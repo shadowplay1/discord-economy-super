@@ -1,0 +1,24 @@
+{
+  "name": "discord-economy-super",
+  "version": "1.0.0",
+  "description": "Easy and customizable economy framework for your Discord bot.",
+  "main": "index.js",
+  "scripts": {
+    "test": "exit 0"
+  },
+  "keywords": [
+    "discord",
+    "bot",
+    "discord.js",
+    "economy",
+    "discord-economy",
+    "discord-economy-super",
+    "discord-js",
+    "discord-bot"
+  ],
+  "author": "shadowplay1",
+  "license": "MIT",
+  "dependencies": {
+    "ms": "^2.1.3"
+  }
+}
