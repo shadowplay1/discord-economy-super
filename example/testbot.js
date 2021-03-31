@@ -45,7 +45,7 @@ bot.on('message', async message => {
     }
     if (message.content.startsWith('+daily')) {
         let daily = eco.daily(message.author.id, message.guild.id)
-        if (daily !== eco.options.dailyAmount) return message.channel.send(`You have already claimed your daily reward! Time left until next claim: **${daily}**`)
+        if (isNaN(daily)) return message.channel.send(`You have already claimed your daily reward! Time left until next claim: **${daily}**`)
         message.channel.send(`You have received **${daily}** daily coins!`)
     }
     if (message.content.startsWith('+work')) {
