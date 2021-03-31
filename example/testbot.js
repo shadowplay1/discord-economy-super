@@ -54,10 +54,9 @@ bot.on('message', async message => {
         message.channel.send(`You worked hard and earned **${work}** coins!`)
     }
     if (message.content.startsWith('+lb') || message.content.startsWith('+leaderboard')) {
-        let i = 1
         try{
             const lb = eco.leaderboard(message.guild.id)
-            message.channel.send(`Money Leaderboard for **${message.guild.name}**\n-----------------------------------\n` + lb.map(x => `${i++}. <@${x.userID}> - ${x.money} coins`).join('\n'))
+            message.channel.send(`Money Leaderboard for **${message.guild.name}**\n-----------------------------------\n` + lb.map((x, i) => `${i + 1}. <@${x.userID}> - ${x.money} coins`).join('\n'))
         }catch(err){
             if(err instanceof eco.EconomyError) return message.channel.send(err.message)
             console.log(err)
