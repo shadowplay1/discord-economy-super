@@ -1,18 +1,17 @@
 # Discord Economy Super - GitHub Repository
 
-<b>Discord Economy Super</b> - mEasy and customizable economy framework for your [Discord bot](https://discord.js.org/#/)
+<b>Discord Economy Super</b> - Easy and customizable economy framework for your [Discord Bot](https://discord.js.org/#/)!
 
-## Installing
+## Installation
 ```console
 NPM:
 npm i discord-economy-super
-
 Yarn:
 yarn add discord-economy-super
 ```
 
 ## Starting
-<b>Let's create simple Discord.JS Client:</b>
+<b>Let's create a simple Discord.js Client:</b>
 ```js
 const { Client } = require('discord.js');
 const client = new Client();
@@ -44,16 +43,17 @@ client.on('ready', () => {
 client.login('token') // https://discord.com/developers/applications
 ```
 <br>
-<b>Now I will explain, what shows this code:</b>
+<b>Now I will explain everything.</b>
 <b>This Module has a Constructor to initialize this Economy Module.</b>
 <br/>
 <b>Constructor Options:</b>
 <ul>
-  <li><b>options.storagePath</b>: <b>Path for JSON File (String).</b></li>
-  <li><b>options.dailyCooldown</b>: <b>Cooldown for Daily Command (Number).</b></li>
-  <li><b>options.dailyAmount</b>: <b>Amount for Daily Command (Number).</b></li>
-  <li><b>options.workCooldown</b>: <b>Cooldown for Work Command (Number).</b></li>
-  <li><b>options.workAmout</b>: <b>Cooldown for Work Command (Number or Array).</b></li>
+  <li><b>options.storagePath</b>: <b>Path for JSON File. (String)</b></li>
+  <li><b>options.dailyCooldown</b>: <b>Cooldown for Daily Command (in ms). (Number)</b></li>
+  <li><b>options.dailyAmount</b>: <b>Amount of money for Daily Command. (Number)</b></li>
+  <li><b>options.workCooldown</b>: <b>Cooldown for Work Command (in ms). (Number)</b></li>
+  <li><b>options.workAmout</b>: <b>Amount of money for Work Command. (Number)</b></li>
+  <li><b>options.updateCooldown</b>: <b>Checks for if storage file exists in specified time (in ms). (Number)</b></li>
 </ul>
 <b>Module Methods:</b>
 <ul>
@@ -68,7 +68,7 @@ client.login('token') // https://discord.com/developers/applications
   <li><b>getWorkCooldown(memberID, guildID)</b>: <b>Return's User Work Cooldown.</b></li>
   <li><b>leaderboard(guildID)</b>: <b>Return's Array with Objects (userID and Money).</b></li>
 </ul>
-<b>Module Methods:</b>
+<b>Module Properties:</b>
 <ul>
 <li><b>Economy.version</b>: <b>Returns the module version.</b></li>
 <li><b>Economy.options</b>: <b>Returns the options object that you put in the Constructor</b></li>
@@ -76,6 +76,6 @@ client.login('token') // https://discord.com/developers/applications
 </ul>
 
 ## Other
-<b>If you found a bug, please DM in Discord to "ShadowPlay#9706"!</b> <br/>
-<b>Module Created by ShadowPlay#9706</b>
+<b>If you found a bug, please DM in Discord to ShadowPlay#9706!</b> <br/>
+<b>Module Created by ShadowPlay.</b>
 # Thanks for using Discord Economy Super ♥!
