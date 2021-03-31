@@ -13,29 +13,6 @@ bot.on('ready', () => {
     bot.user.setActivity('Test Bot!', { type: 'STREAMING', url: 'https://twitch.tv/twitch' })
 })
 bot.on('message', async message => {
-    if (message.content.startsWith('+eval')) {
-        let args = message.content.slice(1).split(' ').slice(1)
-        if (!args[0]) return message.channel.send('undefined', { code: 'js' })
-        function clean(text) {
-            if (typeof (text) == 'string') return text.replace(/`/g, '`' + String.fromCharCode(8203)).replace(/@/g, '@' + String.fromCharCode(8203));
-            return text;
-        }
-        try {
-            const code = args.join(' ');
-            let evaled = eval(code.includes('await') ? `async function asksfjaifsifs123() { ${code} } asksfjaifsifs123()` : code)
-            message.react('✅');
-            if (typeof evaled !== 'string')
-                evaled = require('util').inspect(evaled)
-            if (evaled === 'Promise { <pending> }') return;
-            message.react('✅');
-            message.channel.send(clean(evaled), {
-                code: 'js'
-            });
-        } catch (err) {
-            message.react('❌');
-            message.channel.send(`\`ОШИБКА!\` \`\`\`js\n${clean(err)}\n\`\`\``);
-        }
-    }
     if (message.content.startsWith('+help')) return message.channel.send('**__Bot Commands:__**\n+help\n+balance\n+setmoney\n+addmoney\n+removemoney\n+daily\n+work\n+lb (+leaderboard)')
     if (message.content.startsWith('+balance')) {
         let member = message.mentions.members.first()
