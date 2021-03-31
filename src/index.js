@@ -11,11 +11,12 @@ module.exports = class Economy {
         updateCountdown: Number
     }} options Options object 
     * @property {String} storagePath Full path to JSON file
-     */ 
+     */
     constructor(options = {}) {
         this.ready = false
         this.version = module.exports.version
         this.options = options
+        this.EconomyError = EconomyError
         this.init()
     }
     /**
@@ -177,12 +178,13 @@ module.exports = class Economy {
      */
     leaderboard(guildID) {
         if (typeof guildID !== 'string') throw new EconomyError(`guildID must be a string. Received type: ${typeof guildID}`)
+        let data = this.all()[guildID]
+        if (!data) throw new EconomyError('cannot generate a leaderboard: the server database is empty')
         let lb = []
-        let users = Object.keys(this.all()[guildID])
+        let users = Object.keys(data)
         let ranks = Object.values(this.all()[guildID]).map(x => x.money)
         for (let i in users) lb.push({ userID: users[i], money: Number(ranks[i]) })
-        lb.sort((a, b) => b.money - a.money)
-        return lb
+        return lb.sort((a, b) => b.money - a.money)
     }
     /**
      * Initializates the module.

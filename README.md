@@ -1,6 +1,6 @@
 # Discord Economy Super - GitHub Repository
 
-<b>Discord Economy Super</b> - module that can be used in the bot that writed using [discord.js library](https://discord.js.org/#/)
+<b>Discord Economy Super</b> - mEasy and customizable economy framework for your [Discord bot](https://discord.js.org/#/)
 
 ## Installing
 ```console
@@ -31,12 +31,10 @@ const client = new Client();
 const Economy = require('discord-economy-super');
 const Eco = new Economy({
   storagePath: './storage.json', // Storage of JSON File.
-  
-  dailyCooldown: 60000 * 60 * 24, // Daily Cooldown (1 Day for Now).
-  workCooldown: 60000 * 60, // Work Cooldown (1 Hour for Now).
-  
+  dailyCooldown: 60000 * 60 * 24, // Daily Cooldown, ms (24 Hours = 1 Day).
+  workCooldown: 60000 * 60, // Work Cooldown, ms (1 Hour).
   dailyAmount: 100, // Daily Amount.
-  workAmount: [10, 50] // Work Amount (It can be not an Array, just a Number).
+  workAmount: [10, 50] // Work Amount: first element is min value, second is max value (It also can be a Number).
 });
 
 client.on('ready', () => {
@@ -46,9 +44,9 @@ client.on('ready', () => {
 client.login('token') // https://discord.com/developers/applications
 ```
 <br>
-<b>Now I explain, what shows this code:</b>
+<b>Now I will explain, what shows this code:</b>
 <b>This Module has a Constructor to initialize this Economy Module.</b>
-<br />
+<br/>
 <b>Constructor Options:</b>
 <ul>
   <li><b>options.storagePath</b>: <b>Path for JSON File (String).</b></li>
@@ -57,7 +55,7 @@ client.login('token') // https://discord.com/developers/applications
   <li><b>options.workCooldown</b>: <b>Cooldown for Work Command (Number).</b></li>
   <li><b>options.workAmout</b>: <b>Cooldown for Work Command (Number or Array).</b></li>
 </ul>
-<b>Module Method that You can use:</b>
+<b>Module Methods:</b>
 <ul>
   <li><b>fetch(memberID, guildID)</b>: <b>Returns User's balance.</b></li>
   <li><b>set(amount, memberID, guildID)</b>: <b>Set's Balance to User.</b></li>
@@ -70,8 +68,14 @@ client.login('token') // https://discord.com/developers/applications
   <li><b>getWorkCooldown(memberID, guildID)</b>: <b>Return's User Work Cooldown.</b></li>
   <li><b>leaderboard(guildID)</b>: <b>Return's Array with Objects (userID and Money).</b></li>
 </ul>
+<b>Module Methods:</b>
+<ul>
+<li><b>Economy.version</b>: <b>Returns the module version.</b></li>
+<li><b>Economy.options</b>: <b>Returns the options object that you put in the Constructor</b></li>
+<li><b>Economy.EconomyError</b>: <b>Returns the error class that this module is using.</b></li>
+</ul>
 
 ## Other
-<b>If You found a bug, please DM in Discord to "ShadowPlay#9706"!</b> <br />
+<b>If you found a bug, please DM in Discord to "ShadowPlay#9706"!</b> <br/>
 <b>Module Created by ShadowPlay#9706</b>
 # Thanks for using Discord Economy Super ♥!

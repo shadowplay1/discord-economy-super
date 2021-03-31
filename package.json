@@ -16,9 +16,18 @@
     "discord-js",
     "discord-bot"
   ],
-  "author": "shadowplay1",
+  "author": "shadowplay",
+  "authorDiscordTag": "ShadowPlay#9706",
   "license": "MIT",
   "dependencies": {
     "ms": "^2.1.3"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shadowplay1/discord-economy-super.git"
+  },
+  "bugs": {
+    "url": "https://github.com/shadowplay1/discord-economy-super/issues"
+  },
+  "homepage": "https://github.com/shadowplay1/discord-economy-super#readme"
 }
