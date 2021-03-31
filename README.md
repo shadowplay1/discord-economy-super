@@ -1,6 +1,6 @@
 # Discord Economy Super - GitHub Repository
 
-<b>Discord Economy Super</b> - mEasy and customizable economy framework for your [Discord bot](https://discord.js.org/#/)
+<b>Discord Economy Super</b> - Easy and customizable economy framework for your [Discord Bot](https://discord.js.org/#/)!
 
 ## Installing
 ```console
