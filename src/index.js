@@ -208,8 +208,8 @@ module.exports = class Economy {
         return lb.sort((a, b) => b.money - a.money).filter(x => !isNaN(x.money))
     }
     /**
-* An object with methods to create a shop on your server.
-*/
+    * An object with methods to create a shop on your server.
+    */
     shop = {
         /**
          * Creates an item in shop.
@@ -290,7 +290,7 @@ module.exports = class Economy {
             return true
         },
         /**
-         * Removes the item from the shop.
+         * Removes an item from the shop.
          * @param {Number | String} itemID Item ID or name 
          * @param {String} guildID Guild ID
          * @returns {Boolean} If item not found: null; else: true
@@ -320,7 +320,7 @@ module.exports = class Economy {
             return true
         },
         /**
-         * 
+         * Clears the user's inventory.
          * @param {String} memberID Member ID
          * @param {String} guildID Guild ID
          * @returns {Boolean} true
@@ -340,7 +340,7 @@ module.exports = class Economy {
             return true
         },
         /**
-         * 
+         * Clears the user's purchases history.
          * @param {String} memberID Member ID
          * @param {String} guildID Guild ID
          * @returns {Boolean} true
@@ -367,7 +367,7 @@ module.exports = class Economy {
             return JSON.parse(readFileSync(module.exports.options.storagePath))[guildID]?.shop || []
         },
         /**
-         * Searches for the item in the shop
+         * Searches for the item in the shop.
          * @param {Number | String} itemID Item ID or name 
          * @param {String} guildID Guild ID
          * @returns {Object} If item not found: null; else: item data
@@ -418,7 +418,7 @@ module.exports = class Economy {
          * Shows all items in user's inventory
          * @param {String} memberID Member ID
          * @param {String} guildID Guild ID
-         * @returns {Object} The user's inventory
+         * @returns {Array} The user's inventory
          */
         inventory(memberID, guildID) {
             if (typeof memberID !== 'string') throw new EconomyError(`memberID must be a string. Received type: ${typeof memberID}`)
@@ -428,19 +428,18 @@ module.exports = class Economy {
             return inv
         },
         /**
-         * Uses the item from the user's inventory
+         * Uses the item from the user's inventory.
          * @param {Number | String} itemID Item ID or name
          * @param {String} memberID Member ID
          * @param {String} guildID Guild ID
-         * @returns {String} If item not found: null; else: message on item use (item.message)
+         * @returns {String} If item not found: null; else: message on item use (item.message) (String)
          */
         useItem(itemID, memberID, guildID) {
             if (typeof itemID !== 'number' && typeof itemID !== 'string') throw new EconomyError(`itemID must be a string or a number. Received type: ${typeof itemID}`)
             if (typeof memberID !== 'string') throw new EconomyError(`guildID must be a string. Received type: ${typeof memberID}`)
             if (typeof guildID !== 'string') throw new EconomyError(`guildID must be a string. Received type: ${typeof guildID}`)
-            let obj = JSON.parse(readFileSync(module.exports.options.storagePath))
-            let inv = obj[guildID]?.[memberID]?.inventory || []
-            let i = inv.findIndex(x => x.id == itemID || x.itemName == itemID)
+            let obj = JSON.parse(readFileSync(module.exports.options.storagePath)), inv = obj[guildID]?.[memberID]?.inventory || []
+            const i = inv.findIndex(x => x.id == itemID || x.itemName == itemID)
             if (i == -1) return null
             const message = inv[i].message
             inv = inv.filter(x => x.id !== inv[i].id)
@@ -466,7 +465,7 @@ module.exports = class Economy {
     }
     /**
      * Initializates the module. Please note: you don't need to use this method, it already starts in constructor.
-     * @returns void
+     * @returns true
      */
     init() {
         this.options.storagePath = this.options.storagePath || './storage.json'
@@ -491,10 +490,11 @@ module.exports = class Economy {
         if (Array.isArray(this.options.workAmount) && this.options.workAmount.length > 2) throw new EconomyError(`options.workAmount array cannot have more than 2 elements; it must have min and max values as first and second element of the array (example: [10, 20])`)
         if (Array.isArray(this.options.workAmount) && this.options.workAmount.length == 1) this.options.workAmount = Array.isArray(this.options.workAmount) && this.options.workAmount[0]
         if (Array.isArray(this.options.workAmount) && this.options.workAmount[0] > this.options.workAmount[1]) this.options.workAmount = this.options.workAmount.reverse()
-        this.ready = true
         module.exports.fetch = this.fetch
         module.exports.options = this.options
         module.exports.getDailyCooldown = this.getDailyCooldown
         module.exports.getWorkCooldown = this.getWorkCooldown
+        this.ready = true
+        return true
     }
 }

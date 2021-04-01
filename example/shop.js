@@ -68,6 +68,13 @@ bot.on('message', async message => {
         return message.channel.send('Item successfully removed!');
     }
     if(message.content.startsWith('+shop_buy')) {
+        const balance = eco.fetch(message.author.id, message.guild.id)
+        if(!args[0]) return message.channel.send('Specify an item ID or name.');
+        const item = eco.shop.searchItem(args[0], message.guild.id)
+        if(!item) return message.channel.send(`Cannot find item ${args[0]}.`)
+        if(item.price > balance) return message.channel.send(`You don't have enough money (${balance} coins) to buy this item for ${item.price} coins!`)
+        eco.shop.buy(args[0], message.author.id, message.guild.id);
+        return message.channel.send(`You have received item "${item.itemName}" for ${item.price} coins!`);
     }
     if(message.content.startsWith('+shop_search')) {
         if(!args[0]) return message.channel.send('Specify an item ID or name.')

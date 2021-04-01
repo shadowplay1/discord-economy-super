@@ -7,10 +7,7 @@
 
 ## Installation
 ```console
-NPM:
 npm i discord-economy-super
-Yarn:
-yarn add discord-economy-super
 ```
 
 ## Starting
@@ -83,25 +80,27 @@ client.login('token') // https://discord.com/developers/applications
 </ul>
 <b>Shop Methods</b>
 <ul>
-<li><b>Economy.shop.addItem(guildID, options)</b>: <b>123</b></li>
-<li><b>Economy.shop.buy(itemID, memberID, guildID)</b>: <b>123</b></li>
-<li><b>Economy.shop.clear(guildID)</b>: <b>123</b></li>
-<li><b>Economy.shop.clearHistory(memberID, guildID)</b>: <b>123</b></li>
-<li><b>Economy.shop.clearInventory(memberID, guildID)</b>: <b>123</b></li>
-<li><b>Economy.shop.editItem(itemID, guildID, arg)</b>: <b>123</b></li>
-<li><b>Economy.shop.history(memberID, guildID)</b>: <b>123</b></li>
-<li><b>Economy.shop.inventory(memberID, guildID)</b>: <b>123</b></li>
-<li><b>Economy.shop.list(guildID)</b>: <b>123</b></li>
-<li><b>Economy.shop.removeItem(memberID, guildID)</b>: <b>123</b></li>
-<li><b>Economy.shop.searchItem(memberID, guildID)</b>: <b>123</b></li>
-<li><b>Economy.shop.useItem(memberID, guildID)</b>: <b>123</b></li>
+<li><b>Economy.shop.addItem(guildID, options)</b>: <b>Creates an item in shop. (Object)</b></li>
+<li><b>Economy.shop.buy(itemID, memberID, guildID)</b>: <b>Buys the item from the shop. (Boolean)</b></li>
+<li><b>Economy.shop.clear(guildID)</b>: <b>Clears the shop. (Boolean)</b></li>
+<li><b>Economy.shop.clearHistory(memberID, guildID)</b>: <b>Clears the user's purchases history. (Boolean)</b></li>
+<li><b>Economy.shop.clearInventory(memberID, guildID)</b>: <b>Clears the user's inventory. (Boolean)</b></li>
+<li><b>Economy.shop.editItem(itemID, guildID, arg, value)</b>: <b>Edits the item in shop. 'arg' parameter must be one of these values: description, price, itemName, message, maxAmount. (Boolean)</b></li>
+<li><b>Economy.shop.history(memberID, guildID)</b>: <b>Shows the user's purchases history. (Array)</b></li>
+<li><b>Economy.shop.inventory(memberID, guildID)</b>: <b>Shows all items in user's inventory. (Array)</b></li>
+<li><b>Economy.shop.list(guildID)</b>: <b>Shows all items in the shop. (Array)</b></li>
+<li><b>Economy.shop.removeItem(memberID, guildID)</b>: <b>Removes an item from the shop. (Null or Boolean)</b></li>
+<li><b>Economy.shop.searchItem(memberID, guildID)</b>: <b>Searches for the item in the shop. (Object)</b></li>
+<li><b>Economy.shop.useItem(memberID, guildID)</b>: <b>Uses the item from the user's inventory. (Null or String)</b></li>
 </ul>
-<b>Economy.shop.addItem method options:</b>
+<b>Economy.shop.addItem() method options:</b>
+<ul>
 <li><b>options.itemName</b>: <b>Name for the item. (String)</b></li>
 <li><b>options.price</b>: <b>Price for the item. (Number)</b></li>
 <li><b>options.message</b>: <b>Item message that will be returned on Economy.shop.buy() method. (String)</b></li>
 <li><b>options.description</b>: <b>Description of the item. (String)</b></li> 
 <li><b>options.maxAmount</b>: <b>Max amount of item that user can hold in his inventory. (Number)</b></li>
+</ul>
 </li>
 
 ## Changelog
@@ -131,10 +130,11 @@ client.login('token') // https://discord.com/developers/applications
   <li><b>Fixed bugs</b></li>
   <li><b>Code optimization</b></li>
   <li><b>Now you can create a shop on your Discord server using Economy.shop methods</b></li>
+  <li><b>Added an 'EconomyError' class property</b></li>
   <li><b>Added a 'dateLocale' property for options object</b></li>
 </ul>
 
 ## Other
-<b>If you found a bug, please send them in Discord to ShadowPlay#9706!</b> <br/>
+<b>If you found a bug, please send them in Discord to ShadowPlay#9706.</b><br/>
 <b>Module Created by ShadowPlay.</b>
-# Thanks for using Discord Economy Super ♥!
+# Thanks for using Discord Economy Super ♥
