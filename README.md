@@ -24,7 +24,7 @@ client.login('token') // https://discord.com/developers/applications
 ```
 <b>Now we need to import and initialize 'discord-economy-super':</b>
 ```js
-const { Client } = require('discord.js') // // npm i discord.js
+const { Client } = require('discord.js') // npm i discord.js
 const client = new Client();
 
 const Economy = require('discord-economy-super');
