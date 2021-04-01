@@ -84,14 +84,15 @@ client.login('token') // https://discord.com/developers/applications
 <b>Shop Methods</b>
 <ul>
 <li>Economy.shop.addItem(guildID, options)<b></b>
-Options:
+</ul>
+<b>Economy.shop.addItem method options:</b>
 <li><b>options.itemName</b>: <b>Name for the item. (String)</b></li>
 <li><b>options.price</b>: <b>Price for the item. (Number)</b></li>
 <li><b>options.message</b>: <b>Item message that will be returned on Economy.shop.buy() method. (String)</b></li>
 <li><b>options.description</b>: <b>Description of the item. (String)</b></li> 
 <li><b>options.maxAmount</b>: <b>Max amount of item that user can hold in his inventory. (Number)</b></li>
 </li>
-</ul>
+
 
 ## Changelog
 <b>1.0.1</b>
