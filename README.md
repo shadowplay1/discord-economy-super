@@ -1,6 +1,6 @@
 # Discord Economy Super
 
-[![Downloads](https://img.shields.io/npm/dt/discord-econmy-super?style=for-the-badge)](https://www.npmjs.com/package/discord-economy-super)
+[![Downloads](https://img.shields.io/npm/dt/discord-economy-super?style=for-the-badge)](https://www.npmjs.com/package/discord-economy-super)
 [![Stable version](https://img.shields.io/npm/v/discord-economy-super?style=for-the-badge)](https://www.npmjs.com/package/discord-economy-super)
 
 <b>Discord Economy Super</b> - Easy and customizable economy framework for your [Discord Bot](https://discord.js.org/#/)!
@@ -83,7 +83,8 @@ client.login('token') // https://discord.com/developers/applications
 </ul>
 <b>Shop Methods</b>
 <ul>
-<li>Economy.shop.addItem(guildID, options)<b></b>Options:
+<li>Economy.shop.addItem(guildID, options)<b></b>
+Options:
 <li><b>options.itemName</b>: <b>Name for the item. (String)</b></li>
 <li><b>options.price</b>: <b>Price for the item. (Number)</b></li>
 <li><b>options.message</b>: <b>Item message that will be returned on Economy.shop.buy() method. (String)</b></li>
