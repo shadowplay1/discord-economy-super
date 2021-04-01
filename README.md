@@ -28,7 +28,7 @@ const { Client } = require('discord.js') // // npm i discord.js
 const client = new Client();
 
 const Economy = require('discord-economy-super');
-const Eco = new Economy({
+const eco = new Economy({
   storagePath: './storage.json', // Storage of JSON File. Default: ./storage.json.
   dailyCooldown: 60000 * 60 * 24, // Daily Cooldown, ms (24 Hours = 1 Day).
   workCooldown: 60000 * 60, // Work Cooldown, ms (1 Hour).
@@ -132,6 +132,10 @@ client.login('token') // https://discord.com/developers/applications
   <li><b>Now you can create a shop on your Discord server using Economy.shop methods</b></li>
   <li><b>Added an 'EconomyError' class property</b></li>
   <li><b>Added a 'dateLocale' property for options object</b></li>
+</ul>
+<b>1.0.7</b>
+<ul>
+  <li><b>Fixed bugs</b></li>
 </ul>
 
 ## Other
