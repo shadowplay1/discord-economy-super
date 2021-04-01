@@ -1,6 +1,6 @@
 # Discord Economy Super
 
-[![Downloads](https://img.shields.io/npm/dt/discord-economy-super?style=for-the-badge)](https://www.npmjs.com/package/discord-economy-super)
+[![Downloads](https://img.shields.io/npm/dt/discord-econmy-super?style=for-the-badge)](https://www.npmjs.com/package/discord-economy-super)
 [![Stable version](https://img.shields.io/npm/v/discord-economy-super?style=for-the-badge)](https://www.npmjs.com/package/discord-economy-super)
 
 <b>Discord Economy Super</b> - Easy and customizable economy framework for your [Discord Bot](https://discord.js.org/#/)!
@@ -16,18 +16,18 @@ yarn add discord-economy-super
 ## Starting
 <b>Let's create a simple Discord.js Client:</b>
 ```js
-const { Client } = require('discord.js');
-const client = new Client();
+const { Client } = require('discord.js') // npm i discord.js
+const client = new Client()
 
 client.on('ready', () => {
-  console.log(`${bot.user.tag} is ready!`);
-});
+  console.log(`${bot.user.tag} is ready!`)
+})
 
 client.login('token') // https://discord.com/developers/applications
 ```
 <b>Now we need to import and initialize 'discord-economy-super':</b>
 ```js
-const { Client } = require('discord.js');
+const { Client } = require('discord.js') // // npm i discord.js
 const client = new Client();
 
 const Economy = require('discord-economy-super');
@@ -36,13 +36,13 @@ const Eco = new Economy({
   dailyCooldown: 60000 * 60 * 24, // Daily Cooldown, ms (24 Hours = 1 Day).
   workCooldown: 60000 * 60, // Work Cooldown, ms (1 Hour).
   dailyAmount: 100, // Daily Amount.
-  workAmount: [10, 50], // Work Amount: first element is min value, second is max value (It also can be a Number).
-  updateCountdown: 1000, // Checks for if storage file exists in specified time (in ms). Default: 1000.
+  workAmount: [10, 50] // Work Amount: first element is min value, second is max value (It also can be a Number).
+  updateCountdown: 1000 // Checks for if storage file exists in specified time (in ms). Default: 1000.
   dateLocale: 'ru' // The region (example: ru; en) to format date and time. Default: ru.
 });
 
 client.on('ready', () => {
-  console.log('Client is ready!');
+  console.log(`${bot.user.tag} is ready!`);
 });
 
 client.login('token') // https://discord.com/developers/applications
@@ -83,7 +83,18 @@ client.login('token') // https://discord.com/developers/applications
 </ul>
 <b>Shop Methods</b>
 <ul>
-<li>Economy.shop.addItem(guildID, options)<b></b>
+<li><b>Economy.shop.addItem(guildID, options)</b>: <b>123</b></li>
+<li><b>Economy.shop.buy(itemID, memberID, guildID)</b>: <b>123</b></li>
+<li><b>Economy.shop.clear(guildID)</b>: <b>123</b></li>
+<li><b>Economy.shop.clearHistory(memberID, guildID)</b>: <b>123</b></li>
+<li><b>Economy.shop.clearInventory(memberID, guildID)</b>: <b>123</b></li>
+<li><b>Economy.shop.editItem(itemID, guildID, arg)</b>: <b>123</b></li>
+<li><b>Economy.shop.history(memberID, guildID)</b>: <b>123</b></li>
+<li><b>Economy.shop.inventory(memberID, guildID)</b>: <b>123</b></li>
+<li><b>Economy.shop.list(guildID)</b>: <b>123</b></li>
+<li><b>Economy.shop.removeItem(memberID, guildID)</b>: <b>123</b></li>
+<li><b>Economy.shop.searchItem(memberID, guildID)</b>: <b>123</b></li>
+<li><b>Economy.shop.useItem(memberID, guildID)</b>: <b>123</b></li>
 </ul>
 <b>Economy.shop.addItem method options:</b>
 <li><b>options.itemName</b>: <b>Name for the item. (String)</b></li>
@@ -92,7 +103,6 @@ client.login('token') // https://discord.com/developers/applications
 <li><b>options.description</b>: <b>Description of the item. (String)</b></li> 
 <li><b>options.maxAmount</b>: <b>Max amount of item that user can hold in his inventory. (Number)</b></li>
 </li>
-
 
 ## Changelog
 <b>1.0.1</b>
