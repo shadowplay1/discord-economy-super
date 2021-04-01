@@ -1,6 +1,6 @@
 # Discord Economy Super
 
-[![Downloads](https://img.shields.io/npm/dt/discord-econmy-super?style=for-the-badge)](https://www.npmjs.com/package/discord-economy-super)
+[![Downloads](https://img.shields.io/npm/dt/discord-economy-super?style=for-the-badge)](https://www.npmjs.com/package/discord-economy-super)
 [![Stable version](https://img.shields.io/npm/v/discord-economy-super?style=for-the-badge)](https://www.npmjs.com/package/discord-economy-super)
 
 <b>Discord Economy Super</b> - Easy and customizable economy framework for your [Discord Bot](https://discord.js.org/#/)!
