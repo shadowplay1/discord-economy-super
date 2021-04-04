@@ -7,7 +7,8 @@
 
 ## Installation
 <b>Please note:</br><b>
-<b>Node.js 14.0.0 or newer is required.</b>
+<b>Node.js 14.0.0 or newer is required.</b><br>
+<b>All types in brackets mean the type of what the method or event returns.</b>
 ```console
 npm i discord-economy-super
 ```
@@ -84,15 +85,16 @@ client.login('token') // https://discord.com/developers/applications
 </ul>
 <b>Module Events:</b>
 <ul>
-<li><b>Economy.on('balanceSet')</b>: <b>123</b></li>
-<li><b>Economy.on('balanceAdd')</b>: <b>123</b></li>
-<li><b>Economy.on('balanceSubtract')</b>: <b>123</b></li>
-<li><b>Economy.on('shopAddItem')</b>: <b>123</b></li>
-<li><b>Economy.on('shopRemoveItem')</b>: <b>123</b></li>
-<li><b>Economy.on('shopClear')</b>: <b>123</b></li>
+<li><b>Economy.on('balanceSet')</b>: <b>Emits when you set the balance. (Object)</b></li>
+<li><b>Economy.on('balanceAdd')</b>: <b>Emits when you add money on user's balance. (Object)</b></li>
+<li><b>Economy.on('balanceSubtract')</b>: <b>Emits when you subtract money from user's balance. (Object)</b></li>
+<li><b>Economy.on('shopAddItem')</b>: <b>Emits when you add the item in the guild shop. (Object)</b></li>
+<li><b>Economy.on('shopEditItem')</b>: <b>Emits when you edit the item in the guild shop. (Object)</b></li>
+<li><b>Economy.on('shopRemoveItem')</b>: <b>Emits when you remove the item from the guild shop. (Object)</b></li>
+<li><b>Economy.on('shopClear')</b>: <b>Emits when you clear the shop. (Boolean)</b></li>
 </ul>
 
-<b>Example ecent usage.</b>
+<b>Example event usage:</b>
 
 ```js
 const { Client } = require('discord.js') // npm i discord.js
@@ -113,24 +115,24 @@ client.on('ready', () => {
   console.log(`${bot.user.tag} is ready!`);
 });
 
-
 eco.on('balanceSet', balance => {
-  console.log()
+  console.log(`Someone's just set ${balance.amount} coins for ${balance.memberID} on guild ${balance.guildID}.`)
 })
 eco.on('balanceAdd', balance => {
-  console.log()
+  console.log(`Someone's just added ${balance.amount} coins for ${balance.memberID} on guild ${balance.guildID}.`)
 })
 eco.on('balanceSubtract', balance => {
-  console.log()
+  console.log(`Someone's just subtracted ${balance.amount} coins from balance of member ${balance.memberID} on guild ${balance.guildID}.`)
 })
 eco.on('shopAddItem', item => {
-  console.log()
+  console.log(`Someone's just added an item in the shop!\nItem data:\nID: ${item.id}\nName: ${item.itemName}\nPrice: ${item.price}\nDescription: ${item.description}\nMessage on use: ${item.message}\nMax amount of item in inventory: ${item.maxAmount}`)
 })
 eco.on('shopRemoveItem', item => {
-  console.log()
+  console.log(`Someone's just removed an item from the shop!\nItem data:\nID: ${item.id}\nName: ${item.itemName}\nPrice: ${item.price}\nDescription: ${item.description}\nMessage on use: ${item.message}\nMax amount of item in inventory: ${item.maxAmount}`)
 })
 eco.on('shopClear', cleared => {
-  console.log()
+  if(cleared) console.log('The shop was cleared successfully!')
+  else console.log('Cannot clear the shop!')
 })
 
 client.login('token') // https://discord.com/developers/applications
@@ -186,7 +188,7 @@ client.login('token') // https://discord.com/developers/applications
   <li><b>Edited README.md</b></li>
   <li><b>Fixed bugs</b></li>
   <li><b>Code optimization</b></li>
-  <li><b>Now you can create a shop on your Discord server using Economy.shop methods</b></li>
+  <li><b>Now you can create a shop on your Discord server using Economy.shop methods. They are listed above</b></li>
   <li><b>Added an 'EconomyError' class property</b></li>
   <li><b>Added a 'dateLocale' property for options object</b></li>
 </ul>
@@ -196,14 +198,17 @@ client.login('token') // https://discord.com/developers/applications
 </ul>
 <b>1.0.8</b>
 <ul>
-<li><b>Fixed bugs.</b></li>
 <li><b>Edted README.md</b></li>
-<li><b>Now this module is having an EventEmitter.</b></li>
+<li><b>Fixed bugs.</b></li>
+<li><b>Code optimization</b></li>
+<li><b>Now this module is including Events. They are listed above</b></li>
 </ul>
-# Useful Links
-* [NPM](https://www.npmjs.com/package/discord-economy-super)
-* [GitHub](https://github.com/shadowplay1/discord-economy-super)
-* [Examples](https://github.com/shadowplay1/discord-economy-super/tree/main/example)
+<b>Useful Links<b><br>
+<ul>
+<li><b><a href = "https://www.npmjs.com/package/discord-economy-super">NPM</a></b></li>
+<li><b><a href = "https://github.com/shadowplay1/discord-economy-super">Github</a></b></li>
+<li><b><a href = "https://github.com/shadowplay1/discord-economy-super/tree/main/example">Examples</a></b></li>
+</ul>
 
 ## Other
 <b>If you found a bug, please send them in Discord to ShadowPlay#9706.</b><br/>

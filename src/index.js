@@ -1,5 +1,6 @@
 const { existsSync, writeFileSync, readFileSync } = require('fs'), EconomyError = require('./EconomyError')
-module.exports = class Economy extends require('events').EventEmitter {
+const events = new (require('events')).EventEmitter
+module.exports = class Economy {
     /**
       * The Economy class.
       * @param {Object} options Constructor options object.
@@ -12,7 +13,6 @@ module.exports = class Economy extends require('events').EventEmitter {
       * @param {String} options.dateLocale The region (example: ru; en) to format date and time. Default: ru.
       */
     constructor(options = {}) {
-        super()
         /**
          * Economy ready status.
          */
@@ -30,6 +30,44 @@ module.exports = class Economy extends require('events').EventEmitter {
          */
         this.EconomyError = EconomyError
         this.init()
+    }
+
+    /**
+     * @param {'balanceSet' | 'balanceAdd' | 'balanceSubtract' | 'shopAddItem' | 'shopEditItem' | 'shopClear'} event 
+     * @param {Function} fn 
+     */
+    on(event, fn) {
+        events.on(event, fn)
+    }
+    /**
+     * @param {'balanceSet' | 'balanceAdd' | 'balanceSubtract' | 'shopAddItem' | 'shopEditItem' | 'shopClear'} event 
+     * @param {Function} fn 
+     */
+    once(event, fn) {
+        events.once(event, fn)
+    }
+    /**
+     * @param {'balanceSet' | 'balanceAdd' | 'balanceSubtract' | 'shopAddItem' | 'shopEditItem' | 'shopClear'} event 
+     * @param {Function} fn 
+     */
+    off(event, fn) {
+        events.off(event, fn)
+    }
+    /**
+     * @param {'balanceSet' | 'balanceAdd' | 'balanceSubtract' | 'shopAddItem' | 'shopEditItem' | 'shopClear'} event 
+     * @param {Function} fn 
+     */
+    emit(event, ...args) {
+        events.emit(event, args[0])
+    }
+    setMaxListeners(n) {
+        events.setMaxListeners(n)
+    }
+    listenerCount(type) {
+        events.listenerCount(type)
+    }
+    addListener(event, fn) {
+        events.addListener(event, fn)
     }
     /**
      * Fetches the user's balance.
@@ -270,7 +308,7 @@ module.exports = class Economy extends require('events').EventEmitter {
              * Emits when you add the item in the guild shop
              * @event shopAddItem
              */
-            this.emit('shopAddItem', itemInfo)
+            module.exports.emit('shopAddItem', itemInfo)
             return itemInfo
         },
         /**
@@ -291,7 +329,7 @@ module.exports = class Economy extends require('events').EventEmitter {
                 * Emits when you edit the item in the guild shop
                 * @event shopEditItem
                 */
-                this.emit('shopEditItem', { itemID, guildID, changed: arg, oldValue: item[arg], newValue: value })
+                module.exports.emit('shopEditItem', { itemID, guildID, changed: arg, oldValue: item[arg], newValue: value })
                 item[arg] = value
                 shop.splice(i, 1, item)
                 obj[guildID]['shop'] = shop;
@@ -326,17 +364,22 @@ module.exports = class Economy extends require('events').EventEmitter {
          * Removes an item from the shop.
          * @param {Number | String} itemID Item ID or name 
          * @param {String} guildID Guild ID
-         * @returns {Boolean} If item not found: null; else: true
+         * @returns {Boolean} true or false
          */
         removeItem(itemID, guildID) {
             if (typeof itemID !== 'number' && typeof itemID !== 'string') throw new EconomyError(`itemID must be a string or a number. Received type: ${typeof itemID}`)
             if (typeof guildID !== 'string') throw new EconomyError(`guildID must be a string. Received type: ${typeof guildID}`)
             let obj = JSON.parse(readFileSync(module.exports.options.storagePath))
             let shop = obj[guildID]?.shop || []
-            let item = shop.find(x => x.id == itemID || x.itemName == itemID)
-            if (!item) return null
+            const item = shop.find(x => x.id == itemID || x.itemName == itemID)
+            if (!item) return false
             shop = shop.filter(x => x.id !== item.id)
             obj[guildID]['shop'] = shop;
+            /**
+            * Emits when you remove the item in the guild shop
+            * @event shopEditItem
+            */
+            module.exports.emit('shopRemoveItem', { id: item.id, itemName: item.itemName, price: item.price, message: item.message, description: item.description, maxAmount: item.maxAmount })
             writeFileSync(module.exports.options.storagePath, JSON.stringify(obj))
             return true
         },
@@ -348,13 +391,17 @@ module.exports = class Economy extends require('events').EventEmitter {
         clear(guildID) {
             if (typeof guildID !== 'string') throw new EconomyError(`guildID must be a string. Received type: ${typeof guildID}`)
             let obj = JSON.parse(readFileSync(module.exports.options.storagePath))
+            if (!obj[guildID]?.shop || !obj[guildID]?.shop?.length) {
+                /**
+                * Emits when you clear the shop
+                * @event shopClear
+                */
+                module.exports.emit('shopClear', false)
+                return false
+            }
             obj[guildID]['shop'] = []
             writeFileSync(module.exports.options.storagePath, JSON.stringify(obj))
-            /**
-            * Emits when you clear the shop
-            * @event shopClear
-            */
-            this.emit('shopClear', true)
+            module.exports.emit('shopClear', true)
             return true
         },
         /**
@@ -416,7 +463,7 @@ module.exports = class Economy extends require('events').EventEmitter {
             let obj = JSON.parse(readFileSync(module.exports.options.storagePath))
             let shop = obj[guildID]?.shop || []
             let item = shop.find(x => x.id == itemID || x.itemName == itemID)
-            if (!item) return null
+            if (!item) return false
             return item
         },
         /**
@@ -434,7 +481,7 @@ module.exports = class Economy extends require('events').EventEmitter {
             let obj = JSON.parse(readFileSync(module.exports.options.storagePath).toString());
             let shop = obj[guildID]?.shop || []
             let item = shop.find(x => x.id == itemID || x.itemName == itemID)
-            if (!item) return null
+            if (!item) return false
             if (!obj[guildID]) obj[guildID] = {}
             const bal = obj[guildID]?.[memberID]?.money
             writeFileSync(module.exports.options.storagePath, JSON.stringify(obj))
@@ -479,7 +526,7 @@ module.exports = class Economy extends require('events').EventEmitter {
             if (typeof guildID !== 'string') throw new EconomyError(`guildID must be a string. Received type: ${typeof guildID}`)
             let obj = JSON.parse(readFileSync(module.exports.options.storagePath)), inv = obj[guildID]?.[memberID]?.inventory || []
             const i = inv.findIndex(x => x.id == itemID || x.itemName == itemID)
-            if (i == -1) return null
+            if (i == -1) return false
             const message = inv[i].message
             inv = inv.filter(x => x.id !== inv[i].id)
             obj[guildID][memberID] = {
@@ -505,8 +552,10 @@ module.exports = class Economy extends require('events').EventEmitter {
     /**
      * Initializates the module. Please note: you don't need to use this method, it already starts in constructor.
      * @returns true
+     * @private
      */
     init() {
+        module.exports.emit = this.emit
         this.options.storagePath = this.options.storagePath || './storage.json'
         setInterval(() => {
             let storageExists = existsSync(this.options.storagePath)
@@ -529,10 +578,6 @@ module.exports = class Economy extends require('events').EventEmitter {
         if (Array.isArray(this.options.workAmount) && this.options.workAmount.length > 2) throw new EconomyError(`options.workAmount array cannot have more than 2 elements; it must have min and max values as first and second element of the array (example: [10, 20])`)
         if (Array.isArray(this.options.workAmount) && this.options.workAmount.length == 1) this.options.workAmount = Array.isArray(this.options.workAmount) && this.options.workAmount[0]
         if (Array.isArray(this.options.workAmount) && this.options.workAmount[0] > this.options.workAmount[1]) this.options.workAmount = this.options.workAmount.reverse()
-        module.exports.fetch = this.fetch
-        module.exports.options = this.options
-        module.exports.getDailyCooldown = this.getDailyCooldown
-        module.exports.getWorkCooldown = this.getWorkCooldown
         this.ready = true
         return true
     }
