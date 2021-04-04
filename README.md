@@ -31,7 +31,7 @@ const client = new Client();
 
 const Economy = require('discord-economy-super');
 const eco = new Economy({
-  storagePath: './storage.json', // Storage of JSON File. Default: ./storage.json.
+  storagePath: './storage.json', // JSON File storage. Default: ./storage.json.
   dailyCooldown: 60000 * 60 * 24, // Daily Cooldown, ms (24 Hours = 1 Day).
   workCooldown: 60000 * 60, // Work Cooldown, ms (1 Hour).
   dailyAmount: 100, // Daily Amount.
