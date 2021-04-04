@@ -12,6 +12,7 @@ module.exports = class Economy {
       * @param {String} options.dateLocale The region (example: ru; en) to format date and time. Default: ru.
       */
     constructor(options = {}) {
+        super()
         /**
          * Economy ready status.
          */
@@ -241,7 +242,7 @@ module.exports = class Economy {
                 description,
                 maxAmount
             })
-            obj[guildID]?.shop = shop
+            obj[guildID]['shop'] = shop
             writeFileSync(module.exports.options.storagePath, JSON.stringify(obj))
             return { id, itemName, price, message, description, maxAmount }
         },
@@ -261,7 +262,7 @@ module.exports = class Economy {
                 let item = shop[i]
                 item[arg] = value
                 shop.splice(i, 1, item)
-                obj[guildID]?.shop = shop;
+                obj[guildID]['shop']= shop;
                 writeFileSync(module.exports.options.storagePath, JSON.stringify(obj))
             }
             let args = ['description', 'price', 'itemName', 'message', 'maxAmount']
@@ -303,7 +304,7 @@ module.exports = class Economy {
             let item = shop.find(x => x.id == itemID || x.itemName == itemID)
             if (!item) return null
             shop = shop.filter(x => x.id !== item.id)
-            obj[guildID]?.shop = shop;
+            obj[guildID]['shop'] = shop;
             writeFileSync(module.exports.options.storagePath, JSON.stringify(obj))
             return true
         },
@@ -315,7 +316,7 @@ module.exports = class Economy {
         clear(guildID) {
             if (typeof guildID !== 'string') throw new EconomyError(`guildID must be a string. Received type: ${typeof guildID}`)
             let obj = JSON.parse(readFileSync(module.exports.options.storagePath))
-            obj[guildID]?.shop = []
+            obj[guildID]['shop']= []
             writeFileSync(module.exports.options.storagePath, JSON.stringify(obj))
             return true
         },

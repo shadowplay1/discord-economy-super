@@ -6,7 +6,8 @@
 <b>Discord Economy Super</b> - Easy and customizable economy framework for your [Discord Bot](https://discord.js.org/#/)!
 
 ## Installation
-<b>Before install this module, check your Node.JS Version.<br>Node.JS Version is need to be more than 14.0.0!</b>
+<b>Please note:</br><b>
+<b>Node.js 14.0.0 or newer is required.</b>
 ```console
 npm i discord-economy-super
 ```
@@ -82,6 +83,14 @@ client.login('token') // https://discord.com/developers/applications
 <b>Shop Methods</b>
 <ul>
 <li><b>Economy.shop.addItem(guildID, options)</b>: <b>Creates an item in shop. (Object)</b></li>
+   <ul>
+   <li><b>options.itemName</b>: <b>Name for the item. (String)</b></li>
+   <li><b>options.price</b>: <b>Price of the item. (Number)</b></li>
+   <li><b>options.message</b>: <b>Item message that will be returned on Economy.shop.buy() method. (String)</b></li>
+   <li><b>options.description</b>: <b>Description of the item. (String)</b></li> 
+   <li><b>options.maxAmount</b>: <b>Max amount of item that user can hold in his inventory. (Number)</b></li>
+</ul>
+</li> 
 <li><b>Economy.shop.buy(itemID, memberID, guildID)</b>: <b>Buys the item from the shop. (Boolean)</b></li>
 <li><b>Economy.shop.clear(guildID)</b>: <b>Clears the shop. (Boolean)</b></li>
 <li><b>Economy.shop.clearHistory(memberID, guildID)</b>: <b>Clears the user's purchases history. (Boolean)</b></li>
@@ -94,15 +103,6 @@ client.login('token') // https://discord.com/developers/applications
 <li><b>Economy.shop.searchItem(memberID, guildID)</b>: <b>Searches for the item in the shop. (Object)</b></li>
 <li><b>Economy.shop.useItem(memberID, guildID)</b>: <b>Uses the item from the user's inventory. (Null or String)</b></li>
 </ul>
-<b>Economy.shop.addItem() method options:</b>
-<ul>
-<li><b>options.itemName</b>: <b>Name for the item. (String)</b></li>
-<li><b>options.price</b>: <b>Price for the item. (Number)</b></li>
-<li><b>options.message</b>: <b>Item message that will be returned on Economy.shop.buy() method. (String)</b></li>
-<li><b>options.description</b>: <b>Description of the item. (String)</b></li> 
-<li><b>options.maxAmount</b>: <b>Max amount of item that user can hold in his inventory. (Number)</b></li>
-</ul>
-</li>
 
 ## Changelog
 <b>1.0.1</b>
@@ -138,6 +138,16 @@ client.login('token') // https://discord.com/developers/applications
 <ul>
   <li><b>Fixed bugs</b></li>
 </ul>
+<b>1.0.8</b>
+<ul>
+<li><b>Fixed bugs</b></li>
+<li><b>Edted README.md</b></li>
+<li><b>Now this module is including events.</b></li>
+</ul>
+# Useful Links
+* [NPM](https://www.npmjs.com/package/discord-economy-super)
+* [GitHub](https://github.com/shadowplay1/discord-economy-super)
+* [Examples](https://github.com/shadowplay1/discord-economy-super/tree/main/example)
 
 ## Other
 <b>If you found a bug, please send them in Discord to ShadowPlay#9706.</b><br/>
