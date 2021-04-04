@@ -6,6 +6,7 @@
 <b>Discord Economy Super</b> - Easy and customizable economy framework for your [Discord Bot](https://discord.js.org/#/)!
 
 ## Installation
+<b>Before install this module, check your Node.JS Version.<br>Node.JS Version is need to be more than 14.0.0!</b>
 ```console
 npm i discord-economy-super
 ```
