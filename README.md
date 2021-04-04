@@ -14,6 +14,7 @@ npm i discord-economy-super
 
 ## Starting
 <b>Let's create a simple Discord.js Client:</b>
+
 ```js
 const { Client } = require('discord.js') // npm i discord.js
 const client = new Client()
@@ -25,6 +26,7 @@ client.on('ready', () => {
 client.login('token') // https://discord.com/developers/applications
 ```
 <b>Now we need to import and initialize 'discord-economy-super':</b>
+
 ```js
 const { Client } = require('discord.js') // npm i discord.js
 const client = new Client();
@@ -63,9 +65,9 @@ client.login('token') // https://discord.com/developers/applications
 <b>Module Methods:</b>
 <ul>
   <li><b>fetch(memberID, guildID)</b>: <b>Returns User's balance.</b></li>
-  <li><b>set(amount, memberID, guildID)</b>: <b>Set's Balance to User.</b></li>
-  <li><b>add(amount, memberID, guildID)</b>: <b>Add's Balance to User.</b></li>
-  <li><b>subtract(amount, memberID, guildID)</b>: <b>Remove's Balance to User.</b></li>
+  <li><b>set(amount, memberID, guildID, reason)</b>: <b>Set's Balance to User.</b></li>
+  <li><b>add(amount, memberID, guildID, reason)</b>: <b>Add's Balance to User.</b></li>
+  <li><b>subtract(amount, memberID, guildID, reason)</b>: <b>Remove's Balance to User.</b></li>
   <li><b>all()</b>: <b>Return's All Guild Base.</b></li>
   <li><b>daily(memberID, guildID)</b>: <b>Use with Daily Command.</b></li>
   <li><b>work(memberID, guildID)</b>: <b>Use with Work Command.</b></li>
@@ -80,6 +82,60 @@ client.login('token') // https://discord.com/developers/applications
 <li><b>Economy.EconomyError</b>: <b>Returns the error class that this module is using.</b></li>
 <li><b>Economy.shop</b>: <b>Methods to manage and use a shop on your Discord server.</b></li>
 </ul>
+<b>Module Events:</b>
+<ul>
+<li><b>Economy.on('balanceSet')</b>: <b>123</b></li>
+<li><b>Economy.on('balanceAdd')</b>: <b>123</b></li>
+<li><b>Economy.on('balanceSubtract')</b>: <b>123</b></li>
+<li><b>Economy.on('shopAddItem')</b>: <b>123</b></li>
+<li><b>Economy.on('shopRemoveItem')</b>: <b>123</b></li>
+<li><b>Economy.on('shopClear')</b>: <b>123</b></li>
+</ul>
+
+<b>Example ecent usage.</b>
+
+```js
+const { Client } = require('discord.js') // npm i discord.js
+const client = new Client();
+
+const Economy = require('discord-economy-super');
+const eco = new Economy({
+  storagePath: './storage.json', // JSON File storage. Default: ./storage.json.
+  dailyCooldown: 60000 * 60 * 24, // Daily Cooldown, ms (24 Hours = 1 Day).
+  workCooldown: 60000 * 60, // Work Cooldown, ms (1 Hour).
+  dailyAmount: 100, // Daily Amount.
+  workAmount: [10, 50], // Work Amount: first element is min value, second is max value (It also can be a Number).
+  updateCountdown: 1000, // Checks for if storage file exists in specified time (in ms). Default: 1000.
+  dateLocale: 'ru' // The region (example: ru; en) to format date and time. Default: ru.
+});
+
+client.on('ready', () => {
+  console.log(`${bot.user.tag} is ready!`);
+});
+
+
+eco.on('balanceSet', balance => {
+  console.log()
+})
+eco.on('balanceAdd', balance => {
+  console.log()
+})
+eco.on('balanceSubtract', balance => {
+  console.log()
+})
+eco.on('shopAddItem', item => {
+  console.log()
+})
+eco.on('shopRemoveItem', item => {
+  console.log()
+})
+eco.on('shopClear', cleared => {
+  console.log()
+})
+
+client.login('token') // https://discord.com/developers/applications
+```
+<br>
 <b>Shop Methods</b>
 <ul>
 <li><b>Economy.shop.addItem(guildID, options)</b>: <b>Creates an item in shop. (Object)</b></li>
@@ -91,7 +147,7 @@ client.login('token') // https://discord.com/developers/applications
    <li><b>options.maxAmount</b>: <b>Max amount of item that user can hold in his inventory. (Number)</b></li>
 </ul>
 </li> 
-<li><b>Economy.shop.buy(itemID, memberID, guildID)</b>: <b>Buys the item from the shop. (Boolean)</b></li>
+<li><b>Economy.shop.buy(itemID, memberID, guildID, reason)</b>: <b>Buys the item from the shop. (Boolean)</b></li>
 <li><b>Economy.shop.clear(guildID)</b>: <b>Clears the shop. (Boolean)</b></li>
 <li><b>Economy.shop.clearHistory(memberID, guildID)</b>: <b>Clears the user's purchases history. (Boolean)</b></li>
 <li><b>Economy.shop.clearInventory(memberID, guildID)</b>: <b>Clears the user's inventory. (Boolean)</b></li>
@@ -140,9 +196,9 @@ client.login('token') // https://discord.com/developers/applications
 </ul>
 <b>1.0.8</b>
 <ul>
-<li><b>Fixed bugs</b></li>
+<li><b>Fixed bugs.</b></li>
 <li><b>Edted README.md</b></li>
-<li><b>Now this module is including events.</b></li>
+<li><b>Now this module is having an EventEmitter.</b></li>
 </ul>
 # Useful Links
 * [NPM](https://www.npmjs.com/package/discord-economy-super)

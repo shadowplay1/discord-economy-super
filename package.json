@@ -1,6 +1,6 @@
 {
   "name": "discord-economy-super",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Easy and customizable economy framework for your Discord bot.",
   "main": "index.js",
   "scripts": {
