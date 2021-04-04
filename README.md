@@ -35,8 +35,8 @@ const eco = new Economy({
   dailyCooldown: 60000 * 60 * 24, // Daily Cooldown, ms (24 Hours = 1 Day).
   workCooldown: 60000 * 60, // Work Cooldown, ms (1 Hour).
   dailyAmount: 100, // Daily Amount.
-  workAmount: [10, 50] // Work Amount: first element is min value, second is max value (It also can be a Number).
-  updateCountdown: 1000 // Checks for if storage file exists in specified time (in ms). Default: 1000.
+  workAmount: [10, 50], // Work Amount: first element is min value, second is max value (It also can be a Number).
+  updateCountdown: 1000, // Checks for if storage file exists in specified time (in ms). Default: 1000.
   dateLocale: 'ru' // The region (example: ru; en) to format date and time. Default: ru.
 });
 
