@@ -6,7 +6,8 @@ const eco = new Economy({
     dailyAmount: 100,
     dailyCooldown: 30000,
     workAmount: [10, 50],
-    workCooldown: 15000
+    workCooldown: 15000,
+    checkUpdates: true
 })
 bot.on('ready', () => {
     console.log(bot.user.tag + ' is ready!')

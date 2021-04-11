@@ -7,7 +7,8 @@ const eco = new Economy({
     dailyCooldown: 30000,
     workAmount: [10, 50],
     workCooldown: 15000,
-    dateLocale: 'ru'
+    dateLocale: 'ru',
+    checkUpdates: true
 })
 bot.on('ready', () => {
     console.log(bot.user.tag + ' is ready!')

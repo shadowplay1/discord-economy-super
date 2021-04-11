@@ -5,12 +5,13 @@ module.exports = class Economy {
       * The Economy class.
       * @param {Object} options Constructor options object.
       * @param {String} options.storagePath Full path to JSON file. Default: ./storage.json.
-      * @param {Number} options.dailyCooldown Cooldown for Daily Command (in ms).
-      * @param {Number} options.workCooldown Cooldown for Work Command (in ms).
-      * @param {Number} options.dailyAmount Amount of money for Daily Command.
-      * @param {Number | Array} options.workAmount Amount of money for Work Command.
+      * @param {Number} options.dailyCooldown Cooldown for Daily Command (in ms). Default: 24 Hours (60000 * 60 * 24) ms
+      * @param {Number} options.workCooldown Cooldown for Work Command (in ms). Default: 1 Hour (60000 * 60) ms
+      * @param {Number} options.dailyAmount Amount of money for Daily Command. Default: 100.
+      * @param {Number | Array} options.workAmount Amount of money for Work Command. Default: [10, 50].
       * @param {Number} options.updateCountdown Checks for if storage file exists in specified time (in ms). Default: 1000.
       * @param {String} options.dateLocale The region (example: ru; en) to format date and time. Default: ru.
+      * @param {Boolean} options.checkUpdates Sends the update state message in console on start. Default: true.
       */
     constructor(options = {}) {
         /**
@@ -554,9 +555,57 @@ module.exports = class Economy {
      * @returns true
      * @private
      */
-    init() {
+    async init() {
         module.exports.emit = this.emit
         this.options.storagePath = this.options.storagePath || './storage.json'
+        this.options.dailyAmount == undefined || this.options.dailyAmount == null ? this.options.dailyAmount = 100 : this.options.dailyAmount = this.options.dailyAmount
+        this.options.workAmount == undefined || this.options.workAmount == null ? this.options.workAmount = [10, 50] : this.options.dailyAmount = this.options.workAmount
+        this.options.dailyCooldown == undefined || this.options.dailyCooldown == null ? this.options.dailyCooldown = 60000 * 60 * 24 : this.options.dailyAmount = this.options.dailyCooldown
+        this.options.workCooldown == undefined || this.options.workCooldown == null ? this.options.workCooldown = 60000 * 60 : this.options.dailyAmount = this.options.workCooldown
+        this.options.checkUpdates = this.options.checkUpdates || true
+        if(this.options.checkUpdates) {
+            const packageData = await require('node-fetch')(`https://registry.npmjs.com/discord-economy-super`).then(text => text.json())
+            const colors = {
+                red: '\x1b[31m',
+                green: '\x1b[32m',
+                yellow: '\x1b[33m',
+                blue: '\x1b[34m',
+                magenta: '\x1b[35m',
+                cyan: '\x1b[36m',
+                white: '\x1b[37m',
+            }
+            const v_ = this.version // Installed version
+            const _v = packageData['dist-tags'].latest // Latest version
+            if(v_ !== _v) {
+                // Sorry, I wanna make it look perfectly xD
+                console.log('\n\n')
+                console.log(colors.green + '---------------------------------------------------')
+                console.log(colors.green + '| @ discord-economy-super                  - [] X |')
+                console.log(colors.green + '---------------------------------------------------')
+                console.log(colors.yellow+ `|            The module is ${colors.red}out of date!${colors.yellow}           |`)
+                console.log(colors.magenta+'|              New version is avaible!            |')
+                console.log(colors.blue  + `|                  ${v_} --> ${_v}                |`)
+                console.log(colors.cyan  + '|     Run "npm i discord-economy-super@latest"    |')
+                console.log(colors.cyan  + '|                    to update!                   |')
+                console.log(colors.white + `|          View the full changelog here:          |`)
+                console.log(colors.red   + '| https://npmjs.com/package/discord-economy-super |')
+                console.log(colors.green + '---------------------------------------------------')
+                console.log('\n\n')
+            } else {
+                console.log('\n\n')
+                console.log(colors.green + '---------------------------------------------------')
+                console.log(colors.green + '| @ discord-economy-super                  - [] X |')
+                console.log(colors.green + '---------------------------------------------------')
+                console.log(colors.yellow+ `|            The module is ${colors.cyan}up to date!${colors.yellow}            |`)
+                console.log(colors.magenta+'|             No updates are avaible.             |')
+                console.log(colors.blue  + `|            Currnet version is ${_v}.            |`)
+                console.log(colors.cyan  + '|                     Enjoy!                      |')
+                console.log(colors.white + `|          View the full changelog here:          |`)
+                console.log(colors.red   + '| https://npmjs.com/package/discord-economy-super |')
+                console.log(colors.green + '---------------------------------------------------')
+                console.log('\n\n')
+            }
+        }
         setInterval(() => {
             let storageExists = existsSync(this.options.storagePath)
             if (!storageExists) {
