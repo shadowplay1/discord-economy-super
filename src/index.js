@@ -835,6 +835,7 @@ module.exports = class Economy {
                 } catch (err) {
                     if (err.message.startsWith('Cannot find module') || err.message.includes('no such file or directory')) {
                         console.log('\x1b[36mfailed to find the storage file; created a database file...\x1b[37m')
+                        this.ready = true
                         return writeFileSync(this.options.storagePath, '{}')
                     }
                     if (err.message.includes('Unexpected') && err.message.includes('JSON')) return reject(new EconomyError('Storage file contains wrong data.'))

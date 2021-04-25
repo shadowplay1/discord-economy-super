@@ -1,6 +1,6 @@
 {
   "name": "discord-economy-super",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "description": "Easy and customizable economy framework for your Discord bot.",
   "main": "testbot.js",
   "scripts": {
@@ -22,7 +22,6 @@
   "author": "shadowplay",
   "license": "MIT",
   "dependencies": {
-    "discord.js": "^12.5.3",
     "ms": "^2.1.3",
     "node-fetch": "^2.6.1"
   }
