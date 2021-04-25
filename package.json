@@ -11,14 +11,18 @@
     "bot",
     "discord.js",
     "economy",
+    "discord economy",
     "discord-economy",
     "discord-economy-super",
     "discord-js",
-    "discord-bot"
+    "discord-eco",
+    "discord-bot",
+    "shadowplay"
   ],
-  "author": "shadowplay1",
+  "author": "shadowplay",
   "license": "MIT",
   "dependencies": {
+    "discord.js": "^12.5.3",
     "ms": "^2.1.3",
     "node-fetch": "^2.6.1"
   }
