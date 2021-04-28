@@ -1,10 +1,11 @@
 {
   "name": "discord-economy-super",
-  "version": "1.1.6",
+  "version": "1.1.7",
+  "types": "./typings/index.d.ts",
   "description": "Easy and customizable economy framework for your Discord bot.",
-  "main": "testbot.js",
+  "main": "index.js",
   "scripts": {
-    "test": "exit 0"
+    "postinstall": "node install.js"
   },
   "keywords": [
     "discord",
@@ -24,5 +25,13 @@
   "dependencies": {
     "ms": "^2.1.3",
     "node-fetch": "^2.6.1"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shadowplay1/discord-economy-super.git"
+  },
+  "bugs": {
+    "url": "https://github.com/shadowplay1/discord-economy-super/issues"
+  },
+  "homepage": "https://github.com/shadowplay1/discord-economy-super#readme"
 }

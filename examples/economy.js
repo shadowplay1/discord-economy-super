@@ -29,7 +29,7 @@ bot.on('ready', () => {
     bot.user.setActivity('Test Bot!', { type: 'STREAMING', url: 'https://twitch.tv/twitch' })
 })
 bot.on('message', async message => {
-    if (message.content.startsWith('+help')) return message.channel.send('**__Bot Commands:__**\n+help\n+balance\n+setmoney\n+addmoney\n+removemoney\n+daily\n+work\n+lb (+leaderboard)')
+    if (message.content.startsWith('+help')) return message.channel.send('**__Bot Commands:__**\n+help\n+balance\n+setmoney\n+addmoney\n+removemoney\n+daily\n+weekly\n+work\n+lb (+leaderboard)')
     if (message.content.startsWith('+balance')) {
         let member = message.mentions.members.first()
         let balance = eco.fetch(member?.user?.id || message.author.id, message.guild.id)

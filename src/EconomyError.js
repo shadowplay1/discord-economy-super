@@ -1,6 +1,6 @@
 module.exports = class EconomyError extends Error {
     /**
-     * Creates an 'EconomyError' error.
+     * Creates an 'EconomyError' error instance.
      * @param {String | Error} message Error message.
      */
     constructor(message) {

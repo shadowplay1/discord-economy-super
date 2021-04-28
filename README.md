@@ -339,6 +339,12 @@ client.login('token') // https://discord.com/developers/applications
 <li><b>Fixed bug with "The module is not ready to work" error on.</b></li>
 <li><b>Removed a "discord.js" module from dependencies. It was an accident.</b></li>
 </ul>
+<b>1.1.7</b>
+<ul>
+<li><b>Fixed bugs.</b></li>
+<li><b>Code optimization.</b></li>
+<li><b>TypeScript support is finally here! Created a type defenitions for this module.</b></li>
+</ul>
 
 ## Useful Links
 <ul>

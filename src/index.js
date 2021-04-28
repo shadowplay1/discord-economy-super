@@ -39,7 +39,7 @@ module.exports = class Economy {
          */
         this.options = options
         /**
-         * 'EconomyError' Error class.
+         * 'EconomyError' Error instance.
          */
         this.EconomyError = EconomyError
         typeof this.options.errorHandler == 'object' ? this.options.errorHandler : this.options.errorHandler = {}
@@ -49,7 +49,7 @@ module.exports = class Economy {
         this.options.errorHandler?.handleErrors ? this.init().catch(async err => {
             let attempt = 0
             if (!err instanceof EconomyError) this.errored = true
-            console.log('\x1b[31mFailed to start the module:\x1b[36m') // prev text was "An unexpected error has occurred while starting the module:"
+            console.log('\x1b[31mFailed to start the module:\x1b[36m')
             console.log(err)
             if (err instanceof ReferenceError) {
                 this.errored = true
@@ -72,7 +72,7 @@ module.exports = class Economy {
                 if (attempt < attempts) check().then(async res => {
                     if (res.message) {
                         attempt++
-                        console.log('\x1b[31mFailed to start the module:\x1b[36m') // prev text was "An unexpected error has occurred while starting the module:"
+                        console.log('\x1b[31mFailed to start the module:\x1b[36m')
                         console.log(err)
                         console.log(`\x1b[34mAttempt ${attempt}${attempts == Infinity ? '.' : `/${this.options.errorHandler.attempts}`}`)
                         if (attempt == attempts) return console.log(`\x1b[32mFailed to start the module within ${this.options.errorHandler.attempts} attempts...`)
@@ -126,7 +126,7 @@ module.exports = class Economy {
     }
     /**
      * Checks for if the module is up to date.
-     * @returns {Promise<{updated: Boolean, installedVersion: String, packageVersion: String>} Is the module updated, latest version and installed version [Promise: Object]
+     * @returns {Promise<{updated: Boolean, installedVersion: String, packageVersion: String>} This method will show is the module updated, latest version and installed version. [Promise: Object]
      */
     async checkUpdates() {
         const packageData = await require('node-fetch')(`https://registry.npmjs.com/discord-economy-super`).then(text => text.json())
@@ -170,7 +170,7 @@ module.exports = class Economy {
      * @param {Number} amount Amount of money that you want to set
      * @param {String} memberID Member ID
      * @param {String} guildID Guild ID
-     * @param {any} reason The reason why you set the money
+     * @param {string} reason The reason why you set the money
      * @returns {Number} Money amount
      */
     bankSet(amount, memberID, guildID, reason = null) {
@@ -198,7 +198,7 @@ module.exports = class Economy {
      * @param {Number} amount Amount of money that you want to add
      * @param {String} memberID Member ID
      * @param {String} guildID Guild ID
-     * @param {any} reason The reason why you add the money
+     * @param {string} reason The reason why you add the money
      * @returns {Number} Money amount
      */
     bankAdd(amount, memberID, guildID, reason = null) {
@@ -227,7 +227,7 @@ module.exports = class Economy {
     * @param {Number} amount Amount of money that you want to subtract
     * @param {String} memberID Member ID
     * @param {String} guildID Guild ID
-    * @param {any} reason The reason why you subtract the money
+    * @param {string} reason The reason why you subtract the money
     * @returns {Number} Money amount
     */
     bankSubtract(amount, memberID, guildID, reason = null) {
@@ -256,7 +256,7 @@ module.exports = class Economy {
      * @param {Number} amount Amount of money that you want to set
      * @param {String} memberID Member ID
      * @param {String} guildID Guild ID
-     * @param {any} reason The reason why you set the money
+     * @param {string} reason The reason why you set the money
      * @returns {Number} Money amount
      */
     set(amount, memberID, guildID, reason = null) {
@@ -284,7 +284,7 @@ module.exports = class Economy {
      * @param {Number} amount Amount of money that you want to add
      * @param {String} memberID Member ID
      * @param {String} guildID Guild ID
-     * @param {any} reason The reason why you add the money
+     * @param {string} reason The reason why you add the money
      * @returns {Number} Money amount
      */
     add(amount, memberID, guildID, reason = null) {
@@ -313,7 +313,7 @@ module.exports = class Economy {
     * @param {Number} amount Amount of money that you want to subtract
     * @param {String} memberID Member ID
     * @param {String} guildID Guild ID
-    * @param {any} reason The reason why you subtract the money
+    * @param {string} reason The reason why you subtract the money
     * @returns {Number} Money amount
     */
     subtract(amount, memberID, guildID, reason = null) {
@@ -349,7 +349,7 @@ module.exports = class Economy {
      * Adds a daily reward on user's balance
      * @param {String} memberID Member ID
      * @param {String} guildID Guild ID
-     * @param {any} reason The reason why the money was added. Default: 'claimed the daily reward'
+     * @param {string} reason The reason why the money was added. Default: 'claimed the daily reward'
      * @returns {Number | String} Daily money amount or time before next claim
      */
     daily(memberID, guildID, reason = 'claimed the daily reward') {
@@ -379,7 +379,7 @@ module.exports = class Economy {
      * Adds a work reward on user's balance
      * @param {String} memberID Member ID
      * @param {String} guildID Guild ID
-     * @param {any} reason The reason why the money was added. Default: 'claimed the work reward'
+     * @param {string} reason The reason why the money was added. Default: 'claimed the work reward'
      * @returns {Number | String} Work money amount
      */
     work(memberID, guildID, reason = 'claimed the work reward') {
@@ -410,7 +410,7 @@ module.exports = class Economy {
      * Adds a weekly reward on user's balance
      * @param {String} memberID Member ID
      * @param {String} guildID Guild ID
-     * @param {any} reason The reason why the money was added. Default: 'claimed the weekly reward'
+     * @param {string} reason The reason why the money was added. Default: 'claimed the weekly reward'
      * @returns {Number | String} Weekly money amount
      */
     weekly(memberID, guildID, reason = 'claimed the weekly reward') {
@@ -474,15 +474,16 @@ module.exports = class Economy {
     /**
      * Shows a money leaderboard for your server
      * @param {String} guildID Guild ID
-     * @returns {[{userID: String, money: Number}]} Sorted leaderboard array
+     * @returns {data} Sorted leaderboard array
      */
     leaderboard(guildID) {
+        const data = [{userID: String(), money: Number()}]
         if (!this.ready) throw new EconomyError('The module is not ready to work.')
         if (typeof guildID !== 'string') throw new EconomyError(`guildID must be a string. Received type: ${typeof guildID}`)
-        let data = this.all()[guildID]
-        if (!data) throw new EconomyError('cannot generate a leaderboard: the server database is empty')
+        let serverData = this.all()[guildID]
+        if (!serverData) throw new EconomyError('cannot generate a leaderboard: the server database is empty')
         let lb = []
-        let users = Object.keys(data)
+        let users = Object.keys(serverData)
         let ranks = Object.values(this.all()[guildID]).map(x => x.money)
         for (let i in users) lb.push({ userID: users[i], money: Number(ranks[i]) })
         return lb.sort((a, b) => b.money - a.money).filter(x => !isNaN(x.money))
@@ -490,15 +491,16 @@ module.exports = class Economy {
     /**
     * Shows a bank money leaderboard for your server
     * @param {String} guildID Guild ID
-    * @returns {[{userID: String, money: Number}]} Sorted leaderboard array
+    * @returns {data} Sorted leaderboard array
     */
     bankLeaderboard(guildID) {
+        const data = [{userID: String(), money: Number()}]
         if (!this.ready) throw new EconomyError('The module is not ready to work.')
         if (typeof guildID !== 'string') throw new EconomyError(`guildID must be a string. Received type: ${typeof guildID}`)
-        let data = this.all()[guildID]
-        if (!data) throw new EconomyError('cannot generate a leaderboard: the server database is empty')
+        let serverData = this.all()[guildID]
+        if (!serverData) throw new EconomyError('cannot generate a leaderboard: the server database is empty')
         let lb = []
-        let users = Object.keys(data)
+        let users = Object.keys(serverData)
         let ranks = Object.values(this.all()[guildID]).map(x => x.bank)
         for (let i in users) lb.push({ userID: users[i], bankMoney: Number(ranks[i]) })
         return lb.sort((a, b) => b.bankMoney - a.bankMoney).filter(x => !isNaN(x.bankMoney))
@@ -512,9 +514,9 @@ module.exports = class Economy {
          * @param {Object} options Options object with item info.
          * @param {String} options.itemName Item name.
          * @param {Number} options.price Item price.
-         * @param {String} options.message Item message that will be returned on buying.
+         * @param {String} options.message Item message that will be returned on use.
          * @param {String} options.description Item description.
-         * @param {Number} options.maxAmount Max item amount that user can hold in his inventory.
+         * @param {Number} options.maxAmount Max amount of the item that user can hold in his inventory.
          * @param {String} options.role Role ID from your Discord server.
          * @param {String} guildID Guild ID.
          * @returns {{ id: Number, itemName: String, price: Number, message: String, description: String, role: String, maxAmount: Number | null, role: String, date: String }} Item info.
@@ -545,8 +547,8 @@ module.exports = class Economy {
          * Edits the item in shop.
          * @param {Number | String} itemID Item ID or name
          * @param {String} guildID Guild ID
-         * @param {'description' | 'price' | 'itemName' | 'message' | 'maxAmount' | 'role'} arg This argument means what thing in item you want to edit. Avaible arguments: description, price, name, message, amount
-         * @returns {Boolean} true
+         * @param {'description' | 'price' | 'itemName' | 'message' | 'maxAmount' | 'role'} arg This argument means what thing in item you want to edit. Avaible arguments: description, price, name, message, amount, role
+         * @returns {Boolean} If edited successfully: true, else: false
          */
         editItem(itemID, guildID, arg, value) {
             if (!module.exports.ready) throw new EconomyError('The module is not ready to work.')
@@ -554,7 +556,7 @@ module.exports = class Economy {
                 let obj = JSON.parse(readFileSync(module.exports.options.storagePath))
                 let shop = obj[guildID]?.shop || []
                 let i = shop.findIndex(x => x.id == itemID || x.itemName == itemID)
-                if (i == -1) return null
+                if (i == -1) return false
                 let item = shop[i]
                 module.exports.emit('shopEditItem', { itemID, guildID, changed: arg, oldValue: item[arg], newValue: value })
                 item[arg] = value
@@ -594,7 +596,7 @@ module.exports = class Economy {
          * Removes an item from the shop.
          * @param {Number | String} itemID Item ID or name 
          * @param {String} guildID Guild ID
-         * @returns {Boolean} true or false
+         * @returns {Boolean} If removed: true, else: false
          */
         removeItem(itemID, guildID) {
             if (!module.exports.ready) throw new EconomyError('The module is not ready to work.')
@@ -613,7 +615,7 @@ module.exports = class Economy {
         /**
          * Clears the shop.
          * @param {String} guildID Guild ID
-         * @returns {Boolean} true
+         * @returns {Boolean} If cleared: true, else: false
          */
         clear(guildID) {
             if (!module.exports.ready) throw new EconomyError('The module is not ready to work.')
@@ -632,7 +634,7 @@ module.exports = class Economy {
          * Clears the user's inventory.
          * @param {String} memberID Member ID
          * @param {String} guildID Guild ID
-         * @returns {Boolean} true
+         * @returns {Boolean} If cleared: true, else: false
          */
         clearInventory(memberID, guildID) {
             if (!module.exports.ready) throw new EconomyError('The module is not ready to work.')
@@ -640,6 +642,7 @@ module.exports = class Economy {
             if (typeof memberID !== 'string') throw new EconomyError(`memberID must be a string. Received type: ${typeof memberID}`)
             if (typeof guildID !== 'string') throw new EconomyError(`guildID must be a string. Received type: ${typeof guildID}`)
             let obj = JSON.parse(readFileSync(module.exports.options.storagePath))
+            if (!obj[guildID]?.inventory || !obj[guildID]?.inventory?.length) return false
             obj[guildID][memberID] = {
                 dailyCooldown: data?.dailyCooldown || null,
                 workCooldown: data?.workCooldown || null,
@@ -656,12 +659,13 @@ module.exports = class Economy {
          * Clears the user's purchases history.
          * @param {String} memberID Member ID
          * @param {String} guildID Guild ID
-         * @returns {Boolean} true
+         * @returns {Boolean} If cleared: true, else: false
          */
         clearHistory(memberID, guildID) {
             if (!module.exports.ready) throw new EconomyError('The module is not ready to work.')
             const data = JSON.parse(readFileSync(module.exports.options.storagePath).toString())[guildID]?.[memberID]
             let obj = JSON.parse(readFileSync(module.exports.options.storagePath))
+            if (!obj[guildID]?.history || !obj[guildID]?.history?.length) return false
             obj[guildID][memberID] = {
                 dailyCooldown: data?.dailyCooldown || null,
                 workCooldown: data?.workCooldown || null,
@@ -677,9 +681,10 @@ module.exports = class Economy {
         /**
          * Shows all items in the shop.
          * @param {String} guildID Guild ID
-         * @returns {{[{ id: Number, itemName: String, price: Number, message: String, description: String, role: String, maxAmount: Number | null, role: String, date: String }]}} The shop
+         * @returns {data} The shop array.
          */
         list(guildID) {
+            const data = [{ id: Number(), itemName: String(), price: Number(), message: String(), description: String(), role: String(), maxAmount: Number(), role: String(), date: String() }]
             if (!module.exports.ready) throw new EconomyError('The module is not ready to work.')
             if (typeof guildID !== 'string') throw new EconomyError(`guildID must be a string. Received type: ${typeof guildID}`)
             return JSON.parse(readFileSync(module.exports.options.storagePath))[guildID]?.shop || []
@@ -688,16 +693,17 @@ module.exports = class Economy {
          * Searches for the item in the shop.
          * @param {Number | String} itemID Item ID or name 
          * @param {String} guildID Guild ID
-         * @returns {{ id: Number, itemName: String, price: Number, message: String, description: String, role: String, maxAmount: Number | null, role: String, date: String }} If item not found: null; else: item data array
+         * @returns {data} If item not found: null; else: item data array
          */
         searchItem(itemID, guildID) {
+            const data = { id: Number, itemName: String(), price: Number(), message: String(), description: String(), role: String(), maxAmount: Number(), role: String(), date: String() }
             if (!module.exports.ready) throw new EconomyError('The module is not ready to work.')
             if (typeof itemID !== 'number' && typeof itemID !== 'string') throw new EconomyError(`itemID must be a string or a number. Received type: ${typeof itemID}`)
             if (typeof guildID !== 'string') throw new EconomyError(`guildID must be a string. Received type: ${typeof guildID}`)
             let obj = JSON.parse(readFileSync(module.exports.options.storagePath))
             let shop = obj[guildID]?.shop || []
             let item = shop.find(x => x.id == itemID || x.itemName == itemID)
-            if (!item) return false
+            if (!item) return null
             return item
         },
         /**
@@ -705,8 +711,8 @@ module.exports = class Economy {
          * @param {Number | String} itemID Item ID or name
          * @param {String} memberID Member ID
          * @param {String} guildID Guild ID
-         * @param {any} reason The reason why the money was added. Default: 'received the item from the shop'
-         * @returns {String | Boolean} true
+         * @param {string} reason The reason why the money was added. Default: 'received the item from the shop'
+         * @returns {String | Boolean} If item bought successfully: true; if item not found: false; if user reached the item's max amount: 'max'
          */
         buy(itemID, memberID, guildID, reason = 'received the item from the shop') {
             if (!module.exports.ready) throw new EconomyError('The module is not ready to work.')
@@ -723,7 +729,7 @@ module.exports = class Economy {
             const bal = obj[guildID]?.[memberID]?.money
             writeFileSync(module.exports.options.storagePath, JSON.stringify(obj))
             let inv = this.inventory(memberID, guildID)
-            const itemData = { id: inv.length ? inv.length + 1 : 1, itemName: item.itemName, price: item.price, message: item.message, role: item.role || null, maxAmount: item.maxAmount, maxAmount: item.maxAmount, date: new Date().toLocaleString(module.exports.options.dateLocale || 'ru') }
+            const itemData = { id: inv.length ? inv.length + 1 : 1, itemName: item.itemName, price: item.price, message: item.message, description: item.description, role: item.role || null, maxAmount: item.maxAmount, maxAmount: item.maxAmount, date: new Date().toLocaleString(module.exports.options.dateLocale || 'ru') }
             inv.push(itemData)
             let history = data?.history || []
             history.push({ id: history.length ? history.length + 1 : 1, memberID, guildID, itemName: item.itemName, price: item.price, role: item.role || null, maxAmount: item.maxAmount, date: new Date().toLocaleString(module.exports.options.dateLocale || 'ru') })
@@ -745,9 +751,10 @@ module.exports = class Economy {
          * Shows all items in user's inventory
          * @param {String} memberID Member ID
          * @param {String} guildID Guild ID
-         * @returns {[{ id: Number, itemName: String, price: Number, message: String, role: String, maxAmount: Number, date: String }]} The user's inventory (Array)
+         * @returns {data} The user's inventory array.
          */
         inventory(memberID, guildID) {
+            const data = [{ id: Number(), itemName: String(), price: Number(), message: String(), role: String(), maxAmount: Number(), date: String() }]
             if (!module.exports.ready) throw new EconomyError('The module is not ready to work.')
             if (typeof memberID !== 'string') throw new EconomyError(`memberID must be a string. Received type: ${typeof memberID}`)
             if (typeof guildID !== 'string') throw new EconomyError(`guildID must be a string. Received type: ${typeof guildID}`)
@@ -761,7 +768,7 @@ module.exports = class Economy {
          * @param {String} memberID Member ID
          * @param {String} guildID Guild ID
          * @param {Client} client The Discord Client [Optional]
-         * @returns {String} Message on item use (item.message) (String)
+         * @returns {String} Item message 
          */
         useItem(itemID, memberID, guildID, client) {
             if (!module.exports.ready) throw new EconomyError('The module is not ready to work.')
@@ -805,16 +812,17 @@ module.exports = class Economy {
          * Shows the user's purchase history.
          * @param {String} memberID Member ID
          * @param {String} guildID Guild ID
-         * @returns {[{ id: Number, memberID: String, guildID: String, itemName: String, price: Number, message: String, role: String, date: String }]} User's purchase history
+         * @returns {data} User's purchase history.
          */
         history(memberID, guildID) {
+            const data = [{ id: Number(), memberID: String(), guildID: String(), itemName: String(), price: Number(), message: String(), role: String(), date: String() }]
             if (!module.exports.ready) throw new EconomyError('The module is not ready to work.')
             return JSON.parse(readFileSync(module.exports.options.storagePath))[guildID]?.[memberID]?.history || []
         }
     }
     /**
      * Initializates the module. Please note: you don't need to use this method, it already starts in constructor.
-     * @returns {Promise<true | Error>} If started successfully: true; else: Error object.
+     * @returns {Promise<true | Error>} If started successfully: true; else: Error instance.
      * @private
      */
     init() {

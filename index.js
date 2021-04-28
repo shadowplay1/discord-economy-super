@@ -27,5 +27,6 @@ Thank you for using for using Discord Economy Super <3
 /*
 --Contacts--
 Discord: ShadowPlay#9706
+Discord Server: https://discord.gg/4pWKq8vUnb
 */
 ////////////////////////////////////////////////////////////
