@@ -48,6 +48,7 @@ const client = new Client({ partials: ['CHANNEL', 'GUILD_MEMBER', 'MESSAGE', 'RE
 const Economy = require('discord-economy-super');
 const eco = new Economy({
   storagePath: './storage.json', // Full path to a JSON File. Default: './storage.json'.
+  checkStorage: true, // Checks the if database file exists and if it has errors. Default: true.
   dailyCooldown: 60000 * 60 * 24, // Daily Cooldown, ms (24 Hours = 1 Day). Default: 24 Hours (60000 * 60 * 24) ms.
   workCooldown: 60000 * 60, // Work Cooldown, ms (1 Hour). Default: 1 Hour (60000 * 60) ms.
   weeklyCooldown: 60000 * 60 * 24 * 7, // Cooldown for Weekly Command (in ms). Default: 7 Days (60000 * 60 * 24 * 7) ms
@@ -81,6 +82,7 @@ client.login('token') // https://discord.com/developers/applications
 ## Constructor Options
 <ul>
   <li><b>options.storagePath</b>: <b>Path for JSON File. Default: './storage.json.' (String)</b></li>
+  <li><b>options.checkStorage</b>: <b>Checks the if database file exists and if it has errors. Default: true. (Boolean)</b></li>
   <li><b>options.dailyCooldown</b>: <b>Cooldown for Daily Command (in ms). Default: 24 Hours (60000 * 60 * 24) ms. (Number)</b></li>
   <li><b>options.dailyAmount</b>: <b>Amount of money for Daily Command. Default: 100. (Number)</b></li>
   <li><b>options.workCooldown</b>: <b>Cooldown for Work Command (in ms). Default: 1 Hour (60000 * 60) ms. (Number)</b></li>
@@ -121,13 +123,21 @@ client.login('token') // https://discord.com/developers/applications
   <li><b>work(memberID, guildID)</b>: <b>Adds a work reward on user's balance. (Number | String)</b></li>
   <li><b>weekly(memberID, guildID)</b>: <b>Adds a weekly reward on user's balance. (Number | String)</b></li>
   <br>
-  <li><b>getDailyCooldown(memberID, guildID)</b>: <b>Returns a user's Daily Cooldown. (Number)</b></li>
-  <li><b>getWorkCooldown(memberID, guildID)</b>: <b>Returns a user's Work Cooldown. (Number)</b></li>
-  <li><b>getWeeklyCooldown(memberID, guildID)</b>: <b>Returns a user's Weekly Cooldown. (Number)</b></li>
+  <li><b>getDailyCooldown(memberID, guildID)</b>: <b>Returns a user's daily Cooldown. (Number)</b></li>
+  <li><b>getWorkCooldown(memberID, guildID)</b>: <b>Returns a user's work Cooldown. (Number)</b></li>
+  <li><b>getWeeklyCooldown(memberID, guildID)</b>: <b>Returns a user's weekly Cooldown. (Number)</b></li>
+  <br>
+  <li><b>clearDailyCooldown(memberID, guildID)</b>: <b>Clears user's daily cooldown. (Boolean)</b></li>
+  <li><b>clearWorkCooldown(memberID, guildID)</b>: <b>Clears user's work cooldown. (Boolean)</b></li>
+  <li><b>clearWeeklyCooldown(memberID, guildID)</b>: <b>Clears user's weekly cooldown. (Boolean)</b></li>
   <br>
   <li><b>all()</b>: <b>Returns the database contents. (Object)</b></li>
   <li><b>leaderboard(guildID)</b>: <b>Returns a leaderboard array. (Array)</b></li>
   <li><b>checkUpdates()</b>: <b>Checks for if the module is up to date. Returns a promise with data object. (Promise: Object)</b></li>
+  <br>
+  <li><b>clearStorage()</b>: Clears the storage file. (Boolean)</li>
+  <li><b>kill()</b>: Kills the Economy instance. (Economy Instance)</li>
+  <li><b>init()</b>: Starts the module. (Promise: Boolean)</li>
 </ul>
 
 ## Module Properties
@@ -138,6 +148,8 @@ client.login('token') // https://discord.com/developers/applications
 <li><b>Economy.shop</b>: <b>Methods to manage and use the shop on your Discord server. (Object)</b></li>
 <li><b>Economy.ready</b>: <b>Module ready status. (Boolean)</b></li>
 <li><b>Economy.errored</b>: <b>Module errored status. (Boolean)</b></li>
+<li><b>Economy.interval</b>: <b>Module errored status. (NodeJS.Timeout)</b></li>
+<li><b>Economy.errors</b>: <b>Module errored status. (Object)</b></li>
 </ul>
 
 ## Module Events
@@ -166,6 +178,7 @@ const client = new Client({ partials: ['CHANNEL', 'GUILD_MEMBER', 'MESSAGE', 'RE
 const Economy = require('discord-economy-super');
 const eco = new Economy({
   storagePath: './storage.json', // Full path to a JSON File. Default: './storage.json'.
+  checkStorage: true, // Checks the if database file exists and if it has errors. Default: true.
   dailyCooldown: 60000 * 60 * 24, // Daily Cooldown, ms (24 Hours = 1 Day). Default: 24 Hours (60000 * 60 * 24) ms.
   workCooldown: 60000 * 60, // Work Cooldown, ms (1 Hour). Default: 1 Hour (60000 * 60) ms.
   weeklyCooldown: 60000 * 60 * 24 * 7, // Cooldown for Weekly Command (in ms). Default: 7 Days (60000 * 60 * 24 * 7) ms
@@ -344,6 +357,28 @@ client.login('token') // https://discord.com/developers/applications
 <li><b>Fixed bugs.</b></li>
 <li><b>Code optimization.</b></li>
 <li><b>TypeScript support is finally here! Created a type defenitions for this module.</b></li>
+</ul>
+<b>1.1.8</b>
+<ul>
+<li><b>Fixed bugs.</b></li>
+<li><b>Code optimization.</b></li>
+<li><b>Now you can disable checking a storage file using the 'options.checkStorage' option.</b></li>
+<li><b>Now you can kill the Economy instance using the 'Economy.kill()' method.</b></li>
+<li><b>'Economy.init()' method is not private anymore due to 'Economy.kill()' method.</b></li>
+<li><b>Added an 'interval' property that displays the database checking interval.</b></li>
+<li><b>Now you can clear the entire database using the 'Economy.clearStorage()' method.</b></li>
+<li><b>Now this module is using errors that in 'Economy.errors' property and in './src/errors.js' file.</b></li>
+<li><b>Now you can clear any cooldown using the 'Economy.clearDailyCooldown', 'Economy.clearWorkCooldown' and ''Economy.clearWeeklyCooldown' methods.</b></li>
+<li><b>Added a test for basic Economy methods. You can run it by using these commands:
+
+```console
+cd node_modules/discord-economy-super
+npm test
+```
+The test will look like this:
+
+![Test](https://cdn.discordapp.com/attachments/764192017542283325/838226957166313472/Screenshot_4.png)
+</b></li>
 </ul>
 
 ## Useful Links

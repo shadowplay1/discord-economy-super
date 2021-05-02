@@ -3,6 +3,7 @@ const Economy = require('discord-economy-super')
 const eco = new Economy({
     storagePath: './storage.json',
     updateCountdown: 1000,
+    checkStorage: true,
     dailyAmount: 100,
     workAmount: [10, 50],
     weeklyAmount: 1000,

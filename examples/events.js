@@ -2,6 +2,7 @@ const bot = new (require('discord.js')).Client({ partials: ['USER', 'GUILD_MEMBE
 const Economy = require('discord-economy-super')
 const eco = new Economy({
     storagePath: './storage.json',
+    checkStorage: true,
     updateCountdown: 1000,
     dailyAmount: 100,
     workAmount: [10, 50],

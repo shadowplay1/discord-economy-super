@@ -6,6 +6,7 @@ bot.aliases = new Discord.Collection();
 bot.events = new Discord.Collection();
 const eco = new Economy({
     storagePath: './storage.json',
+    checkStorage: true,
     updateCountdown: 1000,
     dailyAmount: 100,
     workAmount: [10, 50],

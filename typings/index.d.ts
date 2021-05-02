@@ -1,5 +1,6 @@
 declare module 'discord-economy-super' {
     import { EventEmitter } from 'events';
+    import { errorList } from '../src/errors'
     /**
      * The Economy class.
      */
@@ -25,6 +26,14 @@ declare module 'discord-economy-super' {
          */
         public options: Options
         /**
+         * Database checking interval.
+         */
+        public interval: NodeJS.Timeout | null
+        /**
+         * Economy errors object.
+         */
+        public errors: ErrorList
+        /**
          * 'EconomyError' Error instance.
          */
         public EconomyError: EconomyError
@@ -39,7 +48,7 @@ declare module 'discord-economy-super' {
         * @param {String} guildID Guild ID
         * @returns User's balance
         */
-        fetch(memberID: string, guildID: string): number;
+        fetch(memberID: string, guildID: string): Number;
         /**
         * Sets the money amount on user's balance.
         * @param {Number} amount Amount of money that you want to set
@@ -48,7 +57,7 @@ declare module 'discord-economy-super' {
         * @param {String} reason The reason why you set the money
         * @returns Money amount
         */
-        set(amount: number, memberID: string, guildID: string, reason?: string): number;
+        set(amount: number, memberID: string, guildID: string, reason?: string): Number;
         /**
         * Adds the money amount on user's balance.
         * @param {Number} amount Amount of money that you want to add
@@ -57,7 +66,7 @@ declare module 'discord-economy-super' {
         * @param {string} reason The reason why you add the money
         * @returns Money amount
         */
-        add(amount: number, memberID: string, guildID: string, reason?: string): number;
+        add(amount: number, memberID: string, guildID: string, reason?: string): Number;
         /**
         * Subtracts the money amount from user's balance.
         * @param {Number} amount Amount of money that you want to subtract
@@ -66,7 +75,7 @@ declare module 'discord-economy-super' {
         * @param {string} reason The reason why you subtract the money
         * @returns Money amount
         */
-        subtract(amount: number, memberID: string, guildID: string, reason?: string): number;
+        subtract(amount: number, memberID: string, guildID: string, reason?: string): Number;
         /**
         * Fetches the user's bank balance.
         * @param {String} memberID Member ID
@@ -82,7 +91,7 @@ declare module 'discord-economy-super' {
         * @param {string} reason The reason why you set the money
         * @returns Money amount
         */
-        bankSet(amount: number, memberID: string, guildID: string, reason?: string): number;
+        bankSet(amount: number, memberID: string, guildID: string, reason?: string): Number;
         /**
         * Adds the money amount on user's bank balance.
         * @param {Number} amount Amount of money that you want to add
@@ -91,7 +100,7 @@ declare module 'discord-economy-super' {
         * @param {string} reason The reason why you add the money
         * @returns Money amount
         */
-        bankAdd(amount: number, memberID: string, guildID: string, reason?: string): number;
+        bankAdd(amount: number, memberID: string, guildID: string, reason?: string): Number;
         /**
         * Subtracts the money amount from user's bank balance.
         * @param {Number} amount Amount of money that you want to subtract
@@ -100,7 +109,7 @@ declare module 'discord-economy-super' {
         * @param {string} reason The reason why you subtract the money
         * @returns Money amount
         */
-        bankSubtract(amount: number, memberID: string, guildID: string, reason?: string): number;
+        bankSubtract(amount: number, memberID: string, guildID: string, reason?: string): Number;
         /**
         * Adds a daily reward on user's balance
         * @param {String} memberID Member ID
@@ -108,7 +117,7 @@ declare module 'discord-economy-super' {
         * @param {string} reason The reason why the money was added. Default: 'claimed the daily reward'
         * @returns Daily money amount or time before next claim
         */
-        daily(memberID: string, guildID: string, reason: string): (number | string);
+        daily(memberID: string, guildID: string, reason: string): (Number | String);
         /**
         * Adds a work reward on user's balance
         * @param {String} memberID Member ID
@@ -116,7 +125,7 @@ declare module 'discord-economy-super' {
         * @param {string} reason The reason why the money was added. Default: 'claimed the work reward'
         * @returns Work money amount or time before next claim
         */
-        work(memberID: string, guildID: string, reason: string): (number | string);
+        work(memberID: string, guildID: string, reason: string): (Number | String);
         /**
         * Adds a weekly reward on user's balance
         * @param {String} memberID Member ID
@@ -124,45 +133,71 @@ declare module 'discord-economy-super' {
         * @param {string} reason The reason why the money was added. Default: 'claimed the weekly reward'
         * @returns Weekly money amount or time before next claim
         */
-        weekly(memberID: string, guildID: string, reason: string): (number | string);
+        weekly(memberID: string, guildID: string, reason: string): (Number | String);
+        /**
+        * Clears user's daily cooldown
+        * @param {String} memberID Member ID
+        * @param {String} guildID Guild ID
+        * @returns {Boolean} If cleared: true; else: false
+        */
+        clearDailyCooldown(memberID: String, guildID: String): Boolean
+        /**
+        * Clears user's work cooldown
+        * @param {String} memberID Member ID
+        * @param {String} guildID Guild ID
+        * @returns {Boolean} If cleared: true; else: false
+        */
+       clearWorkCooldown(memberID: String, guildID: String): Boolean
+        /**
+        * Clears user's weekly cooldown
+        * @param {String} memberID Member ID
+        * @param {String} guildID Guild ID
+        * @returns {Boolean} If cleared: true; else: false
+        */
+       clearWeeklyCooldown(memberID: String, guildID: String): Boolean
         /**
         * Gets user's daily cooldown
         * @param {String} memberID Member ID
         * @param {String} guildID Guild ID
         * @returns Cooldown end timestamp
         */
-        getDailyCooldown(memberID: string, guildID: string): number;
+        getDailyCooldown(memberID: string, guildID: string): Number;
         /**
         * Gets user's work cooldown
         * @param {String} memberID Member ID
         * @param {String} guildID Guild ID
         * @returns Cooldown end timestamp
         */
-        getWorkCooldown(memberID: string, guildID: string): number;
+        getWorkCooldown(memberID: string, guildID: string): Number;
         /**
         * Gets user's weekly cooldown
         * @param {String} memberID Member ID
         * @param {String} guildID Guild ID
         * @returns Cooldown end timestamp
         */
-        getWeeklyCooldown(memberID: string, guildID: string): number;
+        getWeeklyCooldown(memberID: string, guildID: string): Number;
         /**
         * Fetches the entire database.
         * @returns Database contents
         */
-        all(): object;
+        all(): Object;
+        /**
+        * Clears the storage file.
+        * @returns {Boolean} If cleared successfully: true; else: false
+        */
+        clearStorage(): Boolean
         /**
          * Shows a money leaderboard for your server
          * @param {String} guildID Guild ID
          * @returns Sorted leaderboard array
          */
-        leaderboard(guildID: string): Array<{ userID: string, money: number }>;
+        leaderboard(guildID: string): Array<{ userID: String, money: Number }>;
         /**
          * Shows a bank money leaderboard for your server
          * @param {String} guildID Guild ID
          * @returns Sorted leaderboard array
          */
-        bankLeaderboard(guildID: string): Array<{ userID: string, money: number }>;
+        bankLeaderboard(guildID: string): Array<{ userID: String, money: Number }>;
         /**
          * This method will show is the module updated, latest version and installed version. [Promise: Object]
          * @returns If started successfully: true; else: Error object.
@@ -181,7 +216,16 @@ declare module 'discord-economy-super' {
              */
             packageVersion: string
         }>;
-
+        /**
+         * Kills the Economy instance.
+         * @returns {this} Economy instance.
+         */
+        kill(): this
+        /**
+         * Starts the module.
+         * @returns If started successfully: true; else: Error instance.
+         */
+        init(): Promise<true | Error>
         on<K extends keyof ModuleEvents>(
             event: K,
             listener: (...args: ModuleEvents[K][]) => void
@@ -197,7 +241,6 @@ declare module 'discord-economy-super' {
          * Initializates the module. Please note: you don't need to use this method, it already starts in constructor.
          * @returns If started successfully: true; else: Error instance.
          */
-        private init(): Promise<true | Error>;
     }
     /**
     * An object with methods to create a shop on your server.
@@ -334,7 +377,9 @@ declare module 'discord-economy-super' {
         */
         constructor(message: string | Error) {}
     }
-    namespace Economy {}
+    namespace Economy {
+        declare const version: '1.1.8'
+    }
     export = Economy;
 }
 /**
@@ -547,4 +592,54 @@ interface ModuleEvents {
      * Emits when someone's used the item from his inventory
      */
     shopItemUse: ItemData;
+}
+interface ErrorList {
+    notReady: 'The module is not ready to work.'
+    invalidTypes: {
+        memberID: 'memberID must be a string. Received type: '
+        guildID: 'guildID must be a string. Received type: '
+        amount: 'amount must be a number. Received type: '
+        addItemOptions: {
+            itemName: 'options.itemName must be a string. Received type: '
+            price: 'options.price must be a number. Received type: '
+            message: 'options.message must be a string. Received type: '
+            description: 'options.description must be a string. Received type: '
+            maxAmount: 'options.maxAmount must be a number. Received type: '
+            role: 'options.role must be a string. Received type: '
+        }
+        editItemArgs: {
+            itemID: 'itemID must be a string or a number. Received type: '
+            arg: `arg parameter must be one of these values: 'description', 'price', 'itemName', 'message', 'maxAmount', 'role'. Received: `
+            noValue: 'no value specified. Received: '
+        }
+        constructorOptions: {
+            options: 'options must be type of object. Received: '
+            updaterType: 'options.updater must be type of object. Received: '
+            errorHandlerType: 'options.errorHandler must be type of object. Received: '
+            storatePath: 'options.storagePath must be type of string. Received type: '
+            dailyCooldown: 'options.dailyCooldown must be type of number. Received type: '
+            dailyAmount: 'options.dailyAmount must be type of number. Received type: '
+            workCooldown: 'options.workCooldown must be type of number. Received type: '
+            workAmount: 'options.workAmount must be type of number or array. Received type: '
+            updateCountdown: 'options.updateCountdown must be type of number. Received type: '
+            errorHandler: {
+                handleErrors: 'options.errorHandler.handleErrors must be type of boolean. Received type: '
+                attempts: 'options.errorHandler.attempts must be type of number. Received type: '
+                time: 'options.errorHandler.time must be type of number. Received type: '
+            }
+            updater: {
+                checkUpdates: 'options.updater.checkUpdates must be type of boolean. Received type: '
+                upToDateMessage: 'options.updater.upToDateMessage must be type of boolean. Received type: '
+            }
+        }
+    }
+    workAmount: {
+        tooManyElements: 'options.workAmount array cannot have more than 2 elements; it must have min and max values as first and second element of the array (example: [10, 20]).'
+    }
+    noClient: 'You need to specify your bot client to use this.'
+    roleNotFound: 'Could not find a role with ID '
+    oldNodeVersion: 'This module is supporting only Node.js v14 or newer. Installed version is '
+    invalidStorage: 'Storage file is not valid.'
+    wrongStorageData: 'Storage file contains wrong data.'
+    emptyServerDatabase: 'Cannot generate a leaderboard: the server database is empty.'
 }
