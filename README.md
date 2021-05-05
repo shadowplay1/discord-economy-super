@@ -344,7 +344,7 @@ client.login('token') // https://discord.com/developers/applications
 <li><b>Now you can add a role to users on your Discord server. Click <a href="https://www.npmjs.com/package/discord-economy-super#shop-methods">here</a> for more info.</b></li>
 <li><b>Added a new 'shopItemBuy' and 'shopItemUse' events.</b></li>
 <li><b>Now if user try to buy an item when he reached the max amount of item in his inventory, the method will return a 'max' string.</b></li>
-<li><b>Now this module has a Support Server. Click <b><a href = "https://discord.gg/4pWKq8vUnb">here</a></b> to join!</b></li>
+<li><b>Now this module has a Support Server. Click <b><a href = "https://discord.gg/xQNBGEV8">here</a></b> to join!</b></li>
 </ul>
 <b>1.1.6</b>
 <ul>
@@ -380,17 +380,24 @@ The test will look like this:
 ![Test](https://cdn.discordapp.com/attachments/764192017542283325/838226957166313472/Screenshot_4.png)
 </b></li>
 </ul>
+<b>1.1.9</b>
+<ul>
+<li><b>Fixed bugs.</b></li>
+<li><b>Code optimization.</b></li>
+<li><b>Fixed bugs.</b></li>
+<li><b>Fixed type defebitions.</b></li>
+</ul>
 
 ## Useful Links
 <ul>
 <li><b><a href = "https://www.npmjs.com/package/discord-economy-super">NPM</a></b></li>
 <li><b><a href = "https://github.com/shadowplay1/discord-economy-super">Github</a></b></li>
 <li><b><a href = "https://github.com/shadowplay1/discord-economy-super/tree/main/examples">Examples</a></b></li>
-<li><b><a href = "https://discord.gg/4pWKq8vUnb">Discord Server</a></b></li>
+<li><b><a href = "https://discord.gg/xQNBGEV8">Discord Server</a></b></li>
 </ul>
 <b>If you found a bug, please send it in Discord to ShadowPlay#9706.</b>
 <br>
-<b>If you have any questions or need help, join the <a href = "https://discord.gg/4pWKq8vUnb">Support Server</a>.</b>
+<b>If you have any questions or need help, join the <a href = "https://discord.gg/xQNBGEV8">Support Server</a>.</b>
 <br>
 <b>Module Created by ShadowPlay.</b>
 

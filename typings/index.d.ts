@@ -1,6 +1,5 @@
 declare module 'discord-economy-super' {
     import { EventEmitter } from 'events';
-    import { errorList } from '../src/errors'
     /**
      * The Economy class.
      */
@@ -117,7 +116,7 @@ declare module 'discord-economy-super' {
         * @param {string} reason The reason why the money was added. Default: 'claimed the daily reward'
         * @returns Daily money amount or time before next claim
         */
-        daily(memberID: string, guildID: string, reason: string): (Number | String);
+        daily(memberID: string, guildID: string, reason?: string): (Number | String);
         /**
         * Adds a work reward on user's balance
         * @param {String} memberID Member ID
@@ -125,7 +124,7 @@ declare module 'discord-economy-super' {
         * @param {string} reason The reason why the money was added. Default: 'claimed the work reward'
         * @returns Work money amount or time before next claim
         */
-        work(memberID: string, guildID: string, reason: string): (Number | String);
+        work(memberID: string, guildID: string, reason?: string): (Number | String);
         /**
         * Adds a weekly reward on user's balance
         * @param {String} memberID Member ID
@@ -133,7 +132,7 @@ declare module 'discord-economy-super' {
         * @param {string} reason The reason why the money was added. Default: 'claimed the weekly reward'
         * @returns Weekly money amount or time before next claim
         */
-        weekly(memberID: string, guildID: string, reason: string): (Number | String);
+        weekly(memberID: string, guildID: string, reason?: string): (Number | String);
         /**
         * Clears user's daily cooldown
         * @param {String} memberID Member ID
@@ -343,7 +342,7 @@ declare module 'discord-economy-super' {
          * @param {String} guildID Guild ID
          * @returns The shop array.
          */
-        list(memberID: string, guildID: string): Array<ItemData>;
+        list(пuildID: string): Array<ItemData>;
         /**
          * Searches for the item in the shop.
          * @param {Number | String} itemID Item ID or name 
@@ -378,7 +377,7 @@ declare module 'discord-economy-super' {
         constructor(message: string | Error) {}
     }
     namespace Economy {
-        declare const version: '1.1.8'
+        declare const version: '1.1.9'
     }
     export = Economy;
 }
@@ -390,6 +389,10 @@ interface Options {
      * Full path to a JSON file. Default: './storage.json'.
      */
     storagePath?: string;
+    /**
+     * Checks the if database file exists and if it has errors. Default: true.
+     */
+    checkStorage?: boolean
     /**
      * Cooldown for Daily Command (in ms). Default: 24 Hours (60000 * 60 * 24) ms
      */

@@ -934,7 +934,7 @@ module.exports = class Economy {
     _init() {
         return new Promise(async (resolve, reject) => {
             try {
-                if (Number(process.version.split('.')[1]) < 14) return reject(new EconomyError(this.errors.oldNodeVersion + process.version))
+                if (Number(process.version.split('.')[0].slice(1)) < 14) return reject(new EconomyError(this.errors.oldNodeVersion + process.version))
                 if (this.errored) return
                 if (this.ready) return
                 module.exports.emit = this.emit
