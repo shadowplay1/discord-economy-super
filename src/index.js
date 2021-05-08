@@ -393,11 +393,6 @@ module.exports = class Economy {
         let workAmount = this.options.workAmount
         let reward = Array.isArray(workAmount) ? Math.ceil(Math.random() * (Number(workAmount[0]) - Number(workAmount[1])) + Number(workAmount[1])) : this.options.workAmount
         let cd = JSON.parse(readFileSync(this.options.storagePath).toString())[guildID]?.[memberID]?.workCooldown || null
-        console.log(Array.isArray(workAmount))
-        console.log(workAmount)
-        console.log(this.options)
-        console.log(Math.ceil(Math.random() * (Number(workAmount[0]) - Number(workAmount[1])) + Number(workAmount[1])))
-        console.log(reward)
         if (cd !== null && cooldown - (Date.now() - cd) > 0) return String(require('ms')(cooldown - (Date.now() - cd)))
         let obj = JSON.parse(readFileSync(this.options.storagePath).toString())
         if (!obj[guildID]) obj[guildID] = {}
@@ -405,12 +400,12 @@ module.exports = class Economy {
             dailyCooldown: this.getDailyCooldown(memberID, guildID),
             workCooldown: Date.now(),
             weeklyCooldown: this.getWeeklyCooldown(memberID, guildID),
-            money: this.fetch(memberID, guildID),
+            money: this.fetch(memberID, guildID) + reward,
             bank: this.bankFetch(memberID, guildID),
             inventory: this.shop.inventory(memberID, guildID),
             history: this.shop.history(memberID, guildID)
         }
-        this.add(reward, memberID, guildID, reason)
+        this.emit('balanceAdd', {type: 'add', guildID, memberID, amount: reward, balance: this.fetch(memberID, guildID), reason})
         writeFileSync(this.options.storagePath, JSON.stringify(obj))
         return Number(reward)
     }

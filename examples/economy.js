@@ -31,7 +31,7 @@ bot.on('ready', () => {
 })
 bot.on('message', async message => {
     if (message.content.startsWith('+help')) return message.channel.send('**__Bot Commands:__**\n+help\n+balance\n+setmoney\n+addmoney\n+removemoney\n+daily\n+weekly\n+work\n+lb (+leaderboard)')
-    if (message.content.startsWith('+balance')) {
+    if (message.content.startsWith('+balance') || message.content.startsWith('+bal')) {
         let member = message.mentions.members.first()
         let balance = eco.fetch(member?.user?.id || message.author.id, message.guild.id)
         message.channel.send(`**${member?.user?.username || message.author.username}**'s Balance: ${balance} coins.`)

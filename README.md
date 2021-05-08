@@ -352,7 +352,7 @@ client.login('token') // https://discord.com/developers/applications
 <b>1.1.6</b>
 <ul>
 <li><b>Code optimization.</b></li>
-<li><b>Fixed bug with "The module is not ready to work" error on.</b></li>
+<li><b>Fixed bug with "The module is not ready to work" error on startup.</b></li>
 <li><b>Removed an accidentaly added "discord.js" module from dependencies.</b></li>
 </ul>
 <b>1.1.7</b>
@@ -401,9 +401,15 @@ The test will look like this:
 <ul>
 <li><b>Fixed minor bugs.</b></li>
 <li><b>Code optimization.</b></li>
-<li><b>Now 'Econpmy.work()' method is not taking a daily cooldown as work reward anymore.</b></li>
+<li><b>Now 'Economy.work()' method is not taking a daily cooldown as work reward anymore.</b></li>
 <li><b>Added an 'Economy.removeGuild()' method to fully remove the guild from database.</b></li>
 <li><b>Added an 'Economy.removeUser()' method to to remove the user from database.</b></li>
+</ul>
+<b>1.2.2</b>
+<ul>
+<li><b>Fixed minor bugs.</b></li>
+<li><b>Code optimization.</b></li>
+<li><b>Fixed another issues with 'Economy.work()' method...</b></li>
 </ul>
 
 ## Useful Links
