@@ -135,6 +135,9 @@ client.login('token') // https://discord.com/developers/applications
   <li><b>leaderboard(guildID)</b>: <b>Returns a leaderboard array. (Array)</b></li>
   <li><b>checkUpdates()</b>: <b>Checks for if the module is up to date. Returns a promise with data object. (Promise: Object)</b></li>
   <br>
+  <li><b>removeGuild(guildID)</b>: Fully removes the guild from database. (Boolean)</li>
+  <li><b>removeUser(memberID, guildID)</b>: Removes the user from database. (Boolean)</li>
+  <br>
   <li><b>clearStorage()</b>: Clears the storage file. (Boolean)</li>
   <li><b>kill()</b>: Kills the Economy instance. (Economy Instance)</li>
   <li><b>init()</b>: Starts the module. (Promise: Boolean)</li>
@@ -344,13 +347,13 @@ client.login('token') // https://discord.com/developers/applications
 <li><b>Now you can add a role to users on your Discord server. Click <a href="https://www.npmjs.com/package/discord-economy-super#shop-methods">here</a> for more info.</b></li>
 <li><b>Added a new 'shopItemBuy' and 'shopItemUse' events.</b></li>
 <li><b>Now if user try to buy an item when he reached the max amount of item in his inventory, the method will return a 'max' string.</b></li>
-<li><b>Now this module has a Support Server. Click <b><a href = "https://discord.gg/xQNBGEV8">here</a></b> to join!</b></li>
+<li><b>Now this module has a Support Server. Click <b><a href = "https://discord.gg/afUTRzfb">here</a></b> to join!</b></li>
 </ul>
 <b>1.1.6</b>
 <ul>
 <li><b>Code optimization.</b></li>
 <li><b>Fixed bug with "The module is not ready to work" error on.</b></li>
-<li><b>Removed a "discord.js" module from dependencies. It was an accident.</b></li>
+<li><b>Removed an accidentaly added "discord.js" module from dependencies.</b></li>
 </ul>
 <b>1.1.7</b>
 <ul>
@@ -385,7 +388,22 @@ The test will look like this:
 <li><b>Fixed bugs.</b></li>
 <li><b>Code optimization.</b></li>
 <li><b>Fixed bugs.</b></li>
-<li><b>Fixed type defebitions.</b></li>
+<li><b>Fixed type defenitions.</b></li>
+</ul>
+<b>1.2.0</b>
+<ul>
+<li><b>Fixed bugs.</b></li>
+<li><b>Code optimization.</b></li>
+<li><b>Fixed typos.</b></li>
+<li><b>'Economy.shop.clearInventory' is working fine now.</b></li>
+</ul>
+<b>1.2.1</b>
+<ul>
+<li><b>Fixed minor bugs.</b></li>
+<li><b>Code optimization.</b></li>
+<li><b>Now 'Econpmy.work()' method is not taking a daily cooldown as work reward anymore.</b></li>
+<li><b>Added an 'Economy.removeGuild()' method to fully remove the guild from database.</b></li>
+<li><b>Added an 'Economy.removeUser()' method to to remove the user from database.</b></li>
 </ul>
 
 ## Useful Links
@@ -393,11 +411,11 @@ The test will look like this:
 <li><b><a href = "https://www.npmjs.com/package/discord-economy-super">NPM</a></b></li>
 <li><b><a href = "https://github.com/shadowplay1/discord-economy-super">Github</a></b></li>
 <li><b><a href = "https://github.com/shadowplay1/discord-economy-super/tree/main/examples">Examples</a></b></li>
-<li><b><a href = "https://discord.gg/xQNBGEV8">Discord Server</a></b></li>
+<li><b><a href = "https://discord.gg/afUTRzfb">Discord Server</a></b></li>
 </ul>
 <b>If you found a bug, please send it in Discord to ShadowPlay#9706.</b>
 <br>
-<b>If you have any questions or need help, join the <a href = "https://discord.gg/xQNBGEV8">Support Server</a>.</b>
+<b>If you have any questions or need help, join the <a href = "https://discord.gg/afUTRzfb">Support Server</a>.</b>
 <br>
 <b>Module Created by ShadowPlay.</b>
 

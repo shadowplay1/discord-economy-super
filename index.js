@@ -12,7 +12,7 @@ Please, report any bug if you found it. I really appreciate it.
 Update 1.1.5 is the biggest update in module's history. I put much effort and time to code it. I really hope you will like it <3
 
 If you have any questions or need help, join the Support server:
-https://discord.gg/4pWKq8vUnb
+https://discord.gg/afUTRzfb
 
 Thank you for using for using Discord Economy Super <3
 
@@ -27,6 +27,6 @@ Thank you for using for using Discord Economy Super <3
 /*
 --Contacts--
 Discord: ShadowPlay#9706
-Discord Server: https://discord.gg/4pWKq8vUnb
+Discord Server: https://discord.gg/afUTRzfb
 */
 ////////////////////////////////////////////////////////////

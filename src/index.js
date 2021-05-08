@@ -317,6 +317,38 @@ module.exports = class Economy {
         return true
     }
     /**
+     * Fully removes the guild from database.
+     * @param {String} guildID Guild ID
+     * @returns {Boolean} If cleared successfully: true; else: false
+     */
+    removeGuild(guildID) {
+        if (!this.ready) throw new EconomyError(this.errors.notReady)
+        if (typeof guildID !== 'string') throw new EconomyError(this.errors.invalidTypes.guildID + typeof guildID)
+        const obj = JSON.parse(readFileSync(this.options.storagePath).toString())
+        if(!obj[guildID]) return false
+        obj[guildID] = {}
+        writeFileSync(this.options.storagePath, JSON.stringify(obj))
+        const content = readFileSync(this.options.storagePath).toString()
+        writeFileSync(this.options.storagePath, JSON.stringify(JSON.parse(content.replace(`"${guildID}":{},`, ''))))
+        return true
+    }
+    /**
+     * Removes the user from database.
+     * @param {String} memberID Member ID
+     * @param {String} guildID Guild ID
+     * @returns {Boolean} If cleared successfully: true; else: false
+     */
+    removeUser(memberID, guildID) {
+        if (!this.ready) throw new EconomyError(this.errors.notReady)
+        if (typeof memberID !== 'string') throw new EconomyError(this.errors.invalidTypes.memberID + typeof memberID)
+        if (typeof guildID !== 'string') throw new EconomyError(this.errors.invalidTypes.guildID + typeof guildID)
+        const obj = JSON.parse(readFileSync(this.options.storagePath).toString())
+        if(!obj[guildID]?.[memberID] || !Object.keys(obj[guildID]?.[memberID]).length) return false
+        obj[guildID][memberID] = {}
+        writeFileSync(this.options.storagePath, JSON.stringify(obj))
+        return true
+    }
+    /**
      * Adds a daily reward on user's balance
      * @param {String} memberID Member ID
      * @param {String} guildID Guild ID
@@ -361,6 +393,11 @@ module.exports = class Economy {
         let workAmount = this.options.workAmount
         let reward = Array.isArray(workAmount) ? Math.ceil(Math.random() * (Number(workAmount[0]) - Number(workAmount[1])) + Number(workAmount[1])) : this.options.workAmount
         let cd = JSON.parse(readFileSync(this.options.storagePath).toString())[guildID]?.[memberID]?.workCooldown || null
+        console.log(Array.isArray(workAmount))
+        console.log(workAmount)
+        console.log(this.options)
+        console.log(Math.ceil(Math.random() * (Number(workAmount[0]) - Number(workAmount[1])) + Number(workAmount[1])))
+        console.log(reward)
         if (cd !== null && cooldown - (Date.now() - cd) > 0) return String(require('ms')(cooldown - (Date.now() - cd)))
         let obj = JSON.parse(readFileSync(this.options.storagePath).toString())
         if (!obj[guildID]) obj[guildID] = {}
@@ -373,8 +410,8 @@ module.exports = class Economy {
             inventory: this.shop.inventory(memberID, guildID),
             history: this.shop.history(memberID, guildID)
         }
-        writeFileSync(this.options.storagePath, JSON.stringify(obj))
         this.add(reward, memberID, guildID, reason)
+        writeFileSync(this.options.storagePath, JSON.stringify(obj))
         return Number(reward)
     }
     /**
@@ -686,7 +723,7 @@ module.exports = class Economy {
             if (typeof memberID !== 'string') throw new EconomyError(this.errors.invalidTypes.memberID + typeof memberID)
             if (typeof guildID !== 'string') throw new EconomyError(this.errors.invalidTypes.guildID + typeof guildID)
             let obj = JSON.parse(readFileSync(module.exports.options.storagePath))
-            if (!obj[guildID]?.inventory || !obj[guildID]?.inventory?.length) return false
+            if (!obj[guildID][memberID]?.inventory || !obj[guildID][memberID]?.inventory?.length) return false
             obj[guildID][memberID] = {
                 dailyCooldown: data?.dailyCooldown || null,
                 workCooldown: data?.workCooldown || null,
@@ -946,14 +983,10 @@ module.exports = class Economy {
                 this.options.errorHandler.attempts == undefined ? this.options.errorHandler.attempts = 3 : this.options.errorHandler?.attempts
                 this.options.errorHandler.time == undefined ? this.options.errorHandler.time = 5000 : this.options.errorHandler?.time
                 if (this.options.checkStorage == undefined ? true : this.options.checkStorage) {
+                    if(!existsSync(this.options.storagePath)) writeFileSync(this.options.storagePath, '{}')
                     try {
                         JSON.parse(readFileSync(this.options.storagePath).toString())
                     } catch (err) {
-                        if (err.message.startsWith('Cannot find module') || err.message.includes('no such file or directory')) {
-                            console.log('\x1b[36mfailed to find the storage file; created another one...\x1b[37m')
-                            this.ready = true
-                            return writeFileSync(this.options.storagePath, '{}')
-                        }
                         if (err.message.includes('Unexpected') && err.message.includes('JSON')) return reject(new EconomyError(this.errors.wrongStorageData))
                         else return reject(err)
                     }
@@ -962,7 +995,7 @@ module.exports = class Economy {
                 this.options.updateCountdown == undefined || this.options.updateCountdown == null ? this.options.updateCountdown = 1000 : this.options.updateCountdown = this.options.updateCountdown
                 this.options.workAmount == undefined || this.options.workAmount == null ? this.options.workAmount = [10, 50] : this.options.workAmount = this.options.workAmount
                 this.options.weeklyAmount == undefined || this.options.weeklyAmount == null ? this.options.weeklyAmount = 1000 : this.options.weeklyAmount = this.options.weeklyAmount
-                this.options.dailyCooldown == undefined || this.options.dailyCooldown == null ? this.options.dailyCooldown = 60000 * 60 * 24 : this.options.workAmount = this.options.dailyCooldown
+                this.options.dailyCooldown == undefined || this.options.dailyCooldown == null ? this.options.dailyCooldown = 60000 * 60 * 24 : this.options.dailyCooldown = this.options.dailyCooldown
                 this.options.workCooldown == undefined || this.options.workCooldown == null ? this.options.workCooldown = 60000 * 60 : this.options.workCooldown = this.options.workCooldown
                 this.options.weeklyCooldown == undefined || this.options.weeklyCooldown == null ? this.options.weeklyCooldown = 60000 * 60 * 24 * 7 : this.options.weeklyCooldown = this.options.weeklyCooldown
                 this.options.checkStorage == undefined ? this.options.checkStorage = true : this.options.checkStorage
@@ -1046,7 +1079,7 @@ module.exports = class Economy {
                         try {
                             JSON.parse(readFileSync(this.options.storagePath).toString())
                         } catch (err) {
-                            if (err.message.includes('Unexpected token')) {
+                            if (err.message.includes('Unexpected token') || err.message.includes('Unexpected end')) {
                                 throw new EconomyError(this.errors.wrongStorageData)
                             }
                             else {

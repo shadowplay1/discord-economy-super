@@ -179,18 +179,31 @@ declare module 'discord-economy-super' {
         * Fetches the entire database.
         * @returns Database contents
         */
-        all(): Object;
+        all(): object;
         /**
         * Clears the storage file.
         * @returns {Boolean} If cleared successfully: true; else: false
         */
-        clearStorage(): Boolean
+        clearStorage(): boolean
+        /**
+        * Fully removes the guild from database.
+        * @param {String} guildID Guild ID
+        * @returns {Boolean} If cleared successfully: true; else: false
+        */
+        removeGuild(guildID: string): boolean
+        /**
+        * Removes the user from database.
+        * @param {String} memberID Member ID
+        * @param {String} guildID Guild ID
+        * @returns {Boolean} If cleared successfully: true; else: false
+        */
+        removeUser(memberID: string, guildID: string): boolean
         /**
          * Shows a money leaderboard for your server
          * @param {String} guildID Guild ID
          * @returns Sorted leaderboard array
          */
-        leaderboard(guildID: string): Array<{ userID: String, money: Number }>;
+        leaderboard(guildID: string): Array<{ userID: string, money: number }>;
         /**
          * Shows a bank money leaderboard for your server
          * @param {String} guildID Guild ID
@@ -349,7 +362,7 @@ declare module 'discord-economy-super' {
          * @param {String} guildID Guild ID
          * @returns If item not found: null; else: item data array
          */
-        searchItem(itemID, guildID): ItemData;
+        searchItem(itemID: number | string, guildID: string): ItemData;
         /**
          * Shows all items in user's inventory
          * @param {String} memberID Member ID
@@ -377,7 +390,7 @@ declare module 'discord-economy-super' {
         constructor(message: string | Error) {}
     }
     namespace Economy {
-        declare const version: '1.1.9'
+        declare const version: '1.2.1'
     }
     export = Economy;
 }
