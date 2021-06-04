@@ -355,7 +355,7 @@ declare module 'discord-economy-super' {
          * @param {String} guildID Guild ID
          * @returns The shop array.
          */
-        list(пuildID: string): Array<ItemData>;
+        list(guildID: string): Array<ItemData>;
         /**
          * Searches for the item in the shop.
          * @param {Number | String} itemID Item ID or name 
@@ -390,7 +390,7 @@ declare module 'discord-economy-super' {
         constructor(message: string | Error) {}
     }
     namespace Economy {
-        declare const version: '1.2.2'
+        declare const version: '1.2.3'
     }
     export = Economy;
 }

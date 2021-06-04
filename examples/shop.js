@@ -44,13 +44,9 @@ bot.on('message', async message => {
         message.channel.send(`You have received **${weekly}** weekly coins!`)
     }
     if (message.content.startsWith('+lb') || message.content.startsWith('+leaderboard')) {
-        try {
-            const lb = eco.leaderboard(message.guild.id)
-            message.channel.send(`Money Leaderboard for **${message.guild.name}**\n-----------------------------------\n` + lb.map((x, i) => `${i + 1}. <@${x.userID}> - ${x.money} coins`).join('\n'))
-        } catch (err) {
-            if (err instanceof eco.EconomyError) return message.channel.send(err.message)
-            console.log(err)
-        }
+        const lb = eco.leaderboard(message.guild.id)
+        if(!lb.length) return message.channel.send('Cannot generate a leaderboard: the server database is empty.')
+        message.channel.send(`Money Leaderboard for **${message.guild.name}**\n-----------------------------------\n` + lb.map((x, i) => `${i + 1}. <@${x.userID}> - ${x.money} coins`).join('\n'))
     }
     if (message.content.startsWith('+balance')) {
         let member = message.mentions.members.first()

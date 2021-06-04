@@ -46,5 +46,4 @@ module.exports = {
     oldNodeVersion: 'This module is supporting only Node.js v14 or newer. Installed version is ',
     invalidStorage: 'Storage file is not valid.',
     wrongStorageData: 'Storage file contains wrong data.',
-    emptyServerDatabase: 'Cannot generate a leaderboard: the server database is empty.',
 }

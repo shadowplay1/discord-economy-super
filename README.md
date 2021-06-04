@@ -411,6 +411,13 @@ The test will look like this:
 <li><b>Code optimization.</b></li>
 <li><b>Fixed another issues with 'Economy.work()' method...</b></li>
 </ul>
+<b>1.2.3</b>
+<ul>
+<li><b>Fixed minor bugs.</b></li>
+<li><b>Code optimization.</b></li>
+<li><b>'Economy.leaderboard()' method will return an empty array if the leaderboard is empty.</b></li>
+<li><b>Fixed typos</b></li>
+</ul>
 
 ## Useful Links
 <ul>

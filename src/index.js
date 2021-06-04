@@ -1,5 +1,6 @@
 const { existsSync, writeFileSync, readFileSync } = require('fs'), EconomyError = require('./EconomyError')
 const events = new (require('events')).EventEmitter
+const ms = require('../ms')
 module.exports = class Economy {
     /**
       * The Economy class.
@@ -151,7 +152,7 @@ module.exports = class Economy {
             inventory: this.shop.inventory(memberID, guildID),
             history: this.shop.history(memberID, guildID)
         }
-        writeFileSync(this.options.storagePath, JSON.stringify(obj))
+        writeFileSync(this.options.storagePath, JSON.stringify(obj, null, '\t'))
         this.emit('bankSet', { type: 'bankSet', guildID, memberID, amount: Number(amount), balance: Number(amount), reason })
         return Number(amount)
     }
@@ -180,7 +181,7 @@ module.exports = class Economy {
             inventory: this.shop.inventory(memberID, guildID),
             history: this.shop.history(memberID, guildID)
         }
-        writeFileSync(this.options.storagePath, JSON.stringify(obj))
+        writeFileSync(this.options.storagePath, JSON.stringify(obj, null, '\t'))
         this.emit('bankAdd', { type: 'bankAdd', guildID, memberID, amount: Number(amount), balance: Number(money) + Number(amount), reason })
         return Number(amount)
     }
@@ -209,7 +210,7 @@ module.exports = class Economy {
             inventory: this.shop.inventory(memberID, guildID),
             history: this.shop.history(memberID, guildID),
         }
-        writeFileSync(this.options.storagePath, JSON.stringify(obj))
+        writeFileSync(this.options.storagePath, JSON.stringify(obj, null, '\t'))
         this.emit('bankSubtract', { type: 'bankSubtract', guildID, memberID, amount: Number(amount), balance: Number(money) - Number(amount), reason })
         return Number(amount)
     }
@@ -237,7 +238,7 @@ module.exports = class Economy {
             inventory: this.shop.inventory(memberID, guildID),
             history: this.shop.history(memberID, guildID)
         }
-        writeFileSync(this.options.storagePath, JSON.stringify(obj))
+        writeFileSync(this.options.storagePath, JSON.stringify(obj, null, '\t'))
         this.emit('balanceSet', { type: 'set', guildID, memberID, amount: Number(amount), balance: Number(amount), reason })
         return Number(amount)
     }
@@ -266,7 +267,7 @@ module.exports = class Economy {
             inventory: this.shop.inventory(memberID, guildID),
             history: this.shop.history(memberID, guildID)
         }
-        writeFileSync(this.options.storagePath, JSON.stringify(obj))
+        writeFileSync(this.options.storagePath, JSON.stringify(obj, null, '\t'))
         this.emit('balanceAdd', { type: 'add', guildID, memberID, amount: Number(amount), balance: Number(money) + Number(amount), reason })
         return Number(amount)
     }
@@ -295,7 +296,7 @@ module.exports = class Economy {
             inventory: this.shop.inventory(memberID, guildID),
             history: this.shop.history(memberID, guildID),
         }
-        writeFileSync(this.options.storagePath, JSON.stringify(obj))
+        writeFileSync(this.options.storagePath, JSON.stringify(obj, null, '\t'))
         this.emit('balanceSubtract', { type: 'subtract', guildID, memberID, amount: Number(amount), balance: Number(money) - Number(amount), reason })
         return Number(amount)
     }
@@ -327,7 +328,7 @@ module.exports = class Economy {
         const obj = JSON.parse(readFileSync(this.options.storagePath).toString())
         if(!obj[guildID]) return false
         obj[guildID] = {}
-        writeFileSync(this.options.storagePath, JSON.stringify(obj))
+        writeFileSync(this.options.storagePath, JSON.stringify(obj, null, '\t'))
         const content = readFileSync(this.options.storagePath).toString()
         writeFileSync(this.options.storagePath, JSON.stringify(JSON.parse(content.replace(`"${guildID}":{},`, ''))))
         return true
@@ -345,7 +346,7 @@ module.exports = class Economy {
         const obj = JSON.parse(readFileSync(this.options.storagePath).toString())
         if(!obj[guildID]?.[memberID] || !Object.keys(obj[guildID]?.[memberID]).length) return false
         obj[guildID][memberID] = {}
-        writeFileSync(this.options.storagePath, JSON.stringify(obj))
+        writeFileSync(this.options.storagePath, JSON.stringify(obj, null, '\t'))
         return true
     }
     /**
@@ -362,7 +363,7 @@ module.exports = class Economy {
         let cooldown = this.options.dailyCooldown
         let reward = this.options.dailyAmount
         let cd = JSON.parse(readFileSync(this.options.storagePath).toString())[guildID]?.[memberID]?.dailyCooldown || null
-        if (cd !== null && cooldown - (Date.now() - cd) > 0) return String(require('ms')(cooldown - (Date.now() - cd)))
+        if (cd !== null && cooldown - (Date.now() - cd) > 0) return String(ms(cooldown - (Date.now() - cd)))
         let obj = JSON.parse(readFileSync(this.options.storagePath).toString())
         if (!obj[guildID]) obj[guildID] = {}
         obj[guildID][memberID] = {
@@ -374,7 +375,7 @@ module.exports = class Economy {
             inventory: this.shop.inventory(memberID, guildID),
             history: this.shop.history(memberID, guildID)
         }
-        writeFileSync(this.options.storagePath, JSON.stringify(obj))
+        writeFileSync(this.options.storagePath, JSON.stringify(obj, null, '\t'))
         this.add(reward, memberID, guildID, reason)
         return Number(reward)
     }
@@ -393,7 +394,7 @@ module.exports = class Economy {
         let workAmount = this.options.workAmount
         let reward = Array.isArray(workAmount) ? Math.ceil(Math.random() * (Number(workAmount[0]) - Number(workAmount[1])) + Number(workAmount[1])) : this.options.workAmount
         let cd = JSON.parse(readFileSync(this.options.storagePath).toString())[guildID]?.[memberID]?.workCooldown || null
-        if (cd !== null && cooldown - (Date.now() - cd) > 0) return String(require('ms')(cooldown - (Date.now() - cd)))
+        if (cd !== null && cooldown - (Date.now() - cd) > 0) return String(ms(cooldown - (Date.now() - cd)))
         let obj = JSON.parse(readFileSync(this.options.storagePath).toString())
         if (!obj[guildID]) obj[guildID] = {}
         obj[guildID][memberID] = {
@@ -406,7 +407,7 @@ module.exports = class Economy {
             history: this.shop.history(memberID, guildID)
         }
         this.emit('balanceAdd', {type: 'add', guildID, memberID, amount: reward, balance: this.fetch(memberID, guildID), reason})
-        writeFileSync(this.options.storagePath, JSON.stringify(obj))
+        writeFileSync(this.options.storagePath, JSON.stringify(obj, null, '\t'))
         return Number(reward)
     }
     /**
@@ -422,7 +423,7 @@ module.exports = class Economy {
         if (typeof guildID !== 'string') throw new EconomyError(this.errors.invalidTypes.guildID + typeof guildID)
         let cooldown = this.options.weeklyCooldown
         let cd = JSON.parse(readFileSync(this.options.storagePath).toString())[guildID]?.[memberID]?.weeklyCooldown || null
-        if (cd !== null && cooldown - (Date.now() - cd) > 0) return String(require('ms')(cooldown - (Date.now() - cd)))
+        if (cd !== null && cooldown - (Date.now() - cd) > 0) return String(ms(cooldown - (Date.now() - cd)))
         let obj = JSON.parse(readFileSync(this.options.storagePath).toString())
         if (!obj[guildID]) obj[guildID] = {}
         obj[guildID][memberID] = {
@@ -434,7 +435,7 @@ module.exports = class Economy {
             inventory: this.shop.inventory(memberID, guildID),
             history: this.shop.history(memberID, guildID)
         }
-        writeFileSync(this.options.storagePath, JSON.stringify(obj))
+        writeFileSync(this.options.storagePath, JSON.stringify(obj, null, '\t'))
         this.add(this.options.weeklyAmount, memberID, guildID, reason)
         return Number(this.options.weeklyAmount)
     }
@@ -495,7 +496,7 @@ module.exports = class Economy {
             inventory: this.shop.inventory(memberID, guildID),
             history: this.shop.history(memberID, guildID)
         }
-        writeFileSync(this.options.storagePath, JSON.stringify(obj))
+        writeFileSync(this.options.storagePath, JSON.stringify(obj, null, '\t'))
         return true
     }
     /**
@@ -519,7 +520,7 @@ module.exports = class Economy {
             inventory: this.shop.inventory(memberID, guildID),
             history: this.shop.history(memberID, guildID)
         }
-        writeFileSync(this.options.storagePath, JSON.stringify(obj))
+        writeFileSync(this.options.storagePath, JSON.stringify(obj, null, '\t'))
         return true
     }
     /**
@@ -543,7 +544,7 @@ module.exports = class Economy {
             inventory: this.shop.inventory(memberID, guildID),
             history: this.shop.history(memberID, guildID)
         }
-        writeFileSync(this.options.storagePath, JSON.stringify(obj))
+        writeFileSync(this.options.storagePath, JSON.stringify(obj, null, '\t'))
         return true
     }
     /**
@@ -556,7 +557,7 @@ module.exports = class Economy {
         if (!this.ready) throw new EconomyError(this.errors.notReady)
         if (typeof guildID !== 'string') throw new EconomyError(this.errors.invalidTypes.guildID + typeof guildID)
         let serverData = this.all()[guildID]
-        if (!serverData) throw new EconomyError(this.errors.emptyServerDatabase)
+        if (!serverData) return []
         let lb = []
         let users = Object.keys(serverData)
         let ranks = Object.values(this.all()[guildID]).map(x => x.money)
@@ -615,7 +616,7 @@ module.exports = class Economy {
             shop.push(itemInfo)
             if (!obj[guildID]) obj[guildID] = {}
             obj[guildID]['shop'] = shop
-            writeFileSync(module.exports.options.storagePath, JSON.stringify(obj))
+            writeFileSync(module.exports.options.storagePath, JSON.stringify(obj, null, '\t'))
             module.exports.emit('shopAddItem', itemInfo)
             return itemInfo
         },
@@ -638,7 +639,7 @@ module.exports = class Economy {
                 item[arg] = value
                 shop.splice(i, 1, item)
                 obj[guildID]['shop'] = shop;
-                writeFileSync(module.exports.options.storagePath, JSON.stringify(obj))
+                writeFileSync(module.exports.options.storagePath, JSON.stringify(obj, null, '\t'))
             }
             let args = ['description', 'price', 'itemName', 'message', 'maxAmount', 'role']
             if (typeof itemID !== 'number' && typeof itemID !== 'string') throw new EconomyError(this.errors.invalidTypes.editItemArgs.itemID + typeof itemID)
@@ -685,7 +686,7 @@ module.exports = class Economy {
             shop = shop.filter(x => x.id !== item.id)
             obj[guildID]['shop'] = shop;
             module.exports.emit('shopRemoveItem', { id: item.id, itemName: item.itemName, price: item.price, message: item.message, description: item.description, maxAmount: item.maxAmount, role: item.role || null, date: item.date })
-            writeFileSync(module.exports.options.storagePath, JSON.stringify(obj))
+            writeFileSync(module.exports.options.storagePath, JSON.stringify(obj, null, '\t'))
             return true
         },
         /**
@@ -702,7 +703,7 @@ module.exports = class Economy {
                 return false
             }
             obj[guildID]['shop'] = []
-            writeFileSync(module.exports.options.storagePath, JSON.stringify(obj))
+            writeFileSync(module.exports.options.storagePath, JSON.stringify(obj, null, '\t'))
             module.exports.emit('shopClear', true)
             return true
         },
@@ -728,7 +729,7 @@ module.exports = class Economy {
                 inventory: [],
                 history: this.history(memberID, guildID)
             }
-            writeFileSync(module.exports.options.storagePath, JSON.stringify(obj))
+            writeFileSync(module.exports.options.storagePath, JSON.stringify(obj, null, '\t'))
             return true
         },
         /**
@@ -751,7 +752,7 @@ module.exports = class Economy {
                 inventory: this.inventory(memberID, guildID),
                 history: []
             }
-            writeFileSync(module.exports.options.storagePath, JSON.stringify(obj))
+            writeFileSync(module.exports.options.storagePath, JSON.stringify(obj, null, '\t'))
             return true
         },
         /**
@@ -803,7 +804,7 @@ module.exports = class Economy {
             if (!obj[guildID]) obj[guildID] = {}
             if (item.maxAmount && this.inventory(memberID, guildID).filter(x => x.itemName == item.itemName).length >= item.maxAmount) return 'max'
             const bal = obj[guildID]?.[memberID]?.money
-            writeFileSync(module.exports.options.storagePath, JSON.stringify(obj))
+            writeFileSync(module.exports.options.storagePath, JSON.stringify(obj, null, '\t'))
             let inv = this.inventory(memberID, guildID)
             const itemData = { id: inv.length ? inv.length + 1 : 1, itemName: item.itemName, price: item.price, message: item.message, description: item.description, role: item.role || null, maxAmount: item.maxAmount, maxAmount: item.maxAmount, date: new Date().toLocaleString(module.exports.options.dateLocale || 'ru') }
             inv.push(itemData)
@@ -818,7 +819,7 @@ module.exports = class Economy {
                 inventory: inv,
                 history
             };
-            writeFileSync(module.exports.options.storagePath, JSON.stringify(obj))
+            writeFileSync(module.exports.options.storagePath, JSON.stringify(obj, null, '\t'))
             module.exports.emit('shopItemBuy', itemData)
             module.exports.emit('balanceSubtract', { type: 'subtract', guildID, memberID, amount: item.price, balance: Number(bal) - Number(item.price), reason })
             return true
@@ -880,7 +881,7 @@ module.exports = class Economy {
                 inventory: inv,
                 history: this.history(memberID, guildID)
             }
-            writeFileSync(module.exports.options.storagePath, JSON.stringify(obj))
+            writeFileSync(module.exports.options.storagePath, JSON.stringify(obj, null, '\t'))
             module.exports.emit('shopItemUse', itemData)
             return message
         },
