@@ -133,7 +133,7 @@ function test(value) {
     try {
         const Economy = require('./src/index')
         const eco = new Economy({ updater: { checkUpdates: false } })
-        const balance = await eco.daily('123', '321')
+        const balance = await eco.daily('123', '321').pretty
         test(balance).expect(100)
         tests.passed.push('1')
         console.log(`\x1b[33mTest 8: get daily reward for user 123 on guild 321... \x1b[32mpassed\x1b[33m`)
@@ -148,7 +148,7 @@ function test(value) {
     try {
         const Economy = require('./src/index')
         const eco = new Economy({ workAmount: 5, updater: { checkUpdates: false } })
-        const balance = await eco.work('123', '321')
+        const balance = await eco.work('123', '321').pretty
         test(balance).expect(5)
         tests.passed.push('1')
         console.log(`\x1b[33mTest 9: get work reward for user 123 on guild 321... \x1b[32mpassed\x1b[33m`)
@@ -163,7 +163,7 @@ function test(value) {
     try {
         const Economy = require('./src/index')
         const eco = new Economy({ updater: { checkUpdates: false } })
-        const balance = await eco.weekly('123', '321')
+        const balance = await eco.weekly('123', '321').pretty
         test(balance).expect(1000)
         tests.passed.push('1')
         console.log(`\x1b[33mTest 10: get weekly reward for user 123 on guild 321... \x1b[32mpassed\x1b[33m`)
@@ -193,7 +193,7 @@ function test(value) {
     try {
         const Economy = require('./src/index')
         const eco = new Economy({ updater: { checkUpdates: false } })
-        const balance = await eco.daily('123', '321')
+        const balance = await eco.daily('123', '321').pretty
         test(balance).expect('24h')
         tests.passed.push('1')
         console.log(`\x1b[33mTest 12: get daily reward for user 123 on guild 321 again... \x1b[32mpassed\x1b[33m`)
@@ -208,7 +208,7 @@ function test(value) {
     try {
         const Economy = require('./src/index')
         const eco = new Economy({ workAmount: 5, updater: { checkUpdates: false } })
-        const balance = await eco.work('123', '321')
+        const balance = await eco.work('123', '321').pretty
         test(balance).expect('60m')
         tests.passed.push('1')
         console.log(`\x1b[33mTest 13: get work reward for user 123 on guild 321 again... \x1b[32mpassed\x1b[33m`)
@@ -222,9 +222,8 @@ function test(value) {
 
     try {
         const Economy = require('./src/index')
-        const eco = new Economy(
-            { updater: { checkUpdates: false } })
-        const balance = await eco.weekly('123', '321')
+        const eco = new Economy( { updater: { checkUpdates: false } })
+        const balance = await eco.weekly('123', '321').pretty
         test(balance).expect('7d')
         tests.passed.push('1')
         console.log(`\x1b[33mTest 14: get weekly reward for user 123 on guild 321 again... \x1b[32mpassed\x1b[33m`)

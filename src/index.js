@@ -1,6 +1,13 @@
 const { existsSync, writeFileSync, readFileSync } = require('fs'), EconomyError = require('./EconomyError')
 const events = new (require('events')).EventEmitter
 const ms = require('../ms')
+const parse = ms => ({
+    days: Math.floor(ms / 86400000),
+    hours: Math.floor(ms / 3600000 % 24),
+    minutes: Math.floor(ms / 60000 % 60),
+    seconds: Math.floor(ms / 1000 % 60),
+    milliseconds: Math.floor(ms % 1000)
+})
 module.exports = class Economy {
     /**
       * The Economy class.
@@ -305,7 +312,6 @@ module.exports = class Economy {
     * @returns {Object} Database contents
     */
     all() {
-        if (!this.ready) throw new EconomyError(this.errors.notReady)
         return JSON.parse(readFileSync(this.options.storagePath).toString())
     }
     /**
@@ -326,7 +332,7 @@ module.exports = class Economy {
         if (!this.ready) throw new EconomyError(this.errors.notReady)
         if (typeof guildID !== 'string') throw new EconomyError(this.errors.invalidTypes.guildID + typeof guildID)
         const obj = JSON.parse(readFileSync(this.options.storagePath).toString())
-        if(!obj[guildID]) return false
+        if (!obj[guildID]) return false
         obj[guildID] = {}
         writeFileSync(this.options.storagePath, JSON.stringify(obj, null, '\t'))
         const content = readFileSync(this.options.storagePath).toString()
@@ -344,7 +350,7 @@ module.exports = class Economy {
         if (typeof memberID !== 'string') throw new EconomyError(this.errors.invalidTypes.memberID + typeof memberID)
         if (typeof guildID !== 'string') throw new EconomyError(this.errors.invalidTypes.guildID + typeof guildID)
         const obj = JSON.parse(readFileSync(this.options.storagePath).toString())
-        if(!obj[guildID]?.[memberID] || !Object.keys(obj[guildID]?.[memberID]).length) return false
+        if (!obj[guildID]?.[memberID] || !Object.keys(obj[guildID]?.[memberID]).length) return false
         obj[guildID][memberID] = {}
         writeFileSync(this.options.storagePath, JSON.stringify(obj, null, '\t'))
         return true
@@ -354,16 +360,33 @@ module.exports = class Economy {
      * @param {String} memberID Member ID
      * @param {String} guildID Guild ID
      * @param {string} reason The reason why the money was added. Default: 'claimed the daily reward'
-     * @returns {Number | String} Daily money amount or time before next claim
+     * @returns {data} Daily money amount or time before next claim
      */
     daily(memberID, guildID, reason = 'claimed the daily reward') {
+        const data = {
+            status: Boolean(),
+            value: {
+                days: Number(),
+                hours: Number(),
+                minutes: Number(),
+                seconds: Number(),
+                milliseconds: Number()
+            },
+            pretty: (String() || Number()),
+            reward: Number()
+        }
         if (!this.ready) throw new EconomyError(this.errors.notReady)
         if (typeof memberID !== 'string') throw new EconomyError(this.errors.invalidTypes.memberID + typeof memberID)
         if (typeof guildID !== 'string') throw new EconomyError(this.errors.invalidTypes.guildID + typeof guildID)
         let cooldown = this.options.dailyCooldown
         let reward = this.options.dailyAmount
         let cd = JSON.parse(readFileSync(this.options.storagePath).toString())[guildID]?.[memberID]?.dailyCooldown || null
-        if (cd !== null && cooldown - (Date.now() - cd) > 0) return String(ms(cooldown - (Date.now() - cd)))
+        if (cd !== null && cooldown - (Date.now() - cd) > 0) return {
+            status: false,
+            value: parse(cooldown - (Date.now() - cd)),
+            pretty: String(ms(cooldown - (Date.now() - cd))),
+            reward
+        }
         let obj = JSON.parse(readFileSync(this.options.storagePath).toString())
         if (!obj[guildID]) obj[guildID] = {}
         obj[guildID][memberID] = {
@@ -377,16 +400,33 @@ module.exports = class Economy {
         }
         writeFileSync(this.options.storagePath, JSON.stringify(obj, null, '\t'))
         this.add(reward, memberID, guildID, reason)
-        return Number(reward)
+        return {
+            status: true,
+            value: Number(reward),
+            pretty: reward,
+            reward
+        }
     }
     /**
      * Adds a work reward on user's balance
      * @param {String} memberID Member ID
      * @param {String} guildID Guild ID
      * @param {string} reason The reason why the money was added. Default: 'claimed the work reward'
-     * @returns {Number | String} Work money amount
+     * @returns {data} Work money amount
      */
     work(memberID, guildID, reason = 'claimed the work reward') {
+        const data = {
+            status: Boolean(),
+            value: {
+                days: Number(),
+                hours: Number(),
+                minutes: Number(),
+                seconds: Number(),
+                milliseconds: Number()
+            },
+            pretty: (String() || Number()),
+            reward: (Number() || [1])
+        }
         if (!this.ready) throw new EconomyError(this.errors.notReady)
         if (typeof memberID !== 'string') throw new EconomyError(this.errors.invalidTypes.memberID + typeof memberID)
         if (typeof guildID !== 'string') throw new EconomyError(this.errors.invalidTypes.guildID + typeof guildID)
@@ -394,7 +434,12 @@ module.exports = class Economy {
         let workAmount = this.options.workAmount
         let reward = Array.isArray(workAmount) ? Math.ceil(Math.random() * (Number(workAmount[0]) - Number(workAmount[1])) + Number(workAmount[1])) : this.options.workAmount
         let cd = JSON.parse(readFileSync(this.options.storagePath).toString())[guildID]?.[memberID]?.workCooldown || null
-        if (cd !== null && cooldown - (Date.now() - cd) > 0) return String(ms(cooldown - (Date.now() - cd)))
+        if (cd !== null && cooldown - (Date.now() - cd) > 0) return {
+            status: false,
+            value: parse(cooldown - (Date.now() - cd)),
+            pretty: String(ms(cooldown - (Date.now() - cd))),
+            reward: this.options.workAmount
+        }
         let obj = JSON.parse(readFileSync(this.options.storagePath).toString())
         if (!obj[guildID]) obj[guildID] = {}
         obj[guildID][memberID] = {
@@ -406,24 +451,47 @@ module.exports = class Economy {
             inventory: this.shop.inventory(memberID, guildID),
             history: this.shop.history(memberID, guildID)
         }
-        this.emit('balanceAdd', {type: 'add', guildID, memberID, amount: reward, balance: this.fetch(memberID, guildID), reason})
+        this.emit('balanceAdd', { type: 'add', guildID, memberID, amount: reward, balance: this.fetch(memberID, guildID), reason })
         writeFileSync(this.options.storagePath, JSON.stringify(obj, null, '\t'))
-        return Number(reward)
+        return {
+            status: true,
+            value: Number(reward),
+            pretty: reward,
+            reward: this.options.workAmount
+        }
     }
     /**
      * Adds a weekly reward on user's balance
      * @param {String} memberID Member ID
      * @param {String} guildID Guild ID
      * @param {string} reason The reason why the money was added. Default: 'claimed the weekly reward'
-     * @returns {Number | String} Weekly money amount
+     * @returns {data} Weekly money amount
      */
     weekly(memberID, guildID, reason = 'claimed the weekly reward') {
+        const data = {
+            status: Boolean(),
+            value: {
+                days: Number(),
+                hours: Number(),
+                minutes: Number(),
+                seconds: Number(),
+                milliseconds: Number()
+            },
+            pretty: (String() || Number()),
+            reward: Number()
+        }
         if (!this.ready) throw new EconomyError(this.errors.notReady)
         if (typeof memberID !== 'string') throw new EconomyError(this.errors.invalidTypes.memberID + typeof memberID)
         if (typeof guildID !== 'string') throw new EconomyError(this.errors.invalidTypes.guildID + typeof guildID)
         let cooldown = this.options.weeklyCooldown
+        let reward = this.options.weeklyAmount
         let cd = JSON.parse(readFileSync(this.options.storagePath).toString())[guildID]?.[memberID]?.weeklyCooldown || null
-        if (cd !== null && cooldown - (Date.now() - cd) > 0) return String(ms(cooldown - (Date.now() - cd)))
+        if (cd !== null && cooldown - (Date.now() - cd) > 0) return {
+            status: false,
+            value: parse(cooldown - (Date.now() - cd)),
+            pretty: String(ms(cooldown - (Date.now() - cd))),
+            reward
+        }
         let obj = JSON.parse(readFileSync(this.options.storagePath).toString())
         if (!obj[guildID]) obj[guildID] = {}
         obj[guildID][memberID] = {
@@ -437,7 +505,12 @@ module.exports = class Economy {
         }
         writeFileSync(this.options.storagePath, JSON.stringify(obj, null, '\t'))
         this.add(this.options.weeklyAmount, memberID, guildID, reason)
-        return Number(this.options.weeklyAmount)
+        return {
+            status: true,
+            value: Number(reward),
+            pretty: reward,
+            reward
+        }
     }
     /**
      * Gets user's daily cooldown
@@ -979,7 +1052,7 @@ module.exports = class Economy {
                 this.options.errorHandler.attempts == undefined ? this.options.errorHandler.attempts = 3 : this.options.errorHandler?.attempts
                 this.options.errorHandler.time == undefined ? this.options.errorHandler.time = 5000 : this.options.errorHandler?.time
                 if (this.options.checkStorage == undefined ? true : this.options.checkStorage) {
-                    if(!existsSync(this.options.storagePath)) writeFileSync(this.options.storagePath, '{}')
+                    if (!existsSync(this.options.storagePath)) writeFileSync(this.options.storagePath, '{}')
                     try {
                         JSON.parse(readFileSync(this.options.storagePath).toString())
                     } catch (err) {

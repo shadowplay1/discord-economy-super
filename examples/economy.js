@@ -1,9 +1,11 @@
-const Discord = require('discord.js')
+const { Client, Intents } = require('discord.js')
 const Economy = require('discord-economy-super')
-const bot = new Discord.Client({ partials: ['USER', 'GUILD_MEMBER', 'CHANNEL', 'MESSAGE', 'REACTION'], ws: { intents: require('discord.js').Intents.ALL } })
-bot.commands = new Discord.Collection();
-bot.aliases = new Discord.Collection();
-bot.events = new Discord.Collection();
+const bot = new Client({ 
+    partials: ['USER', 'GUILD_MEMBER', 'CHANNEL', 'MESSAGE', 'REACTION'], 
+    ws: { 
+        intents: Intents.ALL 
+    } 
+})
 const eco = new Economy({
     storagePath: './storage.json',
     checkStorage: true,
@@ -61,19 +63,19 @@ bot.on('message', async message => {
         message.channel.send(`Successfully removed **${args[1]}** coins from user ${member}.`)
     }
     if (message.content.startsWith('+daily')) {
-        let daily = eco.daily(message.author.id, message.guild.id)
-        if (isNaN(daily)) return message.channel.send(`You have already claimed your daily reward! Time left until next claim: **${daily}**`)
-        message.channel.send(`You have received **${daily}** daily coins!`)
+        const daily = eco.daily(message.author.id, message.guild.id)
+        if (!daily.status) return message.channel.send(`You have already claimed your daily reward! Time left until next claim: **${daily.value.days}** days, **${daily.value.hours}** hours, **${daily.value.minutes}** minutes, **${daily.value.seconds}** seconds and **${daily.value.milliseconds}** milliseconds.`)
+        message.channel.send(`You have received **${daily.reward}** daily coins!`)
     }
     if (message.content.startsWith('+work')) {
         let work = eco.work(message.author.id, message.guild.id)
-        if (isNaN(work)) return message.channel.send(`You have already worked! Time left until next work: **${work}**`)
-        message.channel.send(`You worked hard and earned **${work}** coins!`)
+        if (!work.status) return message.channel.send(`You have already worked! Time left until next work: **${work.value.days}** days, **${work.value.hours}** hours, **${work.value.minutes}** minutes, **${work.value.seconds}** seconds and **${work.value.milliseconds}** milliseconds.`)
+        message.channel.send(`You worked hard and earned **${work.pretty}** coins!`)
     }
     if (message.content.startsWith('+weekly')) {
         let weekly = eco.weekly(message.author.id, message.guild.id)
-        if (isNaN(weekly)) return message.channel.send(`You have already claimed your weekly reward! Time left until next claim: **${weekly}**`)
-        message.channel.send(`You have received **${weekly}** weekly coins!`)
+        if (!weekly.status) return message.channel.send(`You have already claimed your weekly reward! Time left until next claim: **${weekly.value.days}** days, **${weekly.value.hours}** hours, **${weekly.value.minutes}** minutes, **${weekly.value.seconds}** seconds and **${weekly.value.milliseconds}** milliseconds.`)
+        message.channel.send(`You have received **${weekly.reward}** weekly coins!`)
     }
     if (message.content.startsWith('+lb') || message.content.startsWith('+leaderboard')) {
         const lb = eco.leaderboard(message.guild.id)

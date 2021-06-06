@@ -116,7 +116,7 @@ declare module 'discord-economy-super' {
         * @param {string} reason The reason why the money was added. Default: 'claimed the daily reward'
         * @returns Daily money amount or time before next claim
         */
-        daily(memberID: string, guildID: string, reason?: string): (Number | String);
+        daily(memberID: string, guildID: string, reason?: string): DailyObject
         /**
         * Adds a work reward on user's balance
         * @param {String} memberID Member ID
@@ -124,7 +124,7 @@ declare module 'discord-economy-super' {
         * @param {string} reason The reason why the money was added. Default: 'claimed the work reward'
         * @returns Work money amount or time before next claim
         */
-        work(memberID: string, guildID: string, reason?: string): (Number | String);
+        work(memberID: string, guildID: string, reason?: string): WorkObject
         /**
         * Adds a weekly reward on user's balance
         * @param {String} memberID Member ID
@@ -132,7 +132,7 @@ declare module 'discord-economy-super' {
         * @param {string} reason The reason why the money was added. Default: 'claimed the weekly reward'
         * @returns Weekly money amount or time before next claim
         */
-        weekly(memberID: string, guildID: string, reason?: string): (Number | String);
+        weekly(memberID: string, guildID: string, reason?: string): WeeklyObject
         /**
         * Clears user's daily cooldown
         * @param {String} memberID Member ID
@@ -390,7 +390,7 @@ declare module 'discord-economy-super' {
         constructor(message: string | Error) {}
     }
     namespace Economy {
-        declare const version: '1.2.3'
+        declare const version: '1.2.4'
     }
     export = Economy;
 }
@@ -608,7 +608,124 @@ interface ModuleEvents {
      * Emits when someone's used the item from his inventory
      */
     shopItemUse: ItemData;
-}
+};
+interface DailyObject {
+    /**
+     * The status of receiving money.
+     */
+    status: Boolean,
+    /**
+     * If reward is already claimed: time object; else: daily reward.
+     */
+    value: {
+        /**
+         * Amount of days from cooldown time.
+         */
+        days: Number, 
+        /**
+         * Amount of hours from cooldown time.
+         */
+        hours: Number,
+        /**
+         * Amount of minutes from cooldown time.
+         */
+        minutes: Number, 
+        /**
+         * Amount of seconds from cooldown time.
+         */
+        seconds: Number, 
+        /**
+         * Amount of milliseconds from cooldown time.
+         */
+        milliseconds: Number 
+    },
+    /**
+     * If reward is already claimed: formatted time in string; else: daily reward.
+     */
+    pretty: String | Number,
+    /**
+     * Daily reward.
+     */
+    reward: Number
+};
+interface WorkObject {
+    /**
+     * The status of receiving money.
+     */
+    status: Boolean,
+    /**
+     * If reward is already claimed: time object; else: work reward.
+     */
+    value: {
+        /**
+         * Amount of days from cooldown time.
+         */
+        days: Number, 
+        /**
+         * Amount of hours from cooldown time.
+         */
+        hours: Number,
+        /**
+         * Amount of minutes from cooldown time.
+         */
+        minutes: Number, 
+        /**
+         * Amount of seconds from cooldown time.
+         */
+        seconds: Number, 
+        /**
+         * Amount of milliseconds from cooldown time.
+         */
+        milliseconds: Number 
+    },
+    /**
+     * If reward is already claimed: formatted time in string; else: work reward.
+     */
+    pretty: String | Number,
+    /**
+     * Work reward.
+     */
+    reward: Number | Array<Number>
+};
+interface WeeklyObject {
+    /**
+     * The status of receiving money.
+     */
+    status: Boolean,
+    /**
+     * If reward is already claimed: time object; else: weekly reward.
+     */
+    value: {
+        /**
+         * Amount of days from cooldown time.
+         */
+        days: Number, 
+        /**
+         * Amount of hours from cooldown time.
+         */
+        hours: Number,
+        /**
+         * Amount of minutes from cooldown time.
+         */
+        minutes: Number, 
+        /**
+         * Amount of seconds from cooldown time.
+         */
+        seconds: Number, 
+        /**
+         * Amount of milliseconds from cooldown time.
+         */
+        milliseconds: Number 
+    },
+    /**
+     * If reward is already claimed: formatted time in string; else: weekly reward.
+     */
+    pretty: String | Number,
+    /**
+     * weekly reward.
+     */
+    reward: Number
+};
 interface ErrorList {
     notReady: 'The module is not ready to work.'
     invalidTypes: {
@@ -657,5 +774,4 @@ interface ErrorList {
     oldNodeVersion: 'This module is supporting only Node.js v14 or newer. Installed version is '
     invalidStorage: 'Storage file is not valid.'
     wrongStorageData: 'Storage file contains wrong data.'
-    emptyServerDatabase: 'Cannot generate a leaderboard: the server database is empty.'
-}
+};

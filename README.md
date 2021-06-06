@@ -43,7 +43,12 @@ client.login('token') // https://discord.com/developers/applications
 
 ```js
 const { Client, Intents } = require('discord.js') // npm i discord.js
-const client = new Client({ partials: ['CHANNEL', 'GUILD_MEMBER', 'MESSAGE', 'REACTION', 'USER'], ws: { intents: Intents.ALL } });
+const client = new Client({
+    partials: ['CHANNEL', 'GUILD_MEMBER', 'MESSAGE', 'REACTION', 'USER'], 
+    ws: {
+        intents: Intents.ALL 
+    } 
+});
 
 const Economy = require('discord-economy-super');
 const eco = new Economy({
@@ -119,9 +124,9 @@ client.login('token') // https://discord.com/developers/applications
   <li><b>bankAdd(amount, memberID, guildID, reason)</b>: <b>Adds money to user's balance. (Number)</b></li>
   <li><b>bankSubtract(amount, memberID, guildID, reason)</b>: <b>Subtracts money from user's balance. (Number)</b></li>
   <br>
-  <li><b>daily(memberID, guildID)</b>: <b>Adds a daily reward on user's balance. (Number | String)</b></li>
-  <li><b>work(memberID, guildID)</b>: <b>Adds a work reward on user's balance. (Number | String)</b></li>
-  <li><b>weekly(memberID, guildID)</b>: <b>Adds a weekly reward on user's balance. (Number | String)</b></li>
+  <li><b>daily(memberID, guildID)</b>: <b>Adds a daily reward on user's balance. (Object)</b></li>
+  <li><b>work(memberID, guildID)</b>: <b>Adds a work reward on user's balance. (Object)</b></li>
+  <li><b>weekly(memberID, guildID)</b>: <b>Adds a weekly reward on user's balance. (Object)</b></li>
   <br>
   <li><b>getDailyCooldown(memberID, guildID)</b>: <b>Returns a user's daily Cooldown. (Number)</b></li>
   <li><b>getWorkCooldown(memberID, guildID)</b>: <b>Returns a user's work Cooldown. (Number)</b></li>
@@ -176,7 +181,12 @@ client.login('token') // https://discord.com/developers/applications
 ## Example Events Usage
 ```js
 const { Client, Intents } = require('discord.js') // npm i discord.js
-const client = new Client({ partials: ['CHANNEL', 'GUILD_MEMBER', 'MESSAGE', 'REACTION', 'USER'], ws: { intents: Intents.ALL } });
+const client = new Client({
+    partials: ['CHANNEL', 'GUILD_MEMBER', 'MESSAGE', 'REACTION', 'USER'], 
+    ws: {
+        intents: Intents.ALL 
+    }
+});
 
 const Economy = require('discord-economy-super');
 const eco = new Economy({
@@ -395,7 +405,7 @@ The test will look like this:
 <li><b>Fixed bugs.</b></li>
 <li><b>Code optimization.</b></li>
 <li><b>Fixed typos.</b></li>
-<li><b>'Economy.shop.clearInventory' is working fine now.</b></li>
+<li><b>'Economy.shop.clearInventory()' method is working fine now.</b></li>
 </ul>
 <b>1.2.1</b>
 <ul>
@@ -416,8 +426,33 @@ The test will look like this:
 <li><b>Fixed minor bugs.</b></li>
 <li><b>Code optimization.</b></li>
 <li><b>'Economy.leaderboard()' method will return an empty array if the leaderboard is empty.</b></li>
+<li><b>Updated examples</b></li>
 <li><b>Fixed typos</b></li>
 </ul>
+<b>1.2.4</b>
+<ul>
+<li><b>Fixed minor bugs.</b></li>
+<li><b>Code optimization.</b></li>
+<li><b>'Economy.daily()', '.work()' and '.weekly()' methods will return an object** instead of Number | String.</b></li>
+<li><b>Updated examples</b></li>
+</ul>
+
+** The object structure will look like this:
+
+```js
+{
+    status: Boolean,
+    value: { // object returns if reward is already claimed; else - number
+        days: Number,
+        hours: Number,
+        minutes: Number,
+        seconds: Number,
+        milliseconds: Number
+    },
+    pretty: String | Number,
+    reward: Number | Array<Number> // array returns if work reward is array
+}
+```
 
 ## Useful Links
 <ul>
