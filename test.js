@@ -43,7 +43,7 @@ function test(value) {
     try {
         const Economy = require('./src/index')
         const eco = new Economy({ updater: { checkUpdates: false } })
-        const set = await eco.set(100, '123', '321')
+        const set = await eco.balance.set(100, '123', '321')
         test(set).expect(100)
         tests.passed.push('1')
         console.log(`\x1b[33mTest 2: set 100 coins for user 123 on guild 321... \x1b[32mpassed\x1b[33m`)
@@ -58,7 +58,7 @@ function test(value) {
     try {
         const Economy = require('./src/index')
         const eco = new Economy({ updater: { checkUpdates: false } })
-        const balance = await eco.fetch('123', '321')
+        const balance = await eco.balance.fetch('123', '321')
         test(balance).expect(100)
         tests.passed.push('1')
         console.log(`\x1b[33mTest 3: fetch the balance for user 123 on guild 321... \x1b[32mpassed\x1b[33m`)
@@ -73,7 +73,7 @@ function test(value) {
     try {
         const Economy = require('./src/index')
         const eco = new Economy({ updater: { checkUpdates: false } })
-        const balance = await eco.add(10, '123', '321')
+        const balance = await eco.balance.add(10, '123', '321')
         test(balance).expect(10)
         tests.passed.push('1')
         console.log(`\x1b[33mTest 4: add 10 coins for user 123 on guild 321... \x1b[32mpassed\x1b[33m`)
@@ -88,7 +88,7 @@ function test(value) {
     try {
         const Economy = require('./src/index')
         const eco = new Economy({ updater: { checkUpdates: false } })
-        const balance = await eco.fetch('123', '321')
+        const balance = await eco.balance.fetch('123', '321')
         test(balance).expect(110)
         tests.passed.push('1')
         console.log(`\x1b[33mTest 5: fetch the balance for user 123 on guild 321... \x1b[32mpassed\x1b[33m`)
@@ -103,7 +103,7 @@ function test(value) {
     try {
         const Economy = require('./src/index')
         const eco = new Economy({ updater: { checkUpdates: false } })
-        const balance = await eco.subtract(5, '123', '321')
+        const balance = await eco.balance.subtract(5, '123', '321')
         test(balance).expect(5)
         tests.passed.push('1')
         console.log(`\x1b[33mTest 6: subtract 5 coins from user 123 on guild 321... \x1b[32mpassed\x1b[33m`)
@@ -118,7 +118,7 @@ function test(value) {
     try {
         const Economy = require('./src/index')
         const eco = new Economy({ updater: { checkUpdates: false } })
-        const balance = await eco.fetch('123', '321')
+        const balance = await eco.balance.fetch('123', '321')
         test(balance).expect(105)
         tests.passed.push('1')
         console.log(`\x1b[33mTest 7: fetch the balance for user 123 on guild 321... \x1b[32mpassed\x1b[33m`)
@@ -178,7 +178,7 @@ function test(value) {
     try {
         const Economy = require('./src/index')
         const eco = new Economy({ updater: { checkUpdates: false } })
-        const balance = await eco.fetch('123', '321')
+        const balance = await eco.balance.fetch('123', '321')
         test(balance).expect(1210)
         tests.passed.push('1')
         console.log(`\x1b[33mTest 11: fetch the balance for user 123 on guild 321... \x1b[32mpassed\x1b[33m`)

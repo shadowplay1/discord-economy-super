@@ -114,16 +114,6 @@ client.login('token') // https://discord.com/developers/applications
 
 ## Module Methods
 <ul>
-  <li><b>fetch(memberID, guildID)</b>: <b>Returns the user's balance. (Number)</b></li>
-  <li><b>set(amount, memberID, guildID, reason)</b>: <b>Sets money to user's balance. (Number)</b></li>
-  <li><b>add(amount, memberID, guildID, reason)</b>: <b>Adds money to user's balance. (Number)</b></li>
-  <li><b>subtract(amount, memberID, guildID, reason)</b>: <b>Subtracts money from user's balance. (Number)</b></li>
-<br>
-  <li><b>bankFetch(memberID, guildID)</b>: <b>Returns the user's balance. (Number)</b></li>
-  <li><b>bankSet(amount, memberID, guildID, reason)</b>: <b>Sets money to user's balance. (Number)</b></li>
-  <li><b>bankAdd(amount, memberID, guildID, reason)</b>: <b>Adds money to user's balance. (Number)</b></li>
-  <li><b>bankSubtract(amount, memberID, guildID, reason)</b>: <b>Subtracts money from user's balance. (Number)</b></li>
-  <br>
   <li><b>daily(memberID, guildID)</b>: <b>Adds a daily reward on user's balance. (Object)</b></li>
   <li><b>work(memberID, guildID)</b>: <b>Adds a work reward on user's balance. (Object)</b></li>
   <li><b>weekly(memberID, guildID)</b>: <b>Adds a weekly reward on user's balance. (Object)</b></li>
@@ -137,7 +127,6 @@ client.login('token') // https://discord.com/developers/applications
   <li><b>clearWeeklyCooldown(memberID, guildID)</b>: <b>Clears user's weekly cooldown. (Boolean)</b></li>
   <br>
   <li><b>all()</b>: <b>Returns the database contents. (Object)</b></li>
-  <li><b>leaderboard(guildID)</b>: <b>Returns a leaderboard array. (Array)</b></li>
   <li><b>checkUpdates()</b>: <b>Checks for if the module is up to date. Returns a promise with data object. (Promise: Object)</b></li>
   <br>
   <li><b>removeGuild(guildID)</b>: Fully removes the guild from database. (Boolean)</li>
@@ -156,8 +145,8 @@ client.login('token') // https://discord.com/developers/applications
 <li><b>Economy.shop</b>: <b>Methods to manage and use the shop on your Discord server. (Object)</b></li>
 <li><b>Economy.ready</b>: <b>Module ready status. (Boolean)</b></li>
 <li><b>Economy.errored</b>: <b>Module errored status. (Boolean)</b></li>
-<li><b>Economy.interval</b>: <b>Module errored status. (NodeJS.Timeout)</b></li>
-<li><b>Economy.errors</b>: <b>Module errored status. (Object)</b></li>
+<li><b>Economy.interval</b>: <b>Database checking interval. (NodeJS.Timeout)</b></li>
+<li><b>Economy.errors</b>: <b>Module errors object. (Object)</b></li>
 </ul>
 
 ## Module Events
@@ -176,6 +165,9 @@ client.login('token') // https://discord.com/developers/applications
 <li><b>Economy.on('shopClear')</b>: <b>Emits when you clear the shop. (Boolean)</b></li>
 <li><b>Economy.on('shopItemBuy')</b>: <b>Emits when someone just bought the item from the shop. (Object)</b></li>
 <li><b>Economy.on('shopItemUse')</b>: <b>Emits when someone just used the item from his inventory. (Object)</b></li>
+<br>
+<li><b>Economy.on('ready')</b>: <b>Emits when the economy instance is ready. (Boolean)</b></li>
+<li><b>Economy.on('destroy')</b>: <b>Emits when the economy instance is destroyed. (Boolean)</b></li>
 </ul>
 
 ## Example Events Usage
@@ -259,9 +251,36 @@ eco.on('shopClear', cleared => {
   else console.log('Cannot clear the shop!')
 })
 
+
+// core events
+eco.on('ready', () => {
+    console.log('Economy is ready!')
+})
+eco.on('destroy', () => {
+    console.log('Economy was destroyed.')
+})
+
 client.login('token') // https://discord.com/developers/applications
 ```
 <br>
+
+## Balance Methods
+<ul>
+    <li><b>fetch(memberID, guildID)</b>: <b>Returns the user's balance. (Number)</b></li>
+    <li><b>set(amount, memberID, guildID, reason)</b>: <b>Sets money to user's balance. (Number)</b></li>
+    <li><b>add(amount, memberID, guildID, reason)</b>: <b>Adds money to user's balance. (Number)</b></li>
+    <li><b>subtract(amount, memberID, guildID, reason)</b>: <b>Subtracts money from user's balance. (Number)</b></li>
+    <li><b>leaderboard(guildID)</b>: <b>Returns a money leaderboard array. (Array)</b></li>
+</ul>
+
+## Bank Methods
+<ul>
+    <li><b>fetch(memberID, guildID)</b>: <b>Returns the user's bank balance. (Number)</b></li>
+    <li><b>set(amount, memberID, guildID, reason)</b>: <b>Sets money to user's bank balance. (Number)</b></li>
+    <li><b>add(amount, memberID, guildID, reason)</b>: <b>Adds money to user's bank balance. (Number)</b></li>
+    <li><b>subtract(amount, memberID, guildID, reason)</b>: <b>Subtracts money from user's bank balance. (Number)</b></li>
+    <li><b>leaderboard(guildID)</b>: <b>Returns a bank balance leaderboard array. (Array)</b></li>
+</ul>
 
 ## Shop Methods
 <ul>
@@ -426,7 +445,7 @@ The test will look like this:
 <li><b>Fixed minor bugs.</b></li>
 <li><b>Code optimization.</b></li>
 <li><b>'Economy.leaderboard()' method will return an empty array if the leaderboard is empty.</b></li>
-<li><b>Updated examples</b></li>
+<li><b>Updated examples.</b></li>
 <li><b>Fixed typos</b></li>
 </ul>
 <b>1.2.4</b>
@@ -434,7 +453,7 @@ The test will look like this:
 <li><b>Fixed minor bugs.</b></li>
 <li><b>Code optimization.</b></li>
 <li><b>'Economy.daily()', '.work()' and '.weekly()' methods will return an object** instead of Number | String.</b></li>
-<li><b>Updated examples</b></li>
+<li><b>Updated examples.</b></li>
 </ul>
 
 ** The object structure will look like this:
@@ -453,6 +472,18 @@ The test will look like this:
     reward: Number | Array<Number> // array returns if work reward is array
 }
 ```
+
+<b>1.2.5</b>
+<ul>
+<li><b>Fixed bugs.</b></li>
+<li><b>Code optimization.</b></li>
+<li><b>Updated typings.</b></li>
+<li><b>Updated examples.</b></li>
+<li><b>discord.js is no longer imported in the module.</b></li>
+<li><b>Added a 'ready' and 'destroy' events. <a href = "https://www.npmjs.com/package/discord-economy-super#module-events">Learn more</a>.</b></li>
+<li><b>All balance and bank methods were moved to objects. <a href = "https://www.npmjs.com/package/discord-economy-super#balance-methods">Learn more</a>.</b></li>
+<li><b>'Economy.balance.leaderboard()' and 'Economy.bank.leaderboard()' methods arrays are now have an 'index' property in object.</b></li>
+</ul>
 
 ## Useful Links
 <ul>

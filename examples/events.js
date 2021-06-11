@@ -76,6 +76,15 @@ eco.on('shopClear', cleared => {
     else console.log('Cannot clear the shop!')
 })
 
+
+// core events
+eco.on('ready', () => {
+    console.log('Economy is ready!')
+})
+eco.on('destroy', () => {
+    console.log('Economy was destroyed.')
+})
+
 bot.on('message', async message => {
     let args = message.content.slice(1).trim().split(' ')
     if (message.content.startsWith('+help')) return message.channel.send('**__Bot Commands:__**\n+help\n+balance\n+daily\n+weekly\n+work\n+lb (+leaderboard)\n+shop\n`+shop_add`\n`+shop_remove`\n`+shop_buy`\n`+shop_search`\n`+shop_clear`\n`+shop_inventory`\n`+shop_use_item`\n`+shop_clear_inventory`\n`+shop_history`\n`+shop_clear_history`')
@@ -95,13 +104,13 @@ bot.on('message', async message => {
         message.channel.send(`You have received **${weekly.reward}** weekly coins!`)
     }
     if (message.content.startsWith('+lb') || message.content.startsWith('+leaderboard')) {
-        const lb = eco.leaderboard(message.guild.id)
+        const lb = eco.balance.leaderboard(message.guild.id)
         if(!lb.length) return message.channel.send('Cannot generate a leaderboard: the server database is empty.')
         message.channel.send(`Money Leaderboard for **${message.guild.name}**\n-----------------------------------\n` + lb.map((x, i) => `${i + 1}. <@${x.userID}> - ${x.money} coins`).join('\n'))
     }
     if (message.content.startsWith('+balance')) {
         let member = message.mentions.members.first()
-        let balance = eco.fetch(member?.user?.id || message.author.id, message.guild.id)
+        let balance = eco.balance.fetch(member?.user?.id || message.author.id, message.guild.id)
         message.channel.send(`**${member?.user?.username || message.author.username}**'s Balance: ${balance} coins.`)
     }
     if (message.content.startsWith('+shop')) {
@@ -130,7 +139,7 @@ bot.on('message', async message => {
         return message.channel.send('Item successfully removed!');
     }
     if (message.content.startsWith('+shop_buy')) {
-        const balance = eco.fetch(message.author.id, message.guild.id)
+        const balance = eco.balance.fetch(message.author.id, message.guild.id)
         if (!args[0]) return message.channel.send('Specify an item ID or name.');
         const item = eco.shop.searchItem(args[0], message.guild.id)
         if (!item) return message.channel.send(`Cannot find item ${args[0]}.`)

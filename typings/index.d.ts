@@ -7,15 +7,23 @@ declare module 'discord-economy-super' {
         /**
          * Module version.
          */
-        public version: string;
+        public version: string
         /**
          * Module ready status.
          */
         public ready: boolean;
         /**
+         * Balance methods object.
+         */
+        public balance: Balance
+        /**
+         * Bank balance methods object.
+         */
+        public bank: Bank
+        /**
         * An object with methods to create a shop on your server.
         */
-        public shop: Shop;
+        public shop: Shop
         /**
          * Economy errored status.
          */
@@ -23,7 +31,7 @@ declare module 'discord-economy-super' {
         /**
          * Constructor options object.
          */
-        public options: Options
+        public options: EconomyOptions
         /**
          * Database checking interval.
          */
@@ -40,75 +48,7 @@ declare module 'discord-economy-super' {
          * The Economy class.
          * @param {Object} options Constructor options object.
          */
-        constructor(options?: Options);
-        /**
-        * Fetches the user's balance.
-        * @param {String} memberID Member ID
-        * @param {String} guildID Guild ID
-        * @returns User's balance
-        */
-        fetch(memberID: string, guildID: string): Number;
-        /**
-        * Sets the money amount on user's balance.
-        * @param {Number} amount Amount of money that you want to set
-        * @param {String} memberID Member ID
-        * @param {String} guildID Guild ID
-        * @param {String} reason The reason why you set the money
-        * @returns Money amount
-        */
-        set(amount: number, memberID: string, guildID: string, reason?: string): Number;
-        /**
-        * Adds the money amount on user's balance.
-        * @param {Number} amount Amount of money that you want to add
-        * @param {String} memberID Member ID
-        * @param {String} guildID Guild ID
-        * @param {string} reason The reason why you add the money
-        * @returns Money amount
-        */
-        add(amount: number, memberID: string, guildID: string, reason?: string): Number;
-        /**
-        * Subtracts the money amount from user's balance.
-        * @param {Number} amount Amount of money that you want to subtract
-        * @param {String} memberID Member ID
-        * @param {String} guildID Guild ID
-        * @param {string} reason The reason why you subtract the money
-        * @returns Money amount
-        */
-        subtract(amount: number, memberID: string, guildID: string, reason?: string): Number;
-        /**
-        * Fetches the user's bank balance.
-        * @param {String} memberID Member ID
-        * @param {String} guildID Guild ID
-        * @returns User's bank balance
-        */
-        bankFetch(memberID: string, guildID: string): number;
-        /**
-        * Sets the money amount on user's bank balance.
-        * @param {Number} amount Amount of money that you want to set
-        * @param {String} memberID Member ID
-        * @param {String} guildID Guild ID
-        * @param {string} reason The reason why you set the money
-        * @returns Money amount
-        */
-        bankSet(amount: number, memberID: string, guildID: string, reason?: string): Number;
-        /**
-        * Adds the money amount on user's bank balance.
-        * @param {Number} amount Amount of money that you want to add
-        * @param {String} memberID Member ID
-        * @param {String} guildID Guild ID
-        * @param {string} reason The reason why you add the money
-        * @returns Money amount
-        */
-        bankAdd(amount: number, memberID: string, guildID: string, reason?: string): Number;
-        /**
-        * Subtracts the money amount from user's bank balance.
-        * @param {Number} amount Amount of money that you want to subtract
-        * @param {String} memberID Member ID
-        * @param {String} guildID Guild ID
-        * @param {string} reason The reason why you subtract the money
-        * @returns Money amount
-        */
-        bankSubtract(amount: number, memberID: string, guildID: string, reason?: string): Number;
+        constructor(options?: EconomyOptions)
         /**
         * Adds a daily reward on user's balance
         * @param {String} memberID Member ID
@@ -146,14 +86,14 @@ declare module 'discord-economy-super' {
         * @param {String} guildID Guild ID
         * @returns {Boolean} If cleared: true; else: false
         */
-       clearWorkCooldown(memberID: String, guildID: String): Boolean
+        clearWorkCooldown(memberID: String, guildID: String): Boolean
         /**
         * Clears user's weekly cooldown
         * @param {String} memberID Member ID
         * @param {String} guildID Guild ID
         * @returns {Boolean} If cleared: true; else: false
         */
-       clearWeeklyCooldown(memberID: String, guildID: String): Boolean
+        clearWeeklyCooldown(memberID: String, guildID: String): Boolean
         /**
         * Gets user's daily cooldown
         * @param {String} memberID Member ID
@@ -199,35 +139,10 @@ declare module 'discord-economy-super' {
         */
         removeUser(memberID: string, guildID: string): boolean
         /**
-         * Shows a money leaderboard for your server
-         * @param {String} guildID Guild ID
-         * @returns Sorted leaderboard array
-         */
-        leaderboard(guildID: string): Array<{ userID: string, money: number }>;
-        /**
-         * Shows a bank money leaderboard for your server
-         * @param {String} guildID Guild ID
-         * @returns Sorted leaderboard array
-         */
-        bankLeaderboard(guildID: string): Array<{ userID: String, money: Number }>;
-        /**
          * This method will show is the module updated, latest version and installed version. [Promise: Object]
          * @returns If started successfully: true; else: Error object.
          */
-        checkUpdates(): Promise<{
-            /**
-             * Checks for if module is up to date.
-             */
-            updated: boolean,
-            /**
-             * Shows an installed version of the module
-             */
-            installedVersion: string,
-            /**
-             * Shows the latest version of the module
-             */
-            packageVersion: string
-        }>;
+        checkUpdates(): Promise<VersionData>;
         /**
          * Kills the Economy instance.
          * @returns {this} Economy instance.
@@ -238,58 +153,123 @@ declare module 'discord-economy-super' {
          * @returns If started successfully: true; else: Error instance.
          */
         init(): Promise<true | Error>
-        on<K extends keyof ModuleEvents>(
+        on<K extends keyof EconomyEvents>(
             event: K,
-            listener: (...args: ModuleEvents[K][]) => void
+            listener: (...args: EconomyEvents[K][]) => void
         ): this;
 
-        once<K extends keyof ModuleEvents>(
+        once<K extends keyof EconomyEvents>(
             event: K,
-            listener: (...args: ModuleEvents[K][]) => void
+            listener: (...args: EconomyEvents[K][]) => void
         ): this;
 
-        emit<K extends keyof ModuleEvents>(event: K, ...args: ModuleEvents[K][]): boolean;
+        emit<K extends keyof EconomyEvents>(event: K, ...args: EconomyEvents[K][]): boolean;
         /**
          * Initializates the module. Please note: you don't need to use this method, it already starts in constructor.
          * @returns If started successfully: true; else: Error instance.
          */
     }
     /**
+    * Balance methods object.
+    */
+    interface Balance {
+        /**
+        * Fetches the user's balance.
+        * @param {String} memberID Member ID
+        * @param {String} guildID Guild ID
+        * @returns User's balance
+        */
+        fetch(memberID: string, guildID: string): Number;
+        /**
+        * Sets the money amount on user's balance.
+        * @param {Number} amount Amount of money that you want to set
+        * @param {String} memberID Member ID
+        * @param {String} guildID Guild ID
+        * @param {String} reason The reason why you set the money
+        * @returns Money amount
+        */
+        set(amount: number, memberID: string, guildID: string, reason?: string): Number;
+        /**
+        * Adds the money amount on user's balance.
+        * @param {Number} amount Amount of money that you want to add
+        * @param {String} memberID Member ID
+        * @param {String} guildID Guild ID
+        * @param {string} reason The reason why you add the money
+        * @returns Money amount
+        */
+        add(amount: number, memberID: string, guildID: string, reason?: string): Number;
+        /**
+        * Subtracts the money amount from user's balance.
+        * @param {Number} amount Amount of money that you want to subtract
+        * @param {String} memberID Member ID
+        * @param {String} guildID Guild ID
+        * @param {string} reason The reason why you subtract the money
+        * @returns Money amount
+        */
+        subtract(amount: number, memberID: string, guildID: string, reason?: string): Number;
+        /**
+        * Shows a money leaderboard for your server
+        * @param {String} guildID Guild ID
+        * @returns Sorted leaderboard array
+        */
+        leaderboard(guildID: string): Array<LeaderboardData>;
+    }
+    /**
+     * Bank balance methods object.
+     */
+    interface Bank {
+        /**
+        * Fetches the user's bank balance.
+        * @param {String} memberID Member ID
+        * @param {String} guildID Guild ID
+        * @returns User's bank balance
+        */
+        fetch(memberID: string, guildID: string): Number;
+        /**
+        * Sets the money amount on user's bank balance.
+        * @param {Number} amount Amount of money that you want to set
+        * @param {String} memberID Member ID
+        * @param {String} guildID Guild ID
+        * @param {string} reason The reason why you set the money
+        * @returns Money amount
+        */
+        set(amount: number, memberID: string, guildID: string, reason?: string): Number;
+        /**
+        * Adds the money amount on user's bank balance.
+        * @param {Number} amount Amount of money that you want to add
+        * @param {String} memberID Member ID
+        * @param {String} guildID Guild ID
+        * @param {string} reason The reason why you add the money
+        * @returns Money amount
+        */
+        add(amount: number, memberID: string, guildID: string, reason?: string): Number;
+        /**
+        * Subtracts the money amount from user's bank balance.
+        * @param {Number} amount Amount of money that you want to subtract
+        * @param {String} memberID Member ID
+        * @param {String} guildID Guild ID
+        * @param {string} reason The reason why you subtract the money
+        * @returns Money amount
+        */
+        subtract(amount: number, memberID: string, guildID: string, reason?: string): Number;
+        /**
+        * Shows a bank money leaderboard for your server
+        * @param {String} guildID Guild ID
+        * @returns Sorted leaderboard array
+        */
+        leaderboard(guildID: string): Array<LeaderboardData>;
+    }
+    /**
     * An object with methods to create a shop on your server.
     */
-    class Shop {
+    interface Shop {
         /**
          * Creates an item in shop.
          * @param {Object} options Options object with item info.
          * @param {String} guildID Guild ID.
          * @returns Item info.
          */
-        addItem(guildID: string, options: {
-            /**
-             * Item name.
-             */
-            itemName: string,
-            /**
-             * Item price.
-             */
-            price: number,
-            /**
-             * The message that will be returned on item use.
-             */
-            message?: string,
-            /**
-             * Item description.
-             */
-            description?: string,
-            /**
-             * Max amount of the item that user can hold in his inventory.
-             */
-            maxAmount?: number,
-            /**
-             * Discord Role ID from your server that will be given to user. Requires to specify your bot client in 'Economy.shop.useItem' method.
-             */
-            role?: string 
-        }): ItemData;
+        addItem(guildID: string, options: AddItemOptions): ItemData;
         /**
          * Edits the item in shop.
          * @param {Number | String} itemID Item ID or name
@@ -369,14 +349,14 @@ declare module 'discord-economy-super' {
          * @param {String} guildID Guild ID
          * @returns The user's inventory array.
          */
-        inventory(memberID: string, guildID: string): Array<{ id: Number, itemName: String, price: Number, message: String, role: String, maxAmount: Number, date: String }>;
+        inventory(memberID: string, guildID: string): Array<Inventory>;
         /**
          * Shows the user's purchase history.
          * @param {String} memberID Member ID
          * @param {String} guildID Guild ID
          * @returns User's purchase history array.
          */
-        history(memberID: string, guildID: string): Array<{ id: Number, memberID: String, guildID: String, itemName: String, price: Number, message: String, role: String, date: String }>;
+        history(memberID: string, guildID: string): Array<PurchasesHistory>;
     }
     class EconomyError extends Error {
         /**
@@ -387,17 +367,47 @@ declare module 'discord-economy-super' {
         * Creates an 'EconomyError' error instance.
         * @param {String | Error} message Error message.
         */
-        constructor(message: string | Error) {}
+        constructor(message: string | Error)
     }
     namespace Economy {
-        declare const version: '1.2.4'
+        declare const version: '1.2.5'
     }
     export = Economy;
 }
 /**
- * Constructor options object
+ * Updater options object.
  */
-interface Options {
+interface UpdaterOptions {
+    /**
+     * Sends the update state message in console on start. Default: true.
+     */
+    checkUpdates: boolean;
+    /**
+     * Sends the message in console on start if module is up to date. Default: true.
+     */
+    upToDateMessage: boolean;
+}
+/**
+ * Error handler options object.
+ */
+interface ErrorHandlerOptions {
+    /**
+     * Handles all errors on startup. Default: true.
+     */
+    handleErrors: boolean;
+    /**
+     * Amount of attempts to load the module. Use 'null' for infinity attempts. Default: 5.
+     */
+    attempts: number;
+    /**
+     * Time between every attempt to start the module (in ms). Default: 3000.
+     */
+    time: number;
+}
+/**
+ * Constructor options object.
+ */
+interface EconomyOptions {
     /**
      * Full path to a JSON file. Default: './storage.json'.
      */
@@ -441,33 +451,11 @@ interface Options {
     /**
     * Update Checker options object.
     */
-    updater?: {
-        /**
-         * Sends the update state message in console on start. Default: true.
-         */
-        checkUpdates: boolean;
-        /**
-         * Sends the message in console on start if module is up to date. Default: true.
-         */
-        upToDateMessage: boolean;
-    };
+    updater?: UpdaterOptions;
     /**
     * Error Handler options object.
     */
-    errorHandler?: {
-        /**
-         * Handles all errors on startup. Default: true.
-         */
-        handleErrors: boolean;
-        /**
-         * Amount of attempts to load the module. Use 'null' for infinity attempts. Default: 5.
-         */
-        attempts: number;
-        /**
-         * Time between every attempt to start the module (in ms). Default: 3000.
-         */
-        time: number;
-    };
+    errorHandler?: ErrorHandlerOptions;
 }
 /**
  * Balance info object for balance events.
@@ -563,7 +551,7 @@ interface EditedItemData {
 /**
  * All events list.
  */
-interface ModuleEvents {
+interface EconomyEvents {
     /**
      * Emits when someone's set the money on the balance.
      */
@@ -608,7 +596,18 @@ interface ModuleEvents {
      * Emits when someone's used the item from his inventory
      */
     shopItemUse: ItemData;
-};
+    /**
+     * Emits when the module is ready
+     */
+    ready: true,
+    /**
+     * Emits when the module is destroyed
+     */
+    destroy: true,
+}
+/**
+ * Object that returns on 'Economy.daily()' method.
+ */
 interface DailyObject {
     /**
      * The status of receiving money.
@@ -617,28 +616,7 @@ interface DailyObject {
     /**
      * If reward is already claimed: time object; else: daily reward.
      */
-    value: {
-        /**
-         * Amount of days from cooldown time.
-         */
-        days: Number, 
-        /**
-         * Amount of hours from cooldown time.
-         */
-        hours: Number,
-        /**
-         * Amount of minutes from cooldown time.
-         */
-        minutes: Number, 
-        /**
-         * Amount of seconds from cooldown time.
-         */
-        seconds: Number, 
-        /**
-         * Amount of milliseconds from cooldown time.
-         */
-        milliseconds: Number 
-    },
+    value: TimeObject,
     /**
      * If reward is already claimed: formatted time in string; else: daily reward.
      */
@@ -647,7 +625,10 @@ interface DailyObject {
      * Daily reward.
      */
     reward: Number
-};
+}
+/**
+ * Object that returns on 'Economy.work()' method.
+ */
 interface WorkObject {
     /**
      * The status of receiving money.
@@ -656,28 +637,7 @@ interface WorkObject {
     /**
      * If reward is already claimed: time object; else: work reward.
      */
-    value: {
-        /**
-         * Amount of days from cooldown time.
-         */
-        days: Number, 
-        /**
-         * Amount of hours from cooldown time.
-         */
-        hours: Number,
-        /**
-         * Amount of minutes from cooldown time.
-         */
-        minutes: Number, 
-        /**
-         * Amount of seconds from cooldown time.
-         */
-        seconds: Number, 
-        /**
-         * Amount of milliseconds from cooldown time.
-         */
-        milliseconds: Number 
-    },
+    value: TimeObject,
     /**
      * If reward is already claimed: formatted time in string; else: work reward.
      */
@@ -686,7 +646,10 @@ interface WorkObject {
      * Work reward.
      */
     reward: Number | Array<Number>
-};
+}
+/**
+ * Object that returns on 'Economy.weekly()' method.
+ */
 interface WeeklyObject {
     /**
      * The status of receiving money.
@@ -695,28 +658,7 @@ interface WeeklyObject {
     /**
      * If reward is already claimed: time object; else: weekly reward.
      */
-    value: {
-        /**
-         * Amount of days from cooldown time.
-         */
-        days: Number, 
-        /**
-         * Amount of hours from cooldown time.
-         */
-        hours: Number,
-        /**
-         * Amount of minutes from cooldown time.
-         */
-        minutes: Number, 
-        /**
-         * Amount of seconds from cooldown time.
-         */
-        seconds: Number, 
-        /**
-         * Amount of milliseconds from cooldown time.
-         */
-        milliseconds: Number 
-    },
+    value: TimeObject,
     /**
      * If reward is already claimed: formatted time in string; else: weekly reward.
      */
@@ -725,7 +667,168 @@ interface WeeklyObject {
      * weekly reward.
      */
     reward: Number
-};
+}
+/**
+ * Options of 'Economy.shop.addItem()' method.
+ */
+interface AddItemOptions {
+    /**
+     * Item name.
+     */
+    itemName: string,
+    /**
+     * Item price.
+     */
+    price: number,
+    /**
+     * The message that will be returned on item use.
+     */
+    message?: string,
+    /**
+     * Item description.
+     */
+    description?: string,
+    /**
+     * Max amount of the item that user can hold in his inventory.
+     */
+    maxAmount?: number,
+    /**
+     * Discord Role ID from your server that will be given to user. Requires to specify your bot client in 'Economy.shop.useItem' method.
+     */
+    role?: string
+}
+/**
+ * Inventory object.
+ */
+interface Inventory {
+    /**
+     * Item ID.
+     */
+    id: number
+    /**
+     * Item name.
+     */
+    itemName: string,
+    /**
+     * Item price.
+     */
+    price: number,
+    /**
+     * The message that will be returned on item use.
+     */
+    message?: string,
+    /**
+     * Max amount of the item that user can hold in his inventory.
+     */
+    maxAmount?: number,
+    /**
+     * Discord Role ID from your server that will be given to user. Requires to specify your bot client in 'Economy.shop.useItem' method.
+     */
+    role?: string
+    /**
+     * Date and time when the user bought the item.
+     */
+    date: string
+}
+/**
+ * Purchases history object.
+ */
+interface PurchasesHistory {
+    /**
+     * Item ID.
+     */
+    id: Number
+    /**
+     * Member ID.
+     */
+    memberID: String
+    /**
+     * Guild ID.
+     */
+    guildID: String
+    /**
+     * Item name.
+     */
+    itemName: String
+    /**
+     * Item price.
+     */
+    price: Number
+    /**
+     * The message that will be returned on item use.
+     */
+    message: String
+    /**
+     * Discord Role ID from your server that will be given to user. Requires to specify your bot client in 'Economy.shop.useItem' method.
+     */
+    role?: string
+    /**
+     * Date and time when the user bought the item.
+     */
+    date: string
+}
+/**
+ * Leaderboard data object.
+ */
+interface LeaderboardData {
+    /**
+     * User's index in the leaderboard
+     */
+    index: Number
+    /**
+     * User ID.
+     */
+    userID: String,
+    /**
+     * User's amount of money.
+     */
+    money: Number
+}
+/**
+ * Object of 'Economy.checkUpdates()' method.
+ */
+interface VersionData {
+    /**
+     * Checks for if module is up to date.
+     */
+    updated: boolean,
+    /**
+     * Shows an installed version of the module
+     */
+    installedVersion: string,
+    /**
+     * Shows the latest version of the module
+     */
+    packageVersion: string
+}
+/**
+ * Time values object.
+ */
+interface TimeObject {
+    /**
+     * Amount of days from cooldown time.
+     */
+    days: Number,
+    /**
+     * Amount of hours from cooldown time.
+     */
+    hours: Number,
+    /**
+     * Amount of minutes from cooldown time.
+     */
+    minutes: Number,
+    /**
+     * Amount of seconds from cooldown time.
+     */
+    seconds: Number,
+    /**
+     * Amount of milliseconds from cooldown time.
+     */
+    milliseconds: Number
+}
+/**
+ * Error list object.
+ */
 interface ErrorList {
     notReady: 'The module is not ready to work.'
     invalidTypes: {
@@ -774,4 +877,4 @@ interface ErrorList {
     oldNodeVersion: 'This module is supporting only Node.js v14 or newer. Installed version is '
     invalidStorage: 'Storage file is not valid.'
     wrongStorageData: 'Storage file contains wrong data.'
-};
+}

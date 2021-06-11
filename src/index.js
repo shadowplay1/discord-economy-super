@@ -1,5 +1,8 @@
-const { existsSync, writeFileSync, readFileSync } = require('fs'), EconomyError = require('./EconomyError')
-const events = new (require('events')).EventEmitter
+const { existsSync, writeFileSync, readFileSync } = require('fs')
+const fetch = require('node-fetch')
+const EconomyError = require('./EconomyError')
+const { EventEmitter } = require('events')
+const events = new EventEmitter()
 const ms = require('../ms')
 const parse = ms => ({
     days: Math.floor(ms / 86400000),
@@ -58,28 +61,28 @@ module.exports = class Economy {
         this.init()
     }
     /**
-     * @param {'balanceSet' | 'balanceAdd' | 'balanceSubtract' | 'bankSet' | 'bankAdd' | 'bankSubtract' | 'shopAddItem' | 'shopEditItem' | 'shopItemBuy' | 'shopItemUse' | 'shopClear'} event 
+     * @param {'balanceSet' | 'balanceAdd' | 'balanceSubtract' | 'bankSet' | 'bankAdd' | 'bankSubtract' | 'shopAddItem' | 'shopEditItem' | 'shopItemBuy' | 'shopItemUse' | 'shopClear' | 'ready' | 'destroy'} event 
      * @param {Function} fn
      */
     on(event, fn) {
         events.on(event, fn)
     }
     /**
-     * @param {'balanceSet' | 'balanceAdd' | 'balanceSubtract' | 'bankSet' | 'bankAdd' | 'bankSubtract' | 'shopAddItem' | 'shopEditItem' | 'shopItemBuy' | 'shopItemUse' | 'shopClear'} event 
+     * @param {'balanceSet' | 'balanceAdd' | 'balanceSubtract' | 'bankSet' | 'bankAdd' | 'bankSubtract' | 'shopAddItem' | 'shopEditItem' | 'shopItemBuy' | 'shopItemUse' | 'shopClear' | 'ready' | 'destroy'} event 
      * @param {Function} fn 
      */
     once(event, fn) {
         events.once(event, fn)
     }
     /**
-     * @param {'balanceSet' | 'balanceAdd' | 'balanceSubtract' | 'bankSet' | 'bankAdd' | 'bankSubtract' | 'shopAddItem' | 'shopEditItem' | 'shopItemBuy' | 'shopItemUse' | 'shopClear'} event 
+     * @param {'balanceSet' | 'balanceAdd' | 'balanceSubtract' | 'bankSet' | 'bankAdd' | 'bankSubtract' | 'shopAddItem' | 'shopEditItem' | 'shopItemBuy' | 'shopItemUse' | 'shopClear' | 'ready' | 'destroy'} event 
      * @param {Function} fn 
      */
     off(event, fn) {
         events.off(event, fn)
     }
     /**
-     * @param {'balanceSet' | 'balanceAdd' | 'balanceSubtract' | 'bankSet' | 'bankAdd' | 'bankSubtract' | 'shopAddItem' | 'shopEditItem' | 'shopItemBuy' | 'shopItemUse' | 'shopClear'} event 
+     * @param {'balanceSet' | 'balanceAdd' | 'balanceSubtract' | 'bankSet' | 'bankAdd' | 'bankSubtract' | 'shopAddItem' | 'shopEditItem' | 'shopItemBuy' | 'shopItemUse' | 'shopClear' | 'ready' | 'destroy'} event 
      * @param {Function} fn 
      */
     emit(event, ...args) {
@@ -99,7 +102,7 @@ module.exports = class Economy {
      * @returns {Promise<{updated: Boolean, installedVersion: String, packageVersion: String>} This method will show is the module updated, latest version and installed version. [Promise: Object]
      */
     async checkUpdates() {
-        const packageData = await require('node-fetch')(`https://registry.npmjs.com/discord-economy-super`).then(text => text.json())
+        const packageData = await fetch(`https://registry.npmjs.com/discord-economy-super`).then(text => text.json())
         if (this.version == packageData['dist-tags'].latest) return {
             updated: true,
             installedVersion: this.version,
@@ -112,200 +115,244 @@ module.exports = class Economy {
         }
     }
     /**
-     * Fetches the user's balance.
-     * @param {String} memberID Member ID
-     * @param {String} guildID Guild ID
-     * @returns {Number} User's balance
+     * Balance methods object.
      */
-    fetch(memberID, guildID) {
-        if (!this.ready) throw new EconomyError(this.errors.notReady)
-        if (typeof memberID !== 'string') throw new EconomyError(this.errors.invalidTypes.memberID + typeof memberID)
-        if (typeof guildID !== 'string') throw new EconomyError(this.errors.invalidTypes.guildID + typeof guildID)
-        return Number(this.all()[guildID]?.[memberID]?.money || 0)
+    balance = {
+        /**
+        * Fetches the user's balance.
+        * @param {String} memberID Member ID
+        * @param {String} guildID Guild ID
+        * @returns {Number} User's balance
+        */
+        fetch(memberID, guildID) {
+            if (!module.exports.ready) throw new EconomyError(module.exports.errors.notReady)
+            if (typeof memberID !== 'string') throw new EconomyError(module.exports.errors.invalidTypes.memberID + typeof memberID)
+            if (typeof guildID !== 'string') throw new EconomyError(module.exports.errors.invalidTypes.guildID + typeof guildID)
+            return Number(module.exports.all()[guildID]?.[memberID]?.money || 0)
+        },
+        /**
+         * Sets the money amount on user's balance.
+         * @param {Number} amount Amount of money that you want to set
+         * @param {String} memberID Member ID
+         * @param {String} guildID Guild ID
+         * @param {string} reason The reason why you set the money
+         * @returns {Number} Money amount
+         */
+        set(amount, memberID, guildID, reason = null) {
+            if (!module.exports.ready) throw new EconomyError(module.exports.errors.notReady)
+            if (isNaN(amount)) throw new EconomyError(module.exports.errors.invalidTypes.amount + typeof amount)
+            if (typeof memberID !== 'string') throw new EconomyError(module.exports.errors.invalidTypes.memberID + typeof memberID)
+            if (typeof guildID !== 'string') throw new EconomyError(module.exports.errors.invalidTypes.guildID + typeof guildID)
+            let obj = JSON.parse(readFileSync(module.exports.options.storagePath).toString())
+            if (!obj[guildID]) obj[guildID] = {}
+            obj[guildID][memberID] = {
+                dailyCooldown: module.exports.getDailyCooldown(memberID, guildID),
+                workCooldown: module.exports.getWorkCooldown(memberID, guildID),
+                weeklyCooldown: module.exports.getWeeklyCooldown(memberID, guildID),
+                money: Number(amount),
+                bank: module.exports.bank.fetch(memberID, guildID),
+                inventory: module.exports.shop.inventory(memberID, guildID),
+                history: module.exports.shop.history(memberID, guildID)
+            }
+            writeFileSync(module.exports.options.storagePath, JSON.stringify(obj, null, '\t'))
+            module.exports.emit('balanceSet', { type: 'set', guildID, memberID, amount: Number(amount), balance: Number(amount), reason })
+            return Number(amount)
+        },
+        /**
+         * Adds the money amount on user's balance.
+         * @param {Number} amount Amount of money that you want to add
+         * @param {String} memberID Member ID
+         * @param {String} guildID Guild ID
+         * @param {string} reason The reason why you add the money
+         * @returns {Number} Money amount
+         */
+        add(amount, memberID, guildID, reason = null) {
+            if (!module.exports.ready) throw new EconomyError(module.exports.errors.notReady)
+            if (isNaN(amount)) throw new EconomyError(module.exports.errors.invalidTypes.amount + typeof amount)
+            if (typeof memberID !== 'string') throw new EconomyError(module.exports.errors.invalidTypes.memberID + typeof memberID)
+            if (typeof guildID !== 'string') throw new EconomyError(module.exports.errors.invalidTypes.guildID + typeof guildID)
+            const money = JSON.parse(readFileSync(module.exports.options.storagePath).toString())[guildID]?.[memberID]?.money || 0
+            let obj = JSON.parse(readFileSync(module.exports.options.storagePath).toString())
+            if (!obj[guildID]) obj[guildID] = {}
+            obj[guildID][memberID] = {
+                dailyCooldown: module.exports.getDailyCooldown(memberID, guildID),
+                workCooldown: module.exports.getWorkCooldown(memberID, guildID),
+                weeklyCooldown: module.exports.getWeeklyCooldown(memberID, guildID),
+                money: Number(money) + Number(amount),
+                bank: module.exports.bank.fetch(memberID, guildID),
+                inventory: module.exports.shop.inventory(memberID, guildID),
+                history: module.exports.shop.history(memberID, guildID)
+            }
+            writeFileSync(module.exports.options.storagePath, JSON.stringify(obj, null, '\t'))
+            module.exports.emit('balanceAdd', { type: 'add', guildID, memberID, amount: Number(amount), balance: Number(money) + Number(amount), reason })
+            return Number(amount)
+        },
+        /**
+        * Subtracts the money amount from user's balance.
+        * @param {Number} amount Amount of money that you want to subtract
+        * @param {String} memberID Member ID
+        * @param {String} guildID Guild ID
+        * @param {string} reason The reason why you subtract the money
+        * @returns {Number} Money amount
+        */
+        subtract(amount, memberID, guildID, reason = null) {
+            if (!module.exports.ready) throw new EconomyError(module.exports.errors.notReady)
+            if (isNaN(amount)) throw new EconomyError(module.exports.errors.invalidTypes.amount + typeof amount)
+            if (typeof memberID !== 'string') throw new EconomyError(module.exports.errors.invalidTypes.memberID + typeof memberID)
+            if (typeof guildID !== 'string') throw new EconomyError(module.exports.errors.invalidTypes.guildID + typeof guildID)
+            const money = JSON.parse(readFileSync(module.exports.options.storagePath).toString())[guildID]?.[memberID]?.money || 0
+            let obj = JSON.parse(readFileSync(module.exports.options.storagePath).toString())
+            if (!obj[guildID]) obj[guildID] = {}
+            obj[guildID][memberID] = {
+                dailyCooldown: module.exports.getDailyCooldown(memberID, guildID),
+                workCooldown: module.exports.getWorkCooldown(memberID, guildID),
+                weeklyCooldown: module.exports.getWeeklyCooldown(memberID, guildID),
+                money: Number(money) - Number(amount),
+                bank: module.exports.bank.fetch(memberID, guildID),
+                inventory: module.exports.shop.inventory(memberID, guildID),
+                history: module.exports.shop.history(memberID, guildID),
+            }
+            writeFileSync(module.exports.options.storagePath, JSON.stringify(obj, null, '\t'))
+            module.exports.emit('balanceSubtract', { type: 'subtract', guildID, memberID, amount: Number(amount), balance: Number(money) - Number(amount), reason })
+            return Number(amount)
+        },
+        /**
+         * Shows a money leaderboard for your server
+         * @param {String} guildID Guild ID
+         * @returns {data} Sorted leaderboard array
+         */
+        leaderboard(guildID) {
+            const data = [{ index: Number(), userID: String(), money: Number() }]
+            if (!module.exports.ready) throw new EconomyError(module.exports.errors.notReady)
+            if (typeof guildID !== 'string') throw new EconomyError(module.exports.errors.invalidTypes.guildID + typeof guildID)
+            let serverData = module.exports.all()[guildID]
+            if (!serverData) return []
+            let lb = []
+            let users = Object.keys(serverData)
+            let ranks = Object.values(module.exports.all()[guildID]).map(x => x.money)
+            for (let i in users) lb.push({ index: Number(i) + 1, userID: users[i], money: Number(ranks[i]) })
+            return lb.sort((a, b) => b.money - a.money).filter(x => !isNaN(x.money))
+        }
     }
     /**
-     * Fetches the user's bank balance.
-     * @param {String} memberID Member ID
-     * @param {String} guildID Guild ID
-     * @returns {Number} User's bank balance
+     * Bank balance methods object.
      */
-    bankFetch(memberID, guildID) {
-        if (!this.ready) throw new EconomyError(this.errors.notReady)
-        if (typeof memberID !== 'string') throw new EconomyError(this.errors.invalidTypes.memberID + typeof memberID)
-        if (typeof guildID !== 'string') throw new EconomyError(this.errors.invalidTypes.guildID + typeof guildID)
-        return Number(this.all()[guildID]?.[memberID]?.bank || 0)
-    }
-    /**
-     * Sets the money amount on user's bank balance.
-     * @param {Number} amount Amount of money that you want to set
-     * @param {String} memberID Member ID
-     * @param {String} guildID Guild ID
-     * @param {string} reason The reason why you set the money
-     * @returns {Number} Money amount
-     */
-    bankSet(amount, memberID, guildID, reason = null) {
-        if (!this.ready) throw new EconomyError(this.errors.notReady)
-        if (isNaN(amount)) throw new EconomyError(this.errors.invalidTypes.amount + typeof amount)
-        if (typeof memberID !== 'string') throw new EconomyError(this.errors.invalidTypes.memberID + typeof memberID)
-        if (typeof guildID !== 'string') throw new EconomyError(this.errors.invalidTypes.guildID + typeof guildID)
-        let obj = JSON.parse(readFileSync(this.options.storagePath).toString())
-        if (!obj[guildID]) obj[guildID] = {}
-        obj[guildID][memberID] = {
-            dailyCooldown: this.getDailyCooldown(memberID, guildID),
-            workCooldown: this.getWorkCooldown(memberID, guildID),
-            weeklyCooldown: this.getWeeklyCooldown(memberID, guildID),
-            money: this.fetch(memberID, guildID),
-            bank: Number(amount),
-            inventory: this.shop.inventory(memberID, guildID),
-            history: this.shop.history(memberID, guildID)
+    bank = {
+        /**
+         * Fetches the user's bank balance.
+         * @param {String} memberID Member ID
+         * @param {String} guildID Guild ID
+         * @returns {Number} User's bank balance
+         */
+        fetch(memberID, guildID) {
+            if (!module.exports.ready) throw new EconomyError(module.exports.errors.notReady)
+            if (typeof memberID !== 'string') throw new EconomyError(module.exports.errors.invalidTypes.memberID + typeof memberID)
+            if (typeof guildID !== 'string') throw new EconomyError(module.exports.errors.invalidTypes.guildID + typeof guildID)
+            return Number(module.exports.all()[guildID]?.[memberID]?.bank || 0)
+        },
+        /**
+         * Sets the money amount on user's bank balance.
+         * @param {Number} amount Amount of money that you want to set
+         * @param {String} memberID Member ID
+         * @param {String} guildID Guild ID
+         * @param {string} reason The reason why you set the money
+         * @returns {Number} Money amount
+         */
+        set(amount, memberID, guildID, reason = null) {
+            if (!module.exports.ready) throw new EconomyError(module.exports.errors.notReady)
+            if (isNaN(amount)) throw new EconomyError(module.exports.errors.invalidTypes.amount + typeof amount)
+            if (typeof memberID !== 'string') throw new EconomyError(module.exports.errors.invalidTypes.memberID + typeof memberID)
+            if (typeof guildID !== 'string') throw new EconomyError(module.exports.errors.invalidTypes.guildID + typeof guildID)
+            let obj = JSON.parse(readFileSync(module.exports.options.storagePath).toString())
+            if (!obj[guildID]) obj[guildID] = {}
+            obj[guildID][memberID] = {
+                dailyCooldown: module.ex.getDailyCooldown(memberID, guildID),
+                workCooldown: module.exports.getWorkCooldown(memberID, guildID),
+                weeklyCooldown: module.exports.getWeeklyCooldown(memberID, guildID),
+                money: module.exports.fetch(memberID, guildID),
+                bank: Number(amount),
+                inventory: module.exports.shop.inventory(memberID, guildID),
+                history: module.exports.shop.history(memberID, guildID)
+            }
+            writeFileSync(module.exports.options.storagePath, JSON.stringify(obj, null, '\t'))
+            module.exports.emit('bankSet', { type: 'bankSet', guildID, memberID, amount: Number(amount), balance: Number(amount), reason })
+            return Number(amount)
+        },
+        /**
+         * Adds the money amount on user's bank balance.
+         * @param {Number} amount Amount of money that you want to add
+         * @param {String} memberID Member ID
+         * @param {String} guildID Guild ID
+         * @param {string} reason The reason why you add the money
+         * @returns {Number} Money amount
+         */
+        add(amount, memberID, guildID, reason = null) {
+            if (!module.exports.ready) throw new EconomyError(module.exports.errors.notReady)
+            if (isNaN(amount)) throw new EconomyError(module.exports.errors.invalidTypes.amount + typeof amount)
+            if (typeof memberID !== 'string') throw new EconomyError(module.exports.errors.invalidTypes.memberID + typeof memberID)
+            if (typeof guildID !== 'string') throw new EconomyError(module.exports.errors.invalidTypes.guildID + typeof guildID)
+            const money = JSON.parse(readFileSync(module.exports.options.storagePath).toString())[guildID]?.[memberID]?.bank || 0
+            let obj = JSON.parse(readFileSync(module.exports.options.storagePath).toString())
+            if (!obj[guildID]) obj[guildID] = {}
+            obj[guildID][memberID] = {
+                dailyCooldown: module.exports.getDailyCooldown(memberID, guildID),
+                workCooldown: module.exports.getWorkCooldown(memberID, guildID),
+                weeklyCooldown: module.exports.getWeeklyCooldown(memberID, guildID),
+                money: module.exports.fetch(memberID, guildID),
+                bank: Number(money) + Number(amount),
+                inventory: module.exports.shop.inventory(memberID, guildID),
+                history: module.exports.shop.history(memberID, guildID)
+            }
+            writeFileSync(module.exports.options.storagePath, JSON.stringify(obj, null, '\t'))
+            module.exports.emit('bankAdd', { type: 'bankAdd', guildID, memberID, amount: Number(amount), balance: Number(money) + Number(amount), reason })
+            return Number(amount)
+        },
+        /**
+        * Subtracts the money amount from user's bank balance.
+        * @param {Number} amount Amount of money that you want to subtract
+        * @param {String} memberID Member ID
+        * @param {String} guildID Guild ID
+        * @param {string} reason The reason why you subtract the money
+        * @returns {Number} Money amount
+        */
+        subtract(amount, memberID, guildID, reason = null) {
+            if (!module.exports.ready) throw new EconomyError(module.exports.errors.notReady)
+            if (isNaN(amount)) throw new EconomyError(module.exports.errors.invalidTypes.amount + typeof amount)
+            if (typeof memberID !== 'string') throw new EconomyError(module.exports.errors.invalidTypes.memberID + typeof memberID)
+            if (typeof guildID !== 'string') throw new EconomyError(module.exports.errors.invalidTypes.guildID + typeof guildID)
+            const money = JSON.parse(readFileSync(module.exports.options.storagePath).toString())[guildID]?.[memberID]?.bank || 0
+            let obj = JSON.parse(readFileSync(module.exports.options.storagePath).toString())
+            if (!obj[guildID]) obj[guildID] = {}
+            obj[guildID][memberID] = {
+                dailyCooldown: module.exports.getDailyCooldown(memberID, guildID),
+                workCooldown: module.exports.getWorkCooldown(memberID, guildID),
+                weeklyCooldown: module.exports.getWeeklyCooldown(memberID, guildID),
+                money: module.exports.fetch(memberID, guildID),
+                bank: Number(money) - Number(amount),
+                inventory: module.exports.shop.inventory(memberID, guildID),
+                history: module.exports.shop.history(memberID, guildID),
+            }
+            writeFileSync(module.exports.options.storagePath, JSON.stringify(obj, null, '\t'))
+            module.exports.emit('bankSubtract', { type: 'bankSubtract', guildID, memberID, amount: Number(amount), balance: Number(money) - Number(amount), reason })
+            return Number(amount)
+        },
+        /**
+        * Shows a bank money leaderboard for your server
+        * @param {String} guildID Guild ID
+        * @returns {data} Sorted leaderboard array
+        */
+        leaderboard(guildID) {
+            const data = [{ index: Number(), userID: String(), money: Number() }]
+            if (!module.exports.ready) throw new EconomyError(module.exports.errors.notReady)
+            if (typeof guildID !== 'string') throw new EconomyError(module.exports.errors.invalidTypes.guildID + typeof guildID)
+            let serverData = module.exports.all()[guildID]
+            if (!serverData) throw new EconomyError(module.exports.errors.emptyServerDatabase)
+            let lb = []
+            let users = Object.keys(serverData)
+            let ranks = Object.values(module.exports.all()[guildID]).map(x => x.bank)
+            for (let i in users) lb.push({ index: Number(i) + 1, userID: users[i], money: Number(ranks[i]) })
+            return lb.sort((a, b) => b.bankMoney - a.bankMoney).filter(x => !isNaN(x.bankMoney))
         }
-        writeFileSync(this.options.storagePath, JSON.stringify(obj, null, '\t'))
-        this.emit('bankSet', { type: 'bankSet', guildID, memberID, amount: Number(amount), balance: Number(amount), reason })
-        return Number(amount)
-    }
-    /**
-     * Adds the money amount on user's bank balance.
-     * @param {Number} amount Amount of money that you want to add
-     * @param {String} memberID Member ID
-     * @param {String} guildID Guild ID
-     * @param {string} reason The reason why you add the money
-     * @returns {Number} Money amount
-     */
-    bankAdd(amount, memberID, guildID, reason = null) {
-        if (!this.ready) throw new EconomyError(this.errors.notReady)
-        if (isNaN(amount)) throw new EconomyError(this.errors.invalidTypes.amount + typeof amount)
-        if (typeof memberID !== 'string') throw new EconomyError(this.errors.invalidTypes.memberID + typeof memberID)
-        if (typeof guildID !== 'string') throw new EconomyError(this.errors.invalidTypes.guildID + typeof guildID)
-        const money = JSON.parse(readFileSync(this.options.storagePath).toString())[guildID]?.[memberID]?.bank || 0
-        let obj = JSON.parse(readFileSync(this.options.storagePath).toString())
-        if (!obj[guildID]) obj[guildID] = {}
-        obj[guildID][memberID] = {
-            dailyCooldown: this.getDailyCooldown(memberID, guildID),
-            workCooldown: this.getWorkCooldown(memberID, guildID),
-            weeklyCooldown: this.getWeeklyCooldown(memberID, guildID),
-            money: this.fetch(memberID, guildID),
-            bank: Number(money) + Number(amount),
-            inventory: this.shop.inventory(memberID, guildID),
-            history: this.shop.history(memberID, guildID)
-        }
-        writeFileSync(this.options.storagePath, JSON.stringify(obj, null, '\t'))
-        this.emit('bankAdd', { type: 'bankAdd', guildID, memberID, amount: Number(amount), balance: Number(money) + Number(amount), reason })
-        return Number(amount)
-    }
-    /**
-    * Subtracts the money amount from user's bank balance.
-    * @param {Number} amount Amount of money that you want to subtract
-    * @param {String} memberID Member ID
-    * @param {String} guildID Guild ID
-    * @param {string} reason The reason why you subtract the money
-    * @returns {Number} Money amount
-    */
-    bankSubtract(amount, memberID, guildID, reason = null) {
-        if (!this.ready) throw new EconomyError(this.errors.notReady)
-        if (isNaN(amount)) throw new EconomyError(this.errors.invalidTypes.amount + typeof amount)
-        if (typeof memberID !== 'string') throw new EconomyError(this.errors.invalidTypes.memberID + typeof memberID)
-        if (typeof guildID !== 'string') throw new EconomyError(this.errors.invalidTypes.guildID + typeof guildID)
-        const money = JSON.parse(readFileSync(this.options.storagePath).toString())[guildID]?.[memberID]?.bank || 0
-        let obj = JSON.parse(readFileSync(this.options.storagePath).toString())
-        if (!obj[guildID]) obj[guildID] = {}
-        obj[guildID][memberID] = {
-            dailyCooldown: this.getDailyCooldown(memberID, guildID),
-            workCooldown: this.getWorkCooldown(memberID, guildID),
-            weeklyCooldown: this.getWeeklyCooldown(memberID, guildID),
-            money: this.fetch(memberID, guildID),
-            bank: Number(money) - Number(amount),
-            inventory: this.shop.inventory(memberID, guildID),
-            history: this.shop.history(memberID, guildID),
-        }
-        writeFileSync(this.options.storagePath, JSON.stringify(obj, null, '\t'))
-        this.emit('bankSubtract', { type: 'bankSubtract', guildID, memberID, amount: Number(amount), balance: Number(money) - Number(amount), reason })
-        return Number(amount)
-    }
-    /**
-     * Sets the money amount on user's balance.
-     * @param {Number} amount Amount of money that you want to set
-     * @param {String} memberID Member ID
-     * @param {String} guildID Guild ID
-     * @param {string} reason The reason why you set the money
-     * @returns {Number} Money amount
-     */
-    set(amount, memberID, guildID, reason = null) {
-        if (!this.ready) throw new EconomyError(this.errors.notReady)
-        if (isNaN(amount)) throw new EconomyError(this.errors.invalidTypes.amount + typeof amount)
-        if (typeof memberID !== 'string') throw new EconomyError(this.errors.invalidTypes.memberID + typeof memberID)
-        if (typeof guildID !== 'string') throw new EconomyError(this.errors.invalidTypes.guildID + typeof guildID)
-        let obj = JSON.parse(readFileSync(this.options.storagePath).toString())
-        if (!obj[guildID]) obj[guildID] = {}
-        obj[guildID][memberID] = {
-            dailyCooldown: this.getDailyCooldown(memberID, guildID),
-            workCooldown: this.getWorkCooldown(memberID, guildID),
-            weeklyCooldown: this.getWeeklyCooldown(memberID, guildID),
-            money: Number(amount),
-            bank: this.bankFetch(memberID, guildID),
-            inventory: this.shop.inventory(memberID, guildID),
-            history: this.shop.history(memberID, guildID)
-        }
-        writeFileSync(this.options.storagePath, JSON.stringify(obj, null, '\t'))
-        this.emit('balanceSet', { type: 'set', guildID, memberID, amount: Number(amount), balance: Number(amount), reason })
-        return Number(amount)
-    }
-    /**
-     * Adds the money amount on user's balance.
-     * @param {Number} amount Amount of money that you want to add
-     * @param {String} memberID Member ID
-     * @param {String} guildID Guild ID
-     * @param {string} reason The reason why you add the money
-     * @returns {Number} Money amount
-     */
-    add(amount, memberID, guildID, reason = null) {
-        if (!this.ready) throw new EconomyError(this.errors.notReady)
-        if (isNaN(amount)) throw new EconomyError(this.errors.invalidTypes.amount + typeof amount)
-        if (typeof memberID !== 'string') throw new EconomyError(this.errors.invalidTypes.memberID + typeof memberID)
-        if (typeof guildID !== 'string') throw new EconomyError(this.errors.invalidTypes.guildID + typeof guildID)
-        const money = JSON.parse(readFileSync(this.options.storagePath).toString())[guildID]?.[memberID]?.money || 0
-        let obj = JSON.parse(readFileSync(this.options.storagePath).toString())
-        if (!obj[guildID]) obj[guildID] = {}
-        obj[guildID][memberID] = {
-            dailyCooldown: this.getDailyCooldown(memberID, guildID),
-            workCooldown: this.getWorkCooldown(memberID, guildID),
-            weeklyCooldown: this.getWeeklyCooldown(memberID, guildID),
-            money: Number(money) + Number(amount),
-            bank: this.bankFetch(memberID, guildID),
-            inventory: this.shop.inventory(memberID, guildID),
-            history: this.shop.history(memberID, guildID)
-        }
-        writeFileSync(this.options.storagePath, JSON.stringify(obj, null, '\t'))
-        this.emit('balanceAdd', { type: 'add', guildID, memberID, amount: Number(amount), balance: Number(money) + Number(amount), reason })
-        return Number(amount)
-    }
-    /**
-    * Subtracts the money amount from user's balance.
-    * @param {Number} amount Amount of money that you want to subtract
-    * @param {String} memberID Member ID
-    * @param {String} guildID Guild ID
-    * @param {string} reason The reason why you subtract the money
-    * @returns {Number} Money amount
-    */
-    subtract(amount, memberID, guildID, reason = null) {
-        if (!this.ready) throw new EconomyError(this.errors.notReady)
-        if (isNaN(amount)) throw new EconomyError(this.errors.invalidTypes.amount + typeof amount)
-        if (typeof memberID !== 'string') throw new EconomyError(this.errors.invalidTypes.memberID + typeof memberID)
-        if (typeof guildID !== 'string') throw new EconomyError(this.errors.invalidTypes.guildID + typeof guildID)
-        const money = JSON.parse(readFileSync(this.options.storagePath).toString())[guildID]?.[memberID]?.money || 0
-        let obj = JSON.parse(readFileSync(this.options.storagePath).toString())
-        if (!obj[guildID]) obj[guildID] = {}
-        obj[guildID][memberID] = {
-            dailyCooldown: this.getDailyCooldown(memberID, guildID),
-            workCooldown: this.getWorkCooldown(memberID, guildID),
-            weeklyCooldown: this.getWeeklyCooldown(memberID, guildID),
-            money: Number(money) - Number(amount),
-            bank: this.bankFetch(memberID, guildID),
-            inventory: this.shop.inventory(memberID, guildID),
-            history: this.shop.history(memberID, guildID),
-        }
-        writeFileSync(this.options.storagePath, JSON.stringify(obj, null, '\t'))
-        this.emit('balanceSubtract', { type: 'subtract', guildID, memberID, amount: Number(amount), balance: Number(money) - Number(amount), reason })
-        return Number(amount)
     }
     /**
     * Fetches the entire database.
@@ -336,7 +383,7 @@ module.exports = class Economy {
         obj[guildID] = {}
         writeFileSync(this.options.storagePath, JSON.stringify(obj, null, '\t'))
         const content = readFileSync(this.options.storagePath).toString()
-        writeFileSync(this.options.storagePath, JSON.stringify(JSON.parse(content.replace(`"${guildID}":{},`, ''))))
+        writeFileSync(this.options.storagePath, JSON.stringify(JSON.parse(content.replace(`"${guildID}":{},`, '')), null, '\t'))
         return true
     }
     /**
@@ -393,13 +440,13 @@ module.exports = class Economy {
             dailyCooldown: Date.now(),
             workCooldown: this.getWorkCooldown(memberID, guildID),
             weeklyCooldown: this.getWeeklyCooldown(memberID, guildID),
-            money: this.fetch(memberID, guildID),
-            bank: this.bankFetch(memberID, guildID),
+            money: this.balance.fetch(memberID, guildID),
+            bank: this.bank.fetch(memberID, guildID),
             inventory: this.shop.inventory(memberID, guildID),
             history: this.shop.history(memberID, guildID)
         }
         writeFileSync(this.options.storagePath, JSON.stringify(obj, null, '\t'))
-        this.add(reward, memberID, guildID, reason)
+        this.balance.add(reward, memberID, guildID, reason)
         return {
             status: true,
             value: Number(reward),
@@ -446,12 +493,12 @@ module.exports = class Economy {
             dailyCooldown: this.getDailyCooldown(memberID, guildID),
             workCooldown: Date.now(),
             weeklyCooldown: this.getWeeklyCooldown(memberID, guildID),
-            money: this.fetch(memberID, guildID) + reward,
-            bank: this.bankFetch(memberID, guildID),
+            money: this.balance.fetch(memberID, guildID) + reward,
+            bank: this.bank.fetch(memberID, guildID),
             inventory: this.shop.inventory(memberID, guildID),
             history: this.shop.history(memberID, guildID)
         }
-        this.emit('balanceAdd', { type: 'add', guildID, memberID, amount: reward, balance: this.fetch(memberID, guildID), reason })
+        this.emit('balanceAdd', { type: 'add', guildID, memberID, amount: reward, balance: this.balance.fetch(memberID, guildID), reason })
         writeFileSync(this.options.storagePath, JSON.stringify(obj, null, '\t'))
         return {
             status: true,
@@ -498,13 +545,13 @@ module.exports = class Economy {
             dailyCooldown: this.getDailyCooldown(memberID, guildID),
             workCooldown: this.getWorkCooldown(memberID, guildID),
             weeklyCooldown: Date.now(),
-            money: this.fetch(memberID, guildID),
-            bank: this.bankFetch(memberID, guildID),
+            money: this.balance.fetch(memberID, guildID),
+            bank: this.bank.fetch(memberID, guildID),
             inventory: this.shop.inventory(memberID, guildID),
             history: this.shop.history(memberID, guildID)
         }
         writeFileSync(this.options.storagePath, JSON.stringify(obj, null, '\t'))
-        this.add(this.options.weeklyAmount, memberID, guildID, reason)
+        this.balance.add(this.options.weeklyAmount, memberID, guildID, reason)
         return {
             status: true,
             value: Number(reward),
@@ -564,8 +611,8 @@ module.exports = class Economy {
             dailyCooldown: null,
             workCooldown: this.getWorkCooldown(memberID, guildID),
             weeklyCooldown: this.getWorkCooldown(memberID, guildID),
-            money: this.fetch(memberID, guildID),
-            bank: this.bankFetch(memberID, guildID),
+            money: this.balance.fetch(memberID, guildID),
+            bank: this.bank.fetch(memberID, guildID),
             inventory: this.shop.inventory(memberID, guildID),
             history: this.shop.history(memberID, guildID)
         }
@@ -588,8 +635,8 @@ module.exports = class Economy {
             dailyCooldown: this.getDailyCooldown(memberID, guildID),
             workCooldown: null,
             weeklyCooldown: this.getWorkCooldown(memberID, guildID),
-            money: this.fetch(memberID, guildID),
-            bank: this.bankFetch(memberID, guildID),
+            money: this.balance.fetch(memberID, guildID),
+            bank: this.bank.fetch(memberID, guildID),
             inventory: this.shop.inventory(memberID, guildID),
             history: this.shop.history(memberID, guildID)
         }
@@ -612,8 +659,8 @@ module.exports = class Economy {
             dailyCooldown: this.getDailyCooldown(memberID, guildID),
             workCooldown: this.getWorkCooldown(memberID, guildID),
             weeklyCooldown: null,
-            money: this.fetch(memberID, guildID),
-            bank: this.bankFetch(memberID, guildID),
+            money: this.balance.fetch(memberID, guildID),
+            bank: this.bank.fetch(memberID, guildID),
             inventory: this.shop.inventory(memberID, guildID),
             history: this.shop.history(memberID, guildID)
         }
@@ -621,44 +668,9 @@ module.exports = class Economy {
         return true
     }
     /**
-     * Shows a money leaderboard for your server
-     * @param {String} guildID Guild ID
-     * @returns {data} Sorted leaderboard array
-     */
-    leaderboard(guildID) {
-        const data = [{ userID: String(), money: Number() }]
-        if (!this.ready) throw new EconomyError(this.errors.notReady)
-        if (typeof guildID !== 'string') throw new EconomyError(this.errors.invalidTypes.guildID + typeof guildID)
-        let serverData = this.all()[guildID]
-        if (!serverData) return []
-        let lb = []
-        let users = Object.keys(serverData)
-        let ranks = Object.values(this.all()[guildID]).map(x => x.money)
-        for (let i in users) lb.push({ userID: users[i], money: Number(ranks[i]) })
-        return lb.sort((a, b) => b.money - a.money).filter(x => !isNaN(x.money))
-    }
-    /**
-    * Shows a bank money leaderboard for your server
-    * @param {String} guildID Guild ID
-    * @returns {data} Sorted leaderboard array
-    */
-    bankLeaderboard(guildID) {
-        const data = [{ userID: String(), money: Number() }]
-        if (!this.ready) throw new EconomyError(this.errors.notReady)
-        if (typeof guildID !== 'string') throw new EconomyError(this.errors.invalidTypes.guildID + typeof guildID)
-        let serverData = this.all()[guildID]
-        if (!serverData) throw new EconomyError(this.errors.emptyServerDatabase)
-        let lb = []
-        let users = Object.keys(serverData)
-        let ranks = Object.values(this.all()[guildID]).map(x => x.bank)
-        for (let i in users) lb.push({ userID: users[i], bankMoney: Number(ranks[i]) })
-        return lb.sort((a, b) => b.bankMoney - a.bankMoney).filter(x => !isNaN(x.bankMoney))
-    }
-    /**
     * An object with methods to create a shop on your server.
     */
     shop = {
-        errors: require('./errors'),
         /**
          * Creates an item in shop.
          * @param {Object} options Options object with item info.
@@ -672,15 +684,15 @@ module.exports = class Economy {
          * @returns {{ id: Number, itemName: String, price: Number, message: String, description: String, role: String, maxAmount: Number | null, role: String, date: String }} Item info.
          */
         addItem(guildID, options) {
-            if (!module.exports.ready) throw new EconomyError(this.errors.notReady)
-            if (typeof guildID !== 'string') throw new EconomyError(this.errors.invalidTypes.guildID + typeof guildID)
+            if (!module.exports.ready) throw new EconomyError(module.exports.errors.notReady)
+            if (typeof guildID !== 'string') throw new EconomyError(module.exports.errors.invalidTypes.guildID + typeof guildID)
             const { itemName, price, message, description, maxAmount, role } = options
-            if (typeof itemName !== 'string') throw new EconomyError(this.errors.invalidTypes.addItemOptions.itemName + typeof itemName)
-            if (isNaN(price)) throw new EconomyError(this.errors.invalidTypes.addItemOptions.price + typeof price)
-            if (message && typeof message !== 'string') throw new EconomyError(this.errors.invalidTypes.addItemOptions.message + typeof message)
-            if (description && typeof description !== 'string') throw new EconomyError(this.errors.invalidTypes.addItemOptions.description + typeof description)
-            if (maxAmount !== undefined && isNaN(maxAmount)) throw new EconomyError(this.errors.invalidTypes.addItemOptions.maxAmount + typeof maxAmount)
-            if (role && typeof role !== 'string') throw new EconomyError(this.errors.invalidTypes.addItemOptions.role + typeof role)
+            if (typeof itemName !== 'string') throw new EconomyError(module.exports.errors.invalidTypes.addItemOptions.itemName + typeof itemName)
+            if (isNaN(price)) throw new EconomyError(module.exports.errors.invalidTypes.addItemOptions.price + typeof price)
+            if (message && typeof message !== 'string') throw new EconomyError(module.exports.errors.invalidTypes.addItemOptions.message + typeof message)
+            if (description && typeof description !== 'string') throw new EconomyError(module.exports.errors.invalidTypes.addItemOptions.description + typeof description)
+            if (maxAmount !== undefined && isNaN(maxAmount)) throw new EconomyError(module.exports.errors.invalidTypes.addItemOptions.maxAmount + typeof maxAmount)
+            if (role && typeof role !== 'string') throw new EconomyError(module.exports.errors.invalidTypes.addItemOptions.role + typeof role)
             let obj = JSON.parse(readFileSync(module.exports.options.storagePath))
             let shop = obj[guildID]?.shop || []
             let id = Number(shop.length ? shop.length + 1 : 1)
@@ -701,7 +713,7 @@ module.exports = class Economy {
          * @returns {Boolean} If edited successfully: true, else: false
          */
         editItem(itemID, guildID, arg, value) {
-            if (!module.exports.ready) throw new EconomyError(this.errors.notReady)
+            if (!module.exports.ready) throw new EconomyError(module.exports.errors.notReady)
             let edit = (arg, value) => {
                 let obj = JSON.parse(readFileSync(module.exports.options.storagePath))
                 let shop = obj[guildID]?.shop || []
@@ -715,10 +727,10 @@ module.exports = class Economy {
                 writeFileSync(module.exports.options.storagePath, JSON.stringify(obj, null, '\t'))
             }
             let args = ['description', 'price', 'itemName', 'message', 'maxAmount', 'role']
-            if (typeof itemID !== 'number' && typeof itemID !== 'string') throw new EconomyError(this.errors.invalidTypes.editItemArgs.itemID + typeof itemID)
-            if (typeof guildID !== 'string') throw new EconomyError(this.errors.invalidTypes.guildID + typeof guildID)
-            if (!args.includes(arg)) throw new EconomyError(this.errors.invalidTypes.editItemArgs.arg + arg)
-            if (value == undefined) throw new EconomyError(this.errors.invalidTypes.editItemArgs.arg + value)
+            if (typeof itemID !== 'number' && typeof itemID !== 'string') throw new EconomyError(module.exports.errors.invalidTypes.editItemArgs.itemID + typeof itemID)
+            if (typeof guildID !== 'string') throw new EconomyError(module.exports.errors.invalidTypes.guildID + typeof guildID)
+            if (!args.includes(arg)) throw new EconomyError(module.exports.errors.invalidTypes.editItemArgs.arg + arg)
+            if (value == undefined) throw new EconomyError(module.exports.errors.invalidTypes.editItemArgs.arg + value)
             switch (arg) {
                 case args[0]:
                     edit(args[0], value)
@@ -749,9 +761,9 @@ module.exports = class Economy {
          * @returns {Boolean} If removed: true, else: false
          */
         removeItem(itemID, guildID) {
-            if (!module.exports.ready) throw new EconomyError(this.errors.notReady)
-            if (typeof itemID !== 'number' && typeof itemID !== 'string') throw new EconomyError(this.errors.invalidTypes.editItemArgs.itemID + typeof itemID)
-            if (typeof guildID !== 'string') throw new EconomyError(this.errors.invalidTypes.guildID + typeof guildID)
+            if (!module.exports.ready) throw new EconomyError(module.exports.errors.notReady)
+            if (typeof itemID !== 'number' && typeof itemID !== 'string') throw new EconomyError(module.exports.errors.invalidTypes.editItemArgs.itemID + typeof itemID)
+            if (typeof guildID !== 'string') throw new EconomyError(module.exports.errors.invalidTypes.guildID + typeof guildID)
             let obj = JSON.parse(readFileSync(module.exports.options.storagePath))
             let shop = obj[guildID]?.shop || []
             const item = shop.find(x => x.id == itemID || x.itemName == itemID)
@@ -768,8 +780,8 @@ module.exports = class Economy {
          * @returns {Boolean} If cleared: true, else: false
          */
         clear(guildID) {
-            if (!module.exports.ready) throw new EconomyError(this.errors.notReady)
-            if (typeof guildID !== 'string') throw new EconomyError(this.errors.invalidTypes.guildID + typeof guildID)
+            if (!module.exports.ready) throw new EconomyError(module.exports.errors.notReady)
+            if (typeof guildID !== 'string') throw new EconomyError(module.exports.errors.invalidTypes.guildID + typeof guildID)
             let obj = JSON.parse(readFileSync(module.exports.options.storagePath))
             if (!obj[guildID]?.shop || !obj[guildID]?.shop?.length) {
                 module.exports.emit('shopClear', false)
@@ -787,10 +799,10 @@ module.exports = class Economy {
          * @returns {Boolean} If cleared: true, else: false
          */
         clearInventory(memberID, guildID) {
-            if (!module.exports.ready) throw new EconomyError(this.errors.notReady)
+            if (!module.exports.ready) throw new EconomyError(module.exports.errors.notReady)
             const data = JSON.parse(readFileSync(module.exports.options.storagePath).toString())[guildID]?.[memberID]
-            if (typeof memberID !== 'string') throw new EconomyError(this.errors.invalidTypes.memberID + typeof memberID)
-            if (typeof guildID !== 'string') throw new EconomyError(this.errors.invalidTypes.guildID + typeof guildID)
+            if (typeof memberID !== 'string') throw new EconomyError(module.exports.errors.invalidTypes.memberID + typeof memberID)
+            if (typeof guildID !== 'string') throw new EconomyError(module.exports.errors.invalidTypes.guildID + typeof guildID)
             let obj = JSON.parse(readFileSync(module.exports.options.storagePath))
             if (!obj[guildID][memberID]?.inventory || !obj[guildID][memberID]?.inventory?.length) return false
             obj[guildID][memberID] = {
@@ -812,7 +824,7 @@ module.exports = class Economy {
          * @returns {Boolean} If cleared: true, else: false
          */
         clearHistory(memberID, guildID) {
-            if (!module.exports.ready) throw new EconomyError(this.errors.notReady)
+            if (!module.exports.ready) throw new EconomyError(module.exports.errors.notReady)
             const data = JSON.parse(readFileSync(module.exports.options.storagePath).toString())[guildID]?.[memberID]
             let obj = JSON.parse(readFileSync(module.exports.options.storagePath))
             if (!obj[guildID]?.history || !obj[guildID]?.history?.length) return false
@@ -835,8 +847,8 @@ module.exports = class Economy {
          */
         list(guildID) {
             const data = [{ id: Number(), itemName: String(), price: Number(), message: String(), description: String(), role: String(), maxAmount: Number(), role: String(), date: String() }]
-            if (!module.exports.ready) throw new EconomyError(this.errors.notReady)
-            if (typeof guildID !== 'string') throw new EconomyError(this.errors.invalidTypes.guildID + typeof guildID)
+            if (!module.exports.ready) throw new EconomyError(module.exports.errors.notReady)
+            if (typeof guildID !== 'string') throw new EconomyError(module.exports.errors.invalidTypes.guildID + typeof guildID)
             return JSON.parse(readFileSync(module.exports.options.storagePath))[guildID]?.shop || []
         },
         /**
@@ -847,9 +859,9 @@ module.exports = class Economy {
          */
         searchItem(itemID, guildID) {
             const data = { id: Number, itemName: String(), price: Number(), message: String(), description: String(), role: String(), maxAmount: Number(), role: String(), date: String() }
-            if (!module.exports.ready) throw new EconomyError(this.errors.notReady)
-            if (typeof itemID !== 'number' && typeof itemID !== 'string') throw new EconomyError(this.errors.invalidTypes.editItemArgs.itemID + typeof itemID)
-            if (typeof guildID !== 'string') throw new EconomyError(this.errors.invalidTypes.guildID + typeof guildID)
+            if (!module.exports.ready) throw new EconomyError(module.exports.errors.notReady)
+            if (typeof itemID !== 'number' && typeof itemID !== 'string') throw new EconomyError(module.exports.errors.invalidTypes.editItemArgs.itemID + typeof itemID)
+            if (typeof guildID !== 'string') throw new EconomyError(module.exports.errors.invalidTypes.guildID + typeof guildID)
             let obj = JSON.parse(readFileSync(module.exports.options.storagePath))
             let shop = obj[guildID]?.shop || []
             let item = shop.find(x => x.id == itemID || x.itemName == itemID)
@@ -865,11 +877,11 @@ module.exports = class Economy {
          * @returns {String | Boolean} If item bought successfully: true; if item not found: false; if user reached the item's max amount: 'max'
          */
         buy(itemID, memberID, guildID, reason = 'received the item from the shop') {
-            if (!module.exports.ready) throw new EconomyError(this.errors.notReady)
+            if (!module.exports.ready) throw new EconomyError(module.exports.errors.notReady)
             const data = JSON.parse(readFileSync(module.exports.options.storagePath).toString())[guildID]?.[memberID]
-            if (typeof itemID !== 'number' && typeof itemID !== 'string') throw new EconomyError(this.errors.invalidTypes.editItemArgs.itemID + typeof itemID)
-            if (typeof memberID !== 'string') throw new EconomyError(this.errors.invalidTypes.memberID + typeof memberID)
-            if (typeof guildID !== 'string') throw new EconomyError(this.errors.invalidTypes.guildID + typeof guildID)
+            if (typeof itemID !== 'number' && typeof itemID !== 'string') throw new EconomyError(module.exports.errors.invalidTypes.editItemArgs.itemID + typeof itemID)
+            if (typeof memberID !== 'string') throw new EconomyError(module.exports.errors.invalidTypes.memberID + typeof memberID)
+            if (typeof guildID !== 'string') throw new EconomyError(module.exports.errors.invalidTypes.guildID + typeof guildID)
             let obj = JSON.parse(readFileSync(module.exports.options.storagePath).toString());
             let shop = obj[guildID]?.shop || []
             let item = shop.find(x => x.id == itemID || x.itemName == itemID)
@@ -905,9 +917,9 @@ module.exports = class Economy {
          */
         inventory(memberID, guildID) {
             const data = [{ id: Number(), itemName: String(), price: Number(), message: String(), role: String(), maxAmount: Number(), date: String() }]
-            if (!module.exports.ready) throw new EconomyError(this.errors.notReady)
-            if (typeof memberID !== 'string') throw new EconomyError(this.errors.invalidTypes.memberID + typeof memberID)
-            if (typeof guildID !== 'string') throw new EconomyError(this.errors.invalidTypes.guildID + typeof guildID)
+            if (!module.exports.ready) throw new EconomyError(module.exports.errors.notReady)
+            if (typeof memberID !== 'string') throw new EconomyError(module.exports.errors.invalidTypes.memberID + typeof memberID)
+            if (typeof guildID !== 'string') throw new EconomyError(module.exports.errors.invalidTypes.guildID + typeof guildID)
             let obj = JSON.parse(readFileSync(module.exports.options.storagePath))
             let inv = obj[guildID]?.[memberID]?.inventory || []
             return inv
@@ -921,21 +933,21 @@ module.exports = class Economy {
          * @returns {String} Item message 
          */
         useItem(itemID, memberID, guildID, client) {
-            if (!module.exports.ready) throw new EconomyError(this.errors.notReady)
+            if (!module.exports.ready) throw new EconomyError(module.exports.errors.notReady)
             const data = JSON.parse(readFileSync(module.exports.options.storagePath).toString())[guildID]?.[memberID]
-            if (typeof itemID !== 'number' && typeof itemID !== 'string') throw new EconomyError(this.errors.invalidTypes.editItemArgs.itemID + typeof itemID)
-            if (typeof memberID !== 'string') throw new EconomyError(this.errors.invalidTypes.memberID + typeof memberID)
-            if (typeof guildID !== 'string') throw new EconomyError(this.errors.invalidTypes.guildID + typeof guildID)
+            if (typeof itemID !== 'number' && typeof itemID !== 'string') throw new EconomyError(module.exports.errors.invalidTypes.editItemArgs.itemID + typeof itemID)
+            if (typeof memberID !== 'string') throw new EconomyError(module.exports.errors.invalidTypes.memberID + typeof memberID)
+            if (typeof guildID !== 'string') throw new EconomyError(module.exports.errors.invalidTypes.guildID + typeof guildID)
             let obj = JSON.parse(readFileSync(module.exports.options.storagePath)), inv = obj[guildID]?.[memberID]?.inventory || []
             const i = inv.findIndex(x => x.id == itemID || x.itemName == itemID)
             if (i == -1) return false
             const item = inv[i]
             if (item.role) {
-                if (item.role && !client) throw new EconomyError(this.errors.noClient)
+                if (item.role && !client) throw new EconomyError(module.exports.errors.noClient)
                 const guild = client.guilds.cache.get(guildID)
                 const roleID = item.role.replace('<@&', '').replace('>', '')
                 guild.roles.fetch(roleID).then(role => {
-                    if (!role) throw new EconomyError(this.errors.roleNotFound + roleID)
+                    if (!role) throw new EconomyError(module.exports.errors.roleNotFound + roleID)
                     guild.member(memberID).roles.add(role).catch(err => {
                         console.log(`\x1b[31mFailed to give a role "${guild.roles.cache.get(roleID).name}" on guild "${guild.name}" to member ${guild.member(memberID).user.tag}:\x1b[36m`)
                         console.log(err)
@@ -966,7 +978,7 @@ module.exports = class Economy {
          */
         history(memberID, guildID) {
             const data = [{ id: Number(), memberID: String(), guildID: String(), itemName: String(), price: Number(), message: String(), role: String(), date: String() }]
-            if (!module.exports.ready) throw new EconomyError(this.errors.notReady)
+            if (!module.exports.ready) throw new EconomyError(module.exports.errors.notReady)
             return JSON.parse(readFileSync(module.exports.options.storagePath))[guildID]?.[memberID]?.history || []
         }
     }
@@ -979,6 +991,8 @@ module.exports = class Economy {
         this.interval = null
         this.options = {}
         this.ready = false
+        module.exports.ready = false
+        this.emit('destroy', true)
         return this
     }
     /**
@@ -986,6 +1000,7 @@ module.exports = class Economy {
      * @returns {Promise<true | void | Error>} If started successfully: true; else: Error instance.
      */
     init() {
+        module.exports.ready = false
         this.EconomyError = EconomyError
         typeof this.options.errorHandler == 'object' ? this.options.errorHandler : this.options.errorHandler = {}
         this.options.errorHandler.handleErrors == undefined ? this.options.errorHandler.handleErrors = true : this.options.errorHandler?.handleErrors
@@ -1043,8 +1058,6 @@ module.exports = class Economy {
                 if (Number(process.version.split('.')[0].slice(1)) < 14) return reject(new EconomyError(this.errors.oldNodeVersion + process.version))
                 if (this.errored) return
                 if (this.ready) return
-                module.exports.emit = this.emit
-                module.exports.options = this.options
                 this.options.storagePath = this.options.storagePath || './storage.json'
                 if (!this.options.storagePath.endsWith('json') && !this.options.storagePath.endsWith('json/')) return reject(new EconomyError(this.errors.invalidStorage))
                 typeof this.options.errorHandler == 'object' ? this.options.errorHandler : this.options.errorHandler = {}
@@ -1159,8 +1172,19 @@ module.exports = class Economy {
                     }, this.options.updateCountdown)
                     this.interval = interval
                 }
-                this.ready = true
+                module.exports.emit = this.emit
+                module.exports.options = this.options
+                module.exports.errors = this.errors
+                module.exports.shop = this.shop
+                module.exports.bank = this.bank
+                module.exports.getDailyCooldown = this.getDailyCooldown
+                module.exports.getWorkCooldown = this.getWorkCooldown
+                module.exports.getWeeklyCooldown = this.getWeeklyCooldown
+                module.exports.fetch = this.balance.fetch
+                module.exports.all = this.all
                 module.exports.ready = true
+                this.ready = true
+                this.emit('ready', true)
                 return resolve(true)
             } catch (err) {
                 this.errored = true
