@@ -477,14 +477,40 @@ The test will look like this:
 <ul>
 <li><b>Fixed bugs.</b></li>
 <li><b>Code optimization.</b></li>
+<li><b>Fixed typos.</b></li>
 <li><b>Updated typings.</b></li>
 <li><b>Updated examples.</b></li>
 <li><b>discord.js is no longer imported in the module.</b></li>
 <li><b>Added a 'ready' and 'destroy' events. <a href = "https://www.npmjs.com/package/discord-economy-super#module-events">Learn more</a>.</b></li>
 <li><b>All balance and bank methods were moved to objects. <a href = "https://www.npmjs.com/package/discord-economy-super#balance-methods">Learn more</a>.</b></li>
+
+```diff
+- eco.fetch('123', '123')
+- eco.set(10, '123', '123')
+- eco.add(10, '123', '123')
+- eco.subtract(10, '123', '123')
+- eco.leaderboard('123')
+
++ eco.balance.fetch('123', '123')
++ eco.balance.set(10, '123', '123')
++ eco.balance.add(10, '123', '123')
++ eco.balance.subtract(10, '123', '123')
++ eco.balance.leaderboard('123')
+
+- eco.bankFetch('123', '123')
+- eco.bankSet(10, '123', '123')
+- eco.bankAdd(10, '123', '123')
+- eco.bankSubtract(10, '123', '123')
+- eco.bankLeaderboard('123')
+
++ eco.bank.fetch('123', '123')
++ eco.bank.set(10, '123', '123')
++ eco.bank.add(10, '123', '123')
++ eco.bank.subtract(10, '123', '123')
++ eco.bank.leaderboard('123')
+```
 <li><b>'Economy.balance.leaderboard()' and 'Economy.bank.leaderboard()' methods arrays are now have an 'index' property in object.</b></li>
 </ul>
-
 ## Useful Links
 <ul>
 <li><b><a href = "https://www.npmjs.com/package/discord-economy-super">NPM</a></b></li>
