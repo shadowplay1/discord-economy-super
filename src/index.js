@@ -992,7 +992,7 @@ module.exports = class Economy {
         this.options = {}
         this.ready = false
         module.exports.ready = false
-        this.emit('destroy', true)
+        this.emit('destroy')
         return this
     }
     /**
@@ -1184,7 +1184,7 @@ module.exports = class Economy {
                 module.exports.all = this.all
                 module.exports.ready = true
                 this.ready = true
-                this.emit('ready', true)
+                this.emit('ready')
                 return resolve(true)
             } catch (err) {
                 this.errored = true

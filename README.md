@@ -21,6 +21,8 @@ npm i discord-economy-super
   <li><b><a href="https://www.npmjs.com/package/discord-economy-super#module-properties">Module Properties</a></b></li>
   <li><b><a href="https://www.npmjs.com/package/discord-economy-super#module-events">Module Events</a></b></li>
   <li><b><a href="https://www.npmjs.com/package/discord-economy-super#example-events-usage">Example Events Usage</a></b></li>
+  <li><b><a href="https://www.npmjs.com/package/discord-economy-super#balance-methods">Balance Methods</a></b></li>
+  <li><b><a href="https://www.npmjs.com/package/discord-economy-super#bank-methods">Bank Methods</a></b></li>
   <li><b><a href="https://www.npmjs.com/package/discord-economy-super#shop-methods">Shop Methods</a></b></li>
   <li><b><a href="https://www.npmjs.com/package/discord-economy-super#changelog">Changelog</a></b></li>
   <li><b><a href="https://www.npmjs.com/package/discord-economy-super#useful-links">Useful Links</a></b></li>
@@ -166,8 +168,8 @@ client.login('token') // https://discord.com/developers/applications
 <li><b>Economy.on('shopItemBuy')</b>: <b>Emits when someone just bought the item from the shop. (Object)</b></li>
 <li><b>Economy.on('shopItemUse')</b>: <b>Emits when someone just used the item from his inventory. (Object)</b></li>
 <br>
-<li><b>Economy.on('ready')</b>: <b>Emits when the economy instance is ready. (Boolean)</b></li>
-<li><b>Economy.on('destroy')</b>: <b>Emits when the economy instance is destroyed. (Boolean)</b></li>
+<li><b>Economy.on('ready')</b>: <b>Emits when the economy instance is ready. (Void)</b></li>
+<li><b>Economy.on('destroy')</b>: <b>Emits when the economy instance is destroyed. (Void)</b></li>
 </ul>
 
 ## Example Events Usage
@@ -483,6 +485,7 @@ The test will look like this:
 <li><b>discord.js is no longer imported in the module.</b></li>
 <li><b>Added a 'ready' and 'destroy' events. <a href = "https://www.npmjs.com/package/discord-economy-super#module-events">Learn more</a>.</b></li>
 <li><b>All balance and bank methods were moved to objects. <a href = "https://www.npmjs.com/package/discord-economy-super#balance-methods">Learn more</a>.</b></li>
+<b>Here is the difference between v1.2.4 and v1.2.5.</b>
 
 ```diff
 - eco.fetch('123', '123')
@@ -511,6 +514,13 @@ The test will look like this:
 ```
 <li><b>'Economy.balance.leaderboard()' and 'Economy.bank.leaderboard()' methods arrays are now have an 'index' property in object.</b></li>
 </ul>
+<b>1.2.6</b>
+<ul>
+<li><b>Fixed typos.</b></li>
+<li><b>Updated README.md.</b></li>
+<li><b>Now 'ready' and 'destroy' events will return nothing (Void) instead of Boolean.</b></li>
+</ul>
+
 ## Useful Links
 <ul>
 <li><b><a href = "https://www.npmjs.com/package/discord-economy-super">NPM</a></b></li>

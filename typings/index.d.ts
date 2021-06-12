@@ -370,7 +370,7 @@ declare module 'discord-economy-super' {
         constructor(message: string | Error)
     }
     namespace Economy {
-        declare const version: '1.2.5'
+        declare const version: '1.2.6'
     }
     export = Economy;
 }
@@ -599,11 +599,11 @@ interface EconomyEvents {
     /**
      * Emits when the module is ready
      */
-    ready: true,
+    ready: void,
     /**
      * Emits when the module is destroyed
      */
-    destroy: true,
+    destroy: void,
 }
 /**
  * Object that returns on 'Economy.daily()' method.
