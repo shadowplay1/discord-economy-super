@@ -370,7 +370,7 @@ declare module 'discord-economy-super' {
         constructor(message: string | Error)
     }
     namespace Economy {
-        declare const version: '1.2.6'
+        declare const version: '1.2.7'
     }
     export = Economy;
 }

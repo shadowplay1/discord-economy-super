@@ -520,6 +520,12 @@ The test will look like this:
 <li><b>Updated README.md.</b></li>
 <li><b>Now 'ready' and 'destroy' events will return nothing (Void) instead of Boolean.</b></li>
 </ul>
+<b>1.2.7</b>
+<ul>
+<li><b>Fixed typos.</b></li>
+<li><b>Fixed minor bugs.</b></li>
+<li><b>Item IDs in shop and inventory are now synced with the last element of array. It fixes the bug with similar item IDs in the shop and inventory.</b></li>
+</ul>
 
 ## Useful Links
 <ul>

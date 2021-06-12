@@ -695,7 +695,7 @@ module.exports = class Economy {
             if (role && typeof role !== 'string') throw new EconomyError(module.exports.errors.invalidTypes.addItemOptions.role + typeof role)
             let obj = JSON.parse(readFileSync(module.exports.options.storagePath))
             let shop = obj[guildID]?.shop || []
-            let id = Number(shop.length ? shop.length + 1 : 1)
+            let id = Number(shop.length ? shop[shop.length - 1].id + 1 : 1)
             const date = new Date().toLocaleString(module.exports.options.dateLocale || 'ru')
             let itemInfo = { id, itemName: String(itemName), price: Number(price), message: String(message || 'You have used this item!'), description: String(description || 'Very mysterious item.'), maxAmount: maxAmount == undefined ? null : Number(maxAmount), role: role || null, date }
             shop.push(itemInfo)
@@ -891,10 +891,10 @@ module.exports = class Economy {
             const bal = obj[guildID]?.[memberID]?.money
             writeFileSync(module.exports.options.storagePath, JSON.stringify(obj, null, '\t'))
             let inv = this.inventory(memberID, guildID)
-            const itemData = { id: inv.length ? inv.length + 1 : 1, itemName: item.itemName, price: item.price, message: item.message, description: item.description, role: item.role || null, maxAmount: item.maxAmount, maxAmount: item.maxAmount, date: new Date().toLocaleString(module.exports.options.dateLocale || 'ru') }
+            const itemData = { id: inv.length ? inv[inv.length - 1].id + 1 : 1, itemName: item.itemName, price: item.price, message: item.message, description: item.description, role: item.role || null, maxAmount: item.maxAmount, maxAmount: item.maxAmount, date: new Date().toLocaleString(module.exports.options.dateLocale || 'ru') }
             inv.push(itemData)
             let history = data?.history || []
-            history.push({ id: history.length ? history.length + 1 : 1, memberID, guildID, itemName: item.itemName, price: item.price, role: item.role || null, maxAmount: item.maxAmount, date: new Date().toLocaleString(module.exports.options.dateLocale || 'ru') })
+            history.push({ id: history.length ? history[history.length - 1].id + 1 : 1, memberID, guildID, itemName: item.itemName, price: item.price, role: item.role || null, maxAmount: item.maxAmount, date: new Date().toLocaleString(module.exports.options.dateLocale || 'ru') })
             obj[guildID][memberID] = {
                 dailyCooldown: data?.dailyCooldown || null,
                 workCooldown: data?.workCooldown || null,
