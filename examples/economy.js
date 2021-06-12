@@ -64,17 +64,17 @@ bot.on('message', async message => {
     }
     if (message.content.startsWith('+daily')) {
         const daily = eco.daily(message.author.id, message.guild.id)
-        if (!daily.status) return message.channel.send(`You have already claimed your daily reward! Time left until next claim: **${daily.value.days}** days, **${daily.value.hours}** hours, **${daily.value.minutes}** minutes, **${daily.value.seconds}** seconds and **${daily.value.milliseconds}** milliseconds.`)
+        if (!daily.status) return message.channel.send(`You have already claimed your daily reward! Time left until next claim: **${daily.value.hours}** hours, **${daily.value.minutes}** minutes, **${daily.value.seconds}** seconds.`)
         message.channel.send(`You have received **${daily.reward}** daily coins!`)
     }
     if (message.content.startsWith('+work')) {
         let work = eco.work(message.author.id, message.guild.id)
-        if (!work.status) return message.channel.send(`You have already worked! Time left until next work: **${work.value.days}** days, **${work.value.hours}** hours, **${work.value.minutes}** minutes, **${work.value.seconds}** seconds and **${work.value.milliseconds}** milliseconds.`)
-        message.channel.send(`You worked hard and earned **${work.pretty}** coins!`)
+        if (!work.status) return message.channel.send(`You have already worked! Time left until next work: **${work.value.minutes}** minutes, **${work.value.seconds}** seconds.`)
+        message.channel.send(`You worked hard and earned **${work.reward}** coins!`)
     }
     if (message.content.startsWith('+weekly')) {
         let weekly = eco.weekly(message.author.id, message.guild.id)
-        if (!weekly.status) return message.channel.send(`You have already claimed your weekly reward! Time left until next claim: **${weekly.value.days}** days, **${weekly.value.hours}** hours, **${weekly.value.minutes}** minutes, **${weekly.value.seconds}** seconds and **${weekly.value.milliseconds}** milliseconds.`)
+        if (!weekly.status) return message.channel.send(`You have already claimed your weekly reward! Time left until next claim: **${weekly.value.days}** days, **${weekly.value.hours}** hours, **${weekly.value.minutes}** minutes, **${weekly.value.seconds}** seconds.`)
         message.channel.send(`You have received **${weekly.reward}** weekly coins!`)
     }
     if (message.content.startsWith('+lb') || message.content.startsWith('+leaderboard')) {
