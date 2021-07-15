@@ -13,8 +13,8 @@ const eco = new Economy({
     dailyAmount: 100,
     workAmount: [10, 50],
     weeklyAmount: 1000,
-    dailyCooldown: 30000,
-    workCooldown: 15000,
+    dailyCooldown: 60000 * 60 * 24,
+    workCooldown: 60000 * 60,
     weeklyCooldown: 60000 * 60 * 24 * 7,
     dateLocale: 'ru',
     updater: {
@@ -32,21 +32,21 @@ bot.on('ready', () => {
     bot.user.setActivity('Test Bot!', { type: 'STREAMING', url: 'https://twitch.tv/twitch' })
 })
 bot.on('message', async message => {
-    let args = message.content.slice(1).trim().split(' ')
+    const args = message.content.slice(1).trim().split(' ').slice(1)
     if (message.content.startsWith('+help')) return message.channel.send('**__Bot Commands:__**\n+help\n+balance\n+daily\n+weekly\n+work\n+lb (+leaderboard)\n+shop\n`+shop_add`\n`+shop_remove`\n`+shop_buy`\n`+shop_search`\n`+shop_clear`\n`+shop_inventory`\n`+shop_use_item`\n`+shop_clear_inventory`\n`+shop_history`\n`+shop_clear_history`')
     if (message.content.startsWith('+daily')) {
-        const daily = eco.daily(message.author.id, message.guild.id)
-        if (!daily.status) return message.channel.send(`You have already claimed your daily reward! Time left until next claim: **${daily.value.days}** days, **${daily.value.hours}** hours, **${daily.value.minutes}** minutes, **${daily.value.seconds}** seconds and **${daily.value.milliseconds}** milliseconds.`)
+        const daily = eco.rewards.daily(message.author.id, message.guild.id)
+        if (!daily.status) return message.channel.send(`You have already claimed your daily reward! Time left until next claim: **${daily.value.days}** days, **${daily.value.hours}** hours, **${daily.value.minutes}** minutes and **${daily.value.seconds}** seconds.`)
         message.channel.send(`You have received **${daily.reward}** daily coins!`)
     }
     if (message.content.startsWith('+work')) {
-        let work = eco.work(message.author.id, message.guild.id)
-        if (!work.status) return message.channel.send(`You have already worked! Time left until next work: **${work.value.days}** days, **${work.value.hours}** hours, **${work.value.minutes}** minutes, **${work.value.seconds}** seconds and **${work.value.milliseconds}** milliseconds.`)
+        let work = eco.rewards.work(message.author.id, message.guild.id)
+        if (!work.status) return message.channel.send(`You have already worked! Time left until next work: **${work.value.days}** days, **${work.value.hours}** hours, **${work.value.minutes}** minutes and **${work.value.seconds}** seconds.`)
         message.channel.send(`You worked hard and earned **${work.pretty}** coins!`)
     }
     if (message.content.startsWith('+weekly')) {
-        let weekly = eco.weekly(message.author.id, message.guild.id)
-        if (!weekly.status) return message.channel.send(`You have already claimed your weekly reward! Time left until next claim: **${weekly.value.days}** days, **${weekly.value.hours}** hours, **${weekly.value.minutes}** minutes, **${weekly.value.seconds}** seconds and **${weekly.value.milliseconds}** milliseconds.`)
+        let weekly = eco.rewards.weekly(message.author.id, message.guild.id)
+        if (!weekly.status) return message.channel.send(`You have already claimed your weekly reward! Time left until next claim: **${weekly.value.days}** days, **${weekly.value.hours}** hours, **${weekly.value.minutes}** minutes and **${weekly.value.seconds}** seconds.`)
         message.channel.send(`You have received **${weekly.reward}** weekly coins!`)
     }
     if (message.content.startsWith('+lb') || message.content.startsWith('+leaderboard')) {
@@ -55,14 +55,17 @@ bot.on('message', async message => {
         message.channel.send(`Money Leaderboard for **${message.guild.name}**\n-----------------------------------\n` + lb.map((x, i) => `${i + 1}. <@${x.userID}> - ${x.money} coins`).join('\n'))
     }
     if (message.content.startsWith('+balance')) {
-        let member = message.mentions.members.first()
-        let balance = eco.balance.fetch(member?.user?.id || message.author.id, message.guild.id)
-        message.channel.send(`**${member?.user?.username || message.author.username}**'s Balance: ${balance} coins.`)
+        let member = message.guild.member(message.mentions.members.first() || message.author)
+        
+        let balance = eco.balance.fetch(member.id, message.guild.id)
+        let bank = eco.bank.fetch(member.user.id, message.guild.id)
+        
+        message.channel.send(`**${member.user.username}**'s Balance:\nCash: **${balance}** coins.\nBank: **${bank}** coins.`)
     }
-    if (message.content.startsWith('+shop')) {
+    if (message.content.startsWith('+shop') && !message.content.includes('_')) {
         const shop = eco.shop.list(message.guild.id);
         if (!shop.length) return message.channel.send(`No items in the shop!`)
-        message.channel.send(shop.map(x => `ID: ${x.id} - **${x.itemName}** (${x.price} coins), description: ${x.description}, max amount in inventory: ${x.maxAmount}`).join('\n'))
+        message.channel.send(shop.map(item => `ID: **${item.id}** - **${item.itemName}** (**${item.price}** coins), description: **${item.description}**, max amount in inventory: **${item.maxAmount || Infinity}**. Role: ${item.role || '**This item don\'t give you a role.**'}`).join('\n'))
     }
     if (message.content.startsWith('+shop_add')) {
         if (!args[0]) return message.channel.send('Specify an item name.');
@@ -92,16 +95,15 @@ bot.on('message', async message => {
         if (item.price > balance) return message.channel.send(`You don't have enough money (${balance} coins) to buy this item for ${item.price} coins!`)
         const purchase = eco.shop.buy(args[0], message.author.id, message.guild.id);
         if (purchase == 'max') return message.channel.send(`You cannot have more than **${item.maxAmount}** of item "**${item.itemName}**".`)
-        if (err.message.includes('You cannot')) return message.channel.send(`You cannot have more than **${item.maxAmount}** of item "**${item.itemName}**".`)
         return message.channel.send(`You have received item "**${item.itemName}**" for **${item.price}** coins!`);
     }
     if (message.content.startsWith('+shop_search')) {
         if (!args[0]) return message.channel.send('Specify an item ID or name.')
         const item = eco.shop.searchItem(args[0], message.guild.id);
         if (!item) return message.channel.send(`Cannot find item ${args[0]}.`);
-        return message.channel.send(`Item info:\nID: ${item.id}\nName: ${item.itemName}\nPrice: ${item.price} coins\nDesciption: ${item.description}\nMessage on use: ${item.message}\nMax amount in inventory: ${x.maxAmount}`)
+        return message.channel.send(`Item info:\nID: **${item.id}**\nName: **${item.itemName}**\nPrice: **${item.price}** coins\nDesciption: **${item.description}**\nMessage on use: **${item.message}**\nMax amount in inventory: **${item.maxAmount || Infinity}**. Role: ${item.role || '**This item don\'t give you a role.**'}`)
     }
-    if (message.content.startsWith('+shop_clear')) {
+    if (message.content.startsWith('+shop_clear') && !message.content.includes('history') && !message.content.includes('shop_clear_inventory')) {
         eco.shop.clear(message.guild.id)
         return message.channel.send('Shop was cleared successfully!')
     }
@@ -126,7 +128,8 @@ bot.on('message', async message => {
         return message.channel.send(history.map(x => `ID: ${x.id}: ${x.itemName} - ${x.price} coins (${x.date})`).join('\n'))
     }
     if (message.content.startsWith('+shop_clear_history')) {
-        eco.shop.clearHistory(message.author.id, message.guild.id)
+        const cleared = eco.shop.clearHistory(message.author.id, message.guild.id)
+        if (!cleared) return message.channel.send('Couldn\'t clear your purchases history: Your history is already empty!')
         return message.channel.send('Your purchases history was successfully cleared!')
     }
 })

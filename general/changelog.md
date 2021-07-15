@@ -5,7 +5,7 @@
 
 <b>Discord Economy Super</b> - Easy and customizable economy framework for your [Discord Bot](https://discord.js.org/#/).
 
-## Changelog
+## ⏰ | Changelog
 <b>1.0.1</b>
 <ul>
   <li><b>The first version of the module: added a basic methods: 'Economy.fetch()', 'Economy.set()', 'Economy.add()', 'Economy.subtract()', 'Economy.daily()', 'Economy.work()', 'Economy.getDailyCooldown()', 'Economy.getWorkCooldown()', 'Economy.all()' and 'Economy.leaderboard()'. Also added an EconomyError class, but you couldn't use it yourself.</b></li>
@@ -71,10 +71,10 @@
 <li><b>Now every balance and bank-balance event object is including 'type' and 'balance' properties. The first property is type of the operation ('set', 'add', 'subtract', 'bankSet', 'bankAdd', 'bankSubtract') and the second is user's new balance after the operation was completed successfully.</b></li>
 <li><b>Now you can manually check the module updates using the new 'Economy.checkUpdates()' method.</b></li>
 <li><b>Added an additional 'Economy.ready' and 'Economy.errored' properties to check the module state.</b></li>
-<li><b>Now you can add a role to users on your Discord server. Click <a href="https://www.npmjs.com/package/discord-economy-super#shop-methods">here</a> for more info.</b></li>
+<li><b>Now you can add a role to users on your Discord server. Click <a href="https://des-docs.tk/#/docs/main/stable/class/ShopManager">here</a> for more info.</b></li>
 <li><b>Added a new 'shopItemBuy' and 'shopItemUse' events.</b></li>
 <li><b>Now if user try to buy an item when he reached the max amount of item in his inventory, the method will return a 'max' string.</b></li>
-<li><b>Now this module has a Support Server. Click <b><a href = "https://discord.gg/afUTRzfb">here</a></b> to join!</b></li>
+<li><b>Now this module has a Support Server. Click <b><a href = "https://discord.gg/4pWKq8vUnb">here</a></b> to join!</b></li>
 </ul>
 <b>1.1.6</b>
 <ul>
@@ -226,21 +226,35 @@ The test will look like this:
 <ul>
 <li><b>Fixed typos.</b></li>
 <li><b>Fixed minor bugs.</b></li>
+<li><b>Updated README.md.</b></li>
 <li><b>Now this module has a <a href="https://des-docs.tk">documentation website</a>!</b></li>
-<li><b>Added an 'Economy.docs' property that contains a link to the docs website.</b></li>
+<li><b>Added an 'Economy.docs' property that contains a link to the documentation website.</b></li>
+<li><b>I think this is the last version of this module. Next versions would be only bugfixes or people's ideas. Thank you for using this module!</b></li>
+</ul>
+<b>1.3.2</b>
+<ul>
+<li><b>Fixed typos.</b></li>
+<li><b>Fixed bugs.</b></li>
+<li><b>Fixed the expired link to the <a href = "https://discord.gg/4pWKq8vUnb">Support Server</a>.</b></li>
+<li><b>Updated README.md.</b></li>
+<li><b>Updated documentation.</b></li>
+<li><b>Added a bank example in module files.</b></li>
+<li><b>Added more examples on <a href="https://des-docs.tk">documentation website</a>.</b></li>
+<li><b>The entire module structure was rewritten on Managers.</b></li>
+<li><b>Added a new Database Manager that allows you to interact with module's storage file.</b></li>
 </ul>
 
-## Useful Links
+## ❗ | Useful Links
 <ul>
 <li><b><a href = "https://www.npmjs.com/package/discord-economy-super">NPM</a></b></li>
 <li><b><a href = "https://github.com/shadowplay1/discord-economy-super">Github</a></b></li>
 <li><b><a href = "https://github.com/shadowplay1/discord-economy-super/tree/main/examples">Examples</a></b></li>
-<li><b><a href = "https://discord.gg/afUTRzfb">Discord Server</a></b></li>
+<li><b><a href = "https://discord.gg/4pWKq8vUnb">Discord Server</a></b></li>
 </ul>
 <b>If you found a bug, please send it in Discord to ShadowPlay#9706.</b>
 <br>
-<b>If you have any questions or need help, join the <a href = "https://discord.gg/afUTRzfb">Support Server</a>.</b>
+<b>If you have any questions or need help, join the <a href = "https://discord.gg/4pWKq8vUnb">Support Server</a>.</b>
 <br>
 <b>Module Created by ShadowPlay.</b>
 
-# Thanks for using Discord Economy Super ♥
+# ❤️ Thanks for using Discord Economy Super ❤️
