@@ -1,3 +1,8 @@
+// I'm do sorry for this "parser". 
+// I hope you won't kill me bc of this :)
+// All module code including this 
+// will be rewritten in the next update.
+
 const UtilsManager = require('../managers/UtilsManager')
 /**
  * Dot parser class.
