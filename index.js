@@ -9,19 +9,32 @@ https://www.npmjs.com/package/discord-economy-super
 Please, report any bug if you found it. I really appreciate it.
 Update 1.1.5 is the biggest update in module's history. I put much effort and time to code it. I really hope you will like it <3
 If you have any questions or need help, join the Support server:
-https://discord.gg/afUTRzfb
+https://discord.gg/4pWKq8vUnb
 Thank you for using for using Discord Economy Super <3
 */
 
 // VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
+
 module.exports = require('./src/index')
+
+
+/**
+* Module version.
+*/
 module.exports.version = require('./package.json').version
+
+
+/**
+* Link to the module's documentation website.
+*/
+module.exports.docs = 'https://des-docs.tk'
+
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ////////////////////////////////////////////////////////////
 /*
 --Contacts--
 Discord: ShadowPlay#9706
-Discord Server: https://discord.gg/afUTRzfb
+Discord Server: https://discord.gg/4pWKq8vUnb
 */
 ////////////////////////////////////////////////////////////

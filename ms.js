@@ -1,7 +1,6 @@
 /**
  * Helpers.
  */
-
 var s = 1000;
 var m = s * 60;
 var h = m * 60;

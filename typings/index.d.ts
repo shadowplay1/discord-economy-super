@@ -1,9 +1,8 @@
 declare module 'discord-economy-super' {
-    import { EventEmitter } from 'events';
     /**
      * The Economy class.
      */
-    class Economy extends EventEmitter {
+    class Economy extends Emitter {
         /**
          * Module version.
          */
@@ -13,17 +12,33 @@ declare module 'discord-economy-super' {
          */
         public ready: boolean;
         /**
-         * Balance methods object.
+         * Balance manager methods object.
          */
-        public balance: Balance
+        public balance: BalanceManager
         /**
-         * Bank balance methods object.
+         * Bank manager methods object.
          */
-        public bank: Bank
+        public bank: BankManager
         /**
-        * An object with methods to create a shop on your server.
+        * Shop manager methods object.
         */
-        public shop: Shop
+        public shop: ShopManager
+        /**
+         * Reward manager methods object.
+         */
+        public rewards: RewardManager
+        /**
+        * Cooldown manager methods object.
+        */
+        public cooldowns: CooldownManager
+        /**
+         * Database manager methods object.
+         */
+        public database: DatabaseManager
+        /**
+         * Utils manager methods object.
+         */
+        public utils: UtilsManager
         /**
          * Economy errored status.
          */
@@ -41,6 +56,10 @@ declare module 'discord-economy-super' {
          */
         public errors: ErrorList
         /**
+         * Link to the module's documentation website.
+         */
+        public docs: 'https://des-docs.tk'
+        /**
          * 'EconomyError' Error instance.
          */
         public EconomyError: EconomyError
@@ -49,100 +68,6 @@ declare module 'discord-economy-super' {
          * @param {Object} options Constructor options object.
          */
         constructor(options?: EconomyOptions)
-        /**
-        * Adds a daily reward on user's balance
-        * @param {String} memberID Member ID
-        * @param {String} guildID Guild ID
-        * @param {string} reason The reason why the money was added. Default: 'claimed the daily reward'
-        * @returns Daily money amount or time before next claim
-        */
-        daily(memberID: string, guildID: string, reason?: string): DailyObject
-        /**
-        * Adds a work reward on user's balance
-        * @param {String} memberID Member ID
-        * @param {String} guildID Guild ID
-        * @param {string} reason The reason why the money was added. Default: 'claimed the work reward'
-        * @returns Work money amount or time before next claim
-        */
-        work(memberID: string, guildID: string, reason?: string): WorkObject
-        /**
-        * Adds a weekly reward on user's balance
-        * @param {String} memberID Member ID
-        * @param {String} guildID Guild ID
-        * @param {string} reason The reason why the money was added. Default: 'claimed the weekly reward'
-        * @returns Weekly money amount or time before next claim
-        */
-        weekly(memberID: string, guildID: string, reason?: string): WeeklyObject
-        /**
-        * Clears user's daily cooldown
-        * @param {String} memberID Member ID
-        * @param {String} guildID Guild ID
-        * @returns {Boolean} If cleared: true; else: false
-        */
-        clearDailyCooldown(memberID: String, guildID: String): Boolean
-        /**
-        * Clears user's work cooldown
-        * @param {String} memberID Member ID
-        * @param {String} guildID Guild ID
-        * @returns {Boolean} If cleared: true; else: false
-        */
-        clearWorkCooldown(memberID: String, guildID: String): Boolean
-        /**
-        * Clears user's weekly cooldown
-        * @param {String} memberID Member ID
-        * @param {String} guildID Guild ID
-        * @returns {Boolean} If cleared: true; else: false
-        */
-        clearWeeklyCooldown(memberID: String, guildID: String): Boolean
-        /**
-        * Gets user's daily cooldown
-        * @param {String} memberID Member ID
-        * @param {String} guildID Guild ID
-        * @returns Cooldown end timestamp
-        */
-        getDailyCooldown(memberID: string, guildID: string): Number;
-        /**
-        * Gets user's work cooldown
-        * @param {String} memberID Member ID
-        * @param {String} guildID Guild ID
-        * @returns Cooldown end timestamp
-        */
-        getWorkCooldown(memberID: string, guildID: string): Number;
-        /**
-        * Gets user's weekly cooldown
-        * @param {String} memberID Member ID
-        * @param {String} guildID Guild ID
-        * @returns Cooldown end timestamp
-        */
-        getWeeklyCooldown(memberID: string, guildID: string): Number;
-        /**
-        * Fetches the entire database.
-        * @returns Database contents
-        */
-        all(): object;
-        /**
-        * Clears the storage file.
-        * @returns {Boolean} If cleared successfully: true; else: false
-        */
-        clearStorage(): boolean
-        /**
-        * Fully removes the guild from database.
-        * @param {String} guildID Guild ID
-        * @returns {Boolean} If cleared successfully: true; else: false
-        */
-        removeGuild(guildID: string): boolean
-        /**
-        * Removes the user from database.
-        * @param {String} memberID Member ID
-        * @param {String} guildID Guild ID
-        * @returns {Boolean} If cleared successfully: true; else: false
-        */
-        removeUser(memberID: string, guildID: string): boolean
-        /**
-         * This method will show is the module updated, latest version and installed version. [Promise: Object]
-         * @returns If started successfully: true; else: Error object.
-         */
-        checkUpdates(): Promise<VersionData>;
         /**
          * Kills the Economy instance.
          * @returns {this} Economy instance.
@@ -153,26 +78,22 @@ declare module 'discord-economy-super' {
          * @returns If started successfully: true; else: Error instance.
          */
         init(): Promise<true | Error>
-        on<K extends keyof EconomyEvents>(
-            event: K,
-            listener: (...args: EconomyEvents[K][]) => void
-        ): this;
-
-        once<K extends keyof EconomyEvents>(
-            event: K,
-            listener: (...args: EconomyEvents[K][]) => void
-        ): this;
-
+        on<K extends keyof EconomyEvents>(event: K, listener: (...args: EconomyEvents[K][]) => void): this;
+        once<K extends keyof EconomyEvents>(event: K, listener: (...args: EconomyEvents[K][]) => void): this;
         emit<K extends keyof EconomyEvents>(event: K, ...args: EconomyEvents[K][]): boolean;
-        /**
-         * Initializates the module. Please note: you don't need to use this method, it already starts in constructor.
-         * @returns If started successfully: true; else: Error instance.
-         */
+    }
+    /**
+    * Simple Economy event emitter with only important emitter methods.
+    */
+    class Emitter {
+        on(event: String, fn: Function): void
+        once(event: String, fn: Function): void
+        emit(event: String, data: any): void
     }
     /**
     * Balance methods object.
     */
-    interface Balance {
+    class BalanceManager {
         /**
         * Fetches the user's balance.
         * @param {String} memberID Member ID
@@ -194,7 +115,7 @@ declare module 'discord-economy-super' {
         * @param {Number} amount Amount of money that you want to add
         * @param {String} memberID Member ID
         * @param {String} guildID Guild ID
-        * @param {string} reason The reason why you add the money
+        * @param {String} reason The reason why you add the money
         * @returns Money amount
         */
         add(amount: number, memberID: string, guildID: string, reason?: string): Number;
@@ -203,7 +124,7 @@ declare module 'discord-economy-super' {
         * @param {Number} amount Amount of money that you want to subtract
         * @param {String} memberID Member ID
         * @param {String} guildID Guild ID
-        * @param {string} reason The reason why you subtract the money
+        * @param {String} reason The reason why you subtract the money
         * @returns Money amount
         */
         subtract(amount: number, memberID: string, guildID: string, reason?: string): Number;
@@ -217,7 +138,7 @@ declare module 'discord-economy-super' {
     /**
      * Bank balance methods object.
      */
-    interface Bank {
+    class BankManager {
         /**
         * Fetches the user's bank balance.
         * @param {String} memberID Member ID
@@ -230,7 +151,7 @@ declare module 'discord-economy-super' {
         * @param {Number} amount Amount of money that you want to set
         * @param {String} memberID Member ID
         * @param {String} guildID Guild ID
-        * @param {string} reason The reason why you set the money
+        * @param {String} reason The reason why you set the money
         * @returns Money amount
         */
         set(amount: number, memberID: string, guildID: string, reason?: string): Number;
@@ -239,7 +160,7 @@ declare module 'discord-economy-super' {
         * @param {Number} amount Amount of money that you want to add
         * @param {String} memberID Member ID
         * @param {String} guildID Guild ID
-        * @param {string} reason The reason why you add the money
+        * @param {String} reason The reason why you add the money
         * @returns Money amount
         */
         add(amount: number, memberID: string, guildID: string, reason?: string): Number;
@@ -248,7 +169,7 @@ declare module 'discord-economy-super' {
         * @param {Number} amount Amount of money that you want to subtract
         * @param {String} memberID Member ID
         * @param {String} guildID Guild ID
-        * @param {string} reason The reason why you subtract the money
+        * @param {String} reason The reason why you subtract the money
         * @returns Money amount
         */
         subtract(amount: number, memberID: string, guildID: string, reason?: string): Number;
@@ -262,7 +183,7 @@ declare module 'discord-economy-super' {
     /**
     * An object with methods to create a shop on your server.
     */
-    interface Shop {
+    class ShopManager {
         /**
          * Creates an item in shop.
          * @param {Object} options Options object with item info.
@@ -306,7 +227,7 @@ declare module 'discord-economy-super' {
          * @param {Number | String} itemID Item ID or name
          * @param {String} memberID Member ID
          * @param {String} guildID Guild ID
-         * @param {string} reason The reason why the money was added. Default: 'received the item from the shop'
+         * @param {String} reason The reason why the money was added. Default: 'received the item from the shop'
          * @returns {String | Boolean} If item bought successfully: true; if item not found: false; if user reached the item's max amount: 'max'
          */
         buy(itemID: string, memberID: string, guildID: string, reason?: 'received the item from the shop'): Boolean | 'max';
@@ -358,6 +279,152 @@ declare module 'discord-economy-super' {
          */
         history(memberID: string, guildID: string): Array<PurchasesHistory>;
     }
+    /**
+     * Reward manager methods object.
+     */
+    class RewardManager {
+        /**
+        * Adds a daily reward on user's balance
+        * @param {String} memberID Member ID
+        * @param {String} guildID Guild ID
+        * @param {String} reason The reason why the money was added. Default: 'claimed the daily reward'
+        * @returns Daily money amount or time before next claim
+        */
+        daily(memberID: string, guildID: string, reason?: string): DailyObject
+        /**
+        * Adds a work reward on user's balance
+        * @param {String} memberID Member ID
+        * @param {String} guildID Guild ID
+        * @param {String} reason The reason why the money was added. Default: 'claimed the work reward'
+        * @returns Work money amount or time before next claim
+        */
+        work(memberID: string, guildID: string, reason?: string): WorkObject
+        /**
+        * Adds a weekly reward on user's balance
+        * @param {String} memberID Member ID
+        * @param {String} guildID Guild ID
+        * @param {String} reason The reason why the money was added. Default: 'claimed the weekly reward'
+        * @returns Weekly money amount or time before next claim
+        */
+        weekly(memberID: string, guildID: string, reason?: string): WeeklyObject
+    }
+    /**
+     * Cooldown manager methods object.
+     */
+    class CooldownManager {
+        /**
+        * Clears user's daily cooldown
+        * @param {String} memberID Member ID
+        * @param {String} guildID Guild ID
+        * @returns {Boolean} If cleared: true; else: false
+        */
+        clearDailyCooldown(memberID: String, guildID: String): Boolean
+        /**
+        * Clears user's work cooldown
+        * @param {String} memberID Member ID
+        * @param {String} guildID Guild ID
+        * @returns {Boolean} If cleared: true; else: false
+        */
+        clearWorkCooldown(memberID: String, guildID: String): Boolean
+        /**
+        * Clears user's weekly cooldown
+        * @param {String} memberID Member ID
+        * @param {String} guildID Guild ID
+        * @returns {Boolean} If cleared: true; else: false
+        */
+        clearWeeklyCooldown(memberID: String, guildID: String): Boolean
+        /**
+        * Gets user's daily cooldown
+        * @param {String} memberID Member ID
+        * @param {String} guildID Guild ID
+        * @returns Cooldown end timestamp
+        */
+        getDailyCooldown(memberID: string, guildID: string): Number;
+        /**
+        * Gets user's work cooldown
+        * @param {String} memberID Member ID
+        * @param {String} guildID Guild ID
+        * @returns Cooldown end timestamp
+        */
+        getWorkCooldown(memberID: string, guildID: string): Number;
+        /**
+        * Gets user's weekly cooldown
+        * @param {String} memberID Member ID
+        * @param {String} guildID Guild ID
+        * @returns Cooldown end timestamp
+        */
+        getWeeklyCooldown(memberID: string, guildID: string): Number;
+    }
+    /**
+     * Database manager methods object.
+     */
+    class DatabaseManager {
+        /**
+        * Gets a list of keys in database.
+        * @returns An array with all keys in database or 'null' if nothing found.
+        */
+        keysList(key: String): Array<String>
+        /**
+        * Sets data in a property in database.
+        * @param {String} key The key in database.
+        * @param {any} data Any data to set in property.
+        * @returns If set successfully: true; else: false
+        */
+        set(key: String, data: any): Boolean
+        /**
+        * Fetches the data from storage file.
+        * @param {String} key The key in database.
+        * @returns Value from the specified key or 'false' if failed to read or 'null' if nothing found.
+        */
+        fetch(key: String): any | false
+        /**
+        * Removes the property from the existing object in database.
+        * @param {String} key The key in database.
+        * @returns If cleared: true; else: false.
+        */
+        remove(key: String): Boolean
+        /**
+        * Fetches the entire database.
+        * @returns {Object} Database contents
+        */
+        all(): Object
+    }
+    /**
+     * Utils manager methods object.
+     */
+    class UtilsManager {
+        /**
+        * Fetches the entire database.
+        * @returns Database contents
+        */
+        all(): object;
+        /**
+        * Clears the storage file.
+        * @returns {Boolean} If cleared successfully: true; else: false
+        */
+        clearStorage(): boolean
+        /**
+        * Fully removes the guild from database.
+        * @param {String} guildID Guild ID
+        * @returns {Boolean} If cleared successfully: true; else: false
+        */
+        removeGuild(guildID: string): boolean
+        /**
+        * Removes the user from database.
+        * @param {String} memberID Member ID
+        * @param {String} guildID Guild ID
+        * @returns {Boolean} If cleared successfully: true; else: false
+        */
+        removeUser(memberID: string, guildID: string): boolean
+        /**
+         * This method will show is the module updated, latest version and installed version.
+         * @returns If started successfully: true; else: Error object.
+         */
+        checkUpdates(): Promise<VersionData>;
+    }
+    /**
+     * EconomyError class.
+     */
     class EconomyError extends Error {
         /**
          * Name of the error
@@ -370,7 +437,8 @@ declare module 'discord-economy-super' {
         constructor(message: string | Error)
     }
     namespace Economy {
-        declare const version: '1.2.7'
+        const version: '1.3.2'
+        const docs: 'https://des-docs.tk'
     }
     export = Economy;
 }
@@ -593,15 +661,15 @@ interface EconomyEvents {
      */
     shopItemBuy: ItemData;
     /**
-     * Emits when someone's used the item from his inventory
+     * Emits when someone's used the item from his inventory.
      */
     shopItemUse: ItemData;
     /**
-     * Emits when the module is ready
+     * Emits when the module is ready.
      */
     ready: void,
     /**
-     * Emits when the module is destroyed
+     * Emits when the module is destroyed.
      */
     destroy: void,
 }
