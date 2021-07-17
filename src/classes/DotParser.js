@@ -1,9 +1,5 @@
-// I'm do sorry for this "parser". 
-// I hope you won't kill me bc of this :)
-// All module code including this 
-// will be rewritten in the next update.
-
 const UtilsManager = require('../managers/UtilsManager')
+
 /**
  * Dot parser class.
  * @private
@@ -11,24 +7,7 @@ const UtilsManager = require('../managers/UtilsManager')
 class DotParser {
     /**
       * Economy constructor options object.
-      * @param {Object} options Constructor options object.
-      * @param {String} options.storagePath Full path to a JSON file. Default: './storage.json'.
-      * @param {Boolean} options.checkStorage Checks the if database file exists and if it has errors. Default: true
-      * @param {Number} options.dailyCooldown Cooldown for Daily Command (in ms). Default: 24 Hours (60000 * 60 * 24) ms
-      * @param {Number} options.workCooldown Cooldown for Work Command (in ms). Default: 1 Hour (60000 * 60) ms
-      * @param {Number} options.dailyAmount Amount of money for Daily Command. Default: 100.
-      * @param {Number} options.weeklyCooldown Cooldown for Weekly Command (in ms). Default: 7 Days (60000 * 60 * 24 * 7) ms
-      * @param {Number} options.weeklyAmount Amount of money for Weekly Command. Default: 1000.
-      * @param {Number | Array} options.workAmount Amount of money for Work Command. Default: [10, 50].
-      * @param {Number} options.updateCountdown Checks for if storage file exists in specified time (in ms). Default: 1000.
-      * @param {String} options.dateLocale The region (example: 'ru'; 'en') to format date and time. Default: 'ru'.
-      * @param {Object} options.updater Update Checker options object.
-      * @param {Boolean} options.updater.checkUpdates Sends the update state message in console on start. Default: true.
-      * @param {Boolean} options.updater.upToDateMessage Sends the message in console on start if module is up to date. Default: true.
-      * @param {Object} options.errorHandler Error Handler options object.
-      * @param {Boolean} options.errorHandler.handleErrors Handles all errors on startup. Default: true.
-      * @param {Number} options.errorHandler.attempts Amount of attempts to load the module. Use 'null' for infinity attempts. Default: 5.
-      * @param {Number} options.errorHandler.time Time between every attempt to start the module (in ms). Default: 3000.
+      * @param {EconomyOptions} options Constructor options object.
      */
     constructor(options) {
         /**
@@ -36,6 +15,11 @@ class DotParser {
          * @type {UtilsManager}
          */
         this.utils = new UtilsManager(options)
+        /**
+         * @private
+         * @type {?EconomyOptions}
+         */
+        this.options = options
     }
     /**
      * Parses the key and fetches the value from database.
@@ -216,7 +200,7 @@ class DotParser {
                 break
         }
 
-        return this.utils.write(options.storagePath, storageData)
+        return this.utils.write(this.options.storagePath, storageData)
     }
     /**
      * Parses the key and removes the data from database. 
@@ -339,9 +323,14 @@ class DotParser {
                 storageData[key] = null
                 break
         }
-        return this.utils.write(options.storagePath, storageData)
+        return this.utils.write(this.options.storagePath, storageData)
     }
 }
+
+/**
+ * @typedef {Object} EconomyOptions Economy Options
+ * @property {String} storagePath Full path to a JSON file. Default: './storage.json'.
+ */
 
 /**
  * DotParser class.
