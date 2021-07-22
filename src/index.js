@@ -356,7 +356,7 @@ class Economy extends Emitter {
                             console.log(colors.green + '---------------------------------------------------')
                             console.log(colors.yellow + `|            The module is ${colors.cyan}up to date!${colors.yellow}            |`)
                             console.log(colors.magenta + '|             No updates are avaible.             |')
-                            console.log(colors.blue + `|            Currnet version is ${version.packageVersion}.            |`)
+                            console.log(colors.blue + `|            Current version is ${version.packageVersion}.            |`)
                             console.log(colors.cyan + '|                     Enjoy!                      |')
                             console.log(colors.white + `|          View the full changelog here:          |`)
                             console.log(colors.red + '| https://npmjs.com/package/discord-economy-super |')
