@@ -40,7 +40,6 @@ class Economy extends Emitter {
     constructor(options) {
         super()
 
-
         /**
          * Module ready status.
          * @type {?Boolean}
