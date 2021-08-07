@@ -1,7 +1,11 @@
+/* eslint-disable no-this-before-super */
+/* eslint-disable constructor-super */
+
 /**
  * EconomyError class.
  */
 class EconomyError extends Error {
+
     /**
      * Creates an 'EconomyError' instance.
      * @param {String | Error} message Error message.
@@ -11,7 +15,9 @@ class EconomyError extends Error {
             super(message.message)
             Error.captureStackTrace(this, this.constructor)
         }
+        
         if (typeof message == 'string') super(message)
+
         /**
          * Error name.
          * @type {String}

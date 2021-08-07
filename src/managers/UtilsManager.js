@@ -1,42 +1,71 @@
-const { existsSync, writeFileSync, readFileSync } = require('fs')
+/* eslint-disable no-empty */
+
+const { readFileSync, writeFileSync } = require('fs')
+const { unset } = require('lodash')
+
 const fetch = require('node-fetch')
 
-const EconomyError = require('../classes/EconomyError')
+const FetchManager = require('./FetchManager')
+const DatabaseManager = require('./DatabaseManager')
 
+const DefaultOptions = require('../structures/DefaultOptions')
 const errors = require('../structures/Errors')
+const defaultObject = require('../structures/DefaultObject')
 
 /**
- * Utils manager methods class.
- */
+* Utils manager methods class.
+*/
 class UtilsManager {
+
     /**
-      * Economy constructor options object. There's only needed options object properties for this manager to work properly.
-      * @param {Object} options Constructor options object.
-      * @param {String} options.storagePath Full path to a JSON file. Default: './storage.json'.
+     * Economy constructor options object. There's only needed options object properties for this manager to work properly.
+     * @param {Object} options Constructor options object.
+     * @param {String} options.storagePath Full path to a JSON file. Default: './storage.json'.
      */
     constructor(options = {}) {
-        if (!options?.storagePath) options.storagePath = './storage.json'
+        
         /**
          * Economy constructor options object.
-         * @type {?Object}
+         * @type {?EconomyOptions}
+         * @private
          */
         this.options = options
 
-        if (!options?.storagePath) this.options.storagePath = DefaultOptions.storagePath
+        /**
+         * Full path to a JSON file.
+         * @private
+         * @type {String}
+        */
+        this.storagePath = options.storagePath || './storage.json'
+
+        /**
+         * Fetch manager methods object.
+         * @type {FetchManager}
+         * @private
+         */
+        this.fetcher = new FetchManager(options)
+
+        /**
+         * Database manager methods object.
+         * @type {DatabaseManager}
+         * @private
+         */
+        this.database = new DatabaseManager(options)
     }
+
     /**
      * Checks for if the module is up to date.
      * @returns {Promise<VersionData>} This method will show is the module updated, latest version and installed version.
      */
     async checkUpdates() {
         const version = require('../../package.json').version
-        const packageData = await fetch(`https://registry.npmjs.com/discord-economy-super`).then(text => text.json())
+        const packageData = await fetch('https://registry.npmjs.com/discord-economy-super').then(text => text.json())
         if (version == packageData['dist-tags'].latest) return {
             updated: true,
             installedVersion: version,
             packageVersion: packageData['dist-tags'].latest
         }
-        return {  
+        return {
             updated: false,
             installedVersion: version,
             packageVersion: packageData['dist-tags'].latest
@@ -47,9 +76,9 @@ class UtilsManager {
     * @returns {Object} Database contents
     */
     all() {
-        if (!existsSync(this.options.storagePath)) writeFileSync(this.options.storagePath, '{}')
-        return JSON.parse(readFileSync(this.options.storagePath).toString())
+        return this.fetcher.fetchAll()
     }
+
     /**
      * Writes the data to file.
      * @param {String} path File path to write.
@@ -59,33 +88,40 @@ class UtilsManager {
     write(path, data) {
         if (!path) return false
         if (!data) return false
-        const fileData = readFileSync(path, { encoding: 'utf-8' }).toString()
+
+        const fileData = readFileSync(path).toString()
         if (fileData == data) return false
-        writeFileSync(path, JSON.stringify(data, null, '\t'))
+
+        writeFileSync(this.options.storagePath, JSON.stringify(data, null, '\t'))
         return true
     }
+
     /**
      * Clears the storage file.
      * @returns {Boolean} If cleared successfully: true; else: false
      */
     clearStorage() {
-        if (readFileSync(this.options.storagePath, { encoding: 'utf-8' }) == '{}') return false
-        writeFileSync(this.options.storagePath, '{}', 'utf-8')
+        const data = this.all()
+        const stringData = String(data)
+
+        if (stringData == '{}') return false
+
+        this.write(this.options.storagePath, '{}')
         return true
     }
     /**
-     * Fully removes the guild from database.
-     * @param {String} guildID Guild ID
-     * @returns {Boolean} If cleared successfully: true; else: false
-     */
+    * Fully removes the guild from database.
+    * @param {String} guildID Guild ID
+    * @returns {Boolean} If cleared successfully: true; else: false
+    */
     removeGuild(guildID) {
-        if (typeof guildID !== 'string') throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
-        const obj = JSON.parse(readFileSync(this.options.storagePath).toString())
-        if (!obj[guildID]) return false
-        obj[guildID] = {}
-        writeFileSync(this.options.storagePath, JSON.stringify(obj, null, '\t'))
-        const content = readFileSync(this.options.storagePath).toString()
-        writeFileSync(this.options.storagePath, JSON.stringify(JSON.parse(content.replace(`"${guildID}":{},`, '')), null, '\t'))
+        const data = this.fetcher.fetchAll()
+        const guild = data[guildID]
+
+        if (!guildID) return false
+        if (!guild) return false
+
+        this.database.remove(guildID)
         return true
     }
     /**
@@ -95,22 +131,144 @@ class UtilsManager {
      * @returns {Boolean} If cleared successfully: true; else: false
      */
     removeUser(memberID, guildID) {
-        if (typeof memberID !== 'string') throw new EconomyError(errors.invalidTypes.memberID + typeof memberID)
-        if (typeof guildID !== 'string') throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
-        const obj = JSON.parse(readFileSync(this.options.storagePath).toString())
-        if (!obj[guildID]?.[memberID] || !Object.keys(obj[guildID]?.[memberID]).length) return false
-        obj[guildID][memberID] = {}
-        writeFileSync(this.options.storagePath, JSON.stringify(obj, null, '\t'))
+        const data = this.fetcher.fetchAll()
+
+        const guild = data[guildID]
+        const user = guild?.[memberID]
+
+        if (!guildID) return false
+        if (!guild) return false
+        if (!user) return false
+
+        this.database.remove(`${guildID}.${memberID}`)
         return true
+    }
+    /**
+     * Sets the default user object for the specified member.
+     * @param {String} memberID Member ID.
+     * @param {String} guildID Guild ID.
+     * @returns {Boolean} If resetted successfully: true; else: false.
+     */
+    reset(memberID, guildID) {
+        if (!guildID) return false
+        if (!memberID) return false
+
+        return this.database.set(`${guildID}.${memberID}`, defaultObject)
+    }
+
+    /**
+     * Checks the Economy options object, fixes the problems in it and returns the fixed options object.
+     * @param {CheckerOptions} options Option checker options.
+     * @returns {EconomyOptions} Fixed economy options object.
+     */
+    checkOptions(options = {}) {
+        let problems = []
+        let output = {}
+
+        const keys = Object.keys(DefaultOptions)
+        const optionKeys = Object.keys(this.options || {})
+
+        if (typeof this.options !== 'object' && !Array.isArray(this.options)) {
+            problems.push('options is not an object. Received type: ' + typeof this.options)
+            output = DefaultOptions
+        } else {
+            for (let i of keys) {
+                if (this.options[i] == undefined) {
+                    output[i] = DefaultOptions[i]
+                    if (!options.ignoreUnspecifiedOptions) problems.push(`options.${i} is not specified.`)
+                }
+                else output[i] = this.options[i]
+
+                for (let y of Object.keys(DefaultOptions[i]).filter(x => isNaN(x))) {
+                    if (this.options[i]?.[y] == undefined || output[i]?.[y] == undefined) {
+
+                        try {
+                            output[i][y] = DefaultOptions[i][y]
+                        } catch (_) { }
+
+                        if (!options.ignoreUnspecifiedOptions) problems.push(`options.${i}.${y} is not specified.`)
+                    }
+
+                    else output[i][y] = this.options[i]?.[y] || DefaultOptions[i][y]
+                }
+
+                if (typeof output[i] !== typeof DefaultOptions[i]) {
+                    if (!options.ignoreInvalidTypes) {
+                        if (i == 'workAmount') {
+                            if (typeof output[i] !== 'number' && !Array.isArray(output[i])) {
+                                problems.push(`options.${i} is not a ${i == 'workAmount' ? 'number or array' : typeof DefaultOptions[i]}. Received type: ${typeof output[i]}.`)
+                                output[i] = DefaultOptions[i]
+                            }
+
+                        } else {
+                            problems.push(`options.${i} is not a ${typeof DefaultOptions[i]}. Received type: ${typeof output[i]}.`)
+                            output[i] = DefaultOptions[i]
+                        }
+                    }
+                }
+
+                else {
+                    output[i] = this.options[i] || DefaultOptions[i]
+                }
+
+                if (i == 'workAmount' && Array.isArray(output[i]) && output[i].length > 2) {
+                    output[i] = output[i].slice(0, 2)
+                    problems.push(errors.workAmount.tooManyElements)
+                }
+
+
+                for (let y of Object.keys(DefaultOptions[i]).filter(x => isNaN(x))) {
+
+                    if (typeof output[i]?.[y] !== typeof DefaultOptions[i][y]) {
+                        if (!options.ignoreInvalidTypes) problems.push(`options.${i}.${y} is not a ${typeof DefaultOptions[i][y]}. Received type: ${typeof output[i][y]}.`)
+                        output[i][y] = DefaultOptions[i][y]
+                    }
+
+                    else output[i][y] = this.options[i]?.[y] || DefaultOptions[i][y]
+                }
+            }
+
+            for (let i of optionKeys) {
+                const defaultIndex = keys.indexOf(i)
+                const objectKeys = Object.keys(this.options[i]).filter(x => isNaN(x))
+
+                for (let y of objectKeys) {
+                    const allKeys = Object.keys(DefaultOptions[i])
+                    const index = allKeys.indexOf(y)
+
+                    if (!allKeys[index]) {
+                        problems.push(`options.${i}.${y} is an invalid option.`)
+                        unset(output, `${i}.${y}`)
+                    }
+                }
+
+                if (!keys[defaultIndex]) {
+                    unset(output, i)
+                    problems.push(`options.${i} is an invalid option.`)
+                }
+
+            }
+        }
+
+
+        if (options.sendLog) {
+            if (options.showProblems) console.log(`Checked the options: ${problems.length ?
+                `${problems.length} problems found:\n\n${problems.join('\n')}` : '0 problems found.'}`)
+
+            if (options.sendSuccessLog && !options.showProblems) console.log(`Checked the options: ${problems.length} ${problems.length == 1 ? 'problem' : 'problems'} found.`)
+        }
+        if (output == this.options) return this.options
+
+        return output
     }
 }
 
 /**
 * Module update state.
 * @typedef {Object} VersionData
-* @property {Boolean} updated Is the module updated
-* @property {String} installedVersion Installed version
-* @property {String} packageVersion Avaible version
+* @property {Boolean} updated Is the module updated.
+* @property {String} installedVersion Installed version.
+* @property {String} packageVersion Avaible version.
 */
 
 /**
