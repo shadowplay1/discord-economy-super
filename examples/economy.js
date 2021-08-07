@@ -1,3 +1,5 @@
+/* eslint-disable linebreak-style */
+
 const { Client, Intents } = require('discord.js')
 const Economy = require('discord-economy-super')
 const bot = new Client({
@@ -25,6 +27,14 @@ const eco = new Economy({
         handleErrors: true,
         attempts: 5,
         time: 3000
+    },
+    optionsChecker: {
+        ignoreInvalidTypes: false,
+        ignoreUnspecifiedOptions: false,
+        ignoreInvalidOptions: false,
+        showProblems: false,
+        sendLog: false,
+        sendSuccessLog: false
     }
 })
 bot.on('ready', () => {

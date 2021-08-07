@@ -1,3 +1,7 @@
+/* eslint-disable no-inner-declarations */
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-useless-escape */
+
 const { Client, Intents } = require('discord.js')
 const Economy = require('discord-economy-super')
 const bot = new Client({
@@ -25,6 +29,14 @@ const eco = new Economy({
         handleErrors: true,
         attempts: 5,
         time: 3000
+    },
+    optionsChecker: {
+        ignoreInvalidTypes: false,
+        ignoreUnspecifiedOptions: false,
+        ignoreInvalidOptions: false,
+        showProblems: false,
+        sendLog: false,
+        sendSuccessLog: false
     }
 })
 bot.on('ready', () => {
@@ -33,7 +45,8 @@ bot.on('ready', () => {
 })
 bot.on('message', async message => {
     const args = message.content.slice(1).trim().split(' ').slice(1)
-    if (message.content.startsWith('+help')) return message.channel.send('**__Bot Commands:__**\n+help\n+balance\n+daily\n+weekly\n+work\n+lb (+leaderboard)\n+cash\n+deposit (+dep)')
+    
+    if (message.content.startsWith('+help')) return message.channel.send('**__Bot Commands:__**\n+help\n+balance\n+daily\n+weekly\n+work\n+lb (+leaderboard)\n+blb (+bankleaderboard)\n+blb (+bankleaderboard)\n+cash\n+deposit (+dep)')
     if (message.content.startsWith('+daily')) {
         const daily = eco.rewards.daily(message.author.id, message.guild.id)
         if (!daily.status) return message.channel.send(`You have already claimed your daily reward! Time left until next claim: **${daily.value.days}** days, **${daily.value.hours}** hours, **${daily.value.minutes}** minutes and **${daily.value.seconds}** seconds.`)
@@ -54,12 +67,17 @@ bot.on('message', async message => {
         if (!lb.length) return message.channel.send('Cannot generate a leaderboard: the server database is empty.')
         message.channel.send(`Money Leaderboard for **${message.guild.name}**\n-----------------------------------\n` + lb.map((x, i) => `${i + 1}. <@${x.userID}> - ${x.money} coins`).join('\n'))
     }
+    if (message.content.startsWith('+blb') || message.content.startsWith('+bankleaderboard')) {
+        const lb = eco.bank.leaderboard(message.guild.id)
+        if (!lb.length) return message.channel.send('Cannot generate a leaderboard: the server database is empty.')
+        message.channel.send(`Bank Leaderboard for **${message.guild.name}** [**${lb.length}**]\n-----------------------------------\n` + lb.map((x, i) => `${i + 1}. <@${x.userID}> - ${x.money} coins`).join('\n'))
+    }
     if (message.content.startsWith('+balance')) {
         let member = message.guild.member(message.mentions.members.first() || message.author)
-        
+
         let balance = eco.balance.fetch(member.id, message.guild.id)
         let bank = eco.bank.fetch(member.user.id, message.guild.id)
-        
+
         message.channel.send(`**${member.user.username}**'s Balance:\nCash: **${balance}** coins.\nBank: **${bank}** coins.`)
     }
     if (message.content.startsWith('+cash')) {
@@ -69,24 +87,24 @@ bot.on('message', async message => {
         if (!amount) return message.channel.send('Specify an amount.')
         if (isNaN(amount)) return message.channel.send('Amount must be a number.')
         if (amount > balance) return message.channel.send(`You don\'t have enough money in your bank to send **${amount}** coins on your balance.`)
-        
+
         eco.balance.add(amount, message.author.id, message.guild.id)
         eco.bank.subtract(amount, message.author.id, message.guild.id)
-        
+
         message.channel.send(`Successfully sent **${amount}** on your balance!`)
     }
 
     if (message.content.startsWith('+deposit') || message.content.startsWith('+dep')) {
         const amount = args[0]
         const balance = eco.balance.fetch(message.author.id, message.guild.id)
-        
+
         if (!amount) return message.channel.send('Specify an amount.')
         if (isNaN(amount)) return message.channel.send('Amount must be a number.')
         if (amount > balance) return message.channel.send(`You don\'t have enough money on your balance to deposit **${amount}** coins.`)
-        
+
         eco.balance.subtract(amount, message.author.id, message.guild.id)
         eco.bank.add(amount, message.author.id, message.guild.id)
-        
+
         message.channel.send(`Successfully deposited **${amount}** coins!`)
     }
 })
