@@ -7,7 +7,7 @@ declare class WorkObject {
     /**
      * The status of receiving money.
      */
-    status: Boolean
+    status: boolean
 
     /**
      * If reward is already claimed: time object; else: work reward.
@@ -17,12 +17,12 @@ declare class WorkObject {
     /**
      * If reward is already claimed: formatted time in string; else: work reward.
      */
-    pretty: String | Number
+    pretty: string | number
 
     /**
      * Work reward.
      */
-    reward: Number | Array<Number>
+    reward: number | Array<number>
 }
 
 export = WorkObject

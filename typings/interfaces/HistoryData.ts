@@ -5,32 +5,32 @@ declare class HistoryData {
     /**
      * Item ID.
      */
-    id: Number
+    id: number
 
     /**
      * Member ID.
      */
-    memberID: String
+    memberID: string
 
     /**
      * Guild ID.
      */
-    guildID: String
+    guildID: string
 
     /**
      * Item name.
      */
-    itemName: String
+    itemName: string
 
     /**
      * Item price.
      */
-    price: Number
+    price: number
 
     /**
      * The message that will be returned on item use.
      */
-    message: String
+    message: string
 
     /**
      * Discord Role ID from your server that will be given to user. Requires to specify your bot client in 'Economy.shop.useItem' method.

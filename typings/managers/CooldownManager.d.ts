@@ -5,51 +5,51 @@ declare class CooldownManager {
 
    /**
    * Clears user's daily cooldown
-   * @param {String} memberID Member ID
-   * @param {String} guildID Guild ID
-   * @returns {Boolean} If cleared: true; else: false
+   * @param {string} memberID Member ID
+   * @param {string} guildID Guild ID
+   * @returns {boolean} If cleared: true; else: false
    */
-   public clearDaily(memberID: String, guildID: String): Boolean
+   public clearDaily(memberID: string, guildID: string): boolean
 
    /**
    * Clears user's work cooldown
-   * @param {String} memberID Member ID
-   * @param {String} guildID Guild ID
-   * @returns {Boolean} If cleared: true; else: false
+   * @param {string} memberID Member ID
+   * @param {string} guildID Guild ID
+   * @returns {boolean} If cleared: true; else: false
    */
-   public clearWork(memberID: String, guildID: String): Boolean
+   public clearWork(memberID: string, guildID: string): boolean
 
    /**
    * Clears user's weekly cooldown
-   * @param {String} memberID Member ID
-   * @param {String} guildID Guild ID
-   * @returns {Boolean} If cleared: true; else: false
+   * @param {string} memberID Member ID
+   * @param {string} guildID Guild ID
+   * @returns {boolean} If cleared: true; else: false
    */
-   public clearWeekly(memberID: String, guildID: String): Boolean
+   public clearWeekly(memberID: string, guildID: string): boolean
 
    /**
    * Gets user's daily cooldown
-   * @param {String} memberID Member ID
-   * @param {String} guildID Guild ID
+   * @param {string} memberID Member ID
+   * @param {string} guildID Guild ID
    * @returns Cooldown end timestamp
    */
-   public daily(memberID: string, guildID: string): Number
+   public daily(memberID: string, guildID: string): number
 
    /**
    * Gets user's work cooldown
-   * @param {String} memberID Member ID
-   * @param {String} guildID Guild ID
+   * @param {string} memberID Member ID
+   * @param {string} guildID Guild ID
    * @returns Cooldown end timestamp
    */
-   public work(memberID: string, guildID: string): Number
+   public work(memberID: string, guildID: string): number
 
    /**
    * Gets user's weekly cooldown
-   * @param {String} memberID Member ID
-   * @param {String} guildID Guild ID
+   * @param {string} memberID Member ID
+   * @param {string} guildID Guild ID
    * @returns Cooldown end timestamp
    */
-   public weekly(memberID: string, guildID: string): Number
+   public weekly(memberID: string, guildID: string): number
 }
 
 export = CooldownManager

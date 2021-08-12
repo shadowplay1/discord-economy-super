@@ -5,17 +5,17 @@ declare class LeaderboardData {
     /**
      * User's index in the leaderboard
      */
-    index: Number
+    index: number
 
     /**
      * User ID.
      */
-    userID: String
+    userID: string
 
     /**
      * User's amount of money.
      */
-    money: Number
+    money: number
 }
 
 export = LeaderboardData

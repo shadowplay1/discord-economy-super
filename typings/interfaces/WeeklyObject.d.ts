@@ -7,7 +7,7 @@ declare class WeeklyObject {
     /**
      * The status of receiving money.
      */
-    status: Boolean
+    status: boolean
 
     /**
      * If reward is already claimed: time object; else: weekly reward.
@@ -17,12 +17,12 @@ declare class WeeklyObject {
     /**
      * If reward is already claimed: formatted time in string; else: weekly reward.
      */
-    pretty: String | Number
+    pretty: string | number
 
     /**
      * Weekly reward.
      */
-    reward: Number
+    reward: number
 }
 
 export = WeeklyObject

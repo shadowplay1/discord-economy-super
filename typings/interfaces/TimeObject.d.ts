@@ -6,27 +6,27 @@ declare class TimeObject {
     /**
      * Amount of days from cooldown time.
      */
-    days: Number
+    days: number
 
     /**
      * Amount of hours from cooldown time.
      */
-    hours: Number
+    hours: number
 
     /**
      * Amount of minutes from cooldown time.
      */
-    minutes: Number
+    minutes: number
 
     /**
      * Amount of seconds from cooldown time.
      */
-    seconds: Number
+    seconds: number
     
     /**
      * Amount of milliseconds from cooldown time.
      */
-    milliseconds: Number
+    milliseconds: number
 }
 
 export = TimeObject

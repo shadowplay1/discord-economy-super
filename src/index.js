@@ -74,7 +74,7 @@ class Economy extends Emitter {
          * Constructor options object.
          * @type {?EconomyOptions}
          */
-        this.options = this.utils.checkOptions(this.options?.optionsChecker)
+        this.options = this.utils.checkOptions(this.options?.optionsChecker, options)
 
         /**
          * Database checking interval.
@@ -92,43 +92,43 @@ class Economy extends Emitter {
         * Balance methods object.
         * @type {BalanceManager}
         */
-        this.balance = new BalanceManager(this.options)
+        this.balance = null
 
         /**
         * Bank balance methods object.
         * @type {BankManager}
         */
-        this.bank = new BankManager(this.options)
+        this.bank = null
 
         /**
         * Fetch manager methods object.
         * @type {FetchManager}
         */
-        this.fetcher = new FetchManager(this.options)
+        this.fetcher = null
 
         /**
         * Database manager methods object.
         * @type {DatabaseManager}
         */
-        this.database = new DatabaseManager(this.options)
+        this.database = null
 
         /**
         * Shop manager methods object.
         * @type {ShopManager}
         */
-        this.shop = new ShopManager(this.options)
+        this.shop = null
 
         /**
         * Balance methods object.
         * @type {RewardManager}
         */
-        this.rewards = new RewardManager(this.options)
+        this.rewards = null
 
         /**
         * Bank balance methods object.
         * @type {CooldownManager}
         */
-        this.cooldowns = new CooldownManager(this.options)
+        this.cooldowns = null
 
         this.init()
     }
@@ -138,11 +138,25 @@ class Economy extends Emitter {
      * @returns {Economy} Economy instance.
      */
     kill() {
-        clearInterval(this.interval)
+        if(!this.ready) return false
 
-        this.interval = null
-        this.options = {}
+        clearInterval(this.interval)
         this.ready = false
+
+        this.EconomyError = null
+        this.interval = null
+
+        this.balance = null
+        this.bank = null
+
+        this.utils = null
+        this.fetcher = null
+        this.database = null
+
+        this.shop = null
+
+        this.rewards = null
+        this.cooldowns = null
 
         this.emit('destroy')
 
@@ -154,14 +168,10 @@ class Economy extends Emitter {
      * @returns {Promise<Boolean>} If started successfully: true; else: Error instance.
      */
     init() {
-        const options = this.utils.checkOptions(this.options?.optionsChecker)
-        //console.log('options:', options)
-        this.options = options
-
         let attempt = 0
-        let attempts = this.options.errorHandler.attempts == 0 ? Infinity : this.options.errorHandler.attempts
+        let attempts = this.options?.errorHandler?.attempts == 0 ? Infinity : this.options?.errorHandler?.attempts
 
-        const time = this.options.errorHandler.time
+        const time = this.options?.errorHandler?.time
         const retryingTime = (time / 1000).toFixed(1)
 
         const sleep = promisify(setTimeout);
@@ -179,7 +189,7 @@ class Economy extends Emitter {
             }).catch(err => resolve(err))
         })
 
-        return this.options.errorHandler?.handleErrors ? this._init().catch(async err => {
+        return this.options?.errorHandler?.handleErrors ? this._init().catch(async err => {
             if (!(err instanceof EconomyError)) this.errored = true
 
             console.log(`${colors.red}Failed to start the module:${colors.cyan}`)
@@ -220,11 +230,11 @@ class Economy extends Emitter {
      * @private
      */
     _init() {
-        const updateCountdown = this.options.updateCountdown
+        const updateCountdown = this.options?.updateCountdown
         const isReservedStorage = !this.options?.storagePath?.includes('testStorage123') && !__dirname.includes('discord-economy-super\\tests')
         const isPathReserved = !__dirname.includes('discord-economy-super\\tests') && !__dirname.includes('discord-economy-super/tests')
 
-        const isFileExist = existsSync(this.options.storagePath)
+        const isFileExist = existsSync(this.options?.storagePath)
 
         return new Promise(async (resolve, reject) => {
             try {
@@ -232,16 +242,16 @@ class Economy extends Emitter {
                 if (this.errored) return
                 if (this.ready) return
 
-                if (this.options.checkStorage == undefined ? true : this.options.checkStorage) {
-                    if (!isFileExist && isReservedStorage) writeFileSync(this.options.storagePath, '{}')
+                if (this.options?.checkStorage == undefined ? true : this.options?.checkStorage) {
+                    if (!isFileExist && isReservedStorage) writeFileSync(this.options?.storagePath, '{}')
 
                     try {
                         if (this.options?.storagePath?.includes('testStorage123') && isPathReserved) return reject(new EconomyError(errors.reservedName('testStorage123')))
-                                
+
                         if (this.options?.storagePath?.endsWith('package.json')) return reject(new EconomyError(errors.reservedName('package.json')))
                         if (this.options?.storagePath?.endsWith('package-lock.json')) return reject(new EconomyError(errors.reservedName('package-lock.json')))
 
-                        const data = readFileSync(this.options.storagePath)
+                        const data = readFileSync(this.options?.storagePath)
                         JSON.parse(data.toString())
 
                     } catch (err) {
@@ -250,7 +260,7 @@ class Economy extends Emitter {
                     }
                 }
 
-                if (this.options.updater.checkUpdates) {
+                if (this.options?.updater?.checkUpdates) {
                     const version = await this.utils.checkUpdates()
 
                     if (!version.updated) {
@@ -270,18 +280,16 @@ class Economy extends Emitter {
                         console.log('\n\n')
 
                     } else {
-                        if (this.options.updater?.upToDateMessage) {
-
+                        if (this.options?.updater?.upToDateMessage) {
 
                             console.log('\n\n')
                             console.log(colors.green + '╔══════════════════════════════════════════════════════════╗')
                             console.log(colors.green + '║ @ discord-economy-super                           - [] X ║')
                             console.log(colors.green + '║══════════════════════════════════════════════════════════║')
-                            console.log(colors.yellow + `║                  The module is ${colors.red}up of date!${colors.yellow}               ║`)
-                            console.log(colors.magenta + '║                    No updates are avaible.               ║')
+                            console.log(colors.yellow + `║                  The module is ${colors.cyan}up of date!${colors.yellow}               ║`)
+                            console.log(colors.magenta + '║                  No updates are available.               ║')
                             console.log(colors.blue + `║                  Current version is ${version.packageVersion}.               ║`)
-                            console.log(colors.cyan + '║          Run "npm i discord-economy-super@latest"        ║')
-                            console.log(colors.cyan + '║                            Enjoy!                        ║')
+                            console.log(colors.cyan + '║                           Enjoy!                         ║')
                             console.log(colors.white + '║               View the full changelog here:              ║')
                             console.log(colors.red + '║ https://des-docs.tk/#/docs/main/stable/general/changelog ║')
                             console.log(colors.green + '╚══════════════════════════════════════════════════════════╝\x1b[37m')
@@ -291,18 +299,18 @@ class Economy extends Emitter {
                     }
                 }
 
-                if (this.options.checkStorage == undefined ? true : this.options.checkStorage) {
-                    const storageExists = existsSync(this.options.storagePath)
+                if (this.options?.checkStorage == undefined ? true : this.options?.checkStorage) {
+                    const storageExists = existsSync(this.options?.storagePath)
 
                     const interval = setInterval(() => {
                         if (!storageExists) {
                             try {
                                 if (this.options?.storagePath?.includes('testStorage123') && !__dirname.includes('discord-economy-super\\tests')) throw new EconomyError(errors.reservedName('testStorage123'))
-                                
+
                                 if (this.options?.storagePath?.endsWith('package.json')) throw new EconomyError(errors.reservedName('package.json'))
                                 if (this.options?.storagePath?.endsWith('package-lock.json')) throw new EconomyError(errors.reservedName('package-lock.json'))
 
-                                writeFileSync(this.options.storagePath, '{}', 'utf-8')
+                                writeFileSync(this.options?.storagePath, '{}', 'utf-8')
                             } catch (err) {
                                 throw new EconomyError(errors.notReady)
                             }
@@ -310,9 +318,9 @@ class Economy extends Emitter {
                         }
 
                         try {
-                            if (!storageExists) writeFileSync(this.options.storagePath, '{}', 'utf-8')
+                            if (!storageExists) writeFileSync(this.options?.storagePath, '{}', 'utf-8')
 
-                            const data = readFileSync(this.options.storagePath)
+                            const data = readFileSync(this.options?.storagePath)
                             JSON.parse(data.toString())
 
                         } catch (err) {
@@ -329,8 +337,10 @@ class Economy extends Emitter {
                     this.interval = interval
                 }
 
+                this.start()
                 this.ready = true
                 this.emit('ready')
+
                 return resolve(true)
 
             } catch (err) {
@@ -338,6 +348,28 @@ class Economy extends Emitter {
                 reject(err)
             }
         })
+    }
+
+    /**
+     * Starts all the managers.
+     * @returns {Boolean} If successfully started: true.
+     * @private
+     */
+    start() {
+        this.utils = new UtilsManager(this.options)
+
+        this.balance = new BalanceManager(this.options)
+        this.bank = new BankManager(this.options)
+
+        this.fetcher = new FetchManager(this.options)
+        this.database = new DatabaseManager(this.options)
+
+        this.shop = new ShopManager(this.options)
+
+        this.rewards = new RewardManager(this.options)
+        this.cooldowns = new CooldownManager(this.options)
+
+        return true
     }
 }
 

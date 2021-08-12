@@ -9,7 +9,7 @@ declare class EconomyError extends Error {
 
     /**
     * Creates an 'EconomyError' error instance.
-    * @param {String | Error} message Error message.
+    * @param {string | Error} message Error message.
     */
     constructor(message: string | Error)
 }

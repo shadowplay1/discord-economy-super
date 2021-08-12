@@ -289,13 +289,13 @@ class ShopManager extends Emitter {
         /**
         * @type {InventoryData[]}
         */
-        const inventory = this.database.fetch(`${guildID}.${memberID}.inventory`)
+        const inventory = this.database.fetch(`${guildID}.${memberID}.inventory`) || []
 
         const inventoryItems = inventory.filter(x => x.itemName == item.itemName)
         /**
          * @type {HistoryData[]}
          */
-        const history = this.database.fetch(`${guildID}.${memberID}.history`)
+        const history = this.database.fetch(`${guildID}.${memberID}.history`) || []
 
         if (typeof itemID !== 'number' && typeof itemID !== 'string') throw new EconomyError(errors.invalidTypes.editItemArgs.itemID + typeof itemID)
         if (typeof memberID !== 'string') throw new EconomyError(errors.invalidTypes.memberID + typeof memberID)
@@ -315,6 +315,7 @@ class ShopManager extends Emitter {
             date: new Date().toLocaleString(this.options.dateLocale || 'ru')
         }
 
+        console.log(this.options)
         if (this.options.subtractOnBuy) this.balance.subtract(itemData.price, memberID, guildID, reason)
 
         this.database.push(`${guildID}.${memberID}.inventory`, itemData)

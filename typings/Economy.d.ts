@@ -19,27 +19,27 @@ declare class Economy extends Emitter {
 
     /**
      * Module ready status.
-     * @type {?Boolean}
+     * @type {?boolean}
      */
-    public ready: Boolean
+    public ready: boolean
 
     /**
      * Economy errored status.
-     * @type {?Boolean}
+     * @type {?boolean}
      */
-    public errored: Boolean
+    public errored: boolean
 
     /**
     * Module version.
-    * @type {String}
+    * @type {string}
     */
-    public version: String
+    public version: string
 
     /**
      * Link to the module's documentation website.
-     * @type {String}
+     * @type {string}
      */
-    public docs: String
+    public docs: string
 
     /**
     * Utils manager methods object.
@@ -114,9 +114,9 @@ declare class Economy extends Emitter {
 
     /**
      * Starts the module.
-     * @returns {Promise<Boolean>} If started successfully: true; else: Error instance.
+     * @returns {Promise<boolean>} If started successfully: true; else: Error instance.
     */
-    public init(): Promise<Boolean>
+    public init(): Promise<boolean>
 
     /**
      * Initializates the module.
@@ -124,6 +124,13 @@ declare class Economy extends Emitter {
      * @private
     */
     private _init(): Promise<true | Error>
+
+    /**
+     * Initializates the module.
+     * @returns {Promise<true | Error>} If started successfully: true; else: Error instance.
+     * @private
+    */
+    private start(): boolean
 }
 
 

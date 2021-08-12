@@ -7,7 +7,7 @@ declare class DailyObject {
     /**
      * The status of receiving money.
      */
-    status: Boolean
+    status: boolean
 
     /**
      * If reward is already claimed: time object; else: daily reward.
@@ -17,12 +17,12 @@ declare class DailyObject {
     /**
      * If reward is already claimed: formatted time in string; else: daily reward.
      */
-    pretty: String | Number
+    pretty: string | number
     
     /**
      * Daily reward.
      */
-    reward: Number
+    reward: number
 }
 
 export = DailyObject

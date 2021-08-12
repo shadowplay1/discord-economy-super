@@ -5,17 +5,17 @@ declare class CooldownData {
     /**
      * User's daily cooldown.
      */
-    dailyCooldown: Number
+    dailyCooldown: number
 
     /**
      * User's work cooldown.
      */
-    workCooldown: Number
+    workCooldown: number
 
     /**
      * User's weekly cooldown.
      */
-    weeklyCooldown: Number
+    weeklyCooldown: number
 }
 
 export = CooldownData

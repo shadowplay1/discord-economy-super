@@ -14,22 +14,22 @@ declare class UtilsManager {
     
     /**
     * Clears the storage file.
-    * @returns {Boolean} If cleared successfully: true; else: false
+    * @returns {boolean} If cleared successfully: true; else: false
     */
     public clearStorage(): boolean
 
     /**
     * Fully removes the guild from database.
-    * @param {String} guildID Guild ID
-    * @returns {Boolean} If cleared successfully: true; else: false
+    * @param {string} guildID Guild ID
+    * @returns {boolean} If cleared successfully: true; else: false
     */
     public removeGuild(guildID: string): boolean
 
     /**
     * Removes the user from database.
-    * @param {String} memberID Member ID
-    * @param {String} guildID Guild ID
-    * @returns {Boolean} If cleared successfully: true; else: false
+    * @param {string} memberID Member ID
+    * @param {string} guildID Guild ID
+    * @returns {boolean} If cleared successfully: true; else: false
     */
     public removeUser(memberID: string, guildID: string): boolean
 

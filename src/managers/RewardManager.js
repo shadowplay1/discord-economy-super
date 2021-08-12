@@ -46,7 +46,7 @@ class RewardManager {
          * @private
          * @type {?EconomyOptions}
          */
-        this.options = this.utils.checkOptions(this.options?.optionsChecker)
+        this.options = options
 
         /**
          * Database manager methods object.
@@ -119,6 +119,8 @@ class RewardManager {
 
             reward = Math.floor(Math.random() * (Number(min) - Number(max)) + Number(max))
         }
+
+        if (Array.isArray(workReward) && workReward.length == 1) reward = workReward[0]
         else reward = workReward
 
         const userCooldown = this.database.fetch(`${guildID}.${memberID}.workCooldown`)
