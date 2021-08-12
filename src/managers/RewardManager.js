@@ -109,7 +109,7 @@ class RewardManager {
         if (typeof memberID !== 'string') throw new EconomyError(errors.invalidTypes.memberID + typeof memberID)
         if (typeof guildID !== 'string') throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
 
-        const cooldown = this.options.workCooldown
+                const cooldown = this.options.workCooldown
         const workReward = this.options.workAmount
         let reward
 
@@ -118,10 +118,12 @@ class RewardManager {
             const max = workReward[1]
 
             reward = Math.floor(Math.random() * (Number(min) - Number(max)) + Number(max))
+            console.log(reward)
         }
 
-        if (Array.isArray(workReward) && workReward.length == 1) reward = workReward[0]
-        else reward = workReward
+        //if (Array.isArray(workReward) && workReward.length == 1) reward = workReward[0]
+        //else reward = workReward
+        //Fixed error here
 
         const userCooldown = this.database.fetch(`${guildID}.${memberID}.workCooldown`)
         const cooldownEnd = cooldown - (Date.now() - userCooldown)
@@ -132,8 +134,8 @@ class RewardManager {
             pretty: ms(cooldownEnd),
             reward
         }
-
-        this.balance.add(reward, memberID, guildID, reason)
+        //Added converting an object to integer to fix an error
+        this.balance.add(parseInt(reward.toString()), memberID, guildID, reason)
         this.database.set(`${guildID}.${memberID}.workCooldown`, Date.now())
 
         return {
