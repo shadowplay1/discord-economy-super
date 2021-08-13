@@ -1,5 +1,6 @@
 import CheckerOptions from '../interfaces/CheckerOptions';
 import EconomyOptions from '../interfaces/EconomyOptions';
+
 import VersionData from '../interfaces/VersionData';
 
 /**
@@ -11,7 +12,7 @@ declare class UtilsManager {
     * @returns Database contents
     */
     public all(): object
-    
+
     /**
     * Clears the storage file.
     * @returns {boolean} If cleared successfully: true; else: false
@@ -45,6 +46,22 @@ declare class UtilsManager {
      * @returns {EconomyOptions} Fixed economy options object.
      */
     public checkOptions(options?: CheckerOptions): EconomyOptions
+
+    /**
+     * Writes the data to file.
+     * @param {String} path File path to write.
+     * @param {any} data Any data to write
+     * @returns {Boolean} If successfully written: true; else: false.
+     */
+    public write(path: string, data: any): boolean
+
+    /**
+     * Sets the default user object for the specified member.
+     * @param {String} memberID Member ID.
+     * @param {String} guildID Guild ID.
+     * @returns {Boolean} If resetted successfully: true; else: false.
+     */
+    public reset(memberID: string, guildID: string): boolean
 }
 
 export = UtilsManager

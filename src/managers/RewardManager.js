@@ -117,10 +117,10 @@ class RewardManager {
             const min = workReward[0]
             const max = workReward[1]
 
-            reward = Math.floor(Math.random() * (Number(min) - Number(max)) + Number(max))
+            if (workReward.length == 1) reward = workReward[0]
+            else reward = Math.floor(Math.random() * (Number(min) - Number(max)) + Number(max))
         }
-
-        if (Array.isArray(workReward) && workReward.length == 1) reward = workReward[0]
+        
         else reward = workReward
 
         const userCooldown = this.database.fetch(`${guildID}.${memberID}.workCooldown`)

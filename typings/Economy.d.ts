@@ -16,7 +16,8 @@ import CooldownManager from './managers/CooldownManager'
 * The Economy class.
 */
 declare class Economy extends Emitter {
-
+    constructor(options: EconomyOptions)
+    
     /**
      * Module ready status.
      * @type {?boolean}
