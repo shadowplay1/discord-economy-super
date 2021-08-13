@@ -37,7 +37,7 @@ class Economy extends Emitter {
     * The Economy class.
     * @param {EconomyOptions} options Economy options object.
     */
-    constructor(options) {
+    constructor(options = {}) {
         super()
 
         /**
