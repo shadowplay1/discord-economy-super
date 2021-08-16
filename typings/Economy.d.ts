@@ -134,5 +134,4 @@ declare class Economy extends Emitter {
     private start(): boolean
 }
 
-
 export = Economy

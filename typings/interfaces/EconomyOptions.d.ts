@@ -44,7 +44,7 @@ declare class EconomyOptions {
     /**
      * If true, when someone buys the item, their balance will subtract by item price.
      */
-    subtractOnBuy: number;
+    subtractOnBuy?: boolean;
 
     /**
      * Amount of money for Weekly Command. Default: 1000.
