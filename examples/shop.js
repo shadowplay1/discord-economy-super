@@ -1,11 +1,16 @@
-const { Client, Intents } = require('discord.js')
+const { Client, } = require('discord.js')
 const Economy = require('discord-economy-super')
+
 const bot = new Client({
-    partials: ['USER', 'GUILD_MEMBER', 'CHANNEL', 'MESSAGE', 'REACTION'],
-    ws: {
-        intents: Intents.ALL
-    }
+    partials: ['CHANNEL', 'GUILD_MEMBER', 'MESSAGE', 'REACTION', 'USER'],
+    intents: [
+        'GUILDS', 'GUILD_BANS', 'GUILD_EMOJIS_AND_STICKERS', 'GUILD_INTEGRATIONS',
+        'GUILD_INVITES', 'GUILD_MEMBERS', 'GUILD_MESSAGES', 'GUILD_MESSAGE_REACTIONS',
+        'GUILD_MESSAGE_TYPING', 'GUILD_PRESENCES', 'GUILD_VOICE_STATES', 'GUILD_WEBHOOKS',
+        'DIRECT_MESSAGES', 'DIRECT_MESSAGE_REACTIONS', 'DIRECT_MESSAGE_TYPING'
+    ]
 })
+
 const eco = new Economy({
     storagePath: './storage.json',
     updateCountdown: 1000,
@@ -35,10 +40,16 @@ const eco = new Economy({
         sendSuccessLog: false
     }
 })
+
 bot.on('ready', () => {
     console.log(bot.user.tag + ' is ready!')
     bot.user.setActivity('Test Bot!', { type: 'STREAMING', url: 'https://twitch.tv/twitch' })
 })
+
+eco.on('ready', () => {
+    console.log('Economy is ready!')
+})
+
 bot.on('message', async message => {
     const args = message.content.slice(1).trim().split(' ').slice(1)
     if (message.content.startsWith('+help')) return message.channel.send('**__Bot Commands:__**\n+help\n+balance\n+daily\n+weekly\n+work\n+lb (+leaderboard)\n+shop\n`+shop_add`\n`+shop_remove`\n`+shop_buy`\n`+shop_search`\n`+shop_clear`\n`+shop_inventory`\n`+shop_use`\n`+shop_clear_inventory`\n`+shop_history`\n`+shop_clear_history`')

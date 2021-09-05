@@ -2,14 +2,19 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-useless-escape */
 
-const { Client, Intents } = require('discord.js')
-const Economy = require('discord-economy-super')
+const { Client } = require('discord.js')
+const Economy = require('../src/index') //require('discord-economy-super')
+
 const bot = new Client({
-    partials: ['USER', 'GUILD_MEMBER', 'CHANNEL', 'MESSAGE', 'REACTION'],
-    ws: {
-        intents: Intents.ALL
-    }
+    partials: ['CHANNEL', 'GUILD_MEMBER', 'MESSAGE', 'REACTION', 'USER'],
+    intents: [
+        'GUILDS', 'GUILD_BANS', 'GUILD_EMOJIS_AND_STICKERS', 'GUILD_INTEGRATIONS',
+        'GUILD_INVITES', 'GUILD_MEMBERS', 'GUILD_MESSAGES', 'GUILD_MESSAGE_REACTIONS',
+        'GUILD_MESSAGE_TYPING', 'GUILD_PRESENCES', 'GUILD_VOICE_STATES', 'GUILD_WEBHOOKS',
+        'DIRECT_MESSAGES', 'DIRECT_MESSAGE_REACTIONS', 'DIRECT_MESSAGE_TYPING'
+    ]
 })
+
 const eco = new Economy({
     storagePath: './storage.json',
     updateCountdown: 1000,
@@ -39,14 +44,24 @@ const eco = new Economy({
         sendSuccessLog: false
     }
 })
+
 bot.on('ready', () => {
     console.log(bot.user.tag + ' is ready!')
     bot.user.setActivity('Test Bot!', { type: 'STREAMING', url: 'https://twitch.tv/twitch' })
 })
+
+eco.on('ready', () => {
+    console.log('Economy is ready!')
+    setTimeout(() => {
+        eco.kill()
+    }, 5000);
+})
+
 bot.on('message', async message => {
     const args = message.content.slice(1).trim().split(' ').slice(1)
     
     if (message.content.startsWith('+help')) return message.channel.send('**__Bot Commands:__**\n+help\n+balance\n+daily\n+weekly\n+work\n+lb (+leaderboard)\n+blb (+bankleaderboard)\n+blb (+bankleaderboard)\n+cash\n+deposit (+dep)')
+    
     if (message.content.startsWith('+daily')) {
         const daily = eco.rewards.daily(message.author.id, message.guild.id)
         if (!daily.status) return message.channel.send(`You have already claimed your daily reward! Time left until next claim: **${daily.value.days}** days, **${daily.value.hours}** hours, **${daily.value.minutes}** minutes and **${daily.value.seconds}** seconds.`)
@@ -54,6 +69,7 @@ bot.on('message', async message => {
     }
     if (message.content.startsWith('+work')) {
         let work = eco.rewards.work(message.author.id, message.guild.id)
+
         if (!work.status) return message.channel.send(`You have already worked! Time left until next work: **${work.value.days}** days, **${work.value.hours}** hours, **${work.value.minutes}** minutes and **${work.value.seconds}** seconds.`)
         message.channel.send(`You worked hard and earned **${work.pretty}** coins!`)
     }
@@ -108,4 +124,5 @@ bot.on('message', async message => {
         message.channel.send(`Successfully deposited **${amount}** coins!`)
     }
 })
-bot.login('token')
+
+bot.login('ODc0MjUzMTc1MDM1NjY2NDUy.YRERtw.HaaM11S86EZ40ojwgx8uAPkK6GI')

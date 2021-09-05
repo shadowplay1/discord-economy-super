@@ -1,13 +1,18 @@
 /* eslint-disable no-useless-escape */
 
-const { Client, Intents } = require('discord.js')
+const { Client } = require('discord.js')
 const Economy = require('discord-economy-super')
+
 const bot = new Client({
-    partials: ['USER', 'GUILD_MEMBER', 'CHANNEL', 'MESSAGE', 'REACTION'],
-    ws: {
-        intents: Intents.ALL
-    }
+    partials: ['CHANNEL', 'GUILD_MEMBER', 'MESSAGE', 'REACTION', 'USER'],
+    intents: [
+        'GUILDS', 'GUILD_BANS', 'GUILD_EMOJIS_AND_STICKERS', 'GUILD_INTEGRATIONS',
+        'GUILD_INVITES', 'GUILD_MEMBERS', 'GUILD_MESSAGES', 'GUILD_MESSAGE_REACTIONS',
+        'GUILD_MESSAGE_TYPING', 'GUILD_PRESENCES', 'GUILD_VOICE_STATES', 'GUILD_WEBHOOKS',
+        'DIRECT_MESSAGES', 'DIRECT_MESSAGE_REACTIONS', 'DIRECT_MESSAGE_TYPING'
+    ]
 })
+
 const eco = new Economy({
     storagePath: './storage.json',
     updateCountdown: 1000,
