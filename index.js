@@ -16,15 +16,10 @@ if (Number(process.version.split('.')[0]) < 14) {
     process.exit(1)
 }
 
-try {
-    eval(`
-    const Economy = require('./src/index')
 
-    module.exports = Object.assign(Economy, {
-        version: require('./package.json').version,
-        docs: 'https://des-docs.tk'
-    })
-`)
-} catch (err) {
-    console.log(err, 'error!!!!!');
-}
+const Economy = require('./src/index')
+
+module.exports = Object.assign(Economy, {
+    version: require('./package.json').version,
+    docs: 'https://des-docs.tk'
+})

@@ -289,7 +289,7 @@ class Economy extends Emitter {
                         console.log(colors.cyan + '║          Run "npm i discord-economy-super@latest"        ║')
                         console.log(colors.cyan + '║                         to update!                       ║')
                         console.log(colors.white + '║               View the full changelog here:              ║')
-                        console.log(colors.red + '║ https://des-docs.tk/#/docs/main/stable/general/changelog ║')
+                        console.log(colors.red + `║  https://des-docs.tk/#/docs/main/${version.packageVersion}/general/changelog ║`)
                         console.log(colors.green + '╚══════════════════════════════════════════════════════════╝\x1b[37m')
                         console.log('\n\n')
 
@@ -305,7 +305,7 @@ class Economy extends Emitter {
                             console.log(colors.blue + `║                  Current version is ${version.packageVersion}.               ║`)
                             console.log(colors.cyan + '║                           Enjoy!                         ║')
                             console.log(colors.white + '║               View the full changelog here:              ║')
-                            console.log(colors.red + '║ https://des-docs.tk/#/docs/main/stable/general/changelog ║')
+                            console.log(colors.red + `║  https://des-docs.tk/#/docs/main/${version.packageVersion}/general/changelog ║`)
                             console.log(colors.green + '╚══════════════════════════════════════════════════════════╝\x1b[37m')
                             console.log('\n\n')
 

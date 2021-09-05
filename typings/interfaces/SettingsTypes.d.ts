@@ -42,3 +42,5 @@ declare class SettingsTypes {
      */
     subtractOnBuy: boolean
 }
+
+export = SettingsTypes

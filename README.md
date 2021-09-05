@@ -14,6 +14,7 @@
 <li><b>Beginner Friendly 😄</b></li>
 <li><b>Shop System 🛒</b></li>
 <li><b>Bank Balance System 🏦</b></li>
+<li><b>Multi-Server Setup 🔧</b></li>
 </ul>
 
 ## 📂 | Installation
