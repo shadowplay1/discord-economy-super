@@ -45,7 +45,7 @@ class DatabaseManager {
     /**
      * Gets a list of keys in database.
      * @param {String} key The key in database.
-     * @returns {Array<String>} An array with all keys in database or 'null' if nothing found.
+     * @returns {String[]} An array with all keys in database or 'null' if nothing found.
      */
     keyList(key) {
         const storageData = this.fetcher.fetchAll()

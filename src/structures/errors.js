@@ -1,3 +1,17 @@
+const settingsArray = [
+    'dailyAmount',
+    'dailyCooldown',
+
+    'workAmount',
+    'workCooldown',
+
+    'weeklyAmount',
+    'weeklyCooldown',
+
+    'dateLocale',
+    'subtractOnBuy'
+]
+
 module.exports = {
     notReady: 'The module is not ready to work.',
 
@@ -5,6 +19,7 @@ module.exports = {
         memberID: 'memberID must be a string. Received type: ',
         guildID: 'guildID must be a string. Received type: ',
         amount: 'amount must be a number. Received type: ',
+        value: 'value must be specified. Received: ',
 
         addItemOptions: {
             itemName: 'options.itemName must be a string. Received type: ',
@@ -37,6 +52,18 @@ module.exports = {
                 number: 'Value is not a number. Received type: ',
                 array: 'Value is not an array. Received type: '
             }
+        }
+    },
+
+    settingsManager: {
+        invalidKey: `You have specified the incorrect settings key. It must be one of the following values:\n${settingsArray.map(x => `'${x}'`).join(', ')}.\nReceived: `,
+
+        valueNotFound(setting, value) {
+            return `Cannot find the value "${value}" in a setting "${setting}".`
+        },
+
+        invalidType(key, type, received) {
+            return `${key} must be a ${type}. Received type: ${received}`
         }
     },
 

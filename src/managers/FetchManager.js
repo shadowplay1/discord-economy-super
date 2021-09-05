@@ -155,7 +155,7 @@ class FetchManager {
     /**
      * Shows all items in the shop.
      * @param {String} guildID Guild ID
-     * @returns {Array<ItemData>} The shop array.
+     * @returns {ItemData[]} The shop array.
      */
     fetchShop(guildID) {
         const data = this.fetchAll()

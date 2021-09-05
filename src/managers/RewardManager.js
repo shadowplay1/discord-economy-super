@@ -3,7 +3,10 @@ const ms = require('../structures/ms')
 const EconomyError = require('../classes/EconomyError')
 
 const BalanceManager = require('./BalanceManager')
+const CooldownManager = require('./CooldownManager')
+
 const DatabaseManager = require('./DatabaseManager')
+const SettingsManager = require('./SettingsManager')
 
 const errors = require('../structures/Errors')
 const UtilsManager = require('./UtilsManager')
@@ -35,6 +38,13 @@ class RewardManager {
     constructor(options) {
 
         /**
+         * Economy options object.
+         * @type {EconomyOptions}
+         * @private
+         */
+        this.options = options
+
+        /**
          * Utils manager methods object.
          * @type {UtilsManager}
          * @private
@@ -42,25 +52,32 @@ class RewardManager {
         this.utils = new UtilsManager(options)
 
         /**
-         * Economy constructor options object.
-         * @private
-         * @type {?EconomyOptions}
-         */
-        this.options = options
-
-        /**
-         * Database manager methods object.
-         * @type {DatabaseManager}
-         * @private
-         */
+        * Database manager methods object.
+        * @type {DatabaseManager}
+        * @private
+        */
         this.database = new DatabaseManager(options)
 
         /**
+         * Cooldown manager methods object.
+         * @type {CooldownManager}
+         * @private
+         */
+        this.cooldowns = new CooldownManager(options)
+
+        /**
          * Balance manager methods object.
-         * @type {DatabaseManager}
+         * @type {BalanceManager}
          * @private
          */
         this.balance = new BalanceManager(options)
+
+        /**
+        * Settings manager methods object.
+        * @type {SettingsManager}
+        * @private
+        */
+        this.settings = new SettingsManager(options)
     }
 
     /**
@@ -74,17 +91,28 @@ class RewardManager {
         if (typeof memberID !== 'string') throw new EconomyError(errors.invalidTypes.memberID + typeof memberID)
         if (typeof guildID !== 'string') throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
 
-        const cooldown = this.options.dailyCooldown
-        const reward = this.options.dailyAmount
+        const cooldown = this.settings.all(guildID).dailyCooldown || this.options.dailyCooldown
+        const dailyReward = this.settings.all(guildID).dailyAmount || this.options.dailyAmount
+        let reward
 
-        const userCooldown = this.database.fetch(`${guildID}.${memberID}.dailyCooldown`)
+        if (Array.isArray(dailyReward)) {
+            const min = dailyReward[0]
+            const max = dailyReward[1]
+
+            if (dailyReward.length == 1) reward = dailyReward[0]
+            else reward = Math.floor(Math.random() * (Number(min) - Number(max)) + Number(max))
+        }
+
+        else reward = dailyReward
+
+        const userCooldown = this.cooldowns.daily(memberID, guildID)
         const cooldownEnd = cooldown - (Date.now() - userCooldown)
 
         if (userCooldown !== null && cooldownEnd > 0) return {
             status: false,
             value: parse(cooldownEnd),
             pretty: ms(cooldownEnd),
-            reward
+            reward: dailyReward
         }
 
         this.balance.add(reward, memberID, guildID, reason)
@@ -94,7 +122,7 @@ class RewardManager {
             status: true,
             value: reward,
             pretty: reward,
-            reward
+            reward: dailyReward
         }
     }
 
@@ -109,8 +137,8 @@ class RewardManager {
         if (typeof memberID !== 'string') throw new EconomyError(errors.invalidTypes.memberID + typeof memberID)
         if (typeof guildID !== 'string') throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
 
-        const cooldown = this.options.workCooldown
-        const workReward = this.options.workAmount
+        const cooldown = this.settings.all(guildID).workCooldown || this.options.workCooldown
+        const workReward = this.settings.all(guildID).workAmount || this.options.workAmount
         let reward
 
         if (Array.isArray(workReward)) {
@@ -120,17 +148,17 @@ class RewardManager {
             if (workReward.length == 1) reward = workReward[0]
             else reward = Math.floor(Math.random() * (Number(min) - Number(max)) + Number(max))
         }
-        
+
         else reward = workReward
 
-        const userCooldown = this.database.fetch(`${guildID}.${memberID}.workCooldown`)
+        const userCooldown = this.cooldowns.work(memberID, guildID)
         const cooldownEnd = cooldown - (Date.now() - userCooldown)
 
         if (userCooldown !== null && cooldownEnd > 0) return {
             status: false,
             value: parse(cooldownEnd),
             pretty: ms(cooldownEnd),
-            reward
+            reward: workReward
         }
 
         this.balance.add(reward, memberID, guildID, reason)
@@ -140,7 +168,7 @@ class RewardManager {
             status: true,
             value: reward,
             pretty: reward,
-            reward
+            reward: workReward
         }
     }
 
@@ -155,17 +183,28 @@ class RewardManager {
         if (typeof memberID !== 'string') throw new EconomyError(errors.invalidTypes.memberID + typeof memberID)
         if (typeof guildID !== 'string') throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
 
-        const cooldown = this.options.weeklyCooldown
-        const reward = this.options.weeklyAmount
+        const cooldown = this.settings.all(guildID).weeklyCooldown || this.options.weeklyCooldown
+        const weeklyReward = this.settings.all(guildID).weeklyAmount || this.options.weeklyAmount
+        let reward
 
-        const userCooldown = this.database.fetch(`${guildID}.${memberID}.weeklyCooldown`)
+        if (Array.isArray(weeklyReward)) {
+            const min = weeklyReward[0]
+            const max = weeklyReward[1]
+
+            if (weeklyReward.length == 1) reward = weeklyReward[0]
+            else reward = Math.floor(Math.random() * (Number(min) - Number(max)) + Number(max))
+        }
+
+        else reward = weeklyReward
+
+        const userCooldown = this.cooldowns.weekly(memberID, guildID)
         const cooldownEnd = cooldown - (Date.now() - userCooldown)
 
         if (userCooldown !== null && cooldownEnd > 0) return {
             status: false,
             value: parse(cooldownEnd),
             pretty: ms(cooldownEnd),
-            reward
+            reward: weeklyReward
         }
 
         this.balance.add(reward, memberID, guildID, reason)
@@ -175,7 +214,7 @@ class RewardManager {
             status: true,
             value: reward,
             pretty: reward,
-            reward
+            reward: weeklyReward
         }
     }
 }
@@ -185,7 +224,7 @@ class RewardManager {
  * @property {Boolean} status The status of operation.
  * @property {CooldownData} value Reward or cooldown time object.
  * @property {String | Number} pretty Reward or formatted cooldown time object.
- * @property {Number | Array<Number>} reward Amount of money for the reward from constructor options.
+ * @property {Number | Number[]} reward Amount of money for the reward from constructor options.
  */
 
 /**

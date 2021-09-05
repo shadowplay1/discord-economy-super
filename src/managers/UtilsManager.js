@@ -198,12 +198,14 @@ class UtilsManager {
 
                 if (typeof output[i] !== typeof DefaultOptions[i]) {
                     if (!options.ignoreInvalidTypes) {
-                        if (i == 'workAmount') {
+                        const isRewardOption = i == 'dailyAmount' || i == 'workAmount' || i == 'weeklyAmount'
+
+                        if (isRewardOption) {
                             if (typeof output[i] !== 'number' && !Array.isArray(output[i])) {
-                                problems.push(`options.${i} is not a ${i == 'workAmount' ? 'number or array' : typeof DefaultOptions[i]}. Received type: ${typeof output[i]}.`)
+                                problems.push(`options.${i} is not a number or array. Received type: ${typeof output[i]}.`)
                                 output[i] = DefaultOptions[i]
                             }
-
+                            
                         } else {
                             problems.push(`options.${i} is not a ${typeof DefaultOptions[i]}. Received type: ${typeof output[i]}.`)
                             output[i] = DefaultOptions[i]
@@ -214,6 +216,11 @@ class UtilsManager {
                 else { }
 
                 if (i == 'workAmount' && Array.isArray(output[i]) && output[i].length > 2) {
+                    output[i] = output[i].slice(0, 2)
+                    problems.push(errors.workAmount.tooManyElements)
+                }
+
+                if (i == 'dailyAmount' && Array.isArray(output[i]) && output[i].length > 2) {
                     output[i] = output[i].slice(0, 2)
                     problems.push(errors.workAmount.tooManyElements)
                 }
@@ -275,17 +282,17 @@ class UtilsManager {
 
 /**
  * @typedef {Object} EconomyOptions Default Economy options object.
- * @property {String} [storagePath='./storage.json'] Full path to a JSON file. Default: './storage.json'.
+ * @property {String} [storagePath='./storage.json'] Full path to a JSON file. Default: './storage.json'
  * @property {Boolean} [checkStorage=true] Checks the if database file exists and if it has errors. Default: true
  * @property {Number} [dailyCooldown=86400000] Cooldown for Daily Command (in ms). Default: 24 Hours (60000 * 60 * 24) ms
  * @property {Number} [workCooldown=3600000] Cooldown for Work Command (in ms). Default: 1 Hour (60000 * 60) ms
- * @property {Number} [dailyAmount=100] Amount of money for Daily Command. Default: 100.
+ * @property {Number | Number[]} [dailyAmount=100] Amount of money for Daily Command. Default: 100.
  * @property {Number} [weeklyCooldown=604800000] Cooldown for Weekly Command (in ms). Default: 7 Days (60000 * 60 * 24 * 7) ms
- * @property {Number} [weeklyAmount=1000] Amount of money for Weekly Command. Default: 1000.
- * @property {Number | Array} [workAmount=[10, 50]] Amount of money for Work Command. Default: [10, 50].
- * @property {Boolean} [subtractOnBuy=true] If true, when someone buys the item, their balance will subtract by item price.
+ * @property {Number | Number[]} [weeklyAmount=100] Amount of money for Weekly Command. Default: 1000.
+ * @property {Number | Number[]} [workAmount=[10, 50]] Amount of money for Work Command. Default: [10, 50].
+ * @property {Boolean} [subtractOnBuy=true] If true, when someone buys the item, their balance will subtract by item price. Default: false
  * @property {Number} [updateCountdown=1000] Checks for if storage file exists in specified time (in ms). Default: 1000.
- * @property {String} [dateLocale='ru'] The region (example: 'ru'; 'en') to format date and time. Default: 'ru'.
+ * @property {String} [dateLocale='ru'] The region (example: 'ru'; 'en') to format the date and time. Default: 'ru'.
  * @property {UpdaterOptions} [updater=UpdaterOptions] Update Checker options object.
  * @property {ErrorHandlerOptions} [errorHandler=ErrorHandlerOptions] Error Handler options object.
  * @property {CheckerOptions} [optionsChecker=CheckerOptions] Options object for an 'Economy.utils.checkOptions' method.

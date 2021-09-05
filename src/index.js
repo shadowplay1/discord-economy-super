@@ -3,14 +3,21 @@
 const { existsSync, readFileSync, writeFileSync } = require('fs')
 const { promisify } = require('util')
 
+
 const DatabaseManager = require('./managers/DatabaseManager')
 const FetchManager = require('./managers/FetchManager')
+
 const UtilsManager = require('./managers/UtilsManager')
+
 const BalanceManager = require('./managers/BalanceManager')
 const BankManager = require('./managers/BankManager')
+
 const RewardManager = require('./managers/RewardManager')
-const ShopManager = require('./managers/ShopManager')
 const CooldownManager = require('./managers/CooldownManager')
+
+const ShopManager = require('./managers/ShopManager')
+const SettingsManager = require('./managers/SettingsManager')
+
 
 const Emitter = require('./classes/Emitter')
 const EconomyError = require('./classes/EconomyError')
@@ -130,6 +137,12 @@ class Economy extends Emitter {
         */
         this.cooldowns = null
 
+        /**
+        * Settings manager methods object.
+        * @type {SettingsManager}
+        */
+        this.settings = null
+
         this.init()
     }
 
@@ -138,7 +151,7 @@ class Economy extends Emitter {
      * @returns {Economy} Economy instance.
      */
     kill() {
-        if(!this.ready) return false
+        if (!this.ready) return false
 
         clearInterval(this.interval)
         this.ready = false
@@ -156,7 +169,9 @@ class Economy extends Emitter {
         this.shop = null
 
         this.rewards = null
+
         this.cooldowns = null
+        this.settings = null
 
         this.emit('destroy')
 
@@ -238,7 +253,6 @@ class Economy extends Emitter {
 
         return new Promise(async (resolve, reject) => {
             try {
-                if (Number(process.version.split('.')[0]) < 14) return reject(new EconomyError(errors.oldNodeVersion + process.version))
                 if (this.errored) return
                 if (this.ready) return
 
@@ -368,6 +382,8 @@ class Economy extends Emitter {
 
         this.rewards = new RewardManager(this.options)
         this.cooldowns = new CooldownManager(this.options)
+
+        this.settings = new SettingsManager(this.options)
 
         return true
     }
@@ -508,17 +524,17 @@ class Economy extends Emitter {
 
 /**
  * @typedef {Object} EconomyOptions Default Economy options object.
- * @property {String} [storagePath='./storage.json'] Full path to a JSON file. Default: './storage.json'.
+ * @property {String} [storagePath='./storage.json'] Full path to a JSON file. Default: './storage.json'
  * @property {Boolean} [checkStorage=true] Checks the if database file exists and if it has errors. Default: true
  * @property {Number} [dailyCooldown=86400000] Cooldown for Daily Command (in ms). Default: 24 Hours (60000 * 60 * 24) ms
  * @property {Number} [workCooldown=3600000] Cooldown for Work Command (in ms). Default: 1 Hour (60000 * 60) ms
- * @property {Number} [dailyAmount=100] Amount of money for Daily Command. Default: 100.
+ * @property {Number | Number[]} [dailyAmount=100] Amount of money for Daily Command. Default: 100.
  * @property {Number} [weeklyCooldown=604800000] Cooldown for Weekly Command (in ms). Default: 7 Days (60000 * 60 * 24 * 7) ms
- * @property {Number} [weeklyAmount=1000] Amount of money for Weekly Command. Default: 1000.
- * @property {Number | Array} [workAmount=[10, 50]] Amount of money for Work Command. Default: [10, 50].
- * @property {Boolean} [subtractOnBuy=true] If true, when someone buys the item, their balance will subtract by item price.
+ * @property {Number | Number[]} [weeklyAmount=100] Amount of money for Weekly Command. Default: 1000.
+ * @property {Number | Number[]} [workAmount=[10, 50]] Amount of money for Work Command. Default: [10, 50].
+ * @property {Boolean} [subtractOnBuy=true] If true, when someone buys the item, their balance will subtract by item price. Default: false
  * @property {Number} [updateCountdown=1000] Checks for if storage file exists in specified time (in ms). Default: 1000.
- * @property {String} [dateLocale='ru'] The region (example: 'ru'; 'en') to format date and time. Default: 'ru'.
+ * @property {String} [dateLocale='en'] The region (example: 'ru' or 'en') to format the date and time. Default: 'en'.
  * @property {UpdaterOptions} [updater=UpdaterOptions] Update Checker options object.
  * @property {ErrorHandlerOptions} [errorHandler=ErrorHandlerOptions] Error Handler options object.
  * @property {CheckerOptions} [optionsChecker=CheckerOptions] Options object for an 'Economy.utils.checkOptions' method.

@@ -17,7 +17,7 @@ class ShopManager extends Emitter {
       * Economy constructor options object. There's only needed options object properties for this manager to work properly.
       * @param {Object} options Constructor options object.
       * @param {String} options.storagePath Full path to a JSON file. Default: './storage.json'.
-      * @param {String} options.dateLocale The region (example: 'ru'; 'en') to format date and time. Default: 'ru'.
+      * @param {String} options.dateLocale The region (example: 'ru' or 'en') to format date and time. Default: 'ru'.
       * @param {Boolean} options.subtractOnBuy If true, when someone buys the item, their balance will subtract by item price.
      */
     constructor(options = {}) {
@@ -241,7 +241,7 @@ class ShopManager extends Emitter {
     /**
      * Shows all items in the shop.
      * @param {String} guildID Guild ID.
-     * @returns {Array<ItemData>} The shop array.
+     * @returns {ItemData[]} The shop array.
      */
     list(guildID) {
         if (typeof guildID !== 'string') throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
@@ -339,7 +339,7 @@ class ShopManager extends Emitter {
      * Shows all items in user's inventory.
      * @param {String} memberID Member ID.
      * @param {String} guildID Guild ID.
-     * @returns {Array<InventoryData>} User's inventory array.
+     * @returns {InventoryData[]} User's inventory array.
      */
     inventory(memberID, guildID) {
         const inventory = this.database.fetch(`${guildID}.${memberID}.inventory`)
@@ -398,7 +398,7 @@ class ShopManager extends Emitter {
      * Shows the user's purchase history.
      * @param {String} memberID Member ID
      * @param {String} guildID Guild ID
-     * @returns {Array<HistoryData>} User's purchase history.
+     * @returns {HistoryData[]} User's purchase history.
      */
     history(memberID, guildID) {
         const history = this.database.fetch(`${guildID}.${memberID}.history`)

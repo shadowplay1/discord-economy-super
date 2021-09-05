@@ -8,6 +8,7 @@ const EconomyOptions = {
     workCooldown: 3600000,
     weeklyCooldown: 604800000,
     checkStorage: true,
+    dateLocale: 'en',
     subtractOnBuy: true,
     updater: {
         checkUpdates: true,
