@@ -7,6 +7,8 @@ import VersionData from '../interfaces/VersionData';
  * Utils manager methods object.
  */
 declare class UtilsManager {
+    constructor(options: EconomyOptions)
+    
     /**
     * Fetches the entire database.
     * @returns Database contents

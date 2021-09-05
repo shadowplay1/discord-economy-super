@@ -4,12 +4,15 @@ import HistoryData from '../interfaces/HistoryData';
 import InventoryData from '../interfaces/InventoryData';
 
 import Emitter from '../classes/Emitter';
+import EconomyOptions from '../interfaces/EconomyOptions';
 
 /**
 * Fetch manager methods class.
 * @extends {Emitter}
 */
 declare class FetchManager extends Emitter {
+    constructor(options: EconomyOptions)
+
     /**
     * Fetches the entire database.
     * @returns {object} Database contents
@@ -19,9 +22,9 @@ declare class FetchManager extends Emitter {
     /**
      * Shows all items in the shop.
      * @param {string} guildID Guild ID
-     * @returns {Array<ItemData>} The shop array.
+     * @returns {ItemData[]} The shop array.
      */
-    public fetchShop(guildID: string): Array<ItemData>
+    public fetchShop(guildID: string): ItemData[]
 
     /**
      * Fetches the user's cooldowns.

@@ -39,7 +39,7 @@ declare class EconomyOptions {
     /**
      * Amount of money for Work Command. Default: [10, 50].
      */
-    workAmount?: number | Array<number>;
+    workAmount?: number | Number[];
 
     /**
      * If true, when someone buys the item, their balance will subtract by item price.

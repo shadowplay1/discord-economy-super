@@ -1,4 +1,5 @@
 import DailyObject from '../interfaces/DailyObject'
+import EconomyOptions from '../interfaces/EconomyOptions'
 import WeeklyObject from '../interfaces/WeeklyObject'
 import WorkObject from '../interfaces/WorkObject'
 
@@ -6,6 +7,8 @@ import WorkObject from '../interfaces/WorkObject'
  * Reward manager methods object.
  */
 declare class RewardManager {
+    constructor(options: EconomyOptions)
+
     /**
     * Adds a daily reward on user's balance
     * @param {string} memberID Member ID

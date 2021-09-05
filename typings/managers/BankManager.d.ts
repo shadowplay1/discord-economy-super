@@ -1,9 +1,12 @@
+import EconomyOptions from '../interfaces/EconomyOptions'
 import LeaderboardData from '../interfaces/LeaderboardData'
 
 /**
  * Bank balance methods object.
  */
 declare class BankManager {
+    constructor(options: EconomyOptions)
+    
     /**
     * Fetches the user's bank balance.
     * @param {string} memberID Member ID
@@ -47,7 +50,7 @@ declare class BankManager {
     * @param {string} guildID Guild ID
     * @returns Sorted leaderboard array
     */
-    public leaderboard(guildID: string): Array<LeaderboardData>
+    public leaderboard(guildID: string): LeaderboardData[]
 }
 
 export = BankManager

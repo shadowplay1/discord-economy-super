@@ -2,11 +2,14 @@ import ItemData from '../interfaces/ItemData'
 import AddItemOptions from '../interfaces/AddItemOptions'
 import Inventory from '../interfaces/InventoryData'
 import PurchasesHistory from '../interfaces/HistoryData'
+import EconomyOptions from '../interfaces/EconomyOptions'
 
 /**
 * Shop manager methods object.
 */
 declare class ShopManager {
+    constructor(options: EconomyOptions)
+
     /**
      * Creates an item in shop.
      * @param {AddItemOptions} options Options object with item info.
@@ -88,7 +91,7 @@ declare class ShopManager {
      * @param {string} guildID Guild ID
      * @returns The shop array.
      */
-    public list(guildID: string): Array<ItemData>
+    public list(guildID: string): ItemData[]
 
     /**
      * Searches for the item in the shop.
@@ -104,7 +107,7 @@ declare class ShopManager {
      * @param {string} guildID Guild ID
      * @returns The user's inventory array.
      */
-    public inventory(memberID: string, guildID: string): Array<Inventory>
+    public inventory(memberID: string, guildID: string): Inventory[]
 
     /**
      * Shows the user's purchase history.
@@ -112,7 +115,7 @@ declare class ShopManager {
      * @param {string} guildID Guild ID
      * @returns User's purchase history array.
      */
-    public history(memberID: string, guildID: string): Array<PurchasesHistory>
+    public history(memberID: string, guildID: string): PurchasesHistory[]
 }
 
 export = ShopManager

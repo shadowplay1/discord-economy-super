@@ -1,12 +1,16 @@
+import EconomyOptions from "../interfaces/EconomyOptions";
+
 /**
  * Database manager methods object.
  */
 declare class DatabaseManager {
+    constructor(options: EconomyOptions)
+
     /**
     * Gets a list of keys in database.
     * @returns An array with all keys in database or 'null' if nothing found.
     */
-    public keysList(key: string): Array<string>
+    public keysList(key: string): string[]
 
     /**
     * Sets data in a property in database.

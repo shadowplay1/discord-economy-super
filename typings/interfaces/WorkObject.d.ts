@@ -22,7 +22,7 @@ declare class WorkObject {
     /**
      * Work reward.
      */
-    reward: number | Array<number>
+    reward: number | Number[]
 }
 
 export = WorkObject
