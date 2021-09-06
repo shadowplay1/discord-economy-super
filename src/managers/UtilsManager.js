@@ -1,7 +1,6 @@
 /* eslint-disable no-empty */
 
 const { readFileSync, writeFileSync } = require('fs')
-const { unset } = require('lodash')
 
 const fetch = require('node-fetch')
 
@@ -247,12 +246,12 @@ class UtilsManager {
 
                     if (!allKeys[index]) {
                         problems.push(`options.${i}.${y} is an invalid option.`)
-                        unset(output, `${i}.${y}`)
+                        this.database.remove(output, `${i}.${y}`)
                     }
                 }
 
                 if (!keys[defaultIndex]) {
-                    unset(output, i)
+                    this.database.remove(output, i)
                     problems.push(`options.${i} is an invalid option.`)
                 }
 

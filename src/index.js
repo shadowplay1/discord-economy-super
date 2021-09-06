@@ -81,7 +81,7 @@ class Economy extends Emitter {
          * Constructor options object.
          * @type {?EconomyOptions}
          */
-        this.options = this.utils.checkOptions(this.options?.optionsChecker, options)
+        this.options = this.utils.checkOptions(this.options, options)
 
         /**
          * Database checking interval.
