@@ -1,6 +1,9 @@
 import EconomyOptions from "../interfaces/EconomyOptions";
 import SettingsTypes from "../interfaces/SettingsTypes";
 
+/**
+ * Settings manager methods class.
+ */
 declare class SettingsManager {
     constructor(options: EconomyOptions)
 
@@ -58,3 +61,5 @@ declare class SettingsManager {
      */
     public reset(guildID: string): SettingsTypes
 }
+
+export = SettingsManager

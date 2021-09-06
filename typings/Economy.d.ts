@@ -11,6 +11,7 @@ import DatabaseManager from './managers/DatabaseManager'
 import ShopManager from './managers/ShopManager'
 import RewardManager from './managers/RewardManager'
 import CooldownManager from './managers/CooldownManager'
+import SettingsManager from './managers/SettingsManager'
 
 /**
 * The Economy class.
@@ -95,6 +96,7 @@ declare class Economy extends Emitter {
     * @type {ShopManager}
     */
     public shop: ShopManager
+
     /**
     * Balance methods object.
     * @type {RewardManager}
@@ -102,10 +104,16 @@ declare class Economy extends Emitter {
     public rewards: RewardManager
 
     /**
-    * Bank balance methods object.
+    * Cooldown methods object.
     * @type {CooldownManager}
     */
     public cooldowns: CooldownManager
+
+    /**
+    * Settings methods object.
+    * @type {SettingsManager}
+    */
+    public settings: SettingsManager
 
     /**
      * Kills the Economy instance.

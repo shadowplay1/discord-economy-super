@@ -8,6 +8,7 @@ declare class DatabaseManager {
 
     /**
     * Gets a list of keys in database.
+    * @param {string} key The key in database.
     * @returns An array with all keys in database or 'null' if nothing found.
     */
     public keysList(key: string): string[]

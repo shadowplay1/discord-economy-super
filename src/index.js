@@ -81,7 +81,7 @@ class Economy extends Emitter {
          * Constructor options object.
          * @type {?EconomyOptions}
          */
-        this.options = this.utils.checkOptions(this.options?.optionsChecker, options)
+        this.options = this.utils.checkOptions(this.options, options)
 
         /**
          * Database checking interval.
@@ -537,7 +537,7 @@ class Economy extends Emitter {
  * @property {String} [dateLocale='en'] The region (example: 'ru' or 'en') to format the date and time. Default: 'en'.
  * @property {UpdaterOptions} [updater=UpdaterOptions] Update Checker options object.
  * @property {ErrorHandlerOptions} [errorHandler=ErrorHandlerOptions] Error Handler options object.
- * @property {CheckerOptions} [optionsChecker=CheckerOptions] Options object for an 'Economy.utils.checkOptions' method.
+ * @property {CheckerOptions} [optionsCheckeroptionsChecker=CheckerOptions] Options object for an 'Economy.utils.checkOptions' method.
  */
 
 /**

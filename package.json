@@ -24,7 +24,8 @@
 	"author": "shadowplay",
 	"license": "MIT",
 	"dependencies": {
-		"node-fetch": "latest"
+		"lodash": "^4.17.21",
+		"node-fetch": "^2.6.2"
 	},
 	"repository": {
 		"type": "git",
