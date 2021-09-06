@@ -3,7 +3,7 @@
 /* eslint-disable no-useless-escape */
 
 const { Client } = require('discord.js')
-const Economy = require('../src/index') //require('discord-economy-super')
+const Economy = require('discord-economy-super')
 
 const bot = new Client({
     partials: ['CHANNEL', 'GUILD_MEMBER', 'MESSAGE', 'REACTION', 'USER'],
@@ -125,4 +125,4 @@ bot.on('message', async message => {
     }
 })
 
-bot.login('ODc0MjUzMTc1MDM1NjY2NDUy.YRERtw.HaaM11S86EZ40ojwgx8uAPkK6GI')
+bot.login('token')
