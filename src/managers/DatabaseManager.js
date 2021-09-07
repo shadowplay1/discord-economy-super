@@ -1,7 +1,7 @@
 const FetchManager = require('./FetchManager')
 
 const DefaultOptions = require('../structures/DefaultOptions')
-const errors = require('../structures/Errors')
+const errors = require('../structures/errors')
 
 const EconomyError = require('../classes/EconomyError')
 
