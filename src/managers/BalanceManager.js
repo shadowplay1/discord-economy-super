@@ -4,7 +4,7 @@ const EconomyError = require('../classes/EconomyError')
 const FetchManager = require('./FetchManager')
 const DatabaseManager = require('./DatabaseManager')
 
-const errors = require('../structures/Errors')
+const errors = require('../structures/errors')
 
 /**
 * Balance manager methods class.

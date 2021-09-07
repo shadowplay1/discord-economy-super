@@ -5,7 +5,7 @@ const FetchManager = require('./FetchManager')
 const DatabaseManager = require('./DatabaseManager')
 const BalanceManager = require('./BalanceManager')
 
-const errors = require('../structures/Errors')
+const errors = require('../structures/errors')
 
 /**
  * Shop manager methods class.
