@@ -22,7 +22,7 @@ const SettingsManager = require('./managers/SettingsManager')
 const Emitter = require('./classes/Emitter')
 const EconomyError = require('./classes/EconomyError')
 
-const errors = require('./structures/Errors')
+const errors = require('./structures/errors')
 
 const colors = {
     red: '\x1b[31m',

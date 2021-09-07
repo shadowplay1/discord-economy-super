@@ -2,7 +2,7 @@ const EconomyError = require('../classes/EconomyError')
 
 const DatabaseManager = require('./DatabaseManager')
 
-const errors = require('../structures/Errors')
+const errors = require('../structures/errors')
 
 /**
 * Cooldown manager methods class.

@@ -1,11 +1,6 @@
 const { writeFileSync } = require('fs')
 
-const get = require('lodash/get')
-const set = require('lodash/set')
-const unset = require('lodash/unset')
-
 const FetchManager = require('../managers/FetchManager')
-
 const DefaultOptions = require('../structures/DefaultOptions')
 
 /**
@@ -39,17 +34,26 @@ class DotParser {
     }
 
     /**
-     * Parses the key and fetches the value from database.
-     * @param {String} key The key in database.
-     * @returns {any | false} The data from database or 'false' if failed to parse or 'null' if nothing found.
-     */
+    * Parses the key and fetches the value from database.
+    * @param {String} key The key in database.
+    * @returns {any | false} The data from database or 'false' if failed to parse or 'null' if nothing found.
+    */
     parse(key) {
-        const storageData = this.fetcher.fetchAll()
+        let parsed = this.fetcher.fetchAll()
 
         if (!key) return false
         if (typeof key !== 'string') return false
 
-        const parsed = get(storageData, key)
+        const keys = key.split('.')
+        let tmp = parsed
+
+        for (let i = 0; i < keys.length; i++) {
+            if ((keys.length - 1) == i) {
+                parsed = tmp?.[keys[i]] || null
+            }
+
+            tmp = tmp?.[keys[i]]
+        }
 
         return parsed || null
     }
@@ -57,19 +61,36 @@ class DotParser {
     /**
      * Parses the key and sets the data in database.
      * @param {String} key The key in database.
-     * @param {any} data Any data to set.
+     * @param {any} value Any data to set.
      * @returns {Boolean} If set successfully: true; else: false
      */
-    set(key, data) {
+    set(key, value) {
+        const { isObject } = this
         let storageData = this.fetcher.fetchAll()
 
         if (!key) return false
-        if (data == undefined) return false
-
         if (typeof key !== 'string') return false
 
-        storageData = set(storageData, key, data)
-        writeFileSync(this.options.storagePath, JSON.stringify(storageData, null, '\t'))
+        if (value == undefined) return false
+        if (typeof value == 'function') return false
+
+
+        const keys = key.split('.')
+        let tmp = storageData
+
+        for (let i = 0; i < keys.length; i++) {
+
+            if ((keys.length - 1) == i) {
+                tmp[keys[i]] = value
+
+            } else if (!isObject(tmp[keys[i]])) {
+                tmp[keys[i]] = {}
+            }
+
+            tmp = tmp?.[keys[i]]
+        }
+
+        writeFileSync(this.options.storagePath || './storage.json', JSON.stringify(storageData, null, '\t'))
 
         return true
     }
@@ -80,6 +101,7 @@ class DotParser {
      * @returns {Boolean} If removed successfully: true; else: false
      */
     remove(key) {
+        const { isObject } = this
         let storageData = this.fetcher.fetchAll()
 
         if (!key) return false
@@ -88,10 +110,34 @@ class DotParser {
         const data = this.parse(key)
         if (data == null) return false
 
-        unset(storageData, key)
-        writeFileSync(this.options.storagePath, JSON.stringify(storageData, null, '\t'))
+        const keys = key.split('.')
+        let tmp = storageData
+
+        for (let i = 0; i < keys.length; i++) {
+            if ((keys.length - 1) == i) {
+                delete tmp?.[keys[i]]
+
+            } else if (!isObject(tmp?.[keys[i]])) {
+                tmp[keys[i]] = {}
+            }
+
+            tmp = tmp[keys[i]]
+        }
+
+        writeFileSync(this.options.storagePath || './storage.json', JSON.stringify(storageData, null, '\t'))
 
         return true
+    }
+
+    /**
+     * Checks for is the item object and returns it.
+     * @param {any} item The item to check.
+     * @returns {Boolean} Is the item object or not.
+    */
+    isObject(item) {
+        return !Array.isArray(item)
+            && typeof item == 'object'
+            && item !== null
     }
 }
 

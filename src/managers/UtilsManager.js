@@ -8,8 +8,33 @@ const FetchManager = require('./FetchManager')
 const DatabaseManager = require('./DatabaseManager')
 
 const DefaultOptions = require('../structures/DefaultOptions')
-const errors = require('../structures/Errors')
+const errors = require('../structures/errors')
 const defaultObject = require('../structures/DefaultObject')
+
+function unset(object, key) {
+    const isObject = item => {
+        return !Array.isArray(item)
+            && typeof item == 'object'
+            && item !== null
+    }
+
+    if (!key) return false
+    if (typeof key !== 'string') return false
+
+    const keys = key.split('.')
+    let tmp = object
+
+    for (let i = 0; i < keys.length; i++) {
+        if ((keys.length - 1) == i) {
+            delete tmp?.[keys[i]]
+
+        } else if (!isObject(tmp?.[keys[i]])) {
+            tmp[keys[i]] = {}
+        }
+
+        tmp = tmp[keys[i]]
+    }
+}
 
 /**
 * Utils manager methods class.
@@ -108,6 +133,7 @@ class UtilsManager {
         this.write(this.options.storagePath, '{}')
         return true
     }
+
     /**
     * Fully removes the guild from database.
     * @param {String} guildID Guild ID
@@ -123,6 +149,7 @@ class UtilsManager {
         this.database.remove(guildID)
         return true
     }
+
     /**
      * Removes the user from database.
      * @param {String} memberID Member ID
@@ -142,6 +169,7 @@ class UtilsManager {
         this.database.remove(`${guildID}.${memberID}`)
         return true
     }
+
     /**
      * Sets the default user object for the specified member.
      * @param {String} memberID Member ID.
@@ -204,7 +232,7 @@ class UtilsManager {
                                 problems.push(`options.${i} is not a number or array. Received type: ${typeof output[i]}.`)
                                 output[i] = DefaultOptions[i]
                             }
-                            
+
                         } else {
                             problems.push(`options.${i} is not a ${typeof DefaultOptions[i]}. Received type: ${typeof output[i]}.`)
                             output[i] = DefaultOptions[i]
@@ -246,12 +274,12 @@ class UtilsManager {
 
                     if (!allKeys[index]) {
                         problems.push(`options.${i}.${y} is an invalid option.`)
-                        this.database.remove(output, `${i}.${y}`)
+                        unset(output, `${i}.${y}`)
                     }
                 }
 
                 if (!keys[defaultIndex]) {
-                    this.database.remove(output, i)
+                    unset(output, i)
                     problems.push(`options.${i} is an invalid option.`)
                 }
 
