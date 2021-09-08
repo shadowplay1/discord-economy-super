@@ -19,7 +19,8 @@
 		"discord-js",
 		"discord-eco",
 		"discord-bot",
-		"shadowplay"
+		"shadowplay",
+		"super"
 	],
 	"author": "shadowplay",
 	"license": "MIT",
