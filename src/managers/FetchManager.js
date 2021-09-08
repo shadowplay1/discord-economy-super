@@ -1,6 +1,6 @@
 const { readFileSync, writeFileSync, existsSync } = require('fs')
 
-const errors = require('../structures/DefaultOptions')
+const errors = require('../structures/errors')
 
 const EconomyError = require('../classes/EconomyError')
 
