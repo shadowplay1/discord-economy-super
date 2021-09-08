@@ -3,7 +3,7 @@ const UtilsManager = require('./UtilsManager');
 
 const EconomyError = require('../classes/EconomyError')
 
-const errors = require('../structures/Errors')
+const errors = require('../structures/errors')
 
 const settingsArray = [
     'dailyAmount',
