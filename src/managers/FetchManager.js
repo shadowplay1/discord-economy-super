@@ -90,7 +90,7 @@ class FetchManager {
      * Fetches the user's inventory.
      * @param {String} memberID Member ID
      * @param {String} guildID Guild ID
-     * @returns {InventoryData} User's bank balance
+     * @returns {InventoryData[]} User's bank balance
      */
     fetchInventory(memberID, guildID) {
         const data = this.fetchAll()
