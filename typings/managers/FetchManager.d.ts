@@ -48,7 +48,7 @@ declare class FetchManager extends Emitter {
      * @param {string} guildID Guild ID
      * @returns {InventoryData} User's bank balance
      */
-    public fetchInventory(memberID: string, guildID: string): InventoryData
+    public fetchInventory(memberID: string, guildID: string): InventoryData[]
 
     /**
     * Fetches the user's bank balance.
