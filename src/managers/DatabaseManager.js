@@ -1,7 +1,7 @@
 const FetchManager = require('./FetchManager')
 
 const DefaultOptions = require('../structures/DefaultOptions')
-const errors = require('../structures/errors')
+const errors = require('../structures/Errors')
 
 const EconomyError = require('../classes/EconomyError')
 
@@ -11,7 +11,8 @@ const EconomyError = require('../classes/EconomyError')
 class DatabaseManager {
 
     /**
-     * Economy constructor options object. There's only needed options object properties for this manager to work properly.
+     * Economy constructor options object.
+     * There's only needed options object properties for this manager to work properly.
      * @param {Object} options Constructor options object.
      * @param {String} options.storagePath Full path to a JSON file. Default: './storage.json'.
      */
@@ -147,10 +148,15 @@ class DatabaseManager {
     push(key, value) {
         if (!key) return false
         if (value == undefined) return false
-        if (typeof key !== 'string') throw new EconomyError(errors.databaseManager.invalidTypes.key + typeof data)
 
-        let data = this.fetch(key) || []
-        if (!Array.isArray(data) && !data.length) throw new EconomyError(errors.databaseManager.invalidTypes.target.array + typeof data)
+        if (typeof key !== 'string') {
+            throw new EconomyError(errors.databaseManager.invalidTypes.key + typeof data)
+        }
+
+        const data = this.fetch(key) || []
+        if (!Array.isArray(data) && !data.length) {
+            throw new EconomyError(errors.databaseManager.invalidTypes.target.array + typeof data)
+        }
 
         data.push(value)
         return this.set(key, data)
@@ -167,7 +173,7 @@ class DatabaseManager {
         if (index == undefined) return false
         if (typeof key !== 'string') throw new EconomyError(errors.databaseManager.invalidTypes.key + typeof data)
 
-        let data = this.fetch(key)
+        const data = this.fetch(key)
         if (!Array.isArray(data)) throw new EconomyError(errors.databaseManager.invalidTypes.target.array + typeof data)
 
         data.splice(index, 1)

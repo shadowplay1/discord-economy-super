@@ -1,7 +1,6 @@
 const { readFileSync, writeFileSync, existsSync } = require('fs')
 
 const errors = require('../structures/errors')
-
 const EconomyError = require('../classes/EconomyError')
 
 /**
@@ -10,12 +9,13 @@ const EconomyError = require('../classes/EconomyError')
 class FetchManager {
 
     /**
-     * Economy constructor options object. There's only needed options object properties for this manager to work properly.
+     * Economy constructor options object. 
+     * There's only needed options object properties for this manager to work properly.
      * @param {Object} options Constructor options object.
      * @param {String} options.storagePath Full path to a JSON file. Default: './storage.json'.
      */
     constructor(options = {}) {
-        
+
         /**
          * Economy constructor options object.
          * @type {EconomyOptions}
@@ -50,7 +50,7 @@ class FetchManager {
     * Fetches the user's balance.
     * @param {String} memberID Member ID
     * @param {String} guildID Guild ID
-    * @returns {Number} User's balance
+    * @returns {Number} User's balance.
     */
     fetchBalance(memberID, guildID) {
         const data = this.fetchAll()
@@ -70,7 +70,7 @@ class FetchManager {
      * Fetches the user's bank balance.
      * @param {String} memberID Member ID
      * @param {String} guildID Guild ID
-     * @returns {Number} User's bank balance
+     * @returns {Number} User's bank balance.
      */
     fetchBank(memberID, guildID) {
         const data = this.fetchAll()
@@ -90,7 +90,7 @@ class FetchManager {
      * Fetches the user's inventory.
      * @param {String} memberID Member ID
      * @param {String} guildID Guild ID
-     * @returns {InventoryData[]} User's bank balance
+     * @returns {InventoryData[]} User's inventory.
      */
     fetchInventory(memberID, guildID) {
         const data = this.fetchAll()
@@ -110,7 +110,7 @@ class FetchManager {
      * Fetches the user's purchases history.
      * @param {String} memberID Member ID
      * @param {String} guildID Guild ID
-     * @returns {HistoryData} User's bank balance
+     * @returns {HistoryData} User's purchases history.
      */
     fetchHistory(memberID, guildID) {
         const data = this.fetchAll()
@@ -130,7 +130,7 @@ class FetchManager {
      * Fetches the user's cooldowns.
      * @param {String} memberID Member ID
      * @param {String} guildID Guild ID
-     * @returns {CooldownData} User's bank balance
+     * @returns {CooldownData} User's cooldowns object.
      */
     fetchCooldowns(memberID, guildID) {
         const data = this.fetchAll()
@@ -140,7 +140,7 @@ class FetchManager {
 
         const guildData = data[guildID]
         const memberData = guildData?.[memberID]
-        
+
         const dailyCooldown = memberData?.dailyCooldown
         const workCooldown = memberData?.workCooldown
         const weeklyCooldown = memberData?.weeklyCooldown

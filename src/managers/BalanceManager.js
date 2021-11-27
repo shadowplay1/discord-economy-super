@@ -4,7 +4,7 @@ const EconomyError = require('../classes/EconomyError')
 const FetchManager = require('./FetchManager')
 const DatabaseManager = require('./DatabaseManager')
 
-const errors = require('../structures/errors')
+const errors = require('../structures/Errors')
 
 /**
 * Balance manager methods class.
@@ -13,7 +13,8 @@ const errors = require('../structures/errors')
 class BalanceManager extends Emitter {
 
     /**
-     * Economy constructor options object. There's only needed options object properties for this manager to work properly.
+     * Economy constructor options object. 
+     * There's only needed options object properties for this manager to work properly.
      * @param {Object} options Constructor options object.
      * @param {String} options.storagePath Full path to a JSON file. Default: './storage.json'.
      */
@@ -145,7 +146,7 @@ class BalanceManager extends Emitter {
      * @returns {BalanceLeaderboard[]} Sorted leaderboard array
      */
     leaderboard(guildID) {
-        let lb = []
+        const lb = []
         const data = this.fetcher.fetchAll()
 
         if (typeof guildID !== 'string') throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
@@ -153,10 +154,10 @@ class BalanceManager extends Emitter {
         const guildData = data[guildID]
         if (!guildData) return []
 
-        let users = Object.keys(guildData)
-        let ranks = Object.values(guildData).map(x => x.money).filter(x => !isNaN(x))
+        const users = Object.keys(guildData)
+        const ranks = Object.values(guildData).map(x => x.money).filter(x => !isNaN(x))
 
-        for (let i in ranks) lb.push({
+        for (const i in ranks) lb.push({
             index: Number(i) + 1,
             userID: users[i],
             money: Number(ranks[i])

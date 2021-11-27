@@ -5,7 +5,7 @@ const FetchManager = require('./FetchManager')
 const DatabaseManager = require('./DatabaseManager')
 const BalanceManager = require('./BalanceManager')
 
-const errors = require('../structures/errors')
+const errors = require('../structures/Errors')
 
 /**
  * Shop manager methods class.
@@ -14,11 +14,13 @@ const errors = require('../structures/errors')
 class ShopManager extends Emitter {
 
     /**
-      * Economy constructor options object. There's only needed options object properties for this manager to work properly.
+      * Economy constructor options object. 
+      * There's only needed options object properties for this manager to work properly.
       * @param {Object} options Constructor options object.
       * @param {String} options.storagePath Full path to a JSON file. Default: './storage.json'.
       * @param {String} options.dateLocale The region (example: 'ru' or 'en') to format date and time. Default: 'ru'.
-      * @param {Boolean} options.subtractOnBuy If true, when someone buys the item, their balance will subtract by item price.
+      * @param {Boolean} options.subtractOnBuy 
+      * If true, when someone buys the item, their balance will subtract by item price.
      */
     constructor(options = {}) {
         super()
@@ -63,15 +65,33 @@ class ShopManager extends Emitter {
         const date = new Date().toLocaleString(this.options.dateLocale || 'ru')
         const shop = this.database.fetch(`${guildID}.shop`) || []
 
-        if (typeof guildID !== 'string') throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
-        if (typeof itemName !== 'string') throw new EconomyError(errors.invalidTypes.addItemOptions.itemName + typeof itemName)
-        if (isNaN(price)) throw new EconomyError(errors.invalidTypes.addItemOptions.price + typeof price)
+        if (typeof guildID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
+        }
 
-        if (message && typeof message !== 'string') throw new EconomyError(errors.invalidTypes.addItemOptions.message + typeof message)
-        if (description && typeof description !== 'string') throw new EconomyError(errors.invalidTypes.addItemOptions.description + typeof description)
+        if (typeof itemName !== 'string') {
+            throw new EconomyError(errors.invalidTypes.addItemOptions.itemName + typeof itemName)
+        }
 
-        if (maxAmount !== undefined && isNaN(maxAmount)) throw new EconomyError(errors.invalidTypes.addItemOptions.maxAmount + typeof maxAmount)
-        if (role && typeof role !== 'string') throw new EconomyError(errors.invalidTypes.addItemOptions.role + typeof role)
+        if (isNaN(price)) {
+            throw new EconomyError(errors.invalidTypes.addItemOptions.price + typeof price)
+        }
+
+        if (message && typeof message !== 'string') {
+            throw new EconomyError(errors.invalidTypes.addItemOptions.message + typeof message)
+        }
+
+        if (description && typeof description !== 'string') {
+            throw new EconomyError(errors.invalidTypes.addItemOptions.description + typeof description)
+        }
+
+        if (maxAmount !== undefined && isNaN(maxAmount)) {
+            throw new EconomyError(errors.invalidTypes.addItemOptions.maxAmount + typeof maxAmount)
+        }
+
+        if (role && typeof role !== 'string') {
+            throw new EconomyError(errors.invalidTypes.addItemOptions.role + typeof role)
+        }
 
         const itemInfo = {
             id: shop.length ? shop[shop.length - 1].id + 1 : 1,
@@ -93,13 +113,18 @@ class ShopManager extends Emitter {
      * Edits the item in the shop.
      * @param {Number | String} itemID Item ID or name.
      * @param {String} guildID Guild ID
-     * @param {'description' | 'price' | 'itemName' | 'message' | 'maxAmount' | 'role'} arg This argument means what thing in item you want to edit. Available arguments: 'description', 'price', 'name', 'message', 'amount', 'role'.
+     * @param {'description' | 'price' | 'itemName' | 'message' | 'maxAmount' | 'role'} arg 
+     * This argument means what thing in item you want to edit. 
+     * Available arguments are 'description', 'price', 'name', 'message', 'amount', 'role'.
+     * 
      * @returns {Boolean} If edited successfully: true, else: false.
      */
     editItem(itemID, guildID, arg, value) {
         const args = ['description', 'price', 'itemName', 'message', 'maxAmount', 'role']
 
-        if (typeof itemID !== 'number' && typeof itemID !== 'string') throw new EconomyError(errors.invalidTypes.editItemArgs.itemID + typeof itemID)
+        if (typeof itemID !== 'number' && typeof itemID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.editItemArgs.itemID + typeof itemID)
+        }
         if (typeof guildID !== 'string') throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
 
         if (!args.includes(arg)) throw new EconomyError(errors.invalidTypes.editItemArgs.arg + arg)
@@ -128,25 +153,25 @@ class ShopManager extends Emitter {
         }
 
         switch (arg) {
-        case args[0]:
-            edit(args[0], value)
-            break
-        case args[1]:
-            edit(args[1], value)
-            break
-        case args[2]:
-            edit(args[2], value)
-            break
-        case args[3]:
-            edit(args[3], value)
-            break
-        case args[4]:
-            edit(args[4], value)
-            break
-        case args[5]:
-            edit(args[5], value)
-            break
-        default: null
+            case args[0]:
+                edit(args[0], value)
+                break
+            case args[1]:
+                edit(args[1], value)
+                break
+            case args[2]:
+                edit(args[2], value)
+                break
+            case args[3]:
+                edit(args[3], value)
+                break
+            case args[4]:
+                edit(args[4], value)
+                break
+            case args[5]:
+                edit(args[5], value)
+                break
+            default: null
         }
     }
 
@@ -164,8 +189,13 @@ class ShopManager extends Emitter {
         const itemIndex = shop.findIndex(x => x.id == itemID || x.itemName == itemID)
         const item = shop[itemIndex]
 
-        if (typeof itemID !== 'number' && typeof itemID !== 'string') throw new EconomyError(errors.invalidTypes.editItemArgs.itemID + typeof itemID)
-        if (typeof guildID !== 'string') throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
+        if (typeof itemID !== 'number' && typeof itemID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.editItemArgs.itemID + typeof itemID)
+        }
+
+        if (typeof guildID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
+        }
 
         this.database.removeElement(`${guildID}.shop`, itemIndex)
 
@@ -254,7 +284,7 @@ class ShopManager extends Emitter {
      * Searches for the item in the shop.
      * @param {Number | String} itemID Item ID or name.
      * @param {String} guildID Guild ID.
-     * @returns {ItemData} If item not found: null; else: item data array.
+     * @returns {ItemData} If item not found: null; else: item info object.
      */
     searchItem(itemID, guildID) {
         /**
@@ -263,11 +293,45 @@ class ShopManager extends Emitter {
         const shop = this.database.fetch(`${guildID}.shop`)
         const item = shop.find(x => x.id == itemID || x.itemName == itemID)
 
-        if (typeof itemID !== 'number' && typeof itemID !== 'string') throw new EconomyError(errors.invalidTypes.editItemArgs.itemID + typeof itemID)
-        if (typeof guildID !== 'string') throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
+        if (typeof itemID !== 'number' && typeof itemID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.editItemArgs.itemID + typeof itemID)
+        }
 
-        if (!item) return false
+        if (typeof guildID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
+        }
 
+        if (!item) return null
+        return item
+    }
+
+    /**
+     * Searches for the item in the inventory.
+     * @param {Number | String} itemID Item ID or name.
+     * @param {String} memberID Member ID.
+     * @param {String} guildID Guild ID.
+     * @returns {InventoryData} If item not found: null; else: item info object.
+     */
+    searchInventoryItem(itemID, memberID, guildID) {
+        /**
+        * @type {InventoryData[]}
+        */
+        const inventory = this.database.fetch(`${guildID}.${memberID}.inventory`)
+        const item = inventory.find(x => x.id == itemID || x.itemName == itemID)
+
+        if (typeof itemID !== 'number' && typeof itemID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.editItemArgs.itemID + typeof itemID)
+        }
+
+        if (typeof memberID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID)
+        }
+
+        if (typeof guildID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
+        }
+
+        if (!item) return null
         return item
     }
 
@@ -277,7 +341,9 @@ class ShopManager extends Emitter {
      * @param {String} memberID Member ID.
      * @param {String} guildID Guild ID.
      * @param {String} reason The reason why the money was subtracted. Default: 'received the item from the shop'.
-     * @returns {'max' | Boolean} If item bought successfully: true; if item not found: false; if user reached the item's max amount: 'max'.
+     * @returns {Boolean | string} 
+     * If item bought successfully: true; if item not found, false will be returned; 
+     * if user reached the item's max amount: 'max' string.
      */
     buy(itemID, memberID, guildID, reason = 'received the item from the shop') {
         /**
@@ -290,16 +356,24 @@ class ShopManager extends Emitter {
         * @type {InventoryData[]}
         */
         const inventory = this.database.fetch(`${guildID}.${memberID}.inventory`) || []
-
         const inventoryItems = inventory.filter(x => x.itemName == item.itemName)
+
         /**
          * @type {HistoryData[]}
          */
         const history = this.database.fetch(`${guildID}.${memberID}.history`) || []
 
-        if (typeof itemID !== 'number' && typeof itemID !== 'string') throw new EconomyError(errors.invalidTypes.editItemArgs.itemID + typeof itemID)
-        if (typeof memberID !== 'string') throw new EconomyError(errors.invalidTypes.memberID + typeof memberID)
-        if (typeof guildID !== 'string') throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
+        if (typeof itemID !== 'number' && typeof itemID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.editItemArgs.itemID + typeof itemID)
+        }
+
+        if (typeof memberID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID)
+        }
+
+        if (typeof guildID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
+        }
 
         if (!item) return false
         if (item.maxAmount && inventoryItems.length >= item.maxAmount) return 'max'
@@ -315,11 +389,11 @@ class ShopManager extends Emitter {
             date: new Date().toLocaleString(this.options.dateLocale || 'ru')
         }
 
-        console.log(this.options)
-        if (this.options.subtractOnBuy) this.balance.subtract(itemData.price, memberID, guildID, reason)
+        if (this.options.subtractOnBuy) {
+            this.balance.subtract(itemData.price, memberID, guildID, reason)
+        }
 
         this.database.push(`${guildID}.${memberID}.inventory`, itemData)
-
         this.database.push(`${guildID}.${memberID}.history`, {
             id: history.length ? history[history.length - 1].id + 1 : 1,
             memberID,
@@ -344,8 +418,13 @@ class ShopManager extends Emitter {
     inventory(memberID, guildID) {
         const inventory = this.database.fetch(`${guildID}.${memberID}.inventory`)
 
-        if (typeof memberID !== 'string') throw new EconomyError(errors.invalidTypes.memberID + typeof memberID)
-        if (typeof guildID !== 'string') throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
+        if (typeof memberID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID)
+        }
+
+        if (typeof guildID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
+        }
 
         return (inventory || [])
     }
@@ -366,7 +445,9 @@ class ShopManager extends Emitter {
         const itemIndex = inventory.findIndex(x => x.id == itemID || x.itemName == itemID)
         const item = inventory[itemIndex]
 
-        if (typeof itemID !== 'number' && typeof itemID !== 'string') throw new EconomyError(errors.invalidTypes.editItemArgs.itemID + typeof itemID)
+        if (typeof itemID !== 'number' && typeof itemID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.editItemArgs.itemID + typeof itemID)
+        }
         if (typeof memberID !== 'string') throw new EconomyError(errors.invalidTypes.memberID + typeof memberID)
         if (typeof guildID !== 'string') throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
 
@@ -379,11 +460,20 @@ class ShopManager extends Emitter {
             const roleID = item.role.replace('<@&', '').replace('>', '')
 
             guild.roles.fetch(roleID).then(role => {
-                if (!role) throw new EconomyError(errors.roleNotFound + roleID)
-                guild.member(memberID).roles.add(role).catch(err => {
-                    console.log(`\x1b[31mFailed to give a role "${guild.roles.cache.get(roleID).name}" on guild "${guild.name}" to member ${guild.member(memberID).user.tag}:\x1b[36m`)
-                    console.log(err)
-                    console.log('\x1b[0m')
+                const member = guild.members.cache.get(memberID)
+
+                member.roles.add(role).catch(err => {
+                    if (!role) {
+                        return console.error(new EconomyError(errors.roleNotFound + roleID))
+                    }
+
+                    console.error(
+                        `\x1b[31mFailed to give a role "${guild.roles.cache.get(roleID)?.name}"` +
+                        `on guild "${guild.name}" to member ${guild.member(memberID).user.tag}:\x1b[36m`
+                    )
+
+                    console.error(err)
+                    console.error('\x1b[0m')
                 })
             })
 

@@ -8,7 +8,7 @@ const FetchManager = require('./FetchManager')
 const DatabaseManager = require('./DatabaseManager')
 
 const DefaultOptions = require('../structures/DefaultOptions')
-const errors = require('../structures/errors')
+const errors = require('../structures/Errors')
 const defaultObject = require('../structures/DefaultObject')
 
 function unset(object, key) {
@@ -42,7 +42,8 @@ function unset(object, key) {
 class UtilsManager {
 
     /**
-     * Economy constructor options object. There's only needed options object properties for this manager to work properly.
+     * Economy constructor options object. 
+     * There's only needed options object properties for this manager to work properly.
      * @param {Object} options Constructor options object.
      * @param {String} options.storagePath Full path to a JSON file. Default: './storage.json'.
      */
@@ -79,7 +80,8 @@ class UtilsManager {
 
     /**
      * Checks for if the module is up to date.
-     * @returns {Promise<VersionData>} This method will show is the module updated, latest version and installed version.
+     * @returns {Promise<VersionData>} 
+     * This method will show is the module updated, latest version and installed version.
      */
     async checkUpdates() {
         const version = require('../../package.json').version
@@ -190,7 +192,7 @@ class UtilsManager {
      * @returns {EconomyOptions} Fixed economy options object.
      */
     checkOptions(options = {}, ecoOptions) {
-        let problems = []
+        const problems = []
         let output = {}
 
         const keys = Object.keys(DefaultOptions)
@@ -200,7 +202,7 @@ class UtilsManager {
             problems.push('options is not an object. Received type: ' + typeof ecoOptions)
             output = DefaultOptions
         } else {
-            for (let i of keys) {
+            for (const i of keys) {
                 if (ecoOptions[i] == undefined) {
 
                     output[i] = DefaultOptions[i]
@@ -210,7 +212,7 @@ class UtilsManager {
                     output[i] = ecoOptions[i]
                 }
 
-                for (let y of Object.keys(DefaultOptions[i]).filter(x => isNaN(x))) {
+                for (const y of Object.keys(DefaultOptions[i]).filter(x => isNaN(x))) {
 
                     if (ecoOptions[i]?.[y] == undefined || output[i]?.[y] == undefined) {
                         try {
@@ -229,12 +231,19 @@ class UtilsManager {
 
                         if (isRewardOption) {
                             if (typeof output[i] !== 'number' && !Array.isArray(output[i])) {
-                                problems.push(`options.${i} is not a number or array. Received type: ${typeof output[i]}.`)
+                                problems.push(
+                                    `options.${i} is not a number or array.` +
+                                    `Received type: ${typeof output[i]}.`
+                                )
                                 output[i] = DefaultOptions[i]
                             }
 
                         } else {
-                            problems.push(`options.${i} is not a ${typeof DefaultOptions[i]}. Received type: ${typeof output[i]}.`)
+                            problems.push(
+                                `options.${i} is not a ${typeof DefaultOptions[i]}. ` +
+                                `Received type: ${typeof output[i]}.`
+                            )
+
                             output[i] = DefaultOptions[i]
                         }
                     }
@@ -253,10 +262,15 @@ class UtilsManager {
                 }
 
 
-                for (let y of Object.keys(DefaultOptions[i]).filter(x => isNaN(x))) {
+                for (const y of Object.keys(DefaultOptions[i]).filter(x => isNaN(x))) {
 
                     if (typeof output[i]?.[y] !== typeof DefaultOptions[i][y]) {
-                        if (!options.ignoreInvalidTypes) problems.push(`options.${i}.${y} is not a ${typeof DefaultOptions[i][y]}. Received type: ${typeof output[i][y]}.`)
+                        if (!options.ignoreInvalidTypes) {
+                            problems.push(
+                                `options.${i}.${y} is not a ${typeof DefaultOptions[i][y]}. ` +
+                                `Received type: ${typeof output[i][y]}.`
+                            )
+                        }
                         output[i][y] = DefaultOptions[i][y]
                     }
 
@@ -264,11 +278,11 @@ class UtilsManager {
                 }
             }
 
-            for (let i of optionKeys) {
+            for (const i of optionKeys) {
                 const defaultIndex = keys.indexOf(i)
                 const objectKeys = Object.keys(ecoOptions[i]).filter(x => isNaN(x))
 
-                for (let y of objectKeys) {
+                for (const y of objectKeys) {
                     const allKeys = Object.keys(DefaultOptions[i])
                     const index = allKeys.indexOf(y)
 
@@ -291,7 +305,12 @@ class UtilsManager {
             if (options.showProblems) console.log(`Checked the options: ${problems.length ?
                 `${problems.length} problems found:\n\n${problems.join('\n')}` : '0 problems found.'}`)
 
-            if (options.sendSuccessLog && !options.showProblems) console.log(`Checked the options: ${problems.length} ${problems.length == 1 ? 'problem' : 'problems'} found.`)
+            if (options.sendSuccessLog && !options.showProblems) {
+                console.log(
+                    `Checked the options: ${problems.length} ` +
+                    `${problems.length == 1 ? 'problem' : 'problems'} found.`
+                )
+            }
         }
 
         if (output == DefaultOptions) return ecoOptions
@@ -311,13 +330,19 @@ class UtilsManager {
  * @typedef {Object} EconomyOptions Default Economy options object.
  * @property {String} [storagePath='./storage.json'] Full path to a JSON file. Default: './storage.json'
  * @property {Boolean} [checkStorage=true] Checks the if database file exists and if it has errors. Default: true
- * @property {Number} [dailyCooldown=86400000] Cooldown for Daily Command (in ms). Default: 24 Hours (60000 * 60 * 24) ms
+ * @property {Number} [dailyCooldown=86400000] 
+ * Cooldown for Daily Command (in ms). Default: 24 Hours (60000 * 60 * 24) ms
+ * 
  * @property {Number} [workCooldown=3600000] Cooldown for Work Command (in ms). Default: 1 Hour (60000 * 60) ms
  * @property {Number | Number[]} [dailyAmount=100] Amount of money for Daily Command. Default: 100.
- * @property {Number} [weeklyCooldown=604800000] Cooldown for Weekly Command (in ms). Default: 7 Days (60000 * 60 * 24 * 7) ms
+ * @property {Number} [weeklyCooldown=604800000] 
+ * Cooldown for Weekly Command (in ms). Default: 7 Days (60000 * 60 * 24 * 7) ms
+ * 
  * @property {Number | Number[]} [weeklyAmount=100] Amount of money for Weekly Command. Default: 1000.
  * @property {Number | Number[]} [workAmount=[10, 50]] Amount of money for Work Command. Default: [10, 50].
- * @property {Boolean} [subtractOnBuy=true] If true, when someone buys the item, their balance will subtract by item price. Default: false
+ * @property {Boolean} [subtractOnBuy=true] 
+ * If true, when someone buys the item, their balance will subtract by item price. Default: false
+ * 
  * @property {Number} [updateCountdown=1000] Checks for if storage file exists in specified time (in ms). Default: 1000.
  * @property {String} [dateLocale='ru'] The region (example: 'ru'; 'en') to format the date and time. Default: 'ru'.
  * @property {UpdaterOptions} [updater=UpdaterOptions] Update Checker options object.
@@ -328,7 +353,8 @@ class UtilsManager {
 /**
  * @typedef {Object} UpdaterOptions Updatee options object.
  * @property {Boolean} [checkUpdates=true] Sends the update state message in console on start. Default: true.
- * @property {Boolean} [upToDateMessage=true] Sends the message in console on start if module is up to date. Default: true.
+ * @property {Boolean} [upToDateMessage=true] 
+ * Sends the message in console on start if module is up to date. Default: true.
  */
 
 /**
@@ -340,12 +366,17 @@ class UtilsManager {
 
 /**
  * @typedef {Object} CheckerOptions Options object for an 'Economy.utils.checkOptions' method.
- * @property {Boolean} [ignoreInvalidTypes=false] Allows the method to ignore the options with invalid types. Default: false.
- * @property {Boolean} [ignoreUnspecifiedOptions=false] Allows the method to ignore the unspecified options. Default: false.
+ * @property {Boolean} [ignoreInvalidTypes=false] 
+ * Allows the method to ignore the options with invalid types. Default: false.
+ * 
+ * @property {Boolean} [ignoreUnspecifiedOptions=false] 
+ * Allows the method to ignore the unspecified options. Default: false.
+ * 
  * @property {Boolean} [ignoreInvalidOptions=false] Allows the method to ignore the unexisting options. Default: false.
  * @property {Boolean} [showProblems=false] Allows the method to show all the problems in the console. Default: false. 
  * @property {Boolean} [sendLog=false] Allows the method to send the result in the console. Default: false.
- * @property {Boolean} [sendSuccessLog=false] Allows the method to send the result if no problems were found. Default: false.
+ * @property {Boolean} [sendSuccessLog=false] 
+ * Allows the method to send the result if no problems were found. Default: false.
  */
 
 /**

@@ -10,7 +10,8 @@ const DefaultOptions = require('../structures/DefaultOptions')
 class DotParser {
 
     /**
-     * Economy constructor options object. There's only needed options object properties for this manager to work properly.
+     * Economy constructor options object. 
+     * There's only needed options object properties for this manager to work properly.
      * @param {Object} options Constructor options object.
      * @param {String} options.storagePath Full path to a JSON file. Default: './storage.json'.
      */
@@ -66,7 +67,7 @@ class DotParser {
      */
     set(key, value) {
         const { isObject } = this
-        let storageData = this.fetcher.fetchAll()
+        const storageData = this.fetcher.fetchAll()
 
         if (!key) return false
         if (typeof key !== 'string') return false
@@ -102,7 +103,7 @@ class DotParser {
      */
     remove(key) {
         const { isObject } = this
-        let storageData = this.fetcher.fetchAll()
+        const storageData = this.fetcher.fetchAll()
 
         if (!key) return false
         if (typeof key !== 'string') return false

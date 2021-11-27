@@ -15,7 +15,7 @@ class EconomyError extends Error {
             super(message.message)
             Error.captureStackTrace(this, this.constructor)
         }
-        
+
         if (typeof message == 'string') super(message)
 
         /**

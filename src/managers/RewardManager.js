@@ -8,7 +8,7 @@ const CooldownManager = require('./CooldownManager')
 const DatabaseManager = require('./DatabaseManager')
 const SettingsManager = require('./SettingsManager')
 
-const errors = require('../structures/errors')
+const errors = require('../structures/Errors')
 const UtilsManager = require('./UtilsManager')
 
 const parse = ms => ({
@@ -25,13 +25,15 @@ const parse = ms => ({
 class RewardManager {
 
     /**
-      * Economy constructor options object. There's only needed options object properties for this manager to work properly.
+      * Economy constructor options object. 
+      * There's only needed options object properties for this manager to work properly.
       * @param {Object} options Constructor options object.
       * @param {String} options.storagePath Full path to a JSON file. Default: './storage.json'.
       * @param {Number} options.dailyCooldown Cooldown for Daily Command (in ms). Default: 24 Hours (60000 * 60 * 24) ms
       * @param {Number} options.workCooldown Cooldown for Work Command (in ms). Default: 1 Hour (60000 * 60) ms
       * @param {Number} options.dailyAmount Amount of money for Daily Command. Default: 100.
-      * @param {Number} options.weeklyCooldown Cooldown for Weekly Command (in ms). Default: 7 Days (60000 * 60 * 24 * 7) ms
+      * @param {Number} options.weeklyCooldown
+      * Cooldown for Weekly Command (in ms). Default: 7 Days (60000 * 60 * 24 * 7) ms
       * @param {Number} options.weeklyAmount Amount of money for Weekly Command. Default: 1000.
       * @param {Number | Array} options.workAmount Amount of money for Work Command. Default: [10, 50].
      */

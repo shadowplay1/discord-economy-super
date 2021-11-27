@@ -1,5 +1,3 @@
-/* eslint-disable no-async-promise-executor */
-
 const { existsSync, readFileSync, writeFileSync } = require('fs')
 const { promisify } = require('util')
 
@@ -22,7 +20,7 @@ const SettingsManager = require('./managers/SettingsManager')
 const Emitter = require('./classes/Emitter')
 const EconomyError = require('./classes/EconomyError')
 
-const errors = require('./structures/errors')
+const errors = require('./structures/Errors')
 
 const colors = {
     red: '\x1b[31m',
@@ -184,12 +182,16 @@ class Economy extends Emitter {
      */
     init() {
         let attempt = 0
-        let attempts = this.options?.errorHandler?.attempts == 0 ? Infinity : this.options?.errorHandler?.attempts
+
+        const attempts =
+            this.options?.errorHandler?.attempts == 0 ?
+                Infinity :
+                this.options?.errorHandler?.attempts
 
         const time = this.options?.errorHandler?.time
         const retryingTime = (time / 1000).toFixed(1)
 
-        const sleep = promisify(setTimeout);
+        const sleep = promisify(setTimeout)
 
         const check = () => new Promise(resolve => {
             this._init().then(x => {
@@ -226,7 +228,11 @@ class Economy extends Emitter {
                         console.log(`\x1b[34mAttempt ${attempt}${attempts == Infinity ? '.' : `/${attempts}`}`)
 
                         if (attempt == attempts) {
-                            console.log(`${colors.green}Failed to start the module within ${attempts} attempts...${colors.reset}`)
+                            console.log(
+                                `${colors.green}Failed to start the module within` +
+                                `${attempts} attempts...${colors.reset}`
+                            )
+
                             process.exit(1)
                         }
 
@@ -246,8 +252,13 @@ class Economy extends Emitter {
      */
     _init() {
         const updateCountdown = this.options?.updateCountdown
-        const isReservedStorage = !this.options?.storagePath?.includes('testStorage123') && !__dirname.includes('discord-economy-super\\tests')
-        const isPathReserved = !__dirname.includes('discord-economy-super\\tests') && !__dirname.includes('discord-economy-super/tests')
+        const isReservedStorage =
+            !this.options?.storagePath?.includes('testStorage123') &&
+            !__dirname.includes('discord-economy-super\\tests')
+
+        const isPathReserved =
+            !__dirname.includes('discord-economy-super\\tests') &&
+            !__dirname.includes('discord-economy-super/tests')
 
         const isFileExist = existsSync(this.options?.storagePath)
 
@@ -260,23 +271,33 @@ class Economy extends Emitter {
                     if (!isFileExist && isReservedStorage) writeFileSync(this.options?.storagePath, '{}')
 
                     try {
-                        if (this.options?.storagePath?.includes('testStorage123') && isPathReserved) return reject(new EconomyError(errors.reservedName('testStorage123')))
+                        if (this.options?.storagePath?.includes('testStorage123') && isPathReserved) {
+                            return reject(new EconomyError(errors.reservedName('testStorage123')))
+                        }
 
-                        if (this.options?.storagePath?.endsWith('package.json')) return reject(new EconomyError(errors.reservedName('package.json')))
-                        if (this.options?.storagePath?.endsWith('package-lock.json')) return reject(new EconomyError(errors.reservedName('package-lock.json')))
+                        if (this.options?.storagePath?.endsWith('package.json')) {
+                            return reject(new EconomyError(errors.reservedName('package.json')))
+                        }
+
+                        if (this.options?.storagePath?.endsWith('package-lock.json')) {
+                            return reject(new EconomyError(errors.reservedName('package-lock.json')))
+                        }
 
                         const data = readFileSync(this.options?.storagePath)
                         JSON.parse(data.toString())
 
                     } catch (err) {
-                        if (err.message.includes('Unexpected') && err.message.includes('JSON')) return reject(new EconomyError(errors.wrongStorageData))
+                        if (err.message.includes('Unexpected') && err.message.includes('JSON')) {
+                            return reject(new EconomyError(errors.wrongStorageData))
+                        }
+
                         else return reject(err)
                     }
                 }
 
+                /* eslint-disable max-len */
                 if (this.options?.updater?.checkUpdates) {
                     const version = await this.utils.checkUpdates()
-
                     if (!version.updated) {
 
                         console.log('\n\n')
@@ -319,10 +340,21 @@ class Economy extends Emitter {
                     const interval = setInterval(() => {
                         if (!storageExists) {
                             try {
-                                if (this.options?.storagePath?.includes('testStorage123') && !__dirname.includes('discord-economy-super\\tests')) throw new EconomyError(errors.reservedName('testStorage123'))
+                                const isPathReserved =
+                                    this.options?.storagePath?.includes('testStorage123') &&
+                                    !__dirname.includes('discord-economy-super\\tests')
 
-                                if (this.options?.storagePath?.endsWith('package.json')) throw new EconomyError(errors.reservedName('package.json'))
-                                if (this.options?.storagePath?.endsWith('package-lock.json')) throw new EconomyError(errors.reservedName('package-lock.json'))
+                                if (isPathReserved) {
+                                    throw new EconomyError(errors.reservedName('testStorage123'))
+                                }
+
+                                if (this.options?.storagePath?.endsWith('package.json')) {
+                                    throw new EconomyError(errors.reservedName('package.json'))
+                                }
+
+                                if (this.options?.storagePath?.endsWith('package-lock.json')) {
+                                    throw new EconomyError(errors.reservedName('package-lock.json'))
+                                }
 
                                 writeFileSync(this.options?.storagePath, '{}', 'utf-8')
                             } catch (err) {
@@ -530,9 +562,11 @@ class Economy extends Emitter {
  * @property {Number} [workCooldown=3600000] Cooldown for Work Command (in ms). Default: 1 Hour (60000 * 60) ms
  * @property {Number | Number[]} [dailyAmount=100] Amount of money for Daily Command. Default: 100.
  * @property {Number} [weeklyCooldown=604800000] Cooldown for Weekly Command (in ms). Default: 7 Days (60000 * 60 * 24 * 7) ms
+ * 
  * @property {Number | Number[]} [weeklyAmount=100] Amount of money for Weekly Command. Default: 1000.
  * @property {Number | Number[]} [workAmount=[10, 50]] Amount of money for Work Command. Default: [10, 50].
  * @property {Boolean} [subtractOnBuy=true] If true, when someone buys the item, their balance will subtract by item price. Default: false
+ * 
  * @property {Number} [updateCountdown=1000] Checks for if storage file exists in specified time (in ms). Default: 1000.
  * @property {String} [dateLocale='en'] The region (example: 'ru' or 'en') to format the date and time. Default: 'en'.
  * @property {UpdaterOptions} [updater=UpdaterOptions] Update Checker options object.

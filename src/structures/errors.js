@@ -32,13 +32,16 @@ module.exports = {
 
         editItemArgs: {
             itemID: 'itemID is not a string or a number. Received type: ',
-            arg: `'arg' parameter must be one of these values: ${['description', 'price', 'itemName', 'message', 'maxAmount', 'role'].map(x => `'${x}'`).join(', ')}. Received: `,
+            arg: '\'arg\' parameter must be one of these values: ' +
+                ['description', 'price', 'itemName', 'message', 'maxAmount', 'role'].map(x => `'${x}'`).join(', ') +
+                '. Received: ',
             noValue: 'no value specified. Received: '
         },
     },
 
     workAmount: {
-        tooManyElements: 'options.workAmount array cannot have more than 2 elements; it must have min and max values as first and second element of the array (example: [10, 20]).',
+        tooManyElements: 'options.workAmount array cannot have more than 2 elements;' +
+            'it must have min and max values as first and second element of the array (example: [10, 20]).',
     },
 
     databaseManager: {
@@ -56,14 +59,17 @@ module.exports = {
     },
 
     settingsManager: {
-        invalidKey: `You have specified the incorrect settings key. It must be one of the following values:\n${settingsArray.map(x => `'${x}'`).join(', ')}.\nReceived: `,
+        invalidKey: 'You have specified the incorrect settings key.' +
+         'It must be one of the following values:\n' +
+        settingsArray.map(x => `'${x}'`).join(', ') +
+        '.\nReceived: ',
 
         valueNotFound(setting, value) {
             return `Cannot find the value "${value}" in a setting "${setting}".`
         },
 
         invalidType(key, type, received) {
-            return `${key} must be a ${type}. Received type: ${received}`
+            return `${ key } must be a ${ type }. Received type: ${ received } `
         }
     },
 
@@ -73,7 +79,7 @@ module.exports = {
     oldNodeVersion: 'This module is supporting only Node.js v14 or newer. Installed version is ',
 
     reservedName(name = 'testStorage123') {
-        return `'${name}' is a reserved storage file name. You cannot use it.`
+        return `'${name}' is a reserved storage file name.You cannot use it.`
     },
     invalidStorage: 'Storage file is not valid.',
     wrongStorageData: 'Storage file contains wrong data.',
