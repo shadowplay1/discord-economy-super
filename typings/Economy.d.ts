@@ -13,6 +13,7 @@ import RewardManager from './managers/RewardManager'
 import CooldownManager from './managers/CooldownManager'
 import SettingsManager from './managers/SettingsManager'
 
+
 /**
 * The Economy class.
 */
@@ -59,7 +60,7 @@ declare class Economy extends Emitter {
      * Database checking interval.
      * @type {?NodeJS.Timeout}
     */
-    public interval: null
+    public interval: NodeJS.Timeout
 
     /**
      * Economy error class.
@@ -129,10 +130,10 @@ declare class Economy extends Emitter {
 
     /**
      * Initializates the module.
-     * @returns {Promise<true | Error>} If started successfully: true; else: Error instance.
+     * @returns {Promise<boolean>} If started successfully: true; else: Error instance.
      * @private
     */
-    private _init(): Promise<true | Error>
+    private _init(): Promise<boolean>
 
     /**
      * Initializates the module.

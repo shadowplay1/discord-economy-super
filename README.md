@@ -21,15 +21,20 @@
 <b>Note:</br><b>
 <b>Node.js 14.0.0 or newer is required.</b><br>
 ```console
-npm i discord-leveling-super
-yarn add discord-leveling-super
-pnpm add discord-leveling-super
+npm i discord-economy-super
+yarn add discord-economy-super
+pnpm add discord-economy-super
 ```
 
 ## [[Module Documentation]](https://des-docs.tk)
 
 ## 🤔 | Help
 <b>If you don't understand something in the documentation or you are experiencing problems, feel free to join our <a href = "https://discord.gg/4pWKq8vUnb">Support Server</a>.</b>
+
+## 🕘 | My Other Modules
+<ul>
+<li><b><a href = "https://www.npmjs.com/package/discord-leveling-super">discord-leveling-super</a></b></li>
+</ul>
 
 ## ❗ | Useful Links
 <ul>

@@ -316,7 +316,7 @@ class ShopManager extends Emitter {
         /**
         * @type {InventoryData[]}
         */
-        const inventory = this.database.fetch(`${guildID}.${memberID}.inventory`)
+        const inventory = this.database.fetch(`${guildID}.${memberID}.inventory`) || []
         const item = inventory.find(x => x.id == itemID || x.itemName == itemID)
 
         if (typeof itemID !== 'number' && typeof itemID !== 'string') {
@@ -416,7 +416,7 @@ class ShopManager extends Emitter {
      * @returns {InventoryData[]} User's inventory array.
      */
     inventory(memberID, guildID) {
-        const inventory = this.database.fetch(`${guildID}.${memberID}.inventory`)
+        const inventory = this.database.fetch(`${guildID}.${memberID}.inventory`) || []
 
         if (typeof memberID !== 'string') {
             throw new EconomyError(errors.invalidTypes.memberID + typeof memberID)
@@ -426,7 +426,7 @@ class ShopManager extends Emitter {
             throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
         }
 
-        return (inventory || [])
+        return inventory
     }
 
     /**
@@ -441,7 +441,7 @@ class ShopManager extends Emitter {
         /**
          * @type {InventoryData[]}
          */
-        const inventory = this.database.fetch(`${guildID}.${memberID}.inventory`)
+        const inventory = this.database.fetch(`${guildID}.${memberID}.inventory`) || []
         const itemIndex = inventory.findIndex(x => x.id == itemID || x.itemName == itemID)
         const item = inventory[itemIndex]
 

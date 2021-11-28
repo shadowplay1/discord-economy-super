@@ -1,12 +1,14 @@
 {
 	"name": "discord-economy-super",
-	"version": "1.4.4",
+	"version": "1.4.6",
 	"types": "./typings/Economy.d.ts",
-	"description": "Easy and customizable economy framework for your Discord bot.",
+	"description": "Easy and customizable economy framework for your Discord Bot.",
 	"main": "index.js",
 	"scripts": {
 		"test": "node ./tests/test.js",
-		"postinstall": "node install.js"
+		"postinstall": "node install.js",
+		"lint": "eslint ./",
+		"lint:fix": "eslint ./ --fix"
 	},
 	"keywords": [
 		"discord",
@@ -17,15 +19,15 @@
 		"discord-economy",
 		"discord-economy-super",
 		"discord-js",
+		"discord.eco",
 		"discord-eco",
 		"discord-bot",
-		"shadowplay",
-		"super"
+		"shadowplay"
 	],
 	"author": "shadowplay",
 	"license": "MIT",
 	"dependencies": {
-		"node-fetch": "^2.6.1"
+		"node-fetch": "2.6.1"
 	},
 	"repository": {
 		"type": "git",
