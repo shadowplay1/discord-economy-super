@@ -8,7 +8,7 @@ const CooldownManager = require('./CooldownManager')
 const DatabaseManager = require('./DatabaseManager')
 const SettingsManager = require('./SettingsManager')
 
-const errors = require('../structures/Errors')
+const errors = require('../structures/errors')
 const UtilsManager = require('./UtilsManager')
 
 const parse = ms => ({

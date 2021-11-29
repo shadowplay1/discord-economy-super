@@ -1,7 +1,7 @@
 const FetchManager = require('./FetchManager')
 
 const DefaultOptions = require('../structures/DefaultOptions')
-const errors = require('../structures/Errors')
+const errors = require('../structures/errors')
 
 const EconomyError = require('../classes/EconomyError')
 
@@ -67,8 +67,12 @@ class DatabaseManager {
      */
     set(key, value) {
         if (!key) return false
-        if (typeof key !== 'string') throw new EconomyError(errors.databaseManager.invalidTypes.key + typeof data)
         if (value == undefined) return false
+
+        if (typeof key !== 'string') {
+            throw new EconomyError(errors.databaseManager.invalidTypes.key + typeof data)
+        }
+
 
         return this.parser.set(key, value)
     }
@@ -80,13 +84,20 @@ class DatabaseManager {
      * @returns {Boolean} If added successfully: true; else: false
      */
     add(key, value) {
-        if (!key) return false
-        if (typeof key !== 'string') throw new EconomyError(errors.databaseManager.invalidTypes.key + typeof data)
-
         const data = this.parser.parse(key)
 
-        if (isNaN(value)) throw new EconomyError(errors.databaseManager.invalidTypes.value.number + typeof value)
-        if (isNaN(data)) throw new EconomyError(errors.databaseManager.invalidTypes.target.number + typeof data)
+        if (!key) return false
+        if (typeof key !== 'string') {
+            throw new EconomyError(errors.databaseManager.invalidTypes.key + typeof data)
+        }
+
+        if (isNaN(value)) {
+            throw new EconomyError(errors.databaseManager.invalidTypes.value.number + typeof value)
+        }
+
+        if (isNaN(data)) {
+            throw new EconomyError(errors.databaseManager.invalidTypes.target.number + typeof data)
+        }
 
         const numData = Number(data)
         const numValue = Number(value)
@@ -101,13 +112,20 @@ class DatabaseManager {
      * @returns {Boolean} If set successfully: true; else: false
      */
     subtract(key, value) {
-        if (!key) return false
-        if (typeof key !== 'string') throw new EconomyError(errors.databaseManager.invalidTypes.key + typeof data)
-
         const data = this.parser.parse(key)
 
-        if (isNaN(value)) throw new EconomyError(errors.databaseManager.invalidTypes.value.number + typeof value)
-        if (isNaN(data)) throw new EconomyError(errors.databaseManager.invalidTypes.target.number + typeof data)
+        if (!key) return false
+        if (typeof key !== 'string') {
+            throw new EconomyError(errors.databaseManager.invalidTypes.key + typeof data)
+        }
+
+        if (isNaN(value)) {
+            throw new EconomyError(errors.databaseManager.invalidTypes.value.number + typeof value)
+        }
+
+        if (isNaN(data)) {
+            throw new EconomyError(errors.databaseManager.invalidTypes.target.number + typeof data)
+        }
 
         const numData = Number(data)
         const numValue = Number(value)
@@ -122,7 +140,9 @@ class DatabaseManager {
      */
     fetch(key) {
         if (!key) return false
-        if (typeof key !== 'string') throw new EconomyError(errors.databaseManager.invalidTypes.key + typeof data)
+        if (typeof key !== 'string') {
+            throw new EconomyError(errors.databaseManager.invalidTypes.key + typeof data)
+        }
 
         return this.parser.parse(key)
     }
@@ -134,7 +154,9 @@ class DatabaseManager {
      */
     remove(key) {
         if (!key) return false
-        if (typeof key !== 'string') throw new EconomyError(errors.databaseManager.invalidTypes.key + typeof data)
+        if (typeof key !== 'string') {
+            throw new EconomyError(errors.databaseManager.invalidTypes.key + typeof data)
+        }
 
         return this.parser.remove(key)
     }
@@ -171,10 +193,14 @@ class DatabaseManager {
     removeElement(key, index) {
         if (!key) return false
         if (index == undefined) return false
-        if (typeof key !== 'string') throw new EconomyError(errors.databaseManager.invalidTypes.key + typeof data)
+        if (typeof key !== 'string') {
+            throw new EconomyError(errors.databaseManager.invalidTypes.key + typeof data)
+        }
 
         const data = this.fetch(key)
-        if (!Array.isArray(data)) throw new EconomyError(errors.databaseManager.invalidTypes.target.array + typeof data)
+        if (!Array.isArray(data)) {
+            throw new EconomyError(errors.databaseManager.invalidTypes.target.array + typeof data)
+        }
 
         data.splice(index, 1)
         return this.set(key, data)

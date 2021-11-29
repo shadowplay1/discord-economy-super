@@ -2,7 +2,7 @@ const EconomyError = require('../classes/EconomyError')
 
 const DatabaseManager = require('./DatabaseManager')
 
-const errors = require('../structures/Errors')
+const errors = require('../structures/errors')
 
 /**
 * Cooldown manager methods class.
@@ -47,8 +47,13 @@ class CooldownManager {
      * @returns {Number} Cooldown end timestamp
      */
     daily(memberID, guildID) {
-        if (typeof memberID !== 'string') throw new EconomyError(errors.invalidTypes.memberID + typeof memberID)
-        if (typeof guildID !== 'string') throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
+        if (typeof memberID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID)
+        }
+
+        if (typeof guildID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
+        }
 
         const cooldown = this.database.fetch(`${guildID}.${memberID}.dailyCooldown`)
 
@@ -62,8 +67,13 @@ class CooldownManager {
      * @returns {Number} Cooldown end timestamp
      */
     work(memberID, guildID) {
-        if (typeof memberID !== 'string') throw new EconomyError(errors.invalidTypes.memberID + typeof memberID)
-        if (typeof guildID !== 'string') throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
+        if (typeof memberID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID)
+        }
+
+        if (typeof guildID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
+        }
 
         const cooldown = this.database.fetch(`${guildID}.${memberID}.workCooldown`)
 
@@ -77,8 +87,13 @@ class CooldownManager {
      * @returns {Number} Cooldown end timestamp
      */
     weekly(memberID, guildID) {
-        if (typeof memberID !== 'string') throw new EconomyError(errors.invalidTypes.memberID + typeof memberID)
-        if (typeof guildID !== 'string') throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
+        if (typeof memberID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID)
+        }
+
+        if (typeof guildID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
+        }
 
         const cooldown = this.database.fetch(`${guildID}.${memberID}.weeklyCooldown`)
 
@@ -92,8 +107,13 @@ class CooldownManager {
      * @returns {Boolean} If cleared: true; else: false
      */
     clearDaily(memberID, guildID) {
-        if (typeof memberID !== 'string') throw new EconomyError(errors.invalidTypes.memberID + typeof memberID)
-        if (typeof guildID !== 'string') throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
+        if (typeof memberID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID)
+        }
+
+        if (typeof guildID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
+        }
 
         return this.database.remove(`${guildID}.${memberID}.dailyCooldown`)
     }
@@ -105,8 +125,13 @@ class CooldownManager {
      * @returns {Boolean} If cleared: true; else: false
      */
     clearWork(memberID, guildID) {
-        if (typeof memberID !== 'string') throw new EconomyError(errors.invalidTypes.memberID + typeof memberID)
-        if (typeof guildID !== 'string') throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
+        if (typeof memberID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID)
+        }
+
+        if (typeof guildID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
+        }
 
         return this.database.remove(`${guildID}.${memberID}.workCooldown`)
     }
@@ -118,8 +143,13 @@ class CooldownManager {
      * @returns {Boolean} If cleared: true; else: false
      */
     clearWeekly(memberID, guildID) {
-        if (typeof memberID !== 'string') throw new EconomyError(errors.invalidTypes.memberID + typeof memberID)
-        if (typeof guildID !== 'string') throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
+        if (typeof memberID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID)
+        }
+
+        if (typeof guildID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
+        }
 
         return this.database.remove(`${guildID}.${memberID}.weeklyCooldown`)
     }

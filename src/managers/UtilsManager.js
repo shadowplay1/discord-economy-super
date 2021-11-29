@@ -8,7 +8,7 @@ const FetchManager = require('./FetchManager')
 const DatabaseManager = require('./DatabaseManager')
 
 const DefaultOptions = require('../structures/DefaultOptions')
-const errors = require('../structures/Errors')
+const errors = require('../structures/errors')
 const defaultObject = require('../structures/DefaultObject')
 
 function unset(object, key) {
