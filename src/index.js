@@ -20,7 +20,7 @@ const SettingsManager = require('./managers/SettingsManager')
 const Emitter = require('./classes/Emitter')
 const EconomyError = require('./classes/EconomyError')
 
-const errors = require('./structures/Errors')
+const errors = require('./structures/errors')
 
 const colors = {
     red: '\x1b[31m',
@@ -321,7 +321,7 @@ class Economy extends Emitter {
                             console.log(colors.green + '╔══════════════════════════════════════════════════════════╗')
                             console.log(colors.green + '║ @ discord-economy-super                           - [] X ║')
                             console.log(colors.green + '║══════════════════════════════════════════════════════════║')
-                            console.log(colors.yellow + `║                  The module is ${colors.cyan}up of date!${colors.yellow}               ║`)
+                            console.log(colors.yellow + `║                  The module is ${colors.cyan}up to date!${colors.yellow}               ║`)
                             console.log(colors.magenta + '║                  No updates are available.               ║')
                             console.log(colors.blue + `║                  Current version is ${version.packageVersion}.               ║`)
                             console.log(colors.cyan + '║                           Enjoy!                         ║')
