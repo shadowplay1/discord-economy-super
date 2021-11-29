@@ -256,6 +256,12 @@ class SettingsManager {
  * @property {Number} [weeklyCooldown=604800000] 
  * Cooldown for Weekly Command (in ms). Default: 7 Days (60000 * 60 * 24 * 7) ms
  * 
+ * @property {Boolean} deprecationWarnings 
+ * If true, the deprecation warnings will be sent in the console. Default: true.
+ *
+ * @property {Number} [sellingItemPercent=75] 
+ * Percent of the item's price it will be sold for. Default: 75.
+ * 
  * @property {Number | Number[]} [weeklyAmount=100] Amount of money for Weekly Command. Default: 1000.
  * @property {Number | Number[]} [workAmount=[10, 50]] Amount of money for Work Command. Default: [10, 50].
  * @property {Boolean} [subtractOnBuy=true] 

@@ -5,12 +5,18 @@ import EconomyError from './classes/EconomyError'
 
 import BalanceManager from './managers/BalanceManager'
 import BankManager from './managers/BankManager'
+
 import UtilsManager from './managers/UtilsManager'
+
 import FetchManager from './managers/FetchManager'
 import DatabaseManager from './managers/DatabaseManager'
+
 import ShopManager from './managers/ShopManager'
+import InventoryManager from './managers/InventoryManager'
+
 import RewardManager from './managers/RewardManager'
 import CooldownManager from './managers/CooldownManager'
+
 import SettingsManager from './managers/SettingsManager'
 
 
@@ -19,7 +25,7 @@ import SettingsManager from './managers/SettingsManager'
 */
 declare class Economy extends Emitter {
     constructor(options: EconomyOptions)
-    
+
     /**
      * Module ready status.
      * @type {?boolean}
@@ -67,6 +73,18 @@ declare class Economy extends Emitter {
      * @type {EconomyError}
      */
     public EconomyError: EconomyError
+
+    /**
+     * Emitter class.
+     * @type {Emitter}
+     */
+    public Emitter: Emitter
+
+    /**
+    * Inventory manager methods object.
+    * @type {InventoryManager}
+    */
+    public inventory: InventoryManager
 
     /**
     * Balance methods object.
@@ -137,7 +155,7 @@ declare class Economy extends Emitter {
 
     /**
      * Initializates the module.
-     * @returns {Promise<true | Error>} If started successfully: true; else: Error instance.
+     * @returns {Promise<boolean | Error>} If started successfully: true; else: Error instance.
      * @private
     */
     private start(): boolean

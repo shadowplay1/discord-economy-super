@@ -18,17 +18,19 @@ class ShopManager extends Emitter {
       * There's only needed options object properties for this manager to work properly.
       * @param {Object} options Constructor options object.
       * @param {String} options.storagePath Full path to a JSON file. Default: './storage.json'.
-      * @param {String} options.dateLocale The region (example: 'ru' or 'en') to format date and time. Default: 'ru'.
-      * @param {Boolean} options.subtractOnBuy 
+      * @param {String} options.dateLocale The region (example: 'ru' or 'en') to format date and time. Default: 'en'.
+      * @param {Boolean} options.subtractOnBuy
       * If true, when someone buys the item, their balance will subtract by item price.
+      * @param {Boolean} options.deprecationWarnings 
+      * If true, the deprecation warnings will be sent in the console.
      */
     constructor(options = {}) {
         super()
 
         /**
          * Economy constructor options object.
-         * @private
          * @type {?EconomyOptions}
+         * @private
          */
         this.options = options
 
@@ -62,7 +64,7 @@ class ShopManager extends Emitter {
      */
     addItem(guildID, options = {}) {
         const { itemName, price, message, description, maxAmount, role } = options
-        const date = new Date().toLocaleString(this.options.dateLocale || 'ru')
+        const date = new Date().toLocaleString(this.options.dateLocale || 'en')
         const shop = this.database.fetch(`${guildID}.shop`) || []
 
         if (typeof guildID !== 'string') {
@@ -262,6 +264,16 @@ class ShopManager extends Emitter {
      * @deprecated
      */
     clearInventory(memberID, guildID) {
+        if (this.options.deprecationWarnings) {
+            console.log(
+                errors.deprecationWarning(
+                    'ShopManager', 'clearInventory',
+                    'InventoryManager', 'clear'
+                )
+            )
+        }
+
+
         const inventory = this.database.fetch(`${guildID}.${memberID}.inventory`)
 
         if (typeof memberID !== 'string') {
@@ -341,7 +353,7 @@ class ShopManager extends Emitter {
 
     /**
      * Searches for the item in the inventory.
-     
+     *
      * [!!!] This method is deprecated.
      * If you want to get all the bugfixes and
      * use the newest inventory features, please
@@ -356,6 +368,14 @@ class ShopManager extends Emitter {
      * @deprecated
      */
     searchInventoryItem(itemID, memberID, guildID) {
+        if (this.options.deprecationWarnings) {
+            console.log(
+                errors.deprecationWarning(
+                    'ShopManager', 'searchInventoryItem',
+                    'InventoryManager', 'searchItem'
+                )
+            )
+        }
 
         /**
         * @type {InventoryData[]}
@@ -431,7 +451,7 @@ class ShopManager extends Emitter {
             description: item.description,
             role: item.role || null,
             maxAmount: item.maxAmount,
-            date: new Date().toLocaleString(this.options.dateLocale || 'ru')
+            date: new Date().toLocaleString(this.options.dateLocale || 'en')
         }
 
         if (this.options.subtractOnBuy) {
@@ -447,7 +467,7 @@ class ShopManager extends Emitter {
             price: item.price,
             role: item.role || null,
             maxAmount: item.maxAmount,
-            date: new Date().toLocaleString(this.options.dateLocale || 'ru')
+            date: new Date().toLocaleString(this.options.dateLocale || 'en')
         })
 
         this.emit('shopItemBuy', itemData)
@@ -470,6 +490,15 @@ class ShopManager extends Emitter {
      * @deprecated
      */
     inventory(memberID, guildID) {
+        if (this.options.deprecationWarnings) {
+            console.log(
+                errors.deprecationWarning(
+                    'ShopManager', 'inventory',
+                    'InventoryManager', 'fetch'
+                )
+            )
+        }
+
         const inventory = this.database.fetch(`${guildID}.${memberID}.inventory`) || []
 
         if (typeof memberID !== 'string') {
@@ -497,10 +526,18 @@ class ShopManager extends Emitter {
      * @param {String} memberID Member ID.
      * @param {String} guildID Guild ID.
      * @param {Client} client The Discord Client. [Optional]
-     * @returns {String | false} Item message or null if item not found.
+     * @returns {String | boolean} Item message or null if item not found.
      * @deprecated
      */
     useItem(itemID, memberID, guildID, client) {
+        if (this.options.deprecationWarnings) {
+            console.log(
+                errors.deprecationWarning(
+                    'ShopManager', 'useItem',
+                    'InventoryManager', 'useItem'
+                )
+            )
+        }
 
         /**
          * @type {InventoryData[]}
@@ -548,7 +585,9 @@ class ShopManager extends Emitter {
                 })
             })
 
-            this.database.removeElement(`${guildID}.${memberID}.inventory`, itemIndex)
+            this.database
+                .removeElement(`${guildID}.${memberID}.inventory`, itemIndex)
+
             this.emit('shopItemUse', item)
 
             return item.message

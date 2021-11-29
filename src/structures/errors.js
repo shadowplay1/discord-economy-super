@@ -12,12 +12,23 @@ const settingsArray = [
     'subtractOnBuy'
 ]
 
+const colors = {
+    red: '\x1b[31m',
+    green: '\x1b[32m',
+    yellow: '\x1b[33m',
+    magenta: '\x1b[35m',
+    cyan: '\x1b[36m',
+    reset: '\x1b[0m'
+}
+
 module.exports = {
     notReady: 'The module is not ready to work.',
 
     invalidTypes: {
         memberID: 'memberID must be a string. Received type: ',
         guildID: 'guildID must be a string. Received type: ',
+        senderMemberID: 'senderMemberID must be a string. Received type: ',
+        recipientMemberID: 'recipientMemberID must be a string. Received type: ',
         amount: 'amount must be a number. Received type: ',
         value: 'value must be specified. Received: ',
 
@@ -60,16 +71,16 @@ module.exports = {
 
     settingsManager: {
         invalidKey: 'You have specified the incorrect settings key.' +
-         'It must be one of the following values:\n' +
-        settingsArray.map(x => `'${x}'`).join(', ') +
-        '.\nReceived: ',
+            'It must be one of the following values:\n' +
+            settingsArray.map(x => `'${x}'`).join(', ') +
+            '.\nReceived: ',
 
         valueNotFound(setting, value) {
             return `Cannot find the value "${value}" in a setting "${setting}".`
         },
 
         invalidType(key, type, received) {
-            return `${ key } must be a ${ type }. Received type: ${ received } `
+            return `${key} must be a ${type}. Received type: ${received} `
         }
     },
 
@@ -81,6 +92,21 @@ module.exports = {
     reservedName(name = 'testStorage123') {
         return `'${name}' is a reserved storage file name.You cannot use it.`
     },
+
     invalidStorage: 'Storage file is not valid.',
     wrongStorageData: 'Storage file contains wrong data.',
+
+    /**
+     * Sends a deprecation warning log in the console.
+     * @param {String} oldManager
+     * @param {String} oldMethod 
+     * @param {String} newManager 
+     * @param {String} newMethod
+     * @returns {String} Deprecation warning message.
+     */
+    deprecationWarning(oldManager, oldMethod, newManager, newMethod) {
+        return `${colors.magenta}[Economy] ${colors.red}"${oldManager}.${oldMethod}()"${colors.cyan} is ` +
+            `${colors.yellow}deprecated${colors.cyan}. ` +
+            `Use ${colors.green}"${newManager}.${newMethod}()"${colors.cyan} instead.${colors.reset}`
+    }
 }

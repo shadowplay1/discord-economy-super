@@ -1,4 +1,4 @@
-import CheckerOptions from './CheckerOptions';
+import CheckerOptions from './CheckerOptions'
 import ErrorHandlerOptions from './ErrorHandlerOptions'
 import UpdaterOptions from './UpdaterOptions'
 
@@ -9,7 +9,7 @@ declare class EconomyOptions {
     /**
      * Full path to a JSON file. Default: './storage.json'.
      */
-    storagePath?: string;
+    storagePath?: string
 
     /**
      * Checks the if database file exists and if it has errors. Default: true.
@@ -19,61 +19,72 @@ declare class EconomyOptions {
     /**
      * Cooldown for Daily Command (in ms). Default: 24 Hours (60000 * 60 * 24) ms
      */
-    dailyCooldown?: number;
+    dailyCooldown?: number
 
     /**
      * Cooldown for Work Command (in ms). Default: 1 Hour (60000 * 60) ms
      */
-    workCooldown?: number;
+    workCooldown?: number
 
     /**
      * Cooldown for Weekly Command (in ms). Default: 7 Days (60000 * 60 * 24 * 7) ms
      */
-    weeklyCooldown?: number;
+    weeklyCooldown?: number
 
     /**
      * Amount of money for Daily Command. Default: 100.
      */
-    dailyAmount?: number;
+    dailyAmount?: number
 
     /**
      * Amount of money for Work Command. Default: [10, 50].
      */
-    workAmount?: number | Number[];
+    workAmount?: number | Number[]
 
     /**
      * If true, when someone buys the item, their balance will subtract by item price.
      */
-    subtractOnBuy?: boolean;
+    subtractOnBuy?: boolean
 
     /**
      * Amount of money for Weekly Command. Default: 1000.
      */
-    weeklyAmount?: number;
+    weeklyAmount?: number
+
     /**
      * Checks for if storage file exists in specified time (in ms). Default: 1000.
      */
-    updateCooldown?: number;
+    updateCooldown?: number
 
     /**
-     * The region (example: 'ru'; 'en') to format date and time. Default: 'ru'.
+     * Percent of the item's price it will be sold for. Default: 75.
      */
-    dateLocale?: string;
+    sellingItemPercent?: number
+    
+    /**
+     * If true, the deprecation warnings will be sent in the console.
+     */
+    deprecationWarnings?: boolean
+
+    /**
+     * The region (example: 'ru'; 'en') to format date and time. Default: 'en'.
+     */
+    dateLocale?: string
 
     /**
     * Update Checker options object.
     */
-    updater?: UpdaterOptions;
+    updater?: UpdaterOptions
 
     /**
     * Error Handler options object.
     */
-    errorHandler?: ErrorHandlerOptions;
+    errorHandler?: ErrorHandlerOptions
 
     /**
      * Options object for an 'Economy.utils.checkOptions' method.
      */
-    optionsChecker?: CheckerOptions;
+    optionsChecker?: CheckerOptions
 }
 
 export = EconomyOptions

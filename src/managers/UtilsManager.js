@@ -343,8 +343,14 @@ class UtilsManager {
  * @property {Boolean} [subtractOnBuy=true] 
  * If true, when someone buys the item, their balance will subtract by item price. Default: false
  * 
+ * @property {Number} [sellingItemPercent=75] 
+ * Percent of the item's price it will be sold for. Default: 75.
+ * 
+ * @property {Boolean} deprecationWarnings 
+ * If true, the deprecation warnings will be sent in the console. Default: true.
+ * 
  * @property {Number} [updateCountdown=1000] Checks for if storage file exists in specified time (in ms). Default: 1000.
- * @property {String} [dateLocale='ru'] The region (example: 'ru'; 'en') to format the date and time. Default: 'ru'.
+ * @property {String} [dateLocale='en'] The region (example: 'ru'; 'en') to format the date and time. Default: 'en'.
  * @property {UpdaterOptions} [updater=UpdaterOptions] Update Checker options object.
  * @property {ErrorHandlerOptions} [errorHandler=ErrorHandlerOptions] Error Handler options object.
  * @property {CheckerOptions} [optionsChecker=CheckerOptions] Options object for an 'Economy.utils.checkOptions' method.

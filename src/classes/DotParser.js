@@ -37,7 +37,7 @@ class DotParser {
     /**
     * Parses the key and fetches the value from database.
     * @param {String} key The key in database.
-    * @returns {any | false} The data from database or 'false' if failed to parse or 'null' if nothing found.
+    * @returns {any | boolean} The data from database or 'false' if failed to parse or 'null' if nothing found.
     */
     parse(key) {
         let parsed = this.fetcher.fetchAll()

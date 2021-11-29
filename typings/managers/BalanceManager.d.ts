@@ -1,4 +1,6 @@
 import EconomyOptions from '../interfaces/EconomyOptions'
+
+import PayingOptions from '../interfaces/PayingOptions'
 import LeaderboardData from '../interfaces/LeaderboardData'
 
 /**
@@ -51,6 +53,14 @@ declare class BalanceManager {
     * @returns Sorted leaderboard array
     */
     public leaderboard(guildID: string): LeaderboardData[]
+
+    /**
+     * Sends the money to the specified user.
+     * @param {string} guildID Guild ID.
+     * @param {PayingOptions} options Paying options.
+     * @returns {number} How much money was sent.
+     */
+    public pay(guildID: string, options: PayingOptions): number
 }
 
 export = BalanceManager

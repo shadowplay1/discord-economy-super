@@ -14,6 +14,8 @@ const RewardManager = require('./managers/RewardManager')
 const CooldownManager = require('./managers/CooldownManager')
 
 const ShopManager = require('./managers/ShopManager')
+const InventoryManager = require('./managers/InventoryManager')
+
 const SettingsManager = require('./managers/SettingsManager')
 
 
@@ -94,6 +96,12 @@ class Economy extends Emitter {
         this.EconomyError = EconomyError
 
         /**
+         * Emitter class.
+         * @type {Emitter}
+         */
+        this.Emitter = Emitter
+
+        /**
         * Balance methods object.
         * @type {BalanceManager}
         */
@@ -122,6 +130,12 @@ class Economy extends Emitter {
         * @type {ShopManager}
         */
         this.shop = null
+
+        /**
+        * Inventory manager methods object.
+        * @type {InventoryManager}
+        */
+        this.inventory = null
 
         /**
         * Balance methods object.
@@ -165,6 +179,7 @@ class Economy extends Emitter {
         this.database = null
 
         this.shop = null
+        this.inventory = null
 
         this.rewards = null
 
@@ -247,7 +262,7 @@ class Economy extends Emitter {
 
     /**
      * Initializates the module.
-     * @returns {Promise<true | Error>} If started successfully: true; else: Error instance.
+     * @returns {Promise<boolean | Error>} If started successfully: true; else: Error instance.
      * @private
      */
     _init() {
@@ -411,6 +426,7 @@ class Economy extends Emitter {
         this.database = new DatabaseManager(this.options)
 
         this.shop = new ShopManager(this.options)
+        this.inventory = new InventoryManager(this.options)
 
         this.rewards = new RewardManager(this.options)
         this.cooldowns = new CooldownManager(this.options)
@@ -562,6 +578,11 @@ class Economy extends Emitter {
  * @property {Number} [workCooldown=3600000] Cooldown for Work Command (in ms). Default: 1 Hour (60000 * 60) ms
  * @property {Number | Number[]} [dailyAmount=100] Amount of money for Daily Command. Default: 100.
  * @property {Number} [weeklyCooldown=604800000] Cooldown for Weekly Command (in ms). Default: 7 Days (60000 * 60 * 24 * 7) ms
+ * @property {Number} [sellingItemPercent=75] 
+ * Percent of the item's price it will be sold for. Default: 75.
+ * 
+ * @property {Boolean} deprecationWarnings 
+ * If true, the deprecation warnings will be sent in the console. Default: true.
  * 
  * @property {Number | Number[]} [weeklyAmount=100] Amount of money for Weekly Command. Default: 1000.
  * @property {Number | Number[]} [workAmount=[10, 50]] Amount of money for Work Command. Default: [10, 50].

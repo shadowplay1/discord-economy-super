@@ -200,14 +200,53 @@ class BalanceManager extends Emitter {
 
         return lb.sort((a, b) => a.money + b.money)
     }
+
+    /**
+     * Sends the money to the specified user.
+     * @param {String} guildID Guild ID.
+     * @param {PayingOptions} options Paying options.
+     * @returns {Number} How much money was sent.
+     */
+    pay(guildID, options = {}) {
+        const {
+            amount, senderMemberID,
+            recipientMemberID,
+            sendingReason, receivingReason
+        } = options
+
+        if (typeof guildID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
+        }
+
+        if (isNaN(amount)) {
+            throw new EconomyError(errors.invalidTypes.amount + typeof amount)
+        }
+
+        if (typeof senderMemberID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.senderMemberID + typeof memberID)
+        }
+
+        if (typeof recipientMemberID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.recipientMemberID + typeof memberID)
+        }
+
+        this.add(amount, recipientMemberID, guildID, receivingReason || 'receiving money from user')
+        this.subtract(amount, senderMemberID, guildID, sendingReason || 'sending money to user')
+
+        return true
+    }
 }
 
 /**
- * Balance leaderboard object.
- * @typedef {Object} BalanceLeaderboard
- * @property {Number} index User's place in the top.
- * @property {String} userID User's ID.
- * @property {Number} money User's amount of money.
+ * Paying options.
+ * @typedef {Object} PayingOptions
+ * @property {Number} amount Amount of money to send.
+ * @property {String} senderMemberID A member ID who will send the money.
+ * @property {String} recipientMemberID A member ID who will receive the money.
+ * @property {String} [sendingReason='sending money to user'] 
+ * The reason of subtracting the money from sender. (example: "sending money to {'user}")
+ * @property {String} [receivingReason='receiving money from user']
+ * The reason of subtracting the money from sender. (example: "receiving money from {user}")
  */
 
 /**

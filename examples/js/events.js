@@ -23,7 +23,7 @@ const eco = new Economy({
     dailyCooldown: 60000 * 60 * 24,
     workCooldown: 60000 * 60,
     weeklyCooldown: 60000 * 60 * 24 * 7,
-    dateLocale: 'ru',
+    dateLocale: 'en',
     subtractOnBuy: true,
     updater: {
         checkUpdates: true,

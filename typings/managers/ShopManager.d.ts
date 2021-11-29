@@ -45,11 +45,20 @@ declare class ShopManager {
 
     /**
      * Uses the item from the user's inventory.
+     * 
+     * [!!!] This method is deprecated.
+     * If you want to get all the bugfixes and
+     * use the newest inventory features, please
+     * switch to the usage of the new InventoryManager.
+     * 
+     * [!!!] No help will be provided for inventory
+     * related methods in ShopManager.
      * @param {number | string} itemID Item ID or name
      * @param {string} memberID Member ID
      * @param {string} guildID Guild ID
      * @param {any} client The Discord Client [Optional]
      * @returns {string} Item message 
+     * @deprecated
      */
     public useItem(itemID: string, memberID: string, guildID: string, client?: any): string
 
@@ -72,9 +81,18 @@ declare class ShopManager {
 
     /**
      * Clears the user's inventory.
+     * 
+     * [!!!] This method is deprecated.
+     * If you want to get all the bugfixes and
+     * use the newest inventory features, please
+     * switch to the usage of the new InventoryManager.
+     * 
+     * [!!!] No help will be provided for inventory
+     * related methods in ShopManager.
      * @param {string} memberID Member ID
      * @param {string} guildID Guild ID
-     * @returns {boolean} If cleared: true, else: false
+     * @returns {boolean} If cleared: true, else: false.
+     * @deprecated
      */
     public clearInventory(memberID: string, guildID: string): boolean
 
@@ -103,18 +121,36 @@ declare class ShopManager {
 
     /**
      * Searches for the item in the inventory.
+     * 
+     * [!!!] This method is deprecated.
+     * If you want to get all the bugfixes and
+     * use the newest inventory features, please
+     * switch to the usage of the new InventoryManager.
+     * 
+     * [!!!] No help will be provided for inventory
+     * related methods in ShopManager.
      * @param {number | string} itemID Item ID or name.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
      * @returns {InventoryData} If item not found: null; else: item info object.
+     * @deprecated
      */
     public searchInventoryItem(itemID: number | string, memberID: string, guildID: string): InventoryData
 
     /**
      * Shows all items in user's inventory
+     * 
+     * [!!!] This method is deprecated.
+     * If you want to get all the bugfixes and
+     * use the newest inventory features, please
+     * switch to the usage of the new InventoryManager.
+     * 
+     * [!!!] No help will be provided for inventory
+     * related methods in ShopManager.
      * @param {string} memberID Member ID
      * @param {string} guildID Guild ID
      * @returns The user's inventory array.
+     * @deprecated
      */
     public inventory(memberID: string, guildID: string): InventoryData[]
 

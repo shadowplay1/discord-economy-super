@@ -7,6 +7,8 @@ const EconomyOptions = {
     dailyCooldown: 86400000,
     workCooldown: 3600000,
     weeklyCooldown: 604800000,
+    sellingItemPercent: 75,
+    deprecationWarnings: true,
     checkStorage: true,
     dateLocale: 'en',
     subtractOnBuy: true,

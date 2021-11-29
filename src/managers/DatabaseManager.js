@@ -136,7 +136,7 @@ class DatabaseManager {
     /**
      * Fetches the data from the storage file.
      * @param {String} key The key in database.
-     * @returns {any | false} Value from the specified key or 'false' if failed to read or 'null' if nothing found.
+     * @returns {any | boolean} Value from the specified key or 'false' if failed to read or 'null' if nothing found.
      */
     fetch(key) {
         if (!key) return false
