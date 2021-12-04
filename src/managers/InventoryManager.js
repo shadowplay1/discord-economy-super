@@ -45,6 +45,13 @@ class InventoryManager extends Emitter {
          * @private
          */
         this.balance = new BalanceManager(options)
+
+        /**
+         * Fetch manager methods object.
+         * @type {FetchManager}
+         * @private
+         */
+        this.fetcher = new FetchManager(options)
     }
 
     /**
@@ -101,13 +108,26 @@ class InventoryManager extends Emitter {
     }
 
     /**
-     * Shows all items in user's inventory.
+     * Searches for the item in the inventory.
+     * 
+     * This method is an alias for the `InventoryManager.searchItem()` method.
+     * @param {Number | String} itemID Item ID or name.
+     * @param {String} memberID Member ID.
+     * @param {String} guildID Guild ID.
+     * @returns {InventoryData} If item not found: null; else: item info object.
+     */
+    findItem(itemID, memberID, guildID) {
+        return this.searchItem(itemID, memberID, guildID)
+    }
+
+    /**
+     * Fetches the user's inventory.
      * @param {String} memberID Member ID.
      * @param {String} guildID Guild ID.
      * @returns {InventoryData[]} User's inventory array.
      */
     fetch(memberID, guildID) {
-        const inventory = this.database.fetch(`${guildID}.${memberID}.inventory`) || []
+        const inventory = this.fetcher.fetchInventory(memberID, guildID)
 
         if (typeof memberID !== 'string') {
             throw new EconomyError(errors.invalidTypes.memberID + typeof memberID)
@@ -121,12 +141,24 @@ class InventoryManager extends Emitter {
     }
 
     /**
+     * Fetches the user's inventory.
+     * 
+     * This method is an alias for the `InventoryManager.fetch()` method.
+     * @param {String} memberID Member ID.
+     * @param {String} guildID Guild ID.
+     * @returns {InventoryData[]} User's inventory array.
+     */
+    list(memberID, guildID) {
+        return this.fetch(memberID, guildID)
+    }
+
+    /**
      * Uses the item from user's inventory.
      * @param {Number | String} itemID Item ID or name.
      * @param {String} memberID Member ID.
      * @param {String} guildID Guild ID.
      * @param {Client} [client] The Discord Client. [Optional]
-     * @returns {String | boolean} Item message or null if item not found.
+     * @returns {String} Item message or null if item not found.
      */
     useItem(itemID, memberID, guildID, client) {
 
@@ -218,6 +250,55 @@ class InventoryManager extends Emitter {
 
         return this.database
             .removeElement(`${guildID}.${memberID}.inventory`, itemIndex)
+    }
+
+    /**
+     * Adds the item from the shop to user's inventory.
+     * @param {String | Number} itemID Item ID or name.
+     * @param {String} memberID Member ID.
+     * @param {String} guildID Guild ID.
+     * @returns {Boolean} If added successfully: true, else: false.
+     */
+    addItem(itemID, memberID, guildID) {
+        /**
+        * @type {ItemData[]}
+        */
+        const shop = this.fetcher.fetchShop(memberID, guildID)
+        const item = shop.find(x => x.id == itemID || x.itemName == itemID)
+
+        /**
+        * @type {InventoryData[]}
+        */
+        const inventory = this.fetcher.fetchInventory(memberID, guildID)
+        const inventoryItems = inventory.filter(x => x.itemName == item.itemName)
+
+        if (typeof itemID !== 'number' && typeof itemID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.editItemArgs.itemID + typeof itemID)
+        }
+
+        if (typeof memberID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID)
+        }
+
+        if (typeof guildID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
+        }
+
+        if (!item) return false
+        if (item.maxAmount && inventoryItems.length >= item.maxAmount) return 'max'
+
+        const itemData = {
+            id: inventory.length ? inventory[inventory.length - 1].id + 1 : 1,
+            itemName: item.itemName,
+            price: item.price,
+            message: item.message,
+            description: item.description,
+            role: item.role || null,
+            maxAmount: item.maxAmount,
+            date: new Date().toLocaleString(this.options.dateLocale || 'en')
+        }
+
+        return this.database.push(`${guildID}.${memberID}.inventory`, itemData)
     }
 
     /**
@@ -320,7 +401,7 @@ class InventoryManager extends Emitter {
  * @property {Number} [sellingItemPercent=75]
  * Percent of the item's price it will be sold for. Default: 75.
  * 
- * @property {Boolean} deprecationWarnings 
+ * @property {Boolean} [deprecationWarnings=true] 
  * If true, the deprecation warnings will be sent in the console.
  * @property {Number | Number[]} [weeklyAmount=100] Amount of money for Weekly Command. Default: 1000.
  * @property {Number | Number[]} [workAmount=[10, 50]] Amount of money for Work Command. Default: [10, 50].

@@ -61,9 +61,9 @@ class FetchManager {
         const guildData = data[guildID]
         const memberData = guildData?.[memberID]
 
-        const money = memberData?.money
+        const money = memberData?.money || 0
 
-        return (money || 0)
+        return money
     }
 
     /**
@@ -81,9 +81,9 @@ class FetchManager {
         const guildData = data[guildID]
         const memberData = guildData?.[memberID]
 
-        const bankMoney = memberData?.bank
+        const bankMoney = memberData?.bank || 0
 
-        return (bankMoney || 0)
+        return bankMoney
     }
 
     /**
@@ -101,9 +101,9 @@ class FetchManager {
         const guildData = data[guildID]
         const memberData = guildData?.[memberID]
 
-        const inventory = memberData?.inventory
+        const inventory = memberData?.inventory || []
 
-        return (inventory || [])
+        return inventory
     }
 
     /**
@@ -121,9 +121,9 @@ class FetchManager {
         const guildData = data[guildID]
         const memberData = guildData?.[memberID]
 
-        const history = memberData?.history
+        const history = memberData?.history || []
 
-        return (history || [])
+        return history
     }
 
     /**
@@ -162,11 +162,10 @@ class FetchManager {
 
         if (typeof guildID !== 'string') throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
 
-
         const guildData = data[guildID]
-        const shop = guildData?.shop
+        const shop = guildData?.shop || []
 
-        return (shop || [])
+        return shop
     }
 }
 

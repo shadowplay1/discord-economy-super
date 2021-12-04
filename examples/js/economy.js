@@ -17,6 +17,8 @@ const eco = new Economy({
     storagePath: './storage.json',
     updateCountdown: 1000,
     checkStorage: true,
+    deprecationWarnings: true,
+    sellingItemPercent: 75,
     dailyAmount: 100,
     workAmount: [10, 50],
     weeklyAmount: 1000,

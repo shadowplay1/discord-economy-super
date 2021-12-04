@@ -73,7 +73,6 @@ class DatabaseManager {
             throw new EconomyError(errors.databaseManager.invalidTypes.key + typeof data)
         }
 
-
         return this.parser.set(key, value)
     }
 

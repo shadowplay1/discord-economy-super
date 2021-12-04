@@ -9,7 +9,7 @@ declare class AddItemOptions {
     /**
      * Item price.
      */
-    price: number
+    price: string | number
     /**
      * The message that will be returned on item use.
      */
@@ -21,7 +21,7 @@ declare class AddItemOptions {
     /**
      * Max amount of the item that user can hold in his inventory.
      */
-    maxAmount?: number
+    maxAmount?: string | number
     /**
      * Discord Role ID from your server that will be given to user. Requires to specify your bot client in 'Economy.shop.useItem' method.
      */

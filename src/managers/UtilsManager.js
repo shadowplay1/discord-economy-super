@@ -346,7 +346,7 @@ class UtilsManager {
  * @property {Number} [sellingItemPercent=75] 
  * Percent of the item's price it will be sold for. Default: 75.
  * 
- * @property {Boolean} deprecationWarnings 
+ * @property {Boolean} [deprecationWarnings=true] 
  * If true, the deprecation warnings will be sent in the console. Default: true.
  * 
  * @property {Number} [updateCountdown=1000] Checks for if storage file exists in specified time (in ms). Default: 1000.

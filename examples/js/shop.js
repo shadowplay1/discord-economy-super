@@ -18,6 +18,8 @@ const eco = new Economy({
     updateCountdown: 1000,
     checkStorage: true,
     dailyAmount: 100,
+    deprecationWarnings: true,
+    sellingItemPercent: 75,
     workAmount: [10, 50],
     weeklyAmount: 1000,
     dailyCooldown: 60000 * 60 * 24,
@@ -129,18 +131,18 @@ bot.on('message', async message => {
         return message.channel.send('Shop was cleared successfully!')
     }
     if (message.content.startsWith('+shop_inventory')) {
-        const inv = eco.shop.inventory(message.author.id, message.guild.id)
+        const inv = eco.inventory.fetch(message.author.id, message.guild.id)
         if (!inv.length) return message.channel.send('You don\'t have any item in your inventory.')
         return message.channel.send(inv.map((x, i) => `ID: ${i + 1}: ${x.itemName} - ${x.price} coins (${x.date})`).join('\n'))
     }
     if (message.content.startsWith('+shop_use')) {
         if (!args[0]) return message.channel.send('Specify an name or ID of item you have in your inventory.')
-        const itemMessage = eco.shop.useItem(args[0], message.author.id, message.guild.id, bot)
+        const itemMessage = eco.inventory.useItem(args[0], message.author.id, message.guild.id, bot)
         if (!itemMessage) return message.channel.send(`Cannot find item ${args[0]} in your inventory.`)
         return message.channel.send(itemMessage)
     }
     if (message.content.startsWith('+shop_clear_inventory')) {
-        eco.shop.clearInventory(message.author.id, message.guild.id)
+        eco.inventory.clear(message.author.id, message.guild.id)
         return message.channel.send('Your inventory was successfully cleared!')
     }
     if (message.content.startsWith('+shop_history')) {

@@ -25,7 +25,7 @@ declare class ShopManager {
      * @param {string} arg This argument means what thing in item you want to edit. Avaible arguments: description, price, name, message, amount, role
      * @returns {boolean} If edited successfully: true, else: false
      */
-    public editItem(itemID: string, guildID: string, arg: 'description' | 'price' | 'itemName' | 'message' | 'maxAmount' | 'role', value: string): boolean
+    public editItem(itemID: string | number, guildID: string, arg: 'description' | 'price' | 'itemName' | 'message' | 'maxAmount' | 'role', value: string): boolean
 
     /**
      * Removes an item from the shop.
@@ -33,7 +33,7 @@ declare class ShopManager {
      * @param {string} guildID Guild ID
      * @returns {boolean} If removed: true, else: false
      */
-    public removeItem(itemID: string, guildID: string): boolean
+    public removeItem(itemID: string | number, guildID: string): boolean
 
     /**
      * Searches for the item in the shop.
@@ -41,7 +41,17 @@ declare class ShopManager {
      * @param {string} guildID Guild ID
      * @returns If item not found: null; else: item data array
      */
-    public searchItem(itemID: string, guildID: string): ItemData
+    public searchItem(itemID: string | number, guildID: string): ItemData
+
+    /**
+     * Searches for the item in the shop.
+     * 
+     * This method is an alias for the `ShopManager.searchItem()` method.
+     * @param {number | string} itemID Item ID or name 
+     * @param {string} guildID Guild ID
+     * @returns If item not found: null; else: item data array
+     */
+    public findItem(itemID: string | number, guildID: string): ItemData
 
     /**
      * Uses the item from the user's inventory.
@@ -60,17 +70,29 @@ declare class ShopManager {
      * @returns {string} Item message 
      * @deprecated
      */
-    public useItem(itemID: string, memberID: string, guildID: string, client?: any): string
+    public useItem(itemID: string | number, memberID: string, guildID: string, client?: any): string
 
     /**
-     * Buys the item from the shop
+     * Buys the item from the shop.
      * @param {number | string} itemID Item ID or name
      * @param {string} memberID Member ID
      * @param {string} guildID Guild ID
      * @param {string} reason The reason why the money was added. Default: 'received the item from the shop'
      * @returns {string | boolean} If item bought successfully: true; if item not found: false; if user reached the item's max amount: 'max'
      */
-    public buy(itemID: string, memberID: string, guildID: string, reason?: string | 'received the item from the shop'): boolean | 'max'
+    public buy(itemID: string | number, memberID: string, guildID: string, reason?: string | 'received the item from the shop'): boolean | string
+
+    /**
+     * Buys the item from the shop.
+     * 
+     * This method is an alias for the `ShopManager.buy()` method.
+     * @param {number | string} itemID Item ID or name
+     * @param {string} memberID Member ID
+     * @param {string} guildID Guild ID
+     * @param {string} reason The reason why the money was added. Default: 'received the item from the shop'
+     * @returns {string | boolean} If item bought successfully: true; if item not found: false; if user reached the item's max amount: 'max'
+     */
+    public buyItem(itemID: string | number, memberID: string, guildID: string, reason?: string | 'received the item from the shop'): boolean | string
 
     /**
      * Clears the shop.
@@ -110,6 +132,15 @@ declare class ShopManager {
      * @returns The shop array.
      */
     public list(guildID: string): ItemData[]
+
+    /**
+     * Shows all items in the shop.
+     * 
+     * This method is an alias for the `ShopManager.list()` method.
+     * @param {string} guildID Guild ID
+     * @returns The shop array.
+     */
+    public fetch(guildID: string): ItemData[]
 
     /**
      * Searches for the item in the shop.

@@ -76,7 +76,7 @@ bot.on('message', async message => {
     }
     else if (message.content.startsWith('+balance')) {
         const member = message.guild.members.cache.get(message.mentions.members.first().id || message.author.id)
-        
+
         const balance = eco.balance.fetch(member.id, message.guild.id)
         const bank = eco.bank.fetch(member.user.id, message.guild.id)
 
@@ -90,7 +90,7 @@ bot.on('message', async message => {
     else if (message.content.startsWith('+shop_add')) {
         if (!args[0]) message.channel.send('Specelse ify an item name.')
         else if (!args[1]) message.channel.send('Specelse ify a price.')
-        
+
         eco.shop.addItem(message.guild.id, {
             itemName: args[0],
             price: args[1],
@@ -132,18 +132,18 @@ bot.on('message', async message => {
         message.channel.send('Shop was cleared successfully!')
     }
     else if (message.content.startsWith('+shop_inventory')) {
-        const inv = eco.shop.inventory(message.author.id, message.guild.id)
+        const inv = eco.inventory.fetch(message.author.id, message.guild.id)
         if (!inv.length) message.channel.send('You don\'t have any item in your inventory.')
         message.channel.send(inv.map((x, i) => `ID: ${i + 1}: ${x.itemName} - ${x.price} coins (${x.date})`).join('\n'))
     }
     else if (message.content.startsWith('+shop_use')) {
-        const itemMessage = eco.shop.useItem(args[0], message.author.id, message.guild.id, bot)
+        const itemMessage = eco.inventory.useItem(args[0], message.author.id, message.guild.id, bot)
         if (!args[0]) message.channel.send('Specelse ify an name or ID of item you have in your inventory.')
         else if (!itemMessage) message.channel.send(`Cannot find item ${args[0]} in your inventory.`)
         message.channel.send(itemMessage)
     }
     else if (message.content == '+shop_clear_inventory') {
-        eco.shop.clearInventory(message.author.id, message.guild.id)
+        eco.inventory.clear(message.author.id, message.guild.id)
         message.channel.send('Your inventory was successfully cleared!')
     }
     else if (message.content.startsWith('+shop_history')) {

@@ -2,6 +2,7 @@ const Emitter = require('../classes/Emitter')
 const EconomyError = require('../classes/EconomyError')
 
 const FetchManager = require('./FetchManager')
+const InventoryManager = require('./InventoryManager')
 const DatabaseManager = require('./DatabaseManager')
 const BalanceManager = require('./BalanceManager')
 
@@ -35,7 +36,14 @@ class ShopManager extends Emitter {
         this.options = options
 
         /**
-         * Fetch manager methods object.
+         * Inventory manager methods object.
+         * @type {InventoryManager}
+         * @private
+         */
+        this._inventory = new InventoryManager(options)
+
+        /**
+         * Inventory manager methods object.
          * @type {FetchManager}
          * @private
          */
@@ -65,7 +73,7 @@ class ShopManager extends Emitter {
     addItem(guildID, options = {}) {
         const { itemName, price, message, description, maxAmount, role } = options
         const date = new Date().toLocaleString(this.options.dateLocale || 'en')
-        const shop = this.database.fetch(`${guildID}.shop`) || []
+        const shop = this.fetcher.fetchShop(guildID)
 
         if (typeof guildID !== 'string') {
             throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
@@ -145,7 +153,7 @@ class ShopManager extends Emitter {
             /**
              * @type {ItemData[]}
              */
-            const shop = this.database.fetch(`${guildID}.shop`)
+            const shop = this.list(guildID)
             const itemIndex = shop.findIndex(x => x.id == itemID || x.itemName == itemID)
             const item = shop[itemIndex]
 
@@ -197,7 +205,7 @@ class ShopManager extends Emitter {
         /**
         * @type {ItemData[]}
         */
-        const shop = this.database.fetch(`${guildID}.shop`)
+        const shop = this.list(guildID)
         const itemIndex = shop.findIndex(x => x.id == itemID || x.itemName == itemID)
         const item = shop[itemIndex]
 
@@ -231,7 +239,7 @@ class ShopManager extends Emitter {
      * @returns {Boolean} If cleared: true, else: false.
      */
     clear(guildID) {
-        const shop = this.database.fetch(`${guildID}.shop`)
+        const shop = this.list(guildID)
 
         if (typeof guildID !== 'string') {
             throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
@@ -274,7 +282,7 @@ class ShopManager extends Emitter {
         }
 
 
-        const inventory = this.database.fetch(`${guildID}.${memberID}.inventory`)
+        const inventory = this._inventory.fetch(memberID, guildID)
 
         if (typeof memberID !== 'string') {
             throw new EconomyError(errors.invalidTypes.memberID + typeof memberID)
@@ -296,7 +304,7 @@ class ShopManager extends Emitter {
      * @returns {Boolean} If cleared: true, else: false.
      */
     clearHistory(memberID, guildID) {
-        const history = this.database.fetch(`${guildID}.${memberID}.history`)
+        const history = this.fetcher.fetchHistory(memberID, guildID)
 
         if (typeof memberID !== 'string') {
             throw new EconomyError(errors.invalidTypes.memberID + typeof memberID)
@@ -321,8 +329,19 @@ class ShopManager extends Emitter {
             throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
         }
 
-        const shop = this.database.fetch(`${guildID}.shop`) || []
+        const shop = this.fetcher.fetchShop(guildID)
         return shop
+    }
+
+    /**
+     * Shows all items in the shop.
+     * 
+     * This method is an alias for the `ShopManager.list()` method.
+     * @param {String} guildID Guild ID.
+     * @returns {ItemData[]} The shop array.
+     */
+    fetch(guildID) {
+        return this.list(guildID)
     }
 
     /**
@@ -336,7 +355,7 @@ class ShopManager extends Emitter {
         /**
         * @type {ItemData[]}
         */
-        const shop = this.database.fetch(`${guildID}.shop`)
+        const shop = this.list(guildID)
         const item = shop.find(x => x.id == itemID || x.itemName == itemID)
 
         if (typeof itemID !== 'number' && typeof itemID !== 'string') {
@@ -349,6 +368,18 @@ class ShopManager extends Emitter {
 
         if (!item) return null
         return item
+    }
+
+    /**
+     * Searches for the item in the shop.
+     * 
+     * This method is an alias for the `ShopManager.searchItem()` method.
+     * @param {Number | String} itemID Item ID or name.
+     * @param {String} guildID Guild ID.
+     * @returns {ItemData} If item not found: null; else: item info object.
+     */
+    findItem(itemID, guildID) {
+        return this.searchItem(itemID, guildID)
     }
 
     /**
@@ -380,7 +411,7 @@ class ShopManager extends Emitter {
         /**
         * @type {InventoryData[]}
         */
-        const inventory = this.database.fetch(`${guildID}.${memberID}.inventory`) || []
+        const inventory = this._inventory.fetch(memberID, guildID)
         const item = inventory.find(x => x.id == itemID || x.itemName == itemID)
 
         if (typeof itemID !== 'number' && typeof itemID !== 'string') {
@@ -405,7 +436,7 @@ class ShopManager extends Emitter {
      * @param {String} memberID Member ID.
      * @param {String} guildID Guild ID.
      * @param {String} reason The reason why the money was subtracted. Default: 'received the item from the shop'.
-     * @returns {Boolean | string} 
+     * @returns {Boolean | String} 
      * If item bought successfully: true; if item not found, false will be returned; 
      * if user reached the item's max amount: 'max' string.
      */
@@ -414,19 +445,19 @@ class ShopManager extends Emitter {
         /**
         * @type {ItemData[]}
         */
-        const shop = this.database.fetch(`${guildID}.shop`)
+        const shop = this.list(guildID)
         const item = shop.find(x => x.id == itemID || x.itemName == itemID)
 
         /**
         * @type {InventoryData[]}
         */
-        const inventory = this.database.fetch(`${guildID}.${memberID}.inventory`) || []
+        const inventory = this._inventory.fetch(memberID, guildID)
         const inventoryItems = inventory.filter(x => x.itemName == item.itemName)
 
         /**
          * @type {HistoryData[]}
          */
-        const history = this.database.fetch(`${guildID}.${memberID}.history`) || []
+        const history = this.fetcher.fetchHistory(memberID, guildID) || []
 
         if (typeof itemID !== 'number' && typeof itemID !== 'string') {
             throw new EconomyError(errors.invalidTypes.editItemArgs.itemID + typeof itemID)
@@ -455,10 +486,10 @@ class ShopManager extends Emitter {
         }
 
         if (this.options.subtractOnBuy) {
-            this.balance.subtract(itemData.price, memberID, guildID, reason)
+            this.balance.subtract(item.price, memberID, guildID, reason)
         }
 
-        this.database.push(`${guildID}.${memberID}.inventory`, itemData)
+        this._inventory.addItem(itemID, memberID, guildID)
         this.database.push(`${guildID}.${memberID}.history`, {
             id: history.length ? history[history.length - 1].id + 1 : 1,
             memberID,
@@ -472,6 +503,22 @@ class ShopManager extends Emitter {
 
         this.emit('shopItemBuy', itemData)
         return true
+    }
+
+    /**
+     * Buys the item from the shop.
+     * 
+     * This method is an alias for the `ShopManager.buy()` method.
+     * @param {Number | String} itemID Item ID or name.
+     * @param {String} memberID Member ID.
+     * @param {String} guildID Guild ID.
+     * @param {String} reason The reason why the money was subtracted. Default: 'received the item from the shop'.
+     * @returns {Boolean | String} 
+     * If item bought successfully: true; if item not found, false will be returned; 
+     * if user reached the item's max amount: 'max' string.
+     */
+    buyItem(itemID, memberID, guildID, reason) {
+        return this.buy(itemID, memberID, guildID, reason)
     }
 
     /**
@@ -499,7 +546,7 @@ class ShopManager extends Emitter {
             )
         }
 
-        const inventory = this.database.fetch(`${guildID}.${memberID}.inventory`) || []
+        const inventory = this._inventory.fetch(memberID, guildID)
 
         if (typeof memberID !== 'string') {
             throw new EconomyError(errors.invalidTypes.memberID + typeof memberID)
@@ -542,7 +589,7 @@ class ShopManager extends Emitter {
         /**
          * @type {InventoryData[]}
          */
-        const inventory = this.database.fetch(`${guildID}.${memberID}.inventory`) || []
+        const inventory = this._inventory.fetch(memberID, guildID)
         const itemIndex = inventory.findIndex(x => x.id == itemID || x.itemName == itemID)
         const item = inventory[itemIndex]
 
@@ -585,9 +632,7 @@ class ShopManager extends Emitter {
                 })
             })
 
-            this.database
-                .removeElement(`${guildID}.${memberID}.inventory`, itemIndex)
-
+            this._inventory.removeItem(itemIndex + 1, memberID, guildID)
             this.emit('shopItemUse', item)
 
             return item.message
@@ -601,7 +646,7 @@ class ShopManager extends Emitter {
      * @returns {HistoryData[]} User's purchase history.
      */
     history(memberID, guildID) {
-        const history = this.database.fetch(`${guildID}.${memberID}.history`)
+        const history = this.fetcher.fetchHistory(memberID, guildID)
 
         if (typeof memberID !== 'string') {
             throw new EconomyError(errors.invalidTypes.memberID + typeof memberID)
@@ -618,10 +663,10 @@ class ShopManager extends Emitter {
 /**
  * @typedef {Object} AddItemOptions Options object with item info for 'Economy.shop.addItem' method.
  * @property {String} itemName Item name.
- * @property {Number} price Item price.
+ * @property {String | Number} price Item price.
  * @property {String} [message='You have used this item!'] Item message that will be returned on use.
  * @property {String} [description='Very mysterious item.'] Item description.
- * @property {Number} [maxAmount=null] Max amount of the item that user can hold in his inventory.
+ * @property {String | Number} [maxAmount=null] Max amount of the item that user can hold in his inventory.
  * @property {String} [role=null] Role ID from your Discord server.
  * @returns {ItemData} Item info.
  */

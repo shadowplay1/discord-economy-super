@@ -17,6 +17,8 @@ const eco = new Economy({
     storagePath: './storage.json',
     updateCountdown: 1000,
     checkStorage: true,
+    deprecationWarnings: true,
+    sellingItemPercent: 75,
     dailyAmount: 100,
     workAmount: [10, 50],
     weeklyAmount: 1000,
@@ -169,7 +171,7 @@ bot.on('message', async message => {
         if (!shop.length) return message.channel.send('No items in the shop!')
         message.channel.send(shop.map(x => `ID: ${x.id} - **${x.itemName}** (${x.price} coins), description: ${x.description}, max amount in inventory: ${x.maxAmount || 'any'}, role: ${x.role || 'No'}`).join('\n'))
     }
-    if (message.content.startsWith('+shop_add')) {
+    if (message.content == '+shop_add') {
         if (!args[0]) return message.channel.send('Specify an item name.')
         if (!args[1]) return message.channel.send('Specify a price.')
         eco.shop.addItem(message.guild.id, {
@@ -203,25 +205,25 @@ bot.on('message', async message => {
         if (!args[0]) return message.channel.send('Specify an item ID or name.')
         const item = eco.shop.searchItem(args[0], message.guild.id)
         if (!item) return message.channel.send(`Cannot find item ${args[0]}.`)
-        return message.channel.send(`Item info:\nID: **${item.id}**\nName: **${item.itemName}**\nPrice: **${item.price} coins**\nDesciption: **${item.description}**\nMessage on use: **${item.message}**\nMax amount in inventory: **${item.maxAmount || 'Any'}**\nRole: **${item.role || 'No'}**`)
+        return message.channel.send(`Item info:\nID: **${item.id}**\nName: **${item.itemName}**\nPrice: **${item.price}** coins\nDesciption: **${item.description}**\nMessage on use: **${item.message}**\nMax amount in inventory: **${item.maxAmount || Infinity}**. Role: ${item.role || '**This item don\'t give you a role.**'}`)
     }
-    if (message.content == '+shop_clear') {
+    if (message.content.startsWith('+shop_clear') && !message.content.includes('history') && !message.content.includes('shop_clear_inventory')) {
         eco.shop.clear(message.guild.id)
         return message.channel.send('Shop was cleared successfully!')
     }
     if (message.content.startsWith('+shop_inventory')) {
-        const inv = eco.shop.inventory(message.author.id, message.guild.id)
+        const inv = eco.inventory.fetch(message.author.id, message.guild.id)
         if (!inv.length) return message.channel.send('You don\'t have any item in your inventory.')
         return message.channel.send(inv.map((x, i) => `ID: ${i + 1}: ${x.itemName} - ${x.price} coins (${x.date})`).join('\n'))
     }
     if (message.content.startsWith('+shop_use')) {
         if (!args[0]) return message.channel.send('Specify an name or ID of item you have in your inventory.')
-        const itemMessage = eco.shop.useItem(args[0], message.author.id, message.guild.id, bot)
+        const itemMessage = eco.inventory.useItem(args[0], message.author.id, message.guild.id, bot)
         if (!itemMessage) return message.channel.send(`Cannot find item ${args[0]} in your inventory.`)
         return message.channel.send(itemMessage)
     }
-    if (message.content == '+shop_clear_inventory') {
-        eco.shop.clearInventory(message.author.id, message.guild.id)
+    if (message.content.startsWith('+shop_clear_inventory')) {
+        eco.inventory.clear(message.author.id, message.guild.id)
         return message.channel.send('Your inventory was successfully cleared!')
     }
     if (message.content.startsWith('+shop_history')) {
@@ -229,8 +231,9 @@ bot.on('message', async message => {
         if (!history.length) return message.channel.send('Your purchases history is empty.')
         return message.channel.send(history.map(x => `ID: ${x.id}: ${x.itemName} - ${x.price} coins (${x.date})`).join('\n'))
     }
-    if (message.content == '+shop_clear_history') {
-        eco.shop.clearHistory(message.author.id, message.guild.id)
+    if (message.content.startsWith('+shop_clear_history')) {
+        const cleared = eco.shop.clearHistory(message.author.id, message.guild.id)
+        if (!cleared) return message.channel.send('Couldn\'t clear your purchases history: Your history is already empty!')
         return message.channel.send('Your purchases history was successfully cleared!')
     }
 })

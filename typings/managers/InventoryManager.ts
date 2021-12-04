@@ -14,7 +14,7 @@ declare class InventoryManager {
      * @param {any} client The Discord Client [Optional]
      * @returns {string} Item message 
      */
-    public useItem(itemID: string, memberID: string, guildID: string, client?: any): string
+    public useItem(itemID: string | number, memberID: string, guildID: string, client?: any): string
 
     /**
      * Clears the user's inventory.
@@ -34,12 +34,33 @@ declare class InventoryManager {
     public searchItem(itemID: number | string, memberID: string, guildID: string): InventoryData
 
     /**
-     * Shows all items in user's inventory
+     * Searches for the item in the inventory.
+     * 
+     * This method is an alias for the `InventoryManager.searchItem()` method.
+     * @param {number | string} itemID Item ID or name.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @returns {InventoryData} If item not found: null; else: item info object.
+     */
+    public findItem(itemID: number | string, memberID: string, guildID: string): InventoryData
+         
+    /**
+     * Shows all items in user's inventory.
      * @param {string} memberID Member ID
      * @param {string} guildID Guild ID
      * @returns The user's inventory array.
      */
     public fetch(memberID: string, guildID: string): InventoryData[]
+
+    /**
+     * Shows all items in user's inventory.
+     * 
+     * This method is an alias for the `InventoryManager.fetch()` method.
+     * @param {string} memberID Member ID
+     * @param {string} guildID Guild ID
+     * @returns The user's inventory array.
+     */
+    public list(memberID: string, guildID: string): InventoryData[]
 
     /**
      * Removes the item from user's inventory
