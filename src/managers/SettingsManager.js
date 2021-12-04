@@ -42,8 +42,8 @@ function checkValueType(key, value) {
 
         case 'workCooldown':
             if (typeof value !== 'number') {
-            throw new EconomyError(errors.settingsManager.invalidType(key, 'number', typeof value))
-        }
+                throw new EconomyError(errors.settingsManager.invalidType(key, 'number', typeof value))
+            }
             break
 
 
@@ -258,6 +258,8 @@ class SettingsManager {
  * 
  * @property {Boolean} [deprecationWarnings=true] 
  * If true, the deprecation warnings will be sent in the console. Default: true.
+ * 
+ * @property {Boolean} [savePurchasesHistory=true] If true, the module will save all the purchases history.
  *
  * @property {Number} [sellingItemPercent=75] 
  * Percent of the item's price it will be sold for. Default: 75.
@@ -299,7 +301,10 @@ class SettingsManager {
  * 
  * @property {Boolean} [ignoreInvalidOptions=false] Allows the method to ignore the unexisting options. Default: false.
  * @property {Boolean} [showProblems=false] Allows the method to show all the problems in the console. Default: false. 
- * @property {Boolean} [sendLog=false] Allows the method to send the result in the console. Default: false.
+ * 
+ * @property {Boolean} [sendLog=false] Allows the method to send the result in the console. 
+ * Requires the 'showProblems' or 'sendLog' options to set. Default: false.
+ * 
  * @property {Boolean} [sendSuccessLog=false] 
  * Allows the method to send the result if no problems were found. Default: false.
  */

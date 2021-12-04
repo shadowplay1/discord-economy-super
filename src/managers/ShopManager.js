@@ -22,8 +22,11 @@ class ShopManager extends Emitter {
       * @param {String} options.dateLocale The region (example: 'ru' or 'en') to format date and time. Default: 'en'.
       * @param {Boolean} options.subtractOnBuy
       * If true, when someone buys the item, their balance will subtract by item price.
+      * 
       * @param {Boolean} options.deprecationWarnings 
       * If true, the deprecation warnings will be sent in the console.
+      * 
+      * @param {Boolean} options.savePurchasesHistory If true, the module will save all the purchases history.
      */
     constructor(options = {}) {
         super()
@@ -298,28 +301,6 @@ class ShopManager extends Emitter {
     }
 
     /**
-     * Clears the user's purchases history.
-     * @param {String} memberID Member ID.
-     * @param {String} guildID Guild ID.
-     * @returns {Boolean} If cleared: true, else: false.
-     */
-    clearHistory(memberID, guildID) {
-        const history = this.fetcher.fetchHistory(memberID, guildID)
-
-        if (typeof memberID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID)
-        }
-
-        if (typeof guildID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
-        }
-
-        if (!history) return false
-
-        return this.database.remove(`${guildID}.${memberID}.history`)
-    }
-
-    /**
      * Shows all items in the shop.
      * @param {String} guildID Guild ID.
      * @returns {ItemData[]} The shop array.
@@ -489,17 +470,20 @@ class ShopManager extends Emitter {
             this.balance.subtract(item.price, memberID, guildID, reason)
         }
 
-        this._inventory.addItem(itemID, memberID, guildID)
-        this.database.push(`${guildID}.${memberID}.history`, {
-            id: history.length ? history[history.length - 1].id + 1 : 1,
-            memberID,
-            guildID,
-            itemName: item.itemName,
-            price: item.price,
-            role: item.role || null,
-            maxAmount: item.maxAmount,
-            date: new Date().toLocaleString(this.options.dateLocale || 'en')
-        })
+        this._inventory.addItem(item.id, memberID, guildID)
+
+        if (this.options.savePurchasesHistory) {
+            this.database.push(`${guildID}.${memberID}.history`, {
+                id: history.length ? history[history.length - 1].id + 1 : 1,
+                memberID,
+                guildID,
+                itemName: item.itemName,
+                price: item.price,
+                role: item.role || null,
+                maxAmount: item.maxAmount,
+                date: new Date().toLocaleString(this.options.dateLocale || 'en')
+            })
+        }
 
         this.emit('shopItemBuy', itemData)
         return true
@@ -648,6 +632,10 @@ class ShopManager extends Emitter {
     history(memberID, guildID) {
         const history = this.fetcher.fetchHistory(memberID, guildID)
 
+        if (!this.options.savePurchasesHistory) {
+            throw new EconomyError(errors.savingHistoryDisabled)
+        }
+
         if (typeof memberID !== 'string') {
             throw new EconomyError(errors.invalidTypes.memberID + typeof memberID)
         }
@@ -656,7 +644,29 @@ class ShopManager extends Emitter {
             throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
         }
 
-        return (history || [])
+        return history
+    }
+
+    /**
+    * Clears the user's purchases history.
+    * @param {String} memberID Member ID.
+    * @param {String} guildID Guild ID.
+    * @returns {Boolean} If cleared: true, else: false.
+    */
+    clearHistory(memberID, guildID) {
+        const history = this.history(memberID, guildID)
+
+        if (typeof memberID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID)
+        }
+
+        if (typeof guildID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
+        }
+
+        if (!history) return false
+
+        return this.database.remove(`${guildID}.${memberID}.history`)
     }
 }
 
@@ -714,3 +724,35 @@ class ShopManager extends Emitter {
  * @type {ShopManager}
  */
 module.exports = ShopManager
+
+/**
+ * @typedef {Object} EconomyOptions Default Economy options object.
+ * @property {String} [storagePath='./storage.json'] Full path to a JSON file. Default: './storage.json'
+ * @property {Boolean} [checkStorage=true] Checks the if database file exists and if it has errors. Default: true
+ * @property {Number} [dailyCooldown=86400000]
+ * Cooldown for Daily Command (in ms). Default: 24 Hours (60000 * 60 * 24) ms
+ *
+ * @property {Number} [workCooldown=3600000] Cooldown for Work Command (in ms). Default: 1 Hour (60000 * 60) ms
+ * @property {Number | Number[]} [dailyAmount=100] Amount of money for Daily Command. Default: 100.
+ * @property {Number} [weeklyCooldown=604800000]
+ * Cooldown for Weekly Command (in ms). Default: 7 Days (60000 * 60 * 24 * 7) ms
+ *
+ * @property {Boolean} [deprecationWarnings=true]
+ * If true, the deprecation warnings will be sent in the console. Default: true.
+ *
+ * @property {Boolean} [savePurchasesHistory=true] If true, the module will save all the purchases history.
+ *
+ * @property {Number} [sellingItemPercent=75]
+ * Percent of the item's price it will be sold for. Default: 75.
+ *
+ * @property {Number | Number[]} [weeklyAmount=100] Amount of money for Weekly Command. Default: 1000.
+ * @property {Number | Number[]} [workAmount=[10, 50]] Amount of money for Work Command. Default: [10, 50].
+ * @property {Boolean} [subtractOnBuy=true]
+ * If true, when someone buys the item, their balance will subtract by item price. Default: false
+ *
+ * @property {Number} [updateCountdown=1000] Checks for if storage file exists in specified time (in ms). Default: 1000.
+ * @property {String} [dateLocale='en'] The region (example: 'ru' or 'en') to format the date and time. Default: 'en'.
+ * @property {UpdaterOptions} [updater=UpdaterOptions] Update Checker options object.
+ * @property {ErrorHandlerOptions} [errorHandler=ErrorHandlerOptions] Error Handler options object.
+ * @property {CheckerOptions} [optionsChecker=CheckerOptions] Options object for an 'Economy.utils.checkOptions' method.
+ */

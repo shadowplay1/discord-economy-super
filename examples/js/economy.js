@@ -19,6 +19,7 @@ const eco = new Economy({
     checkStorage: true,
     deprecationWarnings: true,
     sellingItemPercent: 75,
+    savePurchasesHistory: true,
     dailyAmount: 100,
     workAmount: [10, 50],
     weeklyAmount: 1000,
@@ -37,10 +38,10 @@ const eco = new Economy({
     },
     optionsChecker: {
         ignoreInvalidTypes: false,
-        ignoreUnspecifiedOptions: false,
+        ignoreUnspecifiedOptions: true,
         ignoreInvalidOptions: false,
-        showProblems: false,
-        sendLog: false,
+        showProblems: true,
+        sendLog: true,
         sendSuccessLog: false
     }
 })
@@ -54,11 +55,11 @@ eco.on('ready', () => {
     console.log('Economy is ready!')
 })
 
-bot.on('message', async message => {
+bot.on('messageCreate', async message => {
     const args = message.content.slice(1).split(' ').slice(1)
     if (message.content.startsWith('+help')) return message.channel.send('**__Bot Commands:__**\n+help\n+balance\n+setmoney\n+addmoney\n+removemoney\n+daily\n+weekly\n+work\n+lb (+leaderboard)')
     if (message.content.startsWith('+balance')) {
-        const member = message.guild.member(message.mentions.members.first() || message.author)
+        const member = message.guild.members.cache.get(message.mentions.members.first()?.id || message.author.id)
 
         const balance = eco.balance.fetch(member.id, message.guild.id)
         const bank = eco.bank.fetch(member.user.id, message.guild.id)

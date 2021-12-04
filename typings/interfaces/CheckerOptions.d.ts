@@ -8,7 +8,7 @@ declare class CheckerOptions {
     ignoreInvalidTypes: boolean
 
     /**
-     * Allows the method to ignore the unspecified options. Default: false.
+     * Allows the method to ignore the unspecified options. Default: true.
      */
     ignoreUnspecifiedOptions: boolean
 
@@ -18,12 +18,13 @@ declare class CheckerOptions {
     ignoreInvalidOptions: boolean
 
     /**
-     * Allows the method to show all the problems in the console. Default: false.
+     * Allows the method to show all the problems in the console. Default: true.
      */
     showProblems: boolean
 
     /**
-     * Allows the method to send the result in the console. Default: false.
+     * Allows the method to send the result in the console. 
+     * Requires the 'showProblems' or 'sendLog' options to set. Default: true.
      */
     sendLog: boolean
     

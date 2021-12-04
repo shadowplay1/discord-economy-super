@@ -260,10 +260,11 @@ class InventoryManager extends Emitter {
      * @returns {Boolean} If added successfully: true, else: false.
      */
     addItem(itemID, memberID, guildID) {
+
         /**
         * @type {ItemData[]}
         */
-        const shop = this.fetcher.fetchShop(memberID, guildID)
+        const shop = this.fetcher.fetchShop(guildID)
         const item = shop.find(x => x.id == itemID || x.itemName == itemID)
 
         /**
@@ -403,6 +404,9 @@ class InventoryManager extends Emitter {
  * 
  * @property {Boolean} [deprecationWarnings=true] 
  * If true, the deprecation warnings will be sent in the console.
+ * 
+ * @property {Boolean} [savePurchasesHistory=true] If true, the module will save all the purchases history.
+ * 
  * @property {Number | Number[]} [weeklyAmount=100] Amount of money for Weekly Command. Default: 1000.
  * @property {Number | Number[]} [workAmount=[10, 50]] Amount of money for Work Command. Default: [10, 50].
  * @property {Boolean} [subtractOnBuy=true] 

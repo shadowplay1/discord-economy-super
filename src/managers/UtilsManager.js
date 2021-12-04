@@ -198,6 +198,10 @@ class UtilsManager {
         const keys = Object.keys(DefaultOptions)
         const optionKeys = Object.keys(ecoOptions || {})
 
+        if(!options.ignoreUnspecifiedOptions) options.ignoreUnspecifiedOptions = true
+        if(!options.sendLog) options.sendLog = true
+        if(!options.showProblems) options.showProblems = true
+
         if (typeof ecoOptions !== 'object' && !Array.isArray(ecoOptions)) {
             problems.push('options is not an object. Received type: ' + typeof ecoOptions)
             output = DefaultOptions
@@ -300,10 +304,12 @@ class UtilsManager {
             }
         }
 
-
         if (options.sendLog) {
-            if (options.showProblems) console.log(`Checked the options: ${problems.length ?
-                `${problems.length} problems found:\n\n${problems.join('\n')}` : '0 problems found.'}`)
+            if (options.showProblems && problems.length) {
+                console.log(`Checked the options: ${problems.length ?
+                    `${problems.length} problems found:\n\n${problems.join('\n')}` :
+                    '0 problems found.'}`)
+            }
 
             if (options.sendSuccessLog && !options.showProblems) {
                 console.log(
@@ -349,6 +355,8 @@ class UtilsManager {
  * @property {Boolean} [deprecationWarnings=true] 
  * If true, the deprecation warnings will be sent in the console. Default: true.
  * 
+ * @property {Boolean} [savePurchasesHistory=true] If true, the module will save all the purchases history.
+ * 
  * @property {Number} [updateCountdown=1000] Checks for if storage file exists in specified time (in ms). Default: 1000.
  * @property {String} [dateLocale='en'] The region (example: 'ru'; 'en') to format the date and time. Default: 'en'.
  * @property {UpdaterOptions} [updater=UpdaterOptions] Update Checker options object.
@@ -375,12 +383,15 @@ class UtilsManager {
  * @property {Boolean} [ignoreInvalidTypes=false] 
  * Allows the method to ignore the options with invalid types. Default: false.
  * 
- * @property {Boolean} [ignoreUnspecifiedOptions=false] 
- * Allows the method to ignore the unspecified options. Default: false.
+ * @property {Boolean} [ignoreUnspecifiedOptions=true] 
+ * Allows the method to ignore the unspecified options. Default: true.
  * 
  * @property {Boolean} [ignoreInvalidOptions=false] Allows the method to ignore the unexisting options. Default: false.
- * @property {Boolean} [showProblems=false] Allows the method to show all the problems in the console. Default: false. 
- * @property {Boolean} [sendLog=false] Allows the method to send the result in the console. Default: false.
+ * @property {Boolean} [showProblems=true] Allows the method to show all the problems in the console. Default: true. 
+ * 
+ * @property {Boolean} [sendLog=true] Allows the method to send the result in the console. 
+ * Requires the 'showProblems' or 'sendLog' options to set. Default: true.
+ * 
  * @property {Boolean} [sendSuccessLog=false] 
  * Allows the method to send the result if no problems were found. Default: false.
  */

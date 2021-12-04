@@ -15,6 +15,9 @@ const eco = new Economy({
     storagePath: './storage.json',
     updateCountdown: 1000,
     checkStorage: true,
+    deprecationWarnings: true,
+    sellingItemPercent: 75,
+    savePurchasesHistory: true,
     dailyAmount: 100,
     workAmount: [10, 50],
     weeklyAmount: 1000,
@@ -33,10 +36,10 @@ const eco = new Economy({
     },
     optionsChecker: {
         ignoreInvalidTypes: false,
-        ignoreUnspecifiedOptions: false,
+        ignoreUnspecifiedOptions: true,
         ignoreInvalidOptions: false,
-        showProblems: false,
-        sendLog: false,
+        showProblems: true,
+        sendLog: true,
         sendSuccessLog: false
     }
 })
@@ -50,7 +53,7 @@ eco.on('ready', () => {
     console.log('Economy is ready!')
 })
 
-bot.on('message', async message => {
+bot.on('messageCreate', async message => {
     const args = message.content.slice(1).trim().split(' ').slice(1)
 
     if (message.content.startsWith('+help')) message.channel.send('**__Bot Commands:__**\n+help\n+balance\n+daily\n+weekly\n+work\n+lb (+leaderboard)\n+blb (+bankleaderboard)\n+blb (+bankleaderboard)\n+cash\n+deposit (+dep)')
@@ -82,7 +85,7 @@ bot.on('message', async message => {
         message.channel.send(`Bank Leaderboard for **${message.guild.name}** [**${lb.length}**]\n-----------------------------------\n` + lb.map((x, i) => `${i + 1}. <@${x.userID}> - ${x.money} coins`).join('\n'))
     }
     else if (message.content.startsWith('+balance')) {
-        const member = message.guild.members.cache.get(message.mentions.members.first().id || message.author.id)
+        const member = message.guild.members.cache.get(message.mentions.members.first()?.id || message.author.id)
 
         const balance = eco.balance.fetch(member.id, message.guild.id)
         const bank = eco.bank.fetch(member.user.id, message.guild.id)

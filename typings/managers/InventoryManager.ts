@@ -43,6 +43,15 @@ declare class InventoryManager {
      * @returns {InventoryData} If item not found: null; else: item info object.
      */
     public findItem(itemID: number | string, memberID: string, guildID: string): InventoryData
+
+    /**
+     * Adds the item from the shop to user's inventory.
+     * @param {String | Number} itemID Item ID or name.
+     * @param {String} memberID Member ID.
+     * @param {String} guildID Guild ID.
+     * @returns {Boolean} If added successfully: true, else: false.
+     */
+    public addItem(itemID: string | number, memberID: string, guildID: string): boolean
          
     /**
      * Shows all items in user's inventory.

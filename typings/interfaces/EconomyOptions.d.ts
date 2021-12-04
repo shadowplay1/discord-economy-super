@@ -34,12 +34,17 @@ declare class EconomyOptions {
     /**
      * Amount of money for Daily Command. Default: 100.
      */
-    dailyAmount?: number
+    dailyAmount?: number | number[]
+
+    /**
+     * If true, the module will save all the purchases history.
+     */
+    savePurchasesHistory: boolean
 
     /**
      * Amount of money for Work Command. Default: [10, 50].
      */
-    workAmount?: number | Number[]
+    workAmount?: number | number[]
 
     /**
      * If true, when someone buys the item, their balance will subtract by item price.

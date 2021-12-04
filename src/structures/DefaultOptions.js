@@ -8,6 +8,7 @@ const EconomyOptions = {
     workCooldown: 3600000,
     weeklyCooldown: 604800000,
     sellingItemPercent: 75,
+    savePurchasesHistory: true,
     deprecationWarnings: true,
     checkStorage: true,
     dateLocale: 'en',
@@ -23,10 +24,10 @@ const EconomyOptions = {
     },
     optionsChecker: {
         ignoreInvalidTypes: false,
-        ignoreUnspecifiedOptions: false,
+        ignoreUnspecifiedOptions: true,
         ignoreInvalidOptions: false,
-        showProblems: false,
-        sendLog: false,
+        showProblems: true,
+        sendLog: true,
         sendSuccessLog: false
     }
 }

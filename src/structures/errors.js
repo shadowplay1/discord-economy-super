@@ -23,6 +23,7 @@ const colors = {
 
 module.exports = {
     notReady: 'The module is not ready to work.',
+    savingHistoryDisabled: 'Saving the purchases history is disabled.',
 
     invalidTypes: {
         memberID: 'memberID must be a string. Received type: ',

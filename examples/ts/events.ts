@@ -15,6 +15,9 @@ const eco = new Economy({
     storagePath: './storage.json',
     updateCountdown: 1000,
     checkStorage: true,
+    deprecationWarnings: true,
+    sellingItemPercent: 75,
+    savePurchasesHistory: true,
     dailyAmount: 100,
     workAmount: [10, 50],
     weeklyAmount: 1000,
@@ -22,7 +25,6 @@ const eco = new Economy({
     workCooldown: 60000 * 60,
     weeklyCooldown: 60000 * 60 * 24 * 7,
     dateLocale: 'en',
-    subtractOnBuy: true,
     updater: {
         checkUpdates: true,
         upToDateMessage: true
@@ -34,13 +36,14 @@ const eco = new Economy({
     },
     optionsChecker: {
         ignoreInvalidTypes: false,
-        ignoreUnspecifiedOptions: false,
+        ignoreUnspecifiedOptions: true,
         ignoreInvalidOptions: false,
-        showProblems: false,
-        sendLog: false,
+        showProblems: true,
+        sendLog: true,
         sendSuccessLog: false
     }
 })
+
 bot.on('ready', () => {
     console.log(bot.user.tag + ' is ready!')
     bot.user.setActivity('Test Bot!', { type: 'STREAMING', url: 'https://twitch.tv/twitch' })
@@ -99,7 +102,7 @@ eco.on('destroy', () => {
     console.log('Economy was destroyed.')
 })
 
-bot.on('message', async message => {
+bot.on('messageCreate', async message => {
     const args = message.content.slice(1).split(' ').slice(1)
     if (message.content.startsWith('+help')) message.channel.send('**__Bot Commands:__**\n+help\n+balance\n+daily\n+weekly\n+work\n+lb (+leaderboard)\n+blb (+bankleaderboard)\n+shop\n`+shop_add`\n`+shop_remove`\n`+shop_buy`\n`+shop_search`\n`+shop_clear`\n`+shop_inventory`\n`+shop_use`\n`+shop_clear_inventory`\n`+shop_history`\n`+shop_clear_history`')
     else if (message.content.startsWith('+daily')) {
@@ -128,7 +131,7 @@ bot.on('message', async message => {
         message.channel.send(`Bank Leaderboard for **${message.guild.name}** [**${lb.length}**]\n-----------------------------------\n` + lb.map((x, i) => `${i + 1}. <@${x.userID}> - ${x.money} coins`).join('\n'))
     }
     else if (message.content.startsWith('+balance') || message.content.startsWith('+bal')) {
-        const member = message.guild.members.cache.get(message.mentions.members.first().id || message.author.id)
+        const member = message.guild.members.cache.get(message.mentions.members.first()?.id || message.author.id)
 
         const balance = eco.balance.fetch(member.id, message.guild.id)
         const bank = eco.bank.fetch(member.user.id, message.guild.id)

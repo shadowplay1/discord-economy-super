@@ -37,14 +37,6 @@ declare class ShopManager {
 
     /**
      * Searches for the item in the shop.
-     * @param {number | string} itemID Item ID or name 
-     * @param {string} guildID Guild ID
-     * @returns If item not found: null; else: item data array
-     */
-    public searchItem(itemID: string | number, guildID: string): ItemData
-
-    /**
-     * Searches for the item in the shop.
      * 
      * This method is an alias for the `ShopManager.searchItem()` method.
      * @param {number | string} itemID Item ID or name 

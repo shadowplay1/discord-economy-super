@@ -129,7 +129,7 @@ class BalanceManager extends Emitter {
             guildID,
             memberID,
             amount: Number(amount),
-            balance,
+            balance: balance + amount,
             reason
         })
 
@@ -166,7 +166,7 @@ class BalanceManager extends Emitter {
             guildID,
             memberID,
             amount: Number(amount),
-            balance,
+            balance: balance - amount,
             reason
         })
 

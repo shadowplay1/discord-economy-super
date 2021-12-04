@@ -128,7 +128,7 @@ class BankManager extends Emitter {
             guildID,
             memberID,
             amount: Number(amount),
-            bank,
+            bank: bank + amount,
             reason
         })
 
@@ -165,7 +165,7 @@ class BankManager extends Emitter {
             guildID,
             memberID,
             amount: Number(amount),
-            bank,
+            bank: bank + amount,
             reason
         })
 

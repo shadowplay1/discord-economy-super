@@ -81,7 +81,7 @@ class Economy extends Emitter {
          * Constructor options object.
          * @type {?EconomyOptions}
          */
-        this.options = this.utils.checkOptions(this.options?.optionsChecker, options)
+        this.options = this.utils.checkOptions(options?.optionsChecker, options)
 
         /**
          * Database checking interval.
@@ -155,7 +155,12 @@ class Economy extends Emitter {
         */
         this.settings = null
 
-        this.init()
+        this.init().then(x => {
+            if (x) {
+                this.ready = true
+                this.emit('ready')
+            }
+        })
     }
 
     /**
@@ -282,34 +287,6 @@ class Economy extends Emitter {
                 if (this.errored) return
                 if (this.ready) return
 
-                if (this.options?.checkStorage == undefined ? true : this.options?.checkStorage) {
-                    if (!isFileExist && isReservedStorage) writeFileSync(this.options?.storagePath, '{}')
-
-                    try {
-                        if (this.options?.storagePath?.includes('testStorage123') && isPathReserved) {
-                            return reject(new EconomyError(errors.reservedName('testStorage123')))
-                        }
-
-                        if (this.options?.storagePath?.endsWith('package.json')) {
-                            return reject(new EconomyError(errors.reservedName('package.json')))
-                        }
-
-                        if (this.options?.storagePath?.endsWith('package-lock.json')) {
-                            return reject(new EconomyError(errors.reservedName('package-lock.json')))
-                        }
-
-                        const data = readFileSync(this.options?.storagePath)
-                        JSON.parse(data.toString())
-
-                    } catch (err) {
-                        if (err.message.includes('Unexpected') && err.message.includes('JSON')) {
-                            return reject(new EconomyError(errors.wrongStorageData))
-                        }
-
-                        else return reject(err)
-                    }
-                }
-
                 /* eslint-disable max-len */
                 if (this.options?.updater?.checkUpdates) {
                     const version = await this.utils.checkUpdates()
@@ -350,6 +327,34 @@ class Economy extends Emitter {
                 }
 
                 if (this.options?.checkStorage == undefined ? true : this.options?.checkStorage) {
+                    if (!isFileExist && isReservedStorage) writeFileSync(this.options?.storagePath, '{}')
+
+                    try {
+                        if (this.options?.storagePath?.includes('testStorage123') && isPathReserved) {
+                            return reject(new EconomyError(errors.reservedName('testStorage123')))
+                        }
+
+                        if (this.options?.storagePath?.endsWith('package.json')) {
+                            return reject(new EconomyError(errors.reservedName('package.json')))
+                        }
+
+                        if (this.options?.storagePath?.endsWith('package-lock.json')) {
+                            return reject(new EconomyError(errors.reservedName('package-lock.json')))
+                        }
+
+                        const data = readFileSync(this.options?.storagePath)
+                        JSON.parse(data.toString())
+
+                    } catch (err) {
+                        if (err.message.includes('Unexpected') && err.message.includes('JSON')) {
+                            return reject(new EconomyError(errors.wrongStorageData))
+                        }
+
+                        else return reject(err)
+                    }
+                }
+
+                if (this.options?.checkStorage == undefined ? true : this.options?.checkStorage) {
                     const storageExists = existsSync(this.options?.storagePath)
 
                     const interval = setInterval(() => {
@@ -375,7 +380,10 @@ class Economy extends Emitter {
                             } catch (err) {
                                 throw new EconomyError(errors.notReady)
                             }
-                            console.log(`${colors.red}failed to find a database file; created another one...${colors.reset}`)
+                            console.log(
+                                `${colors.red}failed to find a database file;` +
+                                `created another one...${colors.reset}`
+                            )
                         }
 
                         try {
@@ -386,7 +394,9 @@ class Economy extends Emitter {
 
                         } catch (err) {
                             if (err.message.includes('Unexpected token') ||
-                                err.message.includes('Unexpected end')) reject(new EconomyError(errors.wrongStorageData))
+                                err.message.includes('Unexpected end')) {
+                                reject(new EconomyError(errors.wrongStorageData))
+                            }
 
                             else {
                                 reject(err)
@@ -399,9 +409,6 @@ class Economy extends Emitter {
                 }
 
                 this.start()
-                this.ready = true
-                this.emit('ready')
-
                 return resolve(true)
 
             } catch (err) {
@@ -584,6 +591,8 @@ class Economy extends Emitter {
  * @property {Boolean} [deprecationWarnings=true] 
  * If true, the deprecation warnings will be sent in the console. Default: true.
  * 
+ * @property {Boolean} [savePurchasesHistory=true] If true, the module will save all the purchases history.
+ * 
  * @property {Number | Number[]} [weeklyAmount=100] Amount of money for Weekly Command. Default: 1000.
  * @property {Number | Number[]} [workAmount=[10, 50]] Amount of money for Work Command. Default: [10, 50].
  * @property {Boolean} [subtractOnBuy=true] If true, when someone buys the item, their balance will subtract by item price. Default: false
@@ -614,7 +623,10 @@ class Economy extends Emitter {
  * @property {Boolean} [ignoreUnspecifiedOptions=false] Allows the method to ignore the unspecified options. Default: false.
  * @property {Boolean} [ignoreInvalidOptions=false] Allows the method to ignore the unexisting options. Default: false.
  * @property {Boolean} [showProblems=false] Allows the method to show all the problems in the console. Default: false. 
- * @property {Boolean} [sendLog=false] Allows the method to send the result in the console. Default: false.
+ * 
+ * @property {Boolean} [sendLog=false] Allows the method to send the result in the console. 
+ * Requires the 'showProblems' or 'sendLog' options to set. Default: false.
+ * 
  * @property {Boolean} [sendSuccessLog=false] Allows the method to send the result if no problems were found. Default: false.
  */
 
