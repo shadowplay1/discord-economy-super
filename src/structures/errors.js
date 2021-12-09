@@ -9,7 +9,9 @@ const settingsArray = [
     'weeklyCooldown',
 
     'dateLocale',
-    'subtractOnBuy'
+    'subtractOnBuy',
+
+    'sellingItemPercent'
 ]
 
 const colors = {
@@ -32,6 +34,7 @@ module.exports = {
         recipientMemberID: 'recipientMemberID must be a string. Received type: ',
         amount: 'amount must be a number. Received type: ',
         value: 'value must be specified. Received: ',
+        id: 'id must be a string or a number. Received type: ',
 
         addItemOptions: {
             itemName: 'options.itemName must be a string. Received type: ',
@@ -44,7 +47,7 @@ module.exports = {
 
         editItemArgs: {
             itemID: 'itemID is not a string or a number. Received type: ',
-            arg: '\'arg\' parameter must be one of these values: ' +
+            itemProperty: '\'itemProperty\' parameter must be one of these values: ' +
                 ['description', 'price', 'itemName', 'message', 'maxAmount', 'role'].map(x => `'${x}'`).join(', ') +
                 '. Received: ',
             noValue: 'no value specified. Received: '
@@ -65,7 +68,8 @@ module.exports = {
             },
             value: {
                 number: 'Value is not a number. Received type: ',
-                array: 'Value is not an array. Received type: '
+                array: 'Value is not an array. Received type: ',
+                newValue: '\'newValue\' parameter must be specified. Received: '
             }
         }
     },

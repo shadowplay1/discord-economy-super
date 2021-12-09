@@ -1,16 +1,14 @@
-import ItemData from '../interfaces/ItemData';
-import CooldownData from '../interfaces/CooldownData';
-import HistoryData from '../interfaces/HistoryData';
-import InventoryData from '../interfaces/InventoryData';
+import ItemData from '../interfaces/ItemData'
+import CooldownData from '../interfaces/CooldownData'
+import HistoryData from '../interfaces/HistoryData'
+import InventoryData from '../interfaces/InventoryData'
 
-import Emitter from '../classes/Emitter';
-import EconomyOptions from '../interfaces/EconomyOptions';
+import EconomyOptions from '../interfaces/EconomyOptions'
 
 /**
 * Fetch manager methods class.
-* @extends {Emitter}
 */
-declare class FetchManager extends Emitter {
+declare class FetchManager {
     constructor(options: EconomyOptions)
 
     /**
@@ -40,7 +38,7 @@ declare class FetchManager extends Emitter {
      * @param {string} guildID Guild ID
      * @returns {HistoryData} User's purchases history.
      */
-    public fetchHistory(memberID: string, guildID: string): HistoryData
+    public fetchHistory(memberID: string, guildID: string): HistoryData[]
 
     /**
      * Fetches the user's inventory.

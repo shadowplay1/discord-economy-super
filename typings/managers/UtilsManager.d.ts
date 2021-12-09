@@ -1,7 +1,6 @@
-import CheckerOptions from '../interfaces/CheckerOptions';
-import EconomyOptions from '../interfaces/EconomyOptions';
-
-import VersionData from '../interfaces/VersionData';
+import CheckerOptions from '../interfaces/CheckerOptions'
+import EconomyOptions from '../interfaces/EconomyOptions'
+import VersionData from '../interfaces/VersionData'
 
 /**
  * Utils manager methods object.

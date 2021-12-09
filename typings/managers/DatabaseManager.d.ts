@@ -1,4 +1,4 @@
-import EconomyOptions from "../interfaces/EconomyOptions";
+import EconomyOptions from '../interfaces/EconomyOptions'
 
 /**
  * Database manager methods object.
@@ -57,8 +57,25 @@ declare class DatabaseManager {
      * @param {any} value The key in database.
      * @returns {Boolean} If cleared: true; else: false.
      */
-    push<Data>(key: string, value: Data): boolean
+    public push<Data>(key: string, value: Data): boolean
 
+    /**
+     * Removes an element from a specified array in the database.
+     * @param {String} key The key in database.
+     * @param {Number} index The index in the array.
+     * @returns {Boolean} If cleared: true; else: false.
+     */
+    public removeElement(key: string, index: number): boolean
+
+    /**
+    * Changes the specified element's value in a specified array in the database.
+    * @param {String} key The key in database.
+    * @param {Number} index The index in the array.
+    * @param {any} newValue The new value to set.
+    * @returns {Boolean} If cleared: true; else: false.
+    */
+    public changeElement<Data>(key: string, index: number, newValue: Data): boolean
+    
     /**
     * Fetches the entire database.
     * @returns {object} Database contents

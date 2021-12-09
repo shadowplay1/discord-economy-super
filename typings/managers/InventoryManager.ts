@@ -1,11 +1,15 @@
+import Emitter from '../classes/Emitter'
+
 import InventoryData from '../interfaces/InventoryData'
 import EconomyOptions from '../interfaces/EconomyOptions'
 
 /**
 * Shop manager methods object.
+* @extends {Emitter}
 */
-declare class InventoryManager {
+declare class InventoryManager extends Emitter {
     constructor(options: EconomyOptions)
+
     /**
      * Uses the item from the user's inventory.
      * @param {number | string} itemID Item ID or name
@@ -15,6 +19,18 @@ declare class InventoryManager {
      * @returns {string} Item message 
      */
     public useItem(itemID: string | number, memberID: string, guildID: string, client?: any): string
+
+    /**
+     * Uses the item from user's inventory.
+     * 
+     * This method is an alias for the `InventoryManager.useItem()` method.
+     * @param {Number | String} itemID Item ID or name.
+     * @param {String} memberID Member ID.
+     * @param {String} guildID Guild ID.
+     * @param {Client} [client] The Discord Client. [Optional]
+     * @returns {String} Item message or null if item not found.
+     */
+    public use(itemID: number | string, memberID: string, guildID: string, client: any): string
 
     /**
      * Clears the user's inventory.
@@ -52,7 +68,7 @@ declare class InventoryManager {
      * @returns {Boolean} If added successfully: true, else: false.
      */
     public addItem(itemID: string | number, memberID: string, guildID: string): boolean
-         
+
     /**
      * Shows all items in user's inventory.
      * @param {string} memberID Member ID

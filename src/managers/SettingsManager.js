@@ -16,7 +16,9 @@ const settingsArray = [
     'weeklyCooldown',
 
     'dateLocale',
-    'subtractOnBuy'
+    'subtractOnBuy',
+
+    'sellingItemPercent'
 ]
 
 function checkValueType(key, value) {
@@ -71,6 +73,12 @@ function checkValueType(key, value) {
                 throw new EconomyError(errors.settingsManager.invalidType(key, 'boolean', typeof value))
             }
             break
+
+        case 'sellingItemPercent':
+            if (typeof value !== 'number') {
+                throw new EconomyError(errors.settingsManager.invalidType(key, 'number', typeof value))
+            }
+            break
     }
 
     return true
@@ -82,10 +90,11 @@ function checkValueType(key, value) {
 class SettingsManager {
 
     /**
-     * Economy options object.
-     * @param {EconomyOptions} options Options object.
+     * Settings Manager.
+     * @param {EconomyOptions} options Economy options object.
      */
     constructor(options) {
+
         /**
         * Economy options object.
         * @type {EconomyOptions}
@@ -197,6 +206,8 @@ class SettingsManager {
 
             dateLocale: settings?.dateLocale == null ? null : settings?.dateLocale,
             subtractOnBuy: settings?.subtractOnBuy == null ? null : settings?.subtractOnBuy,
+
+            sellingItemPercent: settings?.sellingItemPercent == null ? null : settings?.sellingItemPercent,
         }
     }
 
@@ -220,6 +231,8 @@ class SettingsManager {
 
             dateLocale: this.options.dateLocale,
             subtractOnBuy: this.options.subtractOnBuy,
+
+            sellingItemPercent: this.options.sellingItemPercent
         }
 
         this.database.set(`${guildID}.settings`, defaultSettings)
@@ -242,6 +255,8 @@ class SettingsManager {
  * @property {String} dateLocale The region (example: 'ru' or 'en') to format the date and time. Default: 'en'
  * @property {Boolean} subtractOnBuy 
  * If true, when someone buys the item, their balance will subtract by item price. Default: false.
+ * 
+ * @property {Number} sellingItemPercent Percent of the item's price it will be sold for. Default: 75.
  */
 
 /**
@@ -313,8 +328,10 @@ class SettingsManager {
  * @typedef {'dailyAmount' | 'dailyCooldown' | 
  * 'workAmount' | 'workCooldown' | 
  * 'weeklyAmount' | 'weeklyCooldown' | 
- * 'dateLocale' | 'subtractOnBuy'} Settings
+ * 'dateLocale' | 'subtractOnBuy' | 
+ * 'sellingItemPercent'} Settings
  */
+
 
 /**
  * Settings Manager.

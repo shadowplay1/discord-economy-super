@@ -1,10 +1,13 @@
+import Emitter from '../classes/Emitter'
+
 import EconomyOptions from '../interfaces/EconomyOptions'
 import LeaderboardData from '../interfaces/LeaderboardData'
 
 /**
- * Bank balance methods object.
+ * Bank balance manager methods object.
+ * @extends {Emitter}
  */
-declare class BankManager {
+declare class BankManager extends Emitter {
     constructor(options: EconomyOptions)
     
     /**

@@ -5,6 +5,7 @@ const FetchManager = require('./FetchManager')
 const InventoryManager = require('./InventoryManager')
 const DatabaseManager = require('./DatabaseManager')
 const BalanceManager = require('./BalanceManager')
+const HistoryManager = require('./HistoryManager')
 
 const errors = require('../structures/errors')
 
@@ -15,9 +16,11 @@ const errors = require('../structures/errors')
 class ShopManager extends Emitter {
 
     /**
-      * Economy constructor options object. 
+      * Shop Manager.
+      * 
+      * @param {Object} options Economy constructor options object.
       * There's only needed options object properties for this manager to work properly.
-      * @param {Object} options Constructor options object.
+      * 
       * @param {String} options.storagePath Full path to a JSON file. Default: './storage.json'.
       * @param {String} options.dateLocale The region (example: 'ru' or 'en') to format date and time. Default: 'en'.
       * @param {Boolean} options.subtractOnBuy
@@ -44,6 +47,13 @@ class ShopManager extends Emitter {
          * @private
          */
         this._inventory = new InventoryManager(options)
+
+        /**
+         * History manager methods object.
+         * @type {HistoryManager}
+         * @private
+         */
+        this._history = new HistoryManager(options)
 
         /**
          * Inventory manager methods object.
@@ -126,14 +136,14 @@ class ShopManager extends Emitter {
      * Edits the item in the shop.
      * @param {Number | String} itemID Item ID or name.
      * @param {String} guildID Guild ID
-     * @param {'description' | 'price' | 'itemName' | 'message' | 'maxAmount' | 'role'} arg 
-     * This argument means what thing in item you want to edit. 
-     * Available arguments are 'description', 'price', 'name', 'message', 'amount', 'role'.
+     * @param {'description' | 'price' | 'itemName' | 'message' | 'maxAmount' | 'role'} itemProperty 
+     * This argument means what thing in item you want to edit (item property). 
+     * Available item properties are 'description', 'price', 'name', 'message', 'amount', 'role'.
      * 
      * @returns {Boolean} If edited successfully: true, else: false.
      */
-    editItem(itemID, guildID, arg, value) {
-        const args = ['description', 'price', 'itemName', 'message', 'maxAmount', 'role']
+    editItem(itemID, guildID, itemProperty, value) {
+        const itemProperties = ['description', 'price', 'itemName', 'message', 'maxAmount', 'role']
 
         if (typeof itemID !== 'number' && typeof itemID !== 'string') {
             throw new EconomyError(errors.invalidTypes.editItemArgs.itemID + typeof itemID)
@@ -143,58 +153,78 @@ class ShopManager extends Emitter {
             throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
         }
 
-        if (!args.includes(arg)) {
-            throw new EconomyError(errors.invalidTypes.editItemArgs.arg + arg)
+        if (!itemProperties.includes(itemProperty)) {
+            throw new EconomyError(errors.invalidTypes.editItemArgs.itemProperty + itemProperty)
         }
 
         if (value == undefined) {
-            throw new EconomyError(errors.invalidTypes.editItemArgs.arg + value)
+            throw new EconomyError(errors.invalidTypes.editItemArgs.itemProperty + value)
         }
 
-        const edit = (arg, value) => {
+        const edit = (itemProperty, value) => {
 
             /**
              * @type {ItemData[]}
              */
             const shop = this.list(guildID)
+
             const itemIndex = shop.findIndex(x => x.id == itemID || x.itemName == itemID)
             const item = shop[itemIndex]
 
             if (!item) return false
 
-            this.database.set(`${guildID}.shop.${itemIndex}.${arg}`, value)
+            item[itemProperty] = value
+
+            this.database.changeElement(`${guildID}.shop`, itemIndex, item)
             this.emit('shopEditItem', {
                 itemID,
                 guildID,
-                changed: arg,
-                oldValue: item[arg],
+                changed: itemProperty,
+                oldValue: item[itemProperty],
                 newValue: value
             })
 
             return true
         }
 
-        switch (arg) {
-            case args[0]:
-                edit(args[0], value)
-                break
-            case args[1]:
-                edit(args[1], value)
-                break
-            case args[2]:
-                edit(args[2], value)
-                break
-            case args[3]:
-                edit(args[3], value)
-                break
-            case args[4]:
-                edit(args[4], value)
-                break
-            case args[5]:
-                edit(args[5], value)
-                break
-            default: null
+        switch (itemProperty) {
+            case itemProperties[0]:
+                return edit(itemProperties[0], value)
+
+            case itemProperties[1]:
+                return edit(itemProperties[1], value)
+
+            case itemProperties[2]:
+                return edit(itemProperties[2], value)
+
+            case itemProperties[3]:
+                return edit(itemProperties[3], value)
+
+            case itemProperties[4]:
+                return edit(itemProperties[4], value)
+
+            case itemProperties[5]:
+                return edit(itemProperties[5], value)
+
+            default:
+                return null
         }
+    }
+
+    /**
+     * Edits the item in the shop.
+     * 
+     * This method is an alias for the `ShopManager.editItem()` method.
+     * @param {Number | String} itemID Item ID or name.
+     * @param {String} guildID Guild ID
+     * @param {'description' | 'price' | 'itemName' | 'message' | 'maxAmount' | 'role'} itemProperty 
+     * This argument means what thing in item you want to edit (item property). 
+     * Available item properties are 'description', 'price', 'name', 'message', 'amount', 'role'.
+     * 
+     * @returns {Boolean} If edited successfully: true, else: false.
+     */
+    edit(itemID, guildID, itemProperty, value) {
+        return this.editItem(itemID, guildID, itemProperty, value)
     }
 
     /**
@@ -422,23 +452,11 @@ class ShopManager extends Emitter {
      * if user reached the item's max amount: 'max' string.
      */
     buy(itemID, memberID, guildID, reason = 'received the item from the shop') {
-
-        /**
-        * @type {ItemData[]}
-        */
         const shop = this.list(guildID)
         const item = shop.find(x => x.id == itemID || x.itemName == itemID)
 
-        /**
-        * @type {InventoryData[]}
-        */
         const inventory = this._inventory.fetch(memberID, guildID)
         const inventoryItems = inventory.filter(x => x.itemName == item.itemName)
-
-        /**
-         * @type {HistoryData[]}
-         */
-        const history = this.fetcher.fetchHistory(memberID, guildID) || []
 
         if (typeof itemID !== 'number' && typeof itemID !== 'string') {
             throw new EconomyError(errors.invalidTypes.editItemArgs.itemID + typeof itemID)
@@ -473,16 +491,7 @@ class ShopManager extends Emitter {
         this._inventory.addItem(item.id, memberID, guildID)
 
         if (this.options.savePurchasesHistory) {
-            this.database.push(`${guildID}.${memberID}.history`, {
-                id: history.length ? history[history.length - 1].id + 1 : 1,
-                memberID,
-                guildID,
-                itemName: item.itemName,
-                price: item.price,
-                role: item.role || null,
-                maxAmount: item.maxAmount,
-                date: new Date().toLocaleString(this.options.dateLocale || 'en')
-            })
+            this._history.add(itemID, memberID, guildID)
         }
 
         this.emit('shopItemBuy', itemData)
@@ -625,11 +634,29 @@ class ShopManager extends Emitter {
 
     /**
      * Shows the user's purchase history.
+     * 
+     * [!!!] This method is deprecated.
+     * If you want to get all the bugfixes and
+     * use the newest history features, please
+     * switch to the usage of the new HistoryManager.
+     * 
+     * [!!!] No help will be provided for history
+     * related methods in ShopManager.
      * @param {String} memberID Member ID
      * @param {String} guildID Guild ID
      * @returns {HistoryData[]} User's purchase history.
+     * @deprecated
      */
     history(memberID, guildID) {
+        if (this.options.deprecationWarnings) {
+            console.log(
+                errors.deprecationWarning(
+                    'ShopManager', 'history',
+                    'HistoryManager', 'fetch'
+                )
+            )
+        }
+
         const history = this.fetcher.fetchHistory(memberID, guildID)
 
         if (!this.options.savePurchasesHistory) {
@@ -649,12 +676,30 @@ class ShopManager extends Emitter {
 
     /**
     * Clears the user's purchases history.
+    * 
+    * [!!!] This method is deprecated.
+    * If you want to get all the bugfixes and
+    * use the newest history features, please
+    * switch to the usage of the new HistoryManager.
+    * 
+    * [!!!] No help will be provided for history
+    * related methods in ShopManager.
     * @param {String} memberID Member ID.
     * @param {String} guildID Guild ID.
     * @returns {Boolean} If cleared: true, else: false.
+    * @deprecated
     */
     clearHistory(memberID, guildID) {
-        const history = this.history(memberID, guildID)
+        if (this.options.deprecationWarnings) {
+            console.log(
+                errors.deprecationWarning(
+                    'ShopManager', 'clearHistory',
+                    'HistoryManager', 'clear'
+                )
+            )
+        }
+
+        const history = this.fetcher.fetchHistory(memberID, guildID)
 
         if (typeof memberID !== 'string') {
             throw new EconomyError(errors.invalidTypes.memberID + typeof memberID)
@@ -720,12 +765,6 @@ class ShopManager extends Emitter {
  */
 
 /**
- * Shop manager class.
- * @type {ShopManager}
- */
-module.exports = ShopManager
-
-/**
  * @typedef {Object} EconomyOptions Default Economy options object.
  * @property {String} [storagePath='./storage.json'] Full path to a JSON file. Default: './storage.json'
  * @property {Boolean} [checkStorage=true] Checks the if database file exists and if it has errors. Default: true
@@ -756,3 +795,9 @@ module.exports = ShopManager
  * @property {ErrorHandlerOptions} [errorHandler=ErrorHandlerOptions] Error Handler options object.
  * @property {CheckerOptions} [optionsChecker=CheckerOptions] Options object for an 'Economy.utils.checkOptions' method.
  */
+
+/**
+ * Shop manager class.
+ * @type {ShopManager}
+ */
+module.exports = ShopManager

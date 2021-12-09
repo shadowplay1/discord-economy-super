@@ -39,7 +39,7 @@ declare class EconomyOptions {
     /**
      * If true, the module will save all the purchases history.
      */
-    savePurchasesHistory: boolean
+    savePurchasesHistory?: boolean
 
     /**
      * Amount of money for Work Command. Default: [10, 50].

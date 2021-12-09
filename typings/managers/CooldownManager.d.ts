@@ -1,4 +1,4 @@
-import EconomyOptions from "../interfaces/EconomyOptions";
+import EconomyOptions from '../interfaces/EconomyOptions'
 
 /**
 * Cooldown manager methods object.

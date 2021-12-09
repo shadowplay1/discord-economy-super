@@ -15,6 +15,7 @@ const CooldownManager = require('./managers/CooldownManager')
 
 const ShopManager = require('./managers/ShopManager')
 const InventoryManager = require('./managers/InventoryManager')
+const HistoryManager = require('./managers/HistoryManager')
 
 const SettingsManager = require('./managers/SettingsManager')
 
@@ -138,6 +139,12 @@ class Economy extends Emitter {
         this.inventory = null
 
         /**
+        * History manager methods object.
+        * @type {HistoryManager}
+        */
+        this.history = null
+
+        /**
         * Balance methods object.
         * @type {RewardManager}
         */
@@ -171,6 +178,8 @@ class Economy extends Emitter {
         if (!this.ready) return false
 
         clearInterval(this.interval)
+
+
         this.ready = false
 
         this.EconomyError = null
@@ -185,6 +194,7 @@ class Economy extends Emitter {
 
         this.shop = null
         this.inventory = null
+        this.history = null
 
         this.rewards = null
 
@@ -192,7 +202,6 @@ class Economy extends Emitter {
         this.settings = null
 
         this.emit('destroy')
-
         return this
     }
 
@@ -266,8 +275,8 @@ class Economy extends Emitter {
     }
 
     /**
-     * Initializates the module.
-     * @returns {Promise<boolean | Error>} If started successfully: true; else: Error instance.
+     * Initializes the module.
+     * @returns {Promise<boolean>} If started successfully: true; else: Error instance.
      * @private
      */
     _init() {
@@ -433,7 +442,7 @@ class Economy extends Emitter {
         this.database = new DatabaseManager(this.options)
 
         this.shop = new ShopManager(this.options)
-        this.inventory = new InventoryManager(this.options)
+        this.history = new HistoryManager(this.options)
 
         this.rewards = new RewardManager(this.options)
         this.cooldowns = new CooldownManager(this.options)

@@ -1,12 +1,14 @@
-import EconomyOptions from '../interfaces/EconomyOptions'
+import Emitter from '../classes/Emitter'
 
+import EconomyOptions from '../interfaces/EconomyOptions'
 import PayingOptions from '../interfaces/PayingOptions'
 import LeaderboardData from '../interfaces/LeaderboardData'
 
 /**
-* Balance methods object.
+* Balance manager methods object.
+* @extends {Emitter}
 */
-declare class BalanceManager {
+declare class BalanceManager extends Emitter {
     constructor(options: EconomyOptions)
 
     /**

@@ -9,9 +9,11 @@ const EconomyError = require('../classes/EconomyError')
 class FetchManager {
 
     /**
-     * Economy constructor options object. 
+     * Fetch Manager.
+     * 
+     * @param {Object} options Economy constructor options object.
      * There's only needed options object properties for this manager to work properly.
-     * @param {Object} options Constructor options object.
+     * 
      * @param {String} options.storagePath Full path to a JSON file. Default: './storage.json'.
      */
     constructor(options = {}) {
@@ -110,7 +112,7 @@ class FetchManager {
      * Fetches the user's purchases history.
      * @param {String} memberID Member ID
      * @param {String} guildID Guild ID
-     * @returns {HistoryData} User's purchases history.
+     * @returns {HistoryData[]} User's purchases history.
      */
     fetchHistory(memberID, guildID) {
         const data = this.fetchAll()
@@ -197,6 +199,19 @@ class FetchManager {
  * @property {String} role ID of Discord Role that will be given to user on item use.
  * @property {Number} maxAmount Max amount of the item that user can hold in his inventory.
  * @property {String} date Date when the item was bought.
+ */
+
+/**
+ * Item data object.
+ * @typedef {Object} ItemData
+ * @property {Number} id Item ID.
+ * @property {String} itemName Item name.
+ * @property {Number} price Item price.
+ * @property {String} message The message that will be returned on item use.
+ * @property {String} description Item description.
+ * @property {String} role ID of Discord Role that will be given to Wuser on item use.
+ * @property {Number} maxAmount Max amount of the item that user can hold in his inventory.
+ * @property {String} date Date when the item was added in the shop.
  */
 
 /**

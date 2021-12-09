@@ -25,9 +25,11 @@ const parse = ms => ({
 class RewardManager {
 
     /**
-      * Economy constructor options object. 
+      * Reward Manager.
+      * 
+      * @param {Object} options Economy constructor options object.
       * There's only needed options object properties for this manager to work properly.
-      * @param {Object} options Constructor options object.
+      * 
       * @param {String} options.storagePath Full path to a JSON file. Default: './storage.json'.
       * @param {Number} options.dailyCooldown Cooldown for Daily Command (in ms). Default: 24 Hours (60000 * 60 * 24) ms
       * @param {Number} options.workCooldown Cooldown for Work Command (in ms). Default: 1 Hour (60000 * 60) ms

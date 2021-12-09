@@ -11,9 +11,11 @@ const EconomyError = require('../classes/EconomyError')
 class DatabaseManager {
 
     /**
-     * Economy constructor options object.
+     * Database Manager.
+     * 
+     * @param {Object} options Economy constructor options object.
      * There's only needed options object properties for this manager to work properly.
-     * @param {Object} options Constructor options object.
+     * 
      * @param {String} options.storagePath Full path to a JSON file. Default: './storage.json'.
      */
     constructor(options = {}) {
@@ -202,6 +204,37 @@ class DatabaseManager {
         }
 
         data.splice(index, 1)
+        return this.set(key, data)
+    }
+
+    /**
+    * Changes the specified element's value in a specified array in the database.
+    * @param {String} key The key in database.
+    * @param {Number} index The index in the array.
+    * @param {any} newValue The new value to set.
+    * @returns {Boolean} If cleared: true; else: false.
+    */
+    changeElement(key, index, newValue) {
+        if (!key) return false
+        if (index == undefined) return false
+        if (typeof key !== 'string') {
+            throw new EconomyError(errors.databaseManager.invalidTypes.key + typeof data)
+        }
+
+        const data = this.fetch(key)
+        if (!Array.isArray(data)) {
+            throw new EconomyError(errors.databaseManager.invalidTypes.target.array + typeof data)
+        }
+
+        if (typeof key !== 'string') {
+            throw new EconomyError(errors.databaseManager.invalidTypes.key + typeof data)
+        }
+
+        if (newValue == undefined) {
+            throw new EconomyError(errors.databaseManager.invalidTypes.value.newValue + typeof newValue)
+        }
+
+        data.splice(index, 1, newValue)
         return this.set(key, data)
     }
 

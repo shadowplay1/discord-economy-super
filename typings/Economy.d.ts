@@ -16,6 +16,7 @@ import InventoryManager from './managers/InventoryManager'
 
 import RewardManager from './managers/RewardManager'
 import CooldownManager from './managers/CooldownManager'
+import HistoryManager from './managers/HistoryManager'
 
 import SettingsManager from './managers/SettingsManager'
 
@@ -87,6 +88,12 @@ declare class Economy extends Emitter {
     public inventory: InventoryManager
 
     /**
+    * History manager methods object.
+    * @type {HistoryManager}
+    */
+    public history: HistoryManager
+
+    /**
     * Balance methods object.
     * @type {BalanceManager}
     */
@@ -154,8 +161,8 @@ declare class Economy extends Emitter {
     private _init(): Promise<boolean>
 
     /**
-     * Initializates the module.
-     * @returns {Promise<boolean | Error>} If started successfully: true; else: Error instance.
+     * Initializes the module.
+     * @returns {Promise<boolean>} If started successfully: true; else: Error instance.
      * @private
     */
     private start(): boolean

@@ -1,5 +1,7 @@
-const Emitter = require('../classes/Emitter')
+const { inspect } = require('util')
+
 const EconomyError = require('../classes/EconomyError')
+const Emitter = require('../classes/Emitter')
 
 const FetchManager = require('./FetchManager')
 const DatabaseManager = require('./DatabaseManager')
@@ -9,14 +11,15 @@ const errors = require('../structures/errors')
 
 /**
  * Inventory manager methods class.
- * @extends {Emitter}
  */
 class InventoryManager extends Emitter {
 
     /**
-      * Economy constructor options object. 
+      * Inventory Manager.
+      * 
+      * @param {Object} options Economy constructor options object.
       * There's only needed options object properties for this manager to work properly.
-      * @param {Object} options Constructor options object.
+      * 
       * @param {String} options.storagePath Full path to a JSON file. Default: './storage.json'.
       * @param {String} options.dateLocale The region (example: 'ru' or 'en') to format date and time. Default: 'en'.
       * @param {Boolean} options.subtractOnBuy 
@@ -215,7 +218,37 @@ class InventoryManager extends Emitter {
         this.removeItem(itemID, memberID, guildID)
         this.emit('shopItemUse', item)
 
-        return item.message
+        let msg
+        const string = item.message
+
+        if (string.includes('[random=')) {
+            const s = string.slice(string.indexOf('[')).replace('random=', '')
+
+            const arr = JSON.parse(s.slice(0, s.indexOf(']') + 1))
+            const randomString = arr[Math.floor(Math.random() * arr.length)]
+            const replacingString = string.slice(string.indexOf('['))
+
+
+            msg = string.replace(replacingString, randomString) +
+                string.slice(string.indexOf('"]')).replace('"]', '')
+        }
+
+        else msg = string
+        return msg
+    }
+
+    /**
+     * Uses the item from user's inventory.
+     * 
+     * This method is an alias for the `InventoryManager.useItem()` method.
+     * @param {Number | String} itemID Item ID or name.
+     * @param {String} memberID Member ID.
+     * @param {String} guildID Guild ID.
+     * @param {Client} [client] The Discord Client. [Optional]
+     * @returns {String} Item message or null if item not found.
+     */
+    use(itemID, memberID, guildID, client) {
+        return this.useItem(itemID, memberID, guildID, client)
     }
 
     /**
@@ -418,6 +451,7 @@ class InventoryManager extends Emitter {
  * @property {ErrorHandlerOptions} [errorHandler=ErrorHandlerOptions] Error Handler options object.
  * @property {CheckerOptions} [optionsChecker=CheckerOptions] Options object for an 'Economy.utils.checkOptions' method.
  */
+
 
 /**
  * Inventory manager class.

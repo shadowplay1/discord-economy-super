@@ -1,13 +1,18 @@
+import Emitter from '../classes/Emitter'
+
 import ItemData from '../interfaces/ItemData'
 import AddItemOptions from '../interfaces/AddItemOptions'
 import InventoryData from '../interfaces/InventoryData'
 import PurchasesHistory from '../interfaces/HistoryData'
+import ItemProperty from '../interfaces/ItemProperty'
+
 import EconomyOptions from '../interfaces/EconomyOptions'
 
 /**
 * Shop manager methods object.
+* @extends {Emitter}
 */
-declare class ShopManager {
+declare class ShopManager extends Emitter {
     constructor(options: EconomyOptions)
 
     /**
@@ -22,10 +27,23 @@ declare class ShopManager {
      * Edits the item in shop.
      * @param {number | string} itemID Item ID or name
      * @param {string} guildID Guild ID
-     * @param {string} arg This argument means what thing in item you want to edit. Avaible arguments: description, price, name, message, amount, role
+     * @param {string} itemProperty This argument means what thing in item you want to edit (item property). 
+     * Available item properties: description, price, name, message, amount, role.
      * @returns {boolean} If edited successfully: true, else: false
      */
-    public editItem(itemID: string | number, guildID: string, arg: 'description' | 'price' | 'itemName' | 'message' | 'maxAmount' | 'role', value: string): boolean
+    public editItem(itemID: string | number, guildID: string, itemProperty: ItemProperty, value: string): boolean
+
+    /**
+     * Edits the item in shop.
+     * 
+     * This method is an alias for the `ShopManager.editItem()` method.
+     * @param {number | string} itemID Item ID or name
+     * @param {string} guildID Guild ID
+     * @param {string} itemProperty This argument means what thing in item you want to edit (item property). 
+     * Available item properties: description, price, name, message, amount, role.
+     * @returns {boolean} If edited successfully: true, else: false
+     */
+    public edit(itemID: string | number, guildID: string, itemProperty: ItemProperty, value: string): boolean
 
     /**
      * Removes an item from the shop.
@@ -111,11 +129,20 @@ declare class ShopManager {
     public clearInventory(memberID: string, guildID: string): boolean
 
     /**
-     * Clears the user's purchases history.
-     * @param {string} memberID Member ID
-     * @param {string} guildID Guild ID
-     * @returns {boolean} If cleared: true, else: false
-     */
+    * Clears the user's purchases history.
+    * 
+    * [!!!] This method is deprecated.
+    * If you want to get all the bugfixes and
+    * use the newest history features, please
+    * switch to the usage of the new HistoryManager.
+    * 
+    * [!!!] No help will be provided for history
+    * related methods in ShopManager.
+    * @param {String} memberID Member ID.
+    * @param {String} guildID Guild ID.
+    * @returns {Boolean} If cleared: true, else: false.
+    * @deprecated
+    */
     public clearHistory(memberID: string, guildID: string): boolean
 
     /**
@@ -179,9 +206,18 @@ declare class ShopManager {
 
     /**
      * Shows the user's purchase history.
-     * @param {string} memberID Member ID
-     * @param {string} guildID Guild ID
-     * @returns User's purchase history array.
+     * 
+     * [!!!] This method is deprecated.
+     * If you want to get all the bugfixes and
+     * use the newest history features, please
+     * switch to the usage of the new HistoryManager.
+     * 
+     * [!!!] No help will be provided for history
+     * related methods in ShopManager.
+     * @param {String} memberID Member ID
+     * @param {String} guildID Guild ID
+     * @returns {PurchasesHistory[]} User's purchase history.
+     * @deprecated
      */
     public history(memberID: string, guildID: string): PurchasesHistory[]
 }

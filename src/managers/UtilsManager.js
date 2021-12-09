@@ -1,5 +1,3 @@
-/* eslint-disable no-empty */
-
 const { readFileSync, writeFileSync } = require('fs')
 
 const fetch = require('node-fetch')
@@ -42,9 +40,11 @@ function unset(object, key) {
 class UtilsManager {
 
     /**
-     * Economy constructor options object. 
+     * Utils Manager.
+     * 
+     * @param {Object} options Economy constructor options object.
      * There's only needed options object properties for this manager to work properly.
-     * @param {Object} options Constructor options object.
+     * 
      * @param {String} options.storagePath Full path to a JSON file. Default: './storage.json'.
      */
     constructor(options = {}) {

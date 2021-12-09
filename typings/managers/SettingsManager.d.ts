@@ -1,5 +1,5 @@
-import EconomyOptions from "../interfaces/EconomyOptions";
-import SettingsTypes from "../interfaces/SettingsTypes";
+import EconomyOptions from '../interfaces/EconomyOptions'
+import SettingsTypes from '../interfaces/SettingsTypes'
 
 /**
  * Settings manager methods class.
@@ -68,4 +68,5 @@ type SettingsStrings =
     'dailyAmount' | 'dailyCooldown' |
     'workAmount' | 'workCooldown' |
     'weeklyAmount' | 'weeklyCooldown' |
-    'dateLocale' | 'subtractOnBuy'
+    'dateLocale' | 'subtractOnBuy' | 
+    'sellingItemPercent'
