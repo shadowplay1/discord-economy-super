@@ -442,6 +442,7 @@ class Economy extends Emitter {
         this.database = new DatabaseManager(this.options)
 
         this.shop = new ShopManager(this.options)
+        this.inventory = new InventoryManager(this.options)
         this.history = new HistoryManager(this.options)
 
         this.rewards = new RewardManager(this.options)

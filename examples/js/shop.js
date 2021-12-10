@@ -58,26 +58,31 @@ eco.on('ready', () => {
 bot.on('messageCreate', async message => {
     const args = message.content.slice(1).trim().split(' ').slice(1)
     if (message.content.startsWith('+help')) return message.channel.send('**__Bot Commands:__**\n+help\n+balance\n+daily\n+weekly\n+work\n+lb (+leaderboard)\n+shop\n`+shop_add`\n`+shop_remove`\n`+shop_buy`\n`+shop_search`\n`+shop_clear`\n`+shop_inventory`\n`+shop_use`\n`+shop_clear_inventory`\n`+shop_history`\n`+shop_clear_history`')
+    
     if (message.content.startsWith('+daily')) {
         const daily = eco.rewards.daily(message.author.id, message.guild.id)
         if (!daily.status) return message.channel.send(`You have already claimed your daily reward! Time left until next claim: **${daily.value.days}** days, **${daily.value.hours}** hours, **${daily.value.minutes}** minutes and **${daily.value.seconds}** seconds.`)
         message.channel.send(`You have received **${daily.reward}** daily coins!`)
     }
+
     if (message.content.startsWith('+work')) {
         const work = eco.rewards.work(message.author.id, message.guild.id)
         if (!work.status) return message.channel.send(`You have already worked! Time left until next work: **${work.value.days}** days, **${work.value.hours}** hours, **${work.value.minutes}** minutes and **${work.value.seconds}** seconds.`)
         message.channel.send(`You worked hard and earned **${work.pretty}** coins!`)
     }
+
     if (message.content.startsWith('+weekly')) {
         const weekly = eco.rewards.weekly(message.author.id, message.guild.id)
         if (!weekly.status) return message.channel.send(`You have already claimed your weekly reward! Time left until next claim: **${weekly.value.days}** days, **${weekly.value.hours}** hours, **${weekly.value.minutes}** minutes and **${weekly.value.seconds}** seconds.`)
         message.channel.send(`You have received **${weekly.reward}** weekly coins!`)
     }
+
     if (message.content.startsWith('+lb') || message.content.startsWith('+leaderboard')) {
         const lb = eco.balance.leaderboard(message.guild.id)
         if (!lb.length) return message.channel.send('Cannot generate a leaderboard: the server database is empty.')
         message.channel.send(`Money Leaderboard for **${message.guild.name}**\n-----------------------------------\n` + lb.map((x, i) => `${i + 1}. <@${x.userID}> - ${x.money} coins`).join('\n'))
     }
+    
     if (message.content.startsWith('+balance')) {
         const member = message.guild.members.cache.get(message.mentions.members.first()?.id || message.author.id)
 
@@ -86,11 +91,13 @@ bot.on('messageCreate', async message => {
 
         message.channel.send(`**${member.user.username}**'s Balance:\nCash: **${balance}** coins.\nBank: **${bank}** coins.`)
     }
+
     if (message.content == '+shop') {
         const shop = eco.shop.list(message.guild.id)
         if (!shop.length) return message.channel.send('No items in the shop!')
         message.channel.send(shop.map(item => `ID: **${item.id}** - **${item.itemName}** (**${item.price}** coins), description: **${item.description}**, max amount in inventory: **${item.maxAmount || Infinity}**. Role: ${item.role || '**This item don\'t give you a role.**'}`).join('\n'))
     }
+
     if (message.content == '+shop_add') {
         if (!args[0]) return message.channel.send('Specify an item name.')
         if (!args[1]) return message.channel.send('Specify a price.')
@@ -104,6 +111,7 @@ bot.on('messageCreate', async message => {
         })
         message.channel.send('Item successfully added!')
     }
+
     if (message.content.startsWith('+shop_remove')) {
         if (!args[0]) return message.channel.send('Specify an item ID or name.')
         const item = eco.shop.searchItem(args[0], message.guild.id)
@@ -111,6 +119,7 @@ bot.on('messageCreate', async message => {
         eco.shop.removeItem(args[0], message.guild.id)
         return message.channel.send('Item successfully removed!')
     }
+
     if (message.content.startsWith('+shop_buy')) {
         const balance = eco.balance.fetch(message.author.id, message.guild.id)
         if (!args[0]) return message.channel.send('Specify an item ID or name.')
@@ -121,40 +130,48 @@ bot.on('messageCreate', async message => {
         if (purchase == 'max') return message.channel.send(`You cannot have more than **${item.maxAmount}** of item "**${item.itemName}**".`)
         return message.channel.send(`You have received item "**${item.itemName}**" for **${item.price}** coins!`)
     }
+
     if (message.content.startsWith('+shop_search')) {
         if (!args[0]) return message.channel.send('Specify an item ID or name.')
         const item = eco.shop.searchItem(args[0], message.guild.id)
         if (!item) return message.channel.send(`Cannot find item ${args[0]}.`)
         return message.channel.send(`Item info:\nID: **${item.id}**\nName: **${item.itemName}**\nPrice: **${item.price}** coins\nDesciption: **${item.description}**\nMessage on use: **${item.message}**\nMax amount in inventory: **${item.maxAmount || Infinity}**. Role: ${item.role || '**This item don\'t give you a role.**'}`)
     }
+
     if (message.content.startsWith('+shop_clear') && !message.content.includes('history') && !message.content.includes('shop_clear_inventory')) {
         eco.shop.clear(message.guild.id)
         return message.channel.send('Shop was cleared successfully!')
     }
+
     if (message.content.startsWith('+shop_inventory')) {
         const inv = eco.inventory.fetch(message.author.id, message.guild.id)
         if (!inv.length) return message.channel.send('You don\'t have any item in your inventory.')
         return message.channel.send(inv.map((x, i) => `ID: ${i + 1}: ${x.itemName} - ${x.price} coins (${x.date})`).join('\n'))
     }
+
     if (message.content.startsWith('+shop_use')) {
         if (!args[0]) return message.channel.send('Specify an name or ID of item you have in your inventory.')
         const itemMessage = eco.inventory.useItem(args[0], message.author.id, message.guild.id, bot)
         if (!itemMessage) return message.channel.send(`Cannot find item ${args[0]} in your inventory.`)
         return message.channel.send(itemMessage)
     }
+
     if (message.content.startsWith('+shop_clear_inventory')) {
         eco.inventory.clear(message.author.id, message.guild.id)
         return message.channel.send('Your inventory was successfully cleared!')
     }
+
     if (message.content.startsWith('+shop_history')) {
         const history = eco.shop.history(message.author.id, message.guild.id)
         if (!history.length) return message.channel.send('Your purchases history is empty.')
         return message.channel.send(history.map(x => `ID: ${x.id}: ${x.itemName} - ${x.price} coins (${x.date})`).join('\n'))
     }
+
     if (message.content.startsWith('+shop_clear_history')) {
         const cleared = eco.shop.clearHistory(message.author.id, message.guild.id)
         if (!cleared) return message.channel.send('Couldn\'t clear your purchases history: Your history is already empty!')
         return message.channel.send('Your purchases history was successfully cleared!')
     }
 })
+
 bot.login('token')

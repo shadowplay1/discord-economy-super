@@ -1,3 +1,5 @@
+// Post-Install Script
+
 console.log()
 console.log('\x1b[32m╔══════════════════════════════════════════════════════════════════╗')
 console.log('\x1b[32m║ @ discord-economy-super                                   - [] X ║')
