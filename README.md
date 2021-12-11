@@ -39,7 +39,8 @@ pnpm add discord-economy-super
 ## ❗ | Useful Links
 <ul>
 <li><b><a href = "https://des-docs.tk">Documentation</a></b></li>
-<li><b><a href = "https://des-docs.tk/#/docs/main/1.5.1general/faq">Frequently Asked Questions</a></b></li>
+<li><b><a href = "https://www.npmjs.com/package/discord-economy-super">NPM</a></b></li>
+<li><b><a href = "https://des-docs.tk/#/docs/main/1.5.2general/faq">Frequently Asked Questions</a></b></li>
 <li><b><a href = "https://github.com/shadowplay1/discord-economy-super">GitHub</a></b></li>
 <li><b><a href = "https://github.com/shadowplay1/discord-economy-super/tree/main/examples">Examples</a></b></li>
 <li><b><a href = "https://discord.gg/4pWKq8vUnb">Discord Server</a></b></li>

@@ -24,6 +24,16 @@ declare class ShopManager extends Emitter {
     public addItem(guildID: string, options: AddItemOptions): ItemData
 
     /**
+     * Creates an item in shop.
+     * 
+     * This method is an alias for the `ShopManager.addItem()` method.
+     * @param {String} guildID Guild ID.
+     * @param {AddItemOptions} options Options object with item info.
+     * @returns {ItemData} Item info.
+     */
+    public add(guildID: string, options: AddItemOptions): ItemData
+
+    /**
      * Edits the item in shop.
      * @param {number | string} itemID Item ID or name
      * @param {string} guildID Guild ID

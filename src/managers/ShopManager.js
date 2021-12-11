@@ -80,7 +80,7 @@ class ShopManager extends Emitter {
     /**
      * Creates an item in shop.
      * @param {String} guildID Guild ID.
-     * @param {AddItemOptions} options object with item info.
+     * @param {AddItemOptions} options Options object with item info.
      * @returns {ItemData} Item info.
      */
     addItem(guildID, options = {}) {
@@ -130,6 +130,18 @@ class ShopManager extends Emitter {
         this.database.push(`${guildID}.shop`, itemInfo)
 
         return itemInfo
+    }
+
+    /**
+     * Creates an item in shop.
+     * 
+     * This method is an alias for the `ShopManager.addItem()` method.
+     * @param {String} guildID Guild ID.
+     * @param {AddItemOptions} options Options object with item info.
+     * @returns {ItemData} Item info.
+     */
+    add(guildID, options = {}) {
+        return this.addItem(guildID, options)
     }
 
     /**

@@ -219,18 +219,29 @@ class InventoryManager extends Emitter {
         this.emit('shopItemUse', item)
 
         let msg
-        const string = item.message
+        const string = item?.message || 'You have used this item!'
 
         if (string.includes('[random=')) {
             const s = string.slice(string.indexOf('[')).replace('random=', '')
 
-            const arr = JSON.parse(s.slice(0, s.indexOf(']') + 1))
-            const randomString = arr[Math.floor(Math.random() * arr.length)]
-            const replacingString = string.slice(string.indexOf('['))
+            let errored = false
+            let arr
+
+            try {
+                arr = JSON.parse(s.slice(0, s.indexOf(']') + 1))
+            } catch {
+                errored = true
+            }
+
+            if (errored || !arr.length) msg = string
+            else {
+                const randomString = arr[Math.floor(Math.random() * arr.length)]
+                const replacingString = string.slice(string.indexOf('['))
 
 
-            msg = string.replace(replacingString, randomString) +
-                string.slice(string.indexOf('"]')).replace('"]', '')
+                msg = string.replace(replacingString, randomString) +
+                    string.slice(string.indexOf('"]')).replace('"]', '')
+            }
         }
 
         else msg = string
