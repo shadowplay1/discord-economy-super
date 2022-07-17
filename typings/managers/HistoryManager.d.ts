@@ -1,64 +1,76 @@
 import EconomyOptions from '../interfaces/EconomyOptions'
-import HistoryData from '../interfaces/HistoryData'
+import HistoryItem from '../classes/HistoryItem'
 
 /**
 * History manager methods object.
 */
 declare class HistoryManager {
-    constructor(options: EconomyOptions)
+    public constructor(options: EconomyOptions)
+
     /**
      * Shows the user's purchase history.
-     * @param {String} memberID Member ID
-     * @param {String} guildID Guild ID
-     * @returns {HistoryData[]} User's purchase history.
+     * @param {string} memberID Member ID
+     * @param {string} guildID Guild ID
+     * @returns {HistoryItem[]} User's purchase history.
      */
-    public fetch(memberID: string, guildID: string): HistoryData[]
+    public fetch<T extends object = any>(memberID: string, guildID: string): HistoryItem<T>[]
+
+    /**
+     * Shows the user's purchase history.
+     * 
+     * This method is an alias for `HistoryManager.fetch()` method.
+     * @param {string} memberID Member ID
+     * @param {string} guildID Guild ID
+     * @returns {HistoryItem[]} User's purchase history.
+     */
+    public get<T extends object = any>(memberID: string, guildID: string): HistoryItem<T>[]
 
     /**
     * Clears the user's purchases history.
-    * @param {String} memberID Member ID.
-    * @param {String} guildID Guild ID.
-    * @returns {Boolean} If cleared: true, else: false.
+    * @param {string} memberID Member ID.
+    * @param {string} guildID Guild ID.
+    * @returns {boolean} If cleared: true, else: false.
     */
     public clear(memberID: string, guildID: string): boolean
-    
+
     /**
      * Adds the item from the shop to the purchases history.
-     * @param {String | Number} itemID Item ID or name.
-     * @param {String} memberID Member ID.
-     * @param {String} guildID Guild ID.
-     * @returns {Boolean} If added: true, else: false.
+     * @param {string} itemID Item ID or name.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @param {number} [quantity=1] Quantity of the items.
+     * @returns {boolean} If added: true, else: false.
      */
-    public add(itemID: string | number, memberID: string, guildID: string): boolean
+    public add(itemID: string | number, memberID: string, guildID: string, quantity?: number): boolean
 
     /**
      * Removes the specified item from history.
-     * @param {String | Number} id History item ID.
-     * @param {String} memberID Member ID.
-     * @param {String} guildID Guild ID.
-     * @returns {Boolean} If removed: true, else: false.
+     * @param {string} id History item ID.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @returns {boolean} If removed: true, else: false.
      */
-    public remove(id: string | number, memberID: string, guildID: string): boolean
+    public remove(id: string, memberID: string, guildID: string): boolean
 
     /**
-     * Searches for the specified item from history.
-     * @param {String | Number} id History item ID.
-     * @param {String} memberID Member ID.
-     * @param {String} guildID Guild ID.
-     * @returns {HistoryData} If removed: true, else: false.
+     * Gets the specified item from history.
+     * @param {string} id History item ID.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @returns {HistoryItem} If removed: true, else: false.
      */
-    public find(id: string | number, memberID: string, guildID: string): HistoryData
+    public findItem<T extends object = any>(id: string, memberID: string, guildID: string): HistoryItem<T>
 
     /**
-     * Searches for the specified item from history.
+     * Gets the specified item from history.
      * 
-     * This method is an alias for the `HistoryManager.find()` method.
-     * @param {String | Number} id History item ID.
-     * @param {String} memberID Member ID.
-     * @param {String} guildID Guild ID.
-     * @returns {HistoryData} If removed: true, else: false.
+     * This method is an alias for the `HistoryManager.findItem()` method.
+     * @param {string} id History item ID.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @returns {HistoryItem} If removed: true, else: false.
      */
-    public search(id: string | number, memberID: string, guildID: string): HistoryData
+    public getItem<T extends object = any>(id: string, memberID: string, guildID: string): HistoryItem<T>
 }
 
 export = HistoryManager

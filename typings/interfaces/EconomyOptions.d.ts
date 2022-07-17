@@ -1,11 +1,15 @@
+// import { MongoConnectionOptions } from 'quick-mongo-super/typings/interfaces/QuickMongo'
+
 import CheckerOptions from './CheckerOptions'
 import ErrorHandlerOptions from './ErrorHandlerOptions'
 import UpdaterOptions from './UpdaterOptions'
 
+
 /**
- * Constructor options object.
+ * Economy configuration.
  */
-declare class EconomyOptions {
+declare interface EconomyOptions {
+
     /**
      * Full path to a JSON file. Default: './storage.json'.
      */
@@ -17,24 +21,29 @@ declare class EconomyOptions {
     checkStorage?: boolean
 
     /**
-     * Cooldown for Daily Command (in ms). Default: 24 Hours (60000 * 60 * 24) ms
+     * How often the module will checck the storage file.
+     */
+    updateCountdown?: number
+
+    /**
+     * Cooldown for Daily Command (in ms). Default: 24 hours (60000 * 60 * 24 ms)
      */
     dailyCooldown?: number
 
     /**
-     * Cooldown for Work Command (in ms). Default: 1 Hour (60000 * 60) ms
+     * Cooldown for Work Command (in ms). Default: 1 hour (60000 * 60 ms)
      */
     workCooldown?: number
 
     /**
-     * Cooldown for Weekly Command (in ms). Default: 7 Days (60000 * 60 * 24 * 7) ms
+     * Cooldown for Weekly Command (in ms). Default: 7 days (60000 * 60 * 24 * 7 ms)
      */
     weeklyCooldown?: number
 
     /**
      * Amount of money for Daily Command. Default: 100.
      */
-    dailyAmount?: number | number[]
+    dailyAmount?: number | [number, number]
 
     /**
      * If true, the module will save all the purchases history.
@@ -44,7 +53,7 @@ declare class EconomyOptions {
     /**
      * Amount of money for Work Command. Default: [10, 50].
      */
-    workAmount?: number | number[]
+    workAmount?: number | [number, number]
 
     /**
      * If true, when someone buys the item, their balance will subtract by item price.
@@ -54,18 +63,13 @@ declare class EconomyOptions {
     /**
      * Amount of money for Weekly Command. Default: 1000.
      */
-    weeklyAmount?: number
-
-    /**
-     * Checks for if storage file exists in specified time (in ms). Default: 1000.
-     */
-    updateCooldown?: number
+    weeklyAmount?: number | [number, number]
 
     /**
      * Percent of the item's price it will be sold for. Default: 75.
      */
     sellingItemPercent?: number
-    
+
     /**
      * If true, the deprecation warnings will be sent in the console.
      */
@@ -77,19 +81,24 @@ declare class EconomyOptions {
     dateLocale?: string
 
     /**
-    * Update Checker options object.
+    * Update checker configuration.
     */
     updater?: UpdaterOptions
 
     /**
-    * Error Handler options object.
+    * Error handler configuration.
     */
     errorHandler?: ErrorHandlerOptions
 
     /**
-     * Options object for an 'Economy.utils.checkOptions' method.
+     * Configuration for an 'Economy.utils.checkOptions' method.
      */
     optionsChecker?: CheckerOptions
+
+    /**
+     * Enables or disables the debug mode.
+     */
+    debug?: boolean
 }
 
 export = EconomyOptions

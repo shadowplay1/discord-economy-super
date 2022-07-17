@@ -1,24 +1,28 @@
 import CheckerOptions from '../interfaces/CheckerOptions'
+
+import EconomyDatabase from '../interfaces/EconomyDatabase'
 import EconomyOptions from '../interfaces/EconomyOptions'
+
 import VersionData from '../interfaces/VersionData'
+
 
 /**
  * Utils manager methods object.
  */
 declare class UtilsManager {
-    constructor(options: EconomyOptions)
+    public constructor(options: EconomyOptions)
     
     /**
     * Fetches the entire database.
     * @returns Database contents
     */
-    public all(): object
+    public all(): EconomyDatabase
 
     /**
     * Clears the storage file.
     * @returns {boolean} If cleared successfully: true; else: false
     */
-    public clearStorage(): boolean
+    public clearDatabase(): boolean
 
     /**
     * Fully removes the guild from database.
@@ -36,31 +40,31 @@ declare class UtilsManager {
     public removeUser(memberID: string, guildID: string): boolean
 
     /**
-     * This method will show is the module updated, latest version and installed version.
-     * @returns If started successfully: true; else: Error object.
-     */
+    * Checks for the module updates.
+    * @returns {Promise<VersionData>} Is the module updated, latest version and installed version.
+    */
     public checkUpdates(): Promise<VersionData>
 
     /**
-     * Checks the Economy options object, fixes the problems in it and returns the fixed options object.
+     * Checks the Economy configuration, fixes the problems returns it.
      * @param {CheckerOptions} options Option checker options.
-     * @returns {EconomyOptions} Fixed economy options object.
+     * @returns {EconomyOptions} Fixed Economy configuration.
      */
     public checkOptions(options?: CheckerOptions): EconomyOptions
 
     /**
      * Writes the data to file.
-     * @param {String} path File path to write.
-     * @param {any} data Any data to write
-     * @returns {Boolean} If successfully written: true; else: false.
+     * @param {string} path File path to write.
+     * @param {T} data Any data to write
+     * @returns {boolean} If successfully written: true; else: false.
      */
-    public write<Data>(path: string, data: Data): boolean
+    public write<T>(path: string, data: T): boolean
 
     /**
      * Sets the default user object for the specified member.
-     * @param {String} memberID Member ID.
-     * @param {String} guildID Guild ID.
-     * @returns {Boolean} If resetted successfully: true; else: false.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @returns {boolean} If reset successfully: true; else: false.
      */
     public reset(memberID: string, guildID: string): boolean
 }

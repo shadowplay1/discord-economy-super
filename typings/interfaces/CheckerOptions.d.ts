@@ -1,37 +1,38 @@
 /**
- * Options object for an 'Economy.utils.checkOptions' method.
+ * Configuration for an 'Economy.utils.checkOptions' method.
  */
-declare class CheckerOptions {
+declare interface CheckerOptions {
+
     /**
      * Allows the method to ignore the options with invalid types. Default: false.
      */
-    ignoreInvalidTypes: boolean
+    ignoreInvalidTypes?: boolean
 
     /**
      * Allows the method to ignore the unspecified options. Default: true.
      */
-    ignoreUnspecifiedOptions: boolean
+    ignoreUnspecifiedOptions?: boolean
 
     /**
      * Allows the method to ignore the unexisting options. Default: false.
      */
-    ignoreInvalidOptions: boolean
+    ignoreInvalidOptions?: boolean
 
     /**
      * Allows the method to show all the problems in the console. Default: true.
      */
-    showProblems: boolean
+    showProblems?: boolean
 
     /**
      * Allows the method to send the result in the console. 
      * Requires the 'showProblems' or 'sendLog' options to set. Default: true.
      */
-    sendLog: boolean
-    
+    sendLog?: boolean
+
     /**
      * Allows the method to send the result if no problems were found. Default: false
      */
-    sendSuccessLog: boolean
+    sendSuccessLog?: boolean
 }
 
 export = CheckerOptions

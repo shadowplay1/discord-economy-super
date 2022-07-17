@@ -1,12 +1,12 @@
 {
 	"name": "discord-economy-super",
-	"version": "1.5.2",
+	"version": "1.6.0-dev.1657990331.b39e3f0",
 	"types": "./typings/Economy.d.ts",
 	"description": "Easy and customizable economy framework for your Discord Bot.",
 	"main": "index.js",
 	"scripts": {
 		"test": "node ./tests/test.js",
-		"postinstall": "node install.js",
+		"postinstall": "node postinstall.js",
 		"lint": "eslint ./",
 		"lint:fix": "eslint ./ --fix"
 	},
@@ -15,6 +15,10 @@
 		"bot",
 		"discord.js",
 		"economy",
+		"fast",
+		"easy",
+		"easy-eco",
+		"easy-economy",
 		"discord economy",
 		"discord-economy",
 		"discord-economy-super",
@@ -24,14 +28,29 @@
 		"discord-bot",
 		"json",
 		"quick",
+		"eco",
 		"quick.eco",
+		"economy.js",
+		"mongo",
+		"mongodb",
+		"database",
+		"economy.json",
+		"economy.mongo",
+		"economy.mongodb",
 		"framework",
 		"shadowplay"
 	],
 	"author": "shadowplay",
 	"license": "MIT",
 	"dependencies": {
-		"node-fetch": "2.6.1"
+		"node-fetch": "^2.6.7",
+		"quick-mongo-super": "^1.0.8"
+	},
+	"engines": {
+		"node": ">=14.0.0"
+	},
+	"directories": {
+		"example": "./examples"
 	},
 	"repository": {
 		"type": "git",
@@ -40,5 +59,8 @@
 	"bugs": {
 		"url": "https://github.com/shadowplay1/discord-economy-super/issues"
 	},
-	"homepage": "https://des-docs.tk"
+	"homepage": "https://des-docs.tk",
+	"devDependencies": {
+		"@types/node-fetch": "^2.6.1"
+	}
 }

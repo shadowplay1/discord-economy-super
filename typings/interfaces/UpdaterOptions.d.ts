@@ -1,16 +1,17 @@
 /**
- * Updater options object.
+ * Update checker configuration.
  */
-declare class UpdaterOptions {
+declare interface UpdaterOptions {
+
     /**
      * Sends the update state message in console on start. Default: true.
      */
-    checkUpdates: boolean
+    checkUpdates?: boolean
 
     /**
      * Sends the message in console on start if module is up to date. Default: true.
      */
-    upToDateMessage: boolean
+    upToDateMessage?: boolean
 }
 
 export = UpdaterOptions

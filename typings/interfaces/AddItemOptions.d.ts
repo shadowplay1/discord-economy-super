@@ -1,31 +1,45 @@
+import CustomItemData from "./CustomItemData"
+
 /**
- * Options of 'Economy.shop.addItem()' method.
+ * Options of 'ShopManager.addItem()' method.
  */
-declare class AddItemOptions {
+declare interface AddItemOptions<T extends object = any> {
+
     /**
      * Item name.
      */
-    itemName: string
+    name: string
+
     /**
      * Item price.
      */
-    price: string | number
+    price: number
+
     /**
      * The message that will be returned on item use.
      */
     message?: string
+
     /**
      * Item description.
      */
     description?: string
+
     /**
-     * Max amount of the item that user can hold in his inventory.
+     * Max amount of the item that user can hold in their inventory.
      */
-    maxAmount?: string | number
+    maxAmount?: string
+
     /**
-     * Discord Role ID from your server that will be given to user. Requires to specify your bot client in 'Economy.shop.useItem' method.
+     * Discord Role ID from your server that will be given to user. 
+     * Requires to specify your bot client in 'Economy.shop.useItem' method.
      */
     role?: string
+
+    /**
+     * Custom item data object.
+     */
+    custom?: CustomItemData<T>
 }
 
 export = AddItemOptions

@@ -7,13 +7,13 @@
 
 ## ❓ | Why?
 <ul>
-<li><b>TypeScript Support 📘</b></li>
-<li><b>Object-oriented 📜</b></li>
+<li><b>Clean TypeScript Defenitions 📘</b></li>
+<li><b><a href="https://des-docs.tk/#/docs/main/1.6.0/general/migrating">MongoDB Support 🍃</a></b></li>
 <li><b>Flexible and Customizable ⚙️</b></li>
 <li><b>Easy to use 👍</b></li>
 <li><b>Beginner Friendly 😄</b></li>
-<li><b>Shop System 🛒</b></li>
-<li><b>Bank Balance System 🏦</b></li>
+<li><b>Shop/Inventory System 🛒</b></li>
+<li><b>Balance/Bank balance Systems 🏦</b></li>
 <li><b>Multi-Server Setup 🔧</b></li>
 </ul>
 
@@ -21,19 +21,24 @@
 <b>Note:</br><b>
 <b>Node.js 14.0.0 or newer is required.</b><br>
 ```console
-npm i discord-economy-super
-yarn add discord-economy-super
-pnpm add discord-economy-super
+$ npm i discord-economy-super
+$ yarn add discord-economy-super
+$ pnpm add discord-economy-super
 ```
 
 ## [[Module Documentation]](https://des-docs.tk)
+
+## Examples
+[JavaScript Examples](https://github.com/shadowplay1/discord-economy-super/tree/main/examples/js)
+[TypeScript Examples](https://github.com/shadowplay1/discord-economy-super/tree/main/examples/ts)
 
 ## 🤔 | Help
 <b>If you don't understand something in the documentation or you are experiencing problems, feel free to join our <a href = "https://discord.gg/4pWKq8vUnb">Support Server</a>.</b>
 
 ## 🕘 | My Other Modules
 <ul>
-<li><b><a href = "https://www.npmjs.com/package/discord-leveling-super">discord-leveling-super</a></b></li>
+<li><b><a href="https://www.npmjs.com/package/discord-leveling-super">discord-leveling-super</a></b></li>
+<li><b><a href="https://www.npmjs.com/package/quick-mongo-super">quick-mongo-super</a></b></li>
 </ul>
 
 ## ❗ | Useful Links

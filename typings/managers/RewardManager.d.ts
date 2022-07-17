@@ -1,13 +1,12 @@
-import DailyObject from '../interfaces/DailyObject'
+import RewardObject from '../interfaces/RewardObject'
 import EconomyOptions from '../interfaces/EconomyOptions'
-import WeeklyObject from '../interfaces/WeeklyObject'
-import WorkObject from '../interfaces/WorkObject'
+
 
 /**
  * Reward manager methods object.
  */
 declare class RewardManager {
-    constructor(options: EconomyOptions)
+    public constructor(options: EconomyOptions)
 
     /**
     * Adds a daily reward on user's balance
@@ -16,7 +15,9 @@ declare class RewardManager {
     * @param {string} reason The reason why the money was added. Default: 'claimed the daily reward'
     * @returns Daily money amount or time before next claim
     */
-    public daily(memberID: string, guildID: string, reason?: string | 'claimed the daily reward'): DailyObject
+    public getDaily<
+        isRewardArray extends boolean = false
+    >(memberID: string, guildID: string, reason?: string): RewardObject<isRewardArray, 'daily'>
 
     /**
     * Adds a work reward on user's balance
@@ -25,7 +26,9 @@ declare class RewardManager {
     * @param {string} reason The reason why the money was added. Default: 'claimed the work reward'
     * @returns Work money amount or time before next claim
     */
-    public work(memberID: string, guildID: string, reason?: string | 'claimed the work reward'): WorkObject
+    public getWork<
+        isRewardArray extends boolean = true
+    >(memberID: string, guildID: string, reason?: string): RewardObject<isRewardArray, 'work'>
 
     /**
     * Adds a weekly reward on user's balance
@@ -34,7 +37,9 @@ declare class RewardManager {
     * @param {string} reason The reason why the money was added. Default: 'claimed the weekly reward'
     * @returns Weekly money amount or time before next claim
     */
-    public weekly(memberID: string, guildID: string, reason?: string | 'claimed the weekly reward'): WeeklyObject
+    public getWeekly<
+        isRewardArray extends boolean = false
+    >(memberID: string, guildID: string, reason?: string): RewardObject<isRewardArray, 'weekly'>
 }
 
 export = RewardManager

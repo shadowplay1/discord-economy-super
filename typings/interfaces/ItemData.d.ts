@@ -1,47 +1,54 @@
+import CustomItemData from './CustomItemData'
+
 /**
  * Item info object for item events.
  */
-declare class ItemData {
+declare interface ItemData<T extends object = any> {
 
     /**
      * Item ID.
      */
-    id: number;
+    public id: number
 
     /**
      * Item name.
      */
-    itemName: string;
+    public name: string
 
     /**
      * Item price.
      */
-    price: number;
+    public price: number
 
     /**
      * Item message that will be returned on item use.
      */
-    message: string;
+    public message: string
 
     /**
      * Item description.
      */
-    description: string;
+    public description: string
 
     /**
-     * Max amount of the item that user can hold in his inventory.
+     * Max amount of the item that user can hold in their inventory.
      */
-    maxAmount: number;
+    public maxAmount: number
 
     /**
      * Role ID from your Discord server.
      */
-    role: string;
-    
+    public role: string
+
     /**
      * Formatted date when the item was added to the shop.
      */
-    date: string;
+    public date: string
+
+    /**
+     * Custom item data object.
+     */
+    public custom: CustomItemData<T>
 }
 
 export = ItemData

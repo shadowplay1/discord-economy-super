@@ -1,12 +1,15 @@
+import BalanceOperation from './BalanceOperation'
+import BalanceOperations from './BalanceOperations'
+
 /**
  * Balance info object for balance events.
  */
-declare class BalanceData {
-    
+declare interface BalanceData<T extends BalanceOperations> {
+
     /**
-     * The type of operation.
+     * Type of operation.
      */
-    type: string;
+    type: BalanceOperation<T>;
 
     /**
      * Guild ID.
@@ -22,7 +25,7 @@ declare class BalanceData {
      * Amount of money.
      */
     amount: number;
-    
+
     /**
      * User's balance after the operation was completed successfully.
      */

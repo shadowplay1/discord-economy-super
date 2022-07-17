@@ -4,7 +4,7 @@ import EconomyOptions from '../interfaces/EconomyOptions'
 * Cooldown manager methods object.
 */
 declare class CooldownManager {
-   constructor(options: EconomyOptions)
+   public constructor(options: EconomyOptions)
 
    /**
    * Clears user's daily cooldown
@@ -36,7 +36,7 @@ declare class CooldownManager {
    * @param {string} guildID Guild ID
    * @returns Cooldown end timestamp
    */
-   public daily(memberID: string, guildID: string): number
+   public getDaily(memberID: string, guildID: string): number
 
    /**
    * Gets user's work cooldown
@@ -44,7 +44,7 @@ declare class CooldownManager {
    * @param {string} guildID Guild ID
    * @returns Cooldown end timestamp
    */
-   public work(memberID: string, guildID: string): number
+   public getWork(memberID: string, guildID: string): number
 
    /**
    * Gets user's weekly cooldown
@@ -52,7 +52,7 @@ declare class CooldownManager {
    * @param {string} guildID Guild ID
    * @returns Cooldown end timestamp
    */
-   public weekly(memberID: string, guildID: string): number
+   public getWeekly(memberID: string, guildID: string): number
 }
 
 export = CooldownManager

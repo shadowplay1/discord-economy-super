@@ -1,77 +1,135 @@
-import Emitter from '../classes/Emitter'
+import Emitter from '../classes/util/Emitter'
+import ShopItem from '../classes/ShopItem'
 
-import ItemData from '../interfaces/ItemData'
 import AddItemOptions from '../interfaces/AddItemOptions'
-import InventoryData from '../interfaces/InventoryData'
-import PurchasesHistory from '../interfaces/HistoryData'
-import ItemProperty from '../interfaces/ItemProperty'
+import ShopOperationInfo from '../interfaces/ShopOperationInfo'
+
+import { ItemProperties, ItemPropertyType } from '../interfaces/ItemProperties'
+import CustomItemData from '../interfaces/CustomItemData'
 
 import EconomyOptions from '../interfaces/EconomyOptions'
+import InventoryData from '../interfaces/InventoryData'
+import HistoryData from '../interfaces/HistoryData'
+
 
 /**
 * Shop manager methods object.
 * @extends {Emitter}
 */
 declare class ShopManager extends Emitter {
-    constructor(options: EconomyOptions)
+    public constructor(options: EconomyOptions)
 
     /**
      * Creates an item in shop.
-     * @param {AddItemOptions} options Options object with item info.
+     * 
+     * Type parameters:
+     * 
+     * - T: Set an object for 'custom' item property.
+     * @param {AddItemOptions} options Configuration with item info.
      * @param {string} guildID Guild ID.
      * @returns Item info.
      */
-    public addItem(guildID: string, options: AddItemOptions): ItemData
+    public addItem<T extends object = any>(guildID: string, options: AddItemOptions<T>): ShopItem<T>
 
     /**
      * Creates an item in shop.
      * 
-     * This method is an alias for the `ShopManager.addItem()` method.
-     * @param {String} guildID Guild ID.
-     * @param {AddItemOptions} options Options object with item info.
-     * @returns {ItemData} Item info.
-     */
-    public add(guildID: string, options: AddItemOptions): ItemData
-
-    /**
-     * Edits the item in shop.
-     * @param {number | string} itemID Item ID or name
-     * @param {string} guildID Guild ID
-     * @param {string} itemProperty This argument means what thing in item you want to edit (item property). 
-     * Available item properties: description, price, name, message, amount, role.
-     * @returns {boolean} If edited successfully: true, else: false
-     */
-    public editItem(itemID: string | number, guildID: string, itemProperty: ItemProperty, value: string): boolean
-
-    /**
-     * Edits the item in shop.
+     * Type parameters:
      * 
-     * This method is an alias for the `ShopManager.editItem()` method.
-     * @param {number | string} itemID Item ID or name
-     * @param {string} guildID Guild ID
-     * @param {string} itemProperty This argument means what thing in item you want to edit (item property). 
-     * Available item properties: description, price, name, message, amount, role.
-     * @returns {boolean} If edited successfully: true, else: false
+     * - T: Set an object for 'custom' item property.
+     * 
+     * This method is an alias for the `ShopManager.addItem()` method.
+     * @param {string} guildID Guild ID.
+     * @param {AddItemOptions} options Configuration with item info.
+     * @returns {ShopItem} Item info.
      */
-    public edit(itemID: string | number, guildID: string, itemProperty: ItemProperty, value: string): boolean
+    public add<T extends object = any>(guildID: string, options: AddItemOptions<T>): ShopItem<T>
 
     /**
-     * Removes an item from the shop.
-     * @param {number | string} itemID Item ID or name 
+    * Edits the item in the shop.
+    * 
+    * Type parameters:
+    * 
+    * - T: Item property string.
+    * - K: Type for specified property in T.
+    * @param {string} itemID Item ID or name.
+    * @param {string} guildID Guild ID.
+    * 
+    * @param {"description" | "price" | "name" | "message" | "maxAmount" | "role" | 'custom'} itemProperty
+    * This argument means what thing in item you want to edit (item property). 
+    * Available item properties are 'description', 'price', 'name', 'message', 'amount', 'role', 'custom'.
+    * 
+    * @param {T} value Any value to set.
+    * @returns {boolean} If edited successfully: true, else: false.
+    */
+    public edit<
+        T extends keyof Omit<ItemProperties, 'id' | 'date'>,
+        K extends ItemPropertyType<T>
+    >(
+        itemID: string | number, guildID: string,
+        itemProperty: T, value: T extends 'custom' ? CustomItemData<K> : K
+    ): boolean
+
+    /**
+    * Edits the item in the shop.
+    *
+    * Type parameters:
+    * 
+    * - T: Item property string.
+    * - K: Type for specified property in T.
+    * 
+    * This method is an alias for 'ShopItem.edit()' method.
+    * 
+    * @param {string} itemID Item ID or name.
+    * @param {string} guildID Guild ID.
+    * 
+    * @param {"description" | "price" | "name" | "message" | "maxAmount" | "role" | 'custom'} itemProperty
+    * This argument means what thing in item you want to edit (item property). 
+    * Available item properties are 'description', 'price', 'name', 'message', 'amount', 'role', 'custom'.
+    * 
+    * @param {T} value Any value to set.
+    * @returns {boolean} If edited successfully: true, else: false.
+    */
+    public editItem<
+        T extends keyof Omit<ItemProperties, 'id' | 'date'>,
+        K extends ItemPropertyType<T>
+    >(
+        itemID: string | number, guildID: string,
+        itemProperty: T, value: T extends 'custom' ? CustomItemData<K> : K
+    ): boolean
+
+    /**
+     * Sets a custom object for the item.
+     * @param {string} itemID Item ID or name.
+     * @param {string} guildID Guild IF.
+     * @param {object} custom Custom item data object.
+     * @returns {boolean} If set successfully: true, else: false.
+     */
+    public setCustom<
+        T extends object = never
+    >(itemID: string | number, guildID: string, custom: CustomItemData<T>): boolean
+
+    /**
+     * Removes the item from the shop.
+     * @param {string} itemID Item ID or name.
      * @param {string} guildID Guild ID
      * @returns {boolean} If removed: true, else: false
      */
     public removeItem(itemID: string | number, guildID: string): boolean
 
     /**
-     * Searches for the item in the shop.
+     * Gets the item in the shop.
      * 
-     * This method is an alias for the `ShopManager.searchItem()` method.
-     * @param {number | string} itemID Item ID or name 
+     * Type parameters:
+     * 
+     * - T: Set an object for 'custom' item property.
+     * 
+     * This method is an alias for the `ShopManager.getItem()` method.
+     * @param {string} itemID Item ID or name.
      * @param {string} guildID Guild ID
      * @returns If item not found: null; else: item data array
      */
-    public findItem(itemID: string | number, guildID: string): ItemData
+    public findItem<T extends object = any>(itemID: string | number, guildID: string): ShopItem<T>
 
     /**
      * Uses the item from the user's inventory.
@@ -83,7 +141,7 @@ declare class ShopManager extends Emitter {
      * 
      * [!!!] No help will be provided for inventory
      * related methods in ShopManager.
-     * @param {number | string} itemID Item ID or name
+     * @param {string} itemID Item ID or name
      * @param {string} memberID Member ID
      * @param {string} guildID Guild ID
      * @param {any} client The Discord Client [Optional]
@@ -94,25 +152,49 @@ declare class ShopManager extends Emitter {
 
     /**
      * Buys the item from the shop.
-     * @param {number | string} itemID Item ID or name
-     * @param {string} memberID Member ID
-     * @param {string} guildID Guild ID
-     * @param {string} reason The reason why the money was added. Default: 'received the item from the shop'
-     * @returns {string | boolean} If item bought successfully: true; if item not found: false; if user reached the item's max amount: 'max'
+     * @param {number | string} itemID Item ID or name.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @param {number} [quantity=1] Quantity of items to buy. Default: 1.
+     * 
+     * @param {string} [reason='received the item from the shop'] 
+     * The reason why the money was subtracted. Default: 'received the item from the shop'.
+     * 
+     * @returns {ShopOperationInfo} Operation information object.
      */
-    public buy(itemID: string | number, memberID: string, guildID: string, reason?: string | 'received the item from the shop'): boolean | string
+    public buy<
+        T extends object = any
+    >(
+        itemID: string | number,
+        memberID: string,
+        guildID: string,
+        quantity?: number,
+        reason?: string
+    ): ShopOperationInfo<T>
 
     /**
      * Buys the item from the shop.
      * 
      * This method is an alias for the `ShopManager.buy()` method.
-     * @param {number | string} itemID Item ID or name
-     * @param {string} memberID Member ID
-     * @param {string} guildID Guild ID
-     * @param {string} reason The reason why the money was added. Default: 'received the item from the shop'
-     * @returns {string | boolean} If item bought successfully: true; if item not found: false; if user reached the item's max amount: 'max'
+     * @param {number | string} itemID Item ID or name.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @param {number} [quantity=1] Quantity of items to buy. Default: 1.
+     * 
+     * @param {string} [reason='received the item from the shop'] 
+     * The reason why the money was subtracted. Default: 'received the item from the shop'.
+     * 
+     * @returns {ShopOperationInfo} Operation information object.
      */
-    public buyItem(itemID: string | number, memberID: string, guildID: string, reason?: string | 'received the item from the shop'): boolean | string
+    public buyItem<
+        T extends object = any
+    >(
+        itemID: string | number,
+        memberID: string,
+        guildID: string,
+        quantity?: number,
+        reason?: string
+    ): ShopOperationInfo<T>
 
     /**
      * Clears the shop.
@@ -148,39 +230,52 @@ declare class ShopManager extends Emitter {
     * 
     * [!!!] No help will be provided for history
     * related methods in ShopManager.
-    * @param {String} memberID Member ID.
-    * @param {String} guildID Guild ID.
-    * @returns {Boolean} If cleared: true, else: false.
+    * @param {string} memberID Member ID.
+    * @param {string} guildID Guild ID.
+    * @returns {boolean} If cleared: true, else: false.
     * @deprecated
     */
     public clearHistory(memberID: string, guildID: string): boolean
 
     /**
      * Shows all items in the shop.
+     * 
+     * Type parameters:
+     * 
+     * - T: Set an object for 'custom' item property.
      * @param {string} guildID Guild ID
      * @returns The shop array.
      */
-    public list(guildID: string): ItemData[]
+    public fetch<T extends object = any>(guildID: string): ShopItem<T>[]
 
     /**
      * Shows all items in the shop.
      * 
-     * This method is an alias for the `ShopManager.list()` method.
+     * This method is an alias for the `ShopManager.fetch()` method.
      * @param {string} guildID Guild ID
-     * @returns The shop array.
+     * @returns {ShopItem[]} The shop array.
      */
-    public fetch(guildID: string): ItemData[]
+    public get<T extends object = any>(guildID: string): ShopItem<T>[]
 
     /**
-     * Searches for the item in the shop.
-     * @param {number | string} itemID Item ID or name 
+     * Shows all items in the shop.
+     * 
+     * This method is an alias for the `ShopManager.get()` method.
      * @param {string} guildID Guild ID
-     * @returns If item not found: null; else: item info object
+     * @returns {ShopItem[]} The shop array.
      */
-    public searchItem(itemID: number | string, guildID: string): ItemData
+    public all<T extends object = any>(guildID: string): ShopItem<T>[]
 
     /**
-     * Searches for the item in the inventory.
+     * Gets the item in the shop.
+     * @param {number | string} itemID Item ID or name.
+     * @param {string} guildID Guild ID.
+     * @returns {ShopItem} If item not found: null; else: item info object.
+     */
+    public getItem<T extends object = any>(itemID: string | number, guildID: string): ShopItem<T>
+
+    /**
+     * Gets the item in the inventory.
      * 
      * [!!!] This method is deprecated.
      * If you want to get all the bugfixes and
@@ -189,13 +284,13 @@ declare class ShopManager extends Emitter {
      * 
      * [!!!] No help will be provided for inventory
      * related methods in ShopManager.
-     * @param {number | string} itemID Item ID or name.
+     * @param {string} itemID Item ID or name.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
      * @returns {InventoryData} If item not found: null; else: item info object.
      * @deprecated
      */
-    public searchInventoryItem(itemID: number | string, memberID: string, guildID: string): InventoryData
+    public searchInventoryItem<T extends object = any>(itemID: string | number, memberID: string, guildID: string): InventoryData<T>
 
     /**
      * Shows all items in user's inventory
@@ -212,7 +307,7 @@ declare class ShopManager extends Emitter {
      * @returns The user's inventory array.
      * @deprecated
      */
-    public inventory(memberID: string, guildID: string): InventoryData[]
+    public inventory<T extends object = any>(memberID: string, guildID: string): InventoryData<T>[]
 
     /**
      * Shows the user's purchase history.
@@ -224,12 +319,12 @@ declare class ShopManager extends Emitter {
      * 
      * [!!!] No help will be provided for history
      * related methods in ShopManager.
-     * @param {String} memberID Member ID
-     * @param {String} guildID Guild ID
-     * @returns {PurchasesHistory[]} User's purchase history.
+     * @param {string} memberID Member ID
+     * @param {string} guildID Guild ID
+     * @returns {HistoryData[]} User's purchase history.
      * @deprecated
      */
-    public history(memberID: string, guildID: string): PurchasesHistory[]
+    public history<T extends object = any>(memberID: string, guildID: string): HistoryData<T>[]
 }
 
 export = ShopManager

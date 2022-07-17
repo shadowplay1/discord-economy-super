@@ -1,31 +1,16 @@
-const EconomyError = require('./src/classes/EconomyError')
+const { readdirSync } = require('fs')
+
+const EconomyError = require('./src/classes/util/EconomyError')
 const errors = require('./src/structures/errors')
 
-const DatabaseManager = require('./src/managers/DatabaseManager')
-const FetchManager = require('./src/managers/FetchManager')
-
-const UtilsManager = require('./src/managers/UtilsManager')
-
-const BalanceManager = require('./src/managers/BalanceManager')
-const BankManager = require('./src/managers/BankManager')
-
-const RewardManager = require('./src/managers/RewardManager')
-const CooldownManager = require('./src/managers/CooldownManager')
-
-const ShopManager = require('./src/managers/ShopManager')
-const InventoryManager = require('./src/managers/InventoryManager')
-
-const SettingsManager = require('./src/managers/SettingsManager')
-
-
-const colors =  {
+const colors = {
     red: '\x1b[31m',
     cyan: '\x1b[36m',
     reset: '\x1b[0m'
 }
 
-if (Number(process.version.split('.')[0]) < 14) {
-    const err = new EconomyError(errors.oldNodeVersion + process.version)
+if (Number(process.version.split('.')[0].slice(1)) < 14) {
+    const err = new EconomyError(errors.oldNodeVersion + process.version, 'OLD_NODE_VERSION')
 
     console.log(`${colors.red}Failed to start the module:${colors.cyan}`)
     console.log(err, colors.reset)
@@ -35,24 +20,31 @@ if (Number(process.version.split('.')[0]) < 14) {
 
 
 const Economy = require('./src/index')
+const Emitter = require('./src/classes/util/Emitter')
 
-module.exports = Object.assign(Economy, {
+const EconomyProperties = {
     version: require('./package.json').version,
     docs: 'https://des-docs.tk',
 
-    DatabaseManager: DatabaseManager,
-    FetchManager: FetchManager,
+    EconomyError,
+    Emitter,
+}
 
-    UtilsManager: UtilsManager,
 
-    BalanceManager: BalanceManager,
-    BankManager: BankManager,
+const userClassFiles = readdirSync(__dirname + '/src/classes/user')
+const guildClassFiles = readdirSync(__dirname + '/src/classes/guild')
+const managerFiles = readdirSync(__dirname + '/src/managers')
 
-    RewardManager: RewardManager,
-    CooldownManager: CooldownManager,
+for (const userClassFile of userClassFiles) {
+    EconomyProperties[userClassFile.slice(0, -3)] = require(`./src/classes/user/${userClassFile}`)
+}
 
-    ShopManager: ShopManager,
-    InventoryManager: InventoryManager,
+for (const guildClassFile of guildClassFiles) {
+    EconomyProperties[guildClassFile.slice(0, -3)] = require(`./src/classes/guild/${guildClassFile}`)
+}
 
-    SettingsManager: SettingsManager
-})
+for (const managerFile of managerFiles) {
+    EconomyProperties[managerFile.slice(0, -3)] = require(`./src/managers/${managerFile}`)
+}
+
+module.exports = Object.assign(Economy, EconomyProperties)

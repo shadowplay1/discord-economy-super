@@ -1,10 +1,11 @@
+import EconomyDatabase from '../../mongodb/typings/interfaces/EconomyDatabase'
 import EconomyOptions from '../interfaces/EconomyOptions'
 
 /**
- * Database manager methods object.
+ * Tbase manager methods object.
  */
 declare class DatabaseManager {
-    constructor(options: EconomyOptions)
+    public constructor(options: EconomyOptions)
 
     /**
     * Gets a list of keys in database.
@@ -16,10 +17,10 @@ declare class DatabaseManager {
     /**
     * Sets data in a property in database.
     * @param {string} key The key in database.
-    * @param {any} data Any data to set in property.
+    * @param {T} data Any data to set in property.
     * @returns If set successfully: true; else: false
     */
-    public set<Data>(key: string, data: Data): boolean
+    public set<T>(key: string, data: T): boolean
 
     /**
      * Adds a number to a property data in database.
@@ -42,7 +43,16 @@ declare class DatabaseManager {
     * @param {string} key The key in database.
     * @returns Value from the specified key or 'false' if failed to read or 'null' if nothing found.
     */
-    public fetch<Data>(key: string): Data | null
+    public fetch<T = any>(key: string): T
+
+    /**
+    * Fetches the data from storage file.
+    * 
+    * This method is an alias for the `DatabaseManager.fetch()` method.
+    * @param {string} key The key in database.
+    * @returns Value from the specified key or 'false' if failed to read or 'null' if nothing found.
+    */
+    public find<T = any>(key: string): T
 
     /**
     * Removes the property from the existing object in database.
@@ -52,35 +62,96 @@ declare class DatabaseManager {
     public remove(key: string): boolean
 
     /**
+    * Removes the property from the existing object in database.
+    * 
+    * This method is an alias for `DatabaseManager.remove()` method.
+    * @param {string} key The key in database.
+    * @returns If cleared: true; else: false.
+    */
+    public delete(key: string): boolean
+
+    /**
      * Pushes a value to a specified array from the database.
-     * @param {String} key The key in database.
-     * @param {any} value The key in database.
-     * @returns {Boolean} If cleared: true; else: false.
+     * @param {string} key The key in database.
+     * @param {T} value The key in database.
+     * @returns {boolean} If cleared: true; else: false.
      */
-    public push<Data>(key: string, value: Data): boolean
+    public push<T = any>(key: string, value: T): boolean
+
+    /**
+    * Removes an element from a specified array in the database.
+    * @param {string} key The key in database.
+    * @param {number} index The index in the array.
+    * @returns {boolean} If cleared: true; else: false.
+    */
+    public pop(key: string, index: number): boolean
 
     /**
      * Removes an element from a specified array in the database.
-     * @param {String} key The key in database.
-     * @param {Number} index The index in the array.
-     * @returns {Boolean} If cleared: true; else: false.
+     * 
+     * This method is an alias for `DatabaseManager.pop()` method.
+     * @param {string} key The key in database.
+     * @param {number} index The index in the array.
+     * @returns {boolean} If cleared: true; else: false.
      */
     public removeElement(key: string, index: number): boolean
 
     /**
     * Changes the specified element's value in a specified array in the database.
-    * @param {String} key The key in database.
-    * @param {Number} index The index in the array.
-    * @param {any} newValue The new value to set.
-    * @returns {Boolean} If cleared: true; else: false.
+    * @param {string} key The key in database.
+    * @param {number} index The index in the array.
+    * @param {T} newValue The new value to set.
+    * @returns {boolean} If cleared: true; else: false.
     */
-    public changeElement<Data>(key: string, index: number, newValue: Data): boolean
-    
+    public pull<T = any>(key: string, index: number, newValue: T): boolean
+
+    /**
+    * Changes the specified element's value in a specified array in the database.
+    * 
+    * This method is an alias for `DatabaseManager.pull()` method.
+    * @param {string} key The key in database.
+    * @param {number} index The index in the array.
+    * @param {T} newValue The new value to set.
+    * @returns {boolean} If cleared: true; else: false.
+    */
+    public changeElement<T>(key: string, index: number, newValue: T): boolean
+
+    /**
+     * Clears the whole database.
+     * @returns {boolean} If cleared: true; else: false.
+     */
+    public deleteAll(): boolean
+
+    /**
+     * Clears the whole database.
+     * 
+     * This method is an alias for `DatabaseManager.deleteAll()` method.
+     * @returns {boolean} If cleared: true; else: false.
+     */
+    public clear(): boolean
+
+
+    /**
+    * Checks if the element is existing in database.
+    * @param {string} key The key in database.
+    * @returns {boolean} If existing: true; else: false.
+    */
+    public has(key: string): boolean
+
+    /**
+     * Checks if the element is existing in database.
+     * 
+     * This method is an alias for `DatabaseManager.has()` method.
+     * @param {string} key The key in database.
+     * @returns {boolean} If existing: true; else: false.
+     */
+    public includes(key: string): boolean
+
     /**
     * Fetches the entire database.
-    * @returns {object} Database contents
+    * @returns {EconomyDatabase} Tbase contents
     */
-    public all(): object
+    public all(): EconomyDatabase
 }
 
 export = DatabaseManager

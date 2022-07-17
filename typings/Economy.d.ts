@@ -1,14 +1,13 @@
+import If from './interfaces/If'
 import EconomyOptions from './interfaces/EconomyOptions'
 
-import Emitter from './classes/Emitter'
-import EconomyError from './classes/EconomyError'
+import Emitter from './classes/util/Emitter'
+import EconomyError from './classes/util/EconomyError'
 
 import BalanceManager from './managers/BalanceManager'
 import BankManager from './managers/BankManager'
 
 import UtilsManager from './managers/UtilsManager'
-
-import FetchManager from './managers/FetchManager'
 import DatabaseManager from './managers/DatabaseManager'
 
 import ShopManager from './managers/ShopManager'
@@ -18,128 +17,145 @@ import RewardManager from './managers/RewardManager'
 import CooldownManager from './managers/CooldownManager'
 import HistoryManager from './managers/HistoryManager'
 
+import UserManager from './managers/UserManager'
+import GuildManager from './managers/GuildManager'
+
 import SettingsManager from './managers/SettingsManager'
 
 
 /**
 * The Economy class.
 */
-declare class Economy extends Emitter {
-    constructor(options: EconomyOptions)
+declare class Economy<Ready extends boolean = boolean> extends Emitter {
+    public constructor(options?: EconomyOptions)
 
     /**
      * Module ready status.
      * @type {?boolean}
      */
-    public ready: boolean
+    public readonly ready: boolean
 
     /**
      * Economy errored status.
      * @type {?boolean}
      */
-    public errored: boolean
+    public readonly errored: boolean
 
     /**
     * Module version.
     * @type {string}
     */
-    public version: string
+    public readonly version: string
 
     /**
      * Link to the module's documentation website.
      * @type {string}
      */
-    public docs: string
+    public readonly docs: string
 
     /**
-    * Utils manager methods object.
+     * Econoomy managers list. Made for optimization purposes.
+     */
+    public readonly managers: {
+        name: string
+        manager: any
+    }
+
+    /**
+    * Utils manager.
     * @type {UtilsManager}
     */
-    public utils: UtilsManager
+    public readonly utils: UtilsManager
 
     /**
-     * Constructor options object.
-     * @type {?EconomyOptions}
+     * Economy configuration.
+     * @type {EconomyOptions}
      */
-    public options: EconomyOptions
+    public readonly options: EconomyOptions
 
     /**
      * Database checking interval.
      * @type {?NodeJS.Timeout}
     */
-    public interval: NodeJS.Timeout
+    public readonly interval: NodeJS.Timeout
 
     /**
      * Economy error class.
      * @type {EconomyError}
      */
-    public EconomyError: EconomyError
+    public readonly EconomyError: EconomyError
 
     /**
      * Emitter class.
      * @type {Emitter}
      */
-    public Emitter: Emitter
+    public readonly Emitter: Emitter
 
     /**
-    * Inventory manager methods object.
-    * @type {InventoryManager}
+    * Inventory manager.
+    * @type {?InventoryManager}
     */
-    public inventory: InventoryManager
+    public readonly inventory: If<Ready, InventoryManager>
 
     /**
-    * History manager methods object.
-    * @type {HistoryManager}
+    * History manager.
+    * @type {?HistoryManager}
     */
-    public history: HistoryManager
+    public readonly history: If<Ready, HistoryManager>
 
     /**
-    * Balance methods object.
-    * @type {BalanceManager}
+    * Balance.
+    * @type {?BalanceManager}
     */
-    public balance: BalanceManager
+    public readonly balance: If<Ready, BalanceManager>
 
     /**
-    * Bank balance methods object.
-    * @type {BankManager}
+    * Bank balance.
+    * @type {?BankManager}
     */
-    public bank: BankManager
+    public readonly bank: If<Ready, BankManager>
 
     /**
-    * Fetch manager methods object.
-    * @type {FetchManager}
+    * Database manager.
+    * @type {?DatabaseManager}
     */
-    public fetcher: FetchManager
+    public readonly database: If<Ready, DatabaseManager>
 
     /**
-    * Database manager methods object.
-    * @type {DatabaseManager}
+    * Shop manager.
+    * @type {?ShopManager}
     */
-    public database: DatabaseManager
+    public readonly shop: If<Ready, ShopManager>
 
     /**
-    * Shop manager methods object.
-    * @type {ShopManager}
+    * Balance.
+    * @type {?RewardManager}
     */
-    public shop: ShopManager
+    public readonly rewards: If<Ready, RewardManager>
 
     /**
-    * Balance methods object.
-    * @type {RewardManager}
+    * Cooldown.
+    * @type {?CooldownManager}
     */
-    public rewards: RewardManager
+    public readonly cooldowns: If<Ready, CooldownManager>
 
     /**
-    * Cooldown methods object.
-    * @type {CooldownManager}
+    * Economy user manager.
+    * @type {?UserManager}
     */
-    public cooldowns: CooldownManager
+    public readonly users: If<Ready, UserManager>
 
     /**
-    * Settings methods object.
-    * @type {SettingsManager}
+    * Economy guild manager.
+    * @type {?GuildManager}
     */
-    public settings: SettingsManager
+    public readonly guilds: If<Ready, GuildManager>
+
+    /**
+    * Settings.
+    * @type {?SettingsManager}
+    */
+    public readonly settings: If<Ready, SettingsManager>
 
     /**
      * Kills the Economy instance.
@@ -149,20 +165,20 @@ declare class Economy extends Emitter {
 
     /**
      * Starts the module.
-     * @returns {Promise<boolean>} If started successfully: true; else: Error instance.
+     * @returns {Promise<boolean>} If started successfully: true.
     */
     public init(): Promise<boolean>
 
     /**
      * Initializates the module.
-     * @returns {Promise<boolean>} If started successfully: true; else: Error instance.
+     * @returns {Promise<boolean>} If started successfully: true.
      * @private
     */
     private _init(): Promise<boolean>
 
     /**
      * Initializes the module.
-     * @returns {Promise<boolean>} If started successfully: true; else: Error instance.
+     * @returns {boolean} If started successfully: true.
      * @private
     */
     private start(): boolean

@@ -1,4 +1,4 @@
-import Emitter from '../classes/Emitter'
+import Emitter from '../classes/util/Emitter'
 
 import EconomyOptions from '../interfaces/EconomyOptions'
 import LeaderboardData from '../interfaces/LeaderboardData'
@@ -8,8 +8,8 @@ import LeaderboardData from '../interfaces/LeaderboardData'
  * @extends {Emitter}
  */
 declare class BankManager extends Emitter {
-    constructor(options: EconomyOptions)
-    
+    public constructor(options: EconomyOptions)
+
     /**
     * Fetches the user's bank balance.
     * @param {string} memberID Member ID
@@ -17,6 +17,16 @@ declare class BankManager extends Emitter {
     * @returns User's bank balance
     */
     public fetch(memberID: string, guildID: string): number
+
+    /**
+    * Gets the user's bank balance.
+    * 
+    * This method is an alias for the `BankManager.fetch()` method.
+    * @param {string} memberID Member ID
+    * @param {string} guildID Guild ID
+    * @returns User's bank balance
+    */
+    public get(memberID: string, guildID: string): number
 
     /**
     * Sets the money amount on user's bank balance.
@@ -47,7 +57,7 @@ declare class BankManager extends Emitter {
     * @returns Money amount
     */
     public subtract(amount: number, memberID: string, guildID: string, reason?: string): number
-    
+
     /**
     * Shows a bank money leaderboard for your server
     * @param {string} guildID Guild ID

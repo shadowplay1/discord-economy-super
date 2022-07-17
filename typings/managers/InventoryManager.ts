@@ -1,18 +1,18 @@
-import Emitter from '../classes/Emitter'
+import Emitter from '../classes/util/Emitter'
 
 import InventoryData from '../interfaces/InventoryData'
 import EconomyOptions from '../interfaces/EconomyOptions'
 
-/**
-* Shop manager methods object.
-* @extends {Emitter}
-*/
+import ShopOperationInfo from '../interfaces/ShopOperationInfo'
+import SellingOperationInfo from '../interfaces/SellingOperationInfo'
+
+
 declare class InventoryManager extends Emitter {
     constructor(options: EconomyOptions)
 
     /**
      * Uses the item from the user's inventory.
-     * @param {number | string} itemID Item ID or name
+     * @param {string} itemID Item ID or name
      * @param {string} memberID Member ID
      * @param {string} guildID Guild ID
      * @param {any} client The Discord Client [Optional]
@@ -24,13 +24,13 @@ declare class InventoryManager extends Emitter {
      * Uses the item from user's inventory.
      * 
      * This method is an alias for the `InventoryManager.useItem()` method.
-     * @param {Number | String} itemID Item ID or name.
-     * @param {String} memberID Member ID.
-     * @param {String} guildID Guild ID.
+     * @param {number | string} itemID Item ID or name.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
      * @param {Client} [client] The Discord Client. [Optional]
-     * @returns {String} Item message or null if item not found.
+     * @returns {string} Item message or null if item not found.
      */
-    public use(itemID: number | string, memberID: string, guildID: string, client: any): string
+    public use(itemID: string | number, memberID: string, guildID: string, client?: any): string
 
     /**
      * Clears the user's inventory.
@@ -41,33 +41,50 @@ declare class InventoryManager extends Emitter {
     public clear(memberID: string, guildID: string): boolean
 
     /**
-     * Searches for the item in the inventory.
-     * @param {number | string} itemID Item ID or name.
+     * Gets the item in the inventory.
+     * @param {string} itemID Item ID or name.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
-     * @returns {InventoryData} If item not found: null; else: item info object.
+     * @returns {InventoryData<T>} If item not found: null; else: item info object.
      */
-    public searchItem(itemID: number | string, memberID: string, guildID: string): InventoryData
+    public searchItem<T extends object = any>(itemID: string | number, memberID: string, guildID: string): InventoryData<T>
 
     /**
-     * Searches for the item in the inventory.
+     * Gets the item in the inventory.
      * 
-     * This method is an alias for the `InventoryManager.searchItem()` method.
-     * @param {number | string} itemID Item ID or name.
+     * This method is an alias for the `InventoryManager.getItem()` method.
+     * @param {string} itemID Item ID or name.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
-     * @returns {InventoryData} If item not found: null; else: item info object.
+     * @returns {InventoryData<T>} If item not found: null; else: item info object.
      */
-    public findItem(itemID: number | string, memberID: string, guildID: string): InventoryData
+    public findItem<T extends object = any>(itemID: string | number, memberID: string, guildID: string): InventoryData<T>
+
+    /**
+     * Gets the item in the inventory.
+     * @param {string} itemID Item ID or name.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @returns {InventoryData<T>} If item not found: null; else: item info object.
+     */
+    public getItem<T extends object = any>(itemID: string | number, memberID: string, guildID: string): InventoryData<T>
 
     /**
      * Adds the item from the shop to user's inventory.
-     * @param {String | Number} itemID Item ID or name.
-     * @param {String} memberID Member ID.
-     * @param {String} guildID Guild ID.
-     * @returns {Boolean} If added successfully: true, else: false.
+     * @param {string} itemID Item ID or name.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @param {number} [quantity=1] Quantity of items to add. Default: 1.
+     * @returns {ShopOperationInfo} Operation info object.
      */
-    public addItem(itemID: string | number, memberID: string, guildID: string): boolean
+    public addItem<
+        T extends object = any
+    >(
+        itemID: string | number,
+        memberID: string,
+        guildID: string,
+        quantity?: number
+    ): ShopOperationInfo<T>
 
     /**
      * Shows all items in user's inventory.
@@ -75,7 +92,7 @@ declare class InventoryManager extends Emitter {
      * @param {string} guildID Guild ID
      * @returns The user's inventory array.
      */
-    public fetch(memberID: string, guildID: string): InventoryData[]
+    public fetch<T extends object = any>(memberID: string, guildID: string): InventoryData<T>[]
 
     /**
      * Shows all items in user's inventory.
@@ -85,27 +102,60 @@ declare class InventoryManager extends Emitter {
      * @param {string} guildID Guild ID
      * @returns The user's inventory array.
      */
-    public list(memberID: string, guildID: string): InventoryData[]
+    public get<T extends object = any>(memberID: string, guildID: string): InventoryData<T>[]
+
+    /**
+    * Removes the item from user's inventory
+    * and adds its price to the user' balance.
+    * This is the same as selling something.
+    * @param {string} itemID Item ID or name.
+    * @param {string} memberID Member ID.
+    * @param {string} guildID Guild ID.
+    * @param {number} [quantity=1] Quantity of items to sell.
+    * @returns {SellingOperationInfo} Selling operation info.
+    */
+    public sellItem<
+        T extends object = any
+    >(
+        itemID: string | number,
+        memberID: string,
+        guildID: string,
+        quantity?: number,
+        reason?: string
+    ): SellingOperationInfo<T>
 
     /**
      * Removes the item from user's inventory
-     * and adds its price to the user' balance.
+     * and adds its price to the user's balance.
      * This is the same as selling something.
-     * @param {string | number} itemID Item ID or name.
+     * 
+     * This method is an alias for 'InventoryManager.sellItem()' method.
+     * @param {string} itemID Item ID or name.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
-     * @returns {number} The price the item was sold for.
+     * @param {number} [quantity=1] Quantity of items to sell.
+     * @param {string} [reason='sold the item from the inventory'] The reason why the item was sold.
+     * @returns {SellingOperationInfo} Selling operation info.
      */
-    public sellItem(itemID: string | number, memberID: string, guildID: string, reason?: string | 'sold the item from the inventory'): number
+    public sell<
+        T extends object = any
+    >(
+        itemID: string | number,
+        memberID: string,
+        guildID: string,
+        quantity?: number,
+        reason?: string
+    ): SellingOperationInfo<T>
 
     /**
      * Removes the item from user's inventory.
-     * @param {string | number} itemID Item ID or name.
+     * @param {string} itemID Item ID or name.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
-     * @returns {Boolean} If removed successfully: true, else: false.
+     * @param {number} [quantity=1] Quantity of items to sell.
+     * @returns {boolean} If removed successfully: true, else: false.
      */
-    public removeItem(itemID: string | number, memberID: string, guildID: string): boolean
+    public removeItem(itemID: string | number, memberID: string, guildID: string, quantity?: number): boolean
 }
 
-export = InventoryManager
+export default InventoryManager

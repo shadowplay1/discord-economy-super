@@ -1,32 +1,35 @@
+import ShopItem from '../classes/ShopItem'
+
+
 /**
- * Item info object for 'shopEditItem' event.
+ * Item info object for 'shopItemEdit' event.
  */
-declare class EditedItemData {
+declare interface EditedItemData {
 
     /**
-     * Item ID.
+     * Item that was edited.
      */
-    itemID: string;
+    item: ShopItem<any>
 
     /**
      * Guild ID.
      */
-    guildID: string;
+    guildID: string
 
     /**
-     * What was changed in item data.
+     * The item property that was changed.
      */
-    changed: string;
+    changedProperty: string
 
     /**
      * Value before edit.
      */
-    oldValue: string;
+    oldValue: string
     
     /**
      * Value after edit.
      */
-    newValue: string;
+    newValue: string
 }
 
 export = EditedItemData

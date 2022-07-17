@@ -1,3 +1,1 @@
-type ItemProperty = 'description' | 'price' | 'itemName' | 'message' | 'maxAmount' | 'role'
-
-export = ItemProperty
+export type ItemProperty = 'description' | 'price' | 'name' | 'message' | 'maxAmount' | 'role'

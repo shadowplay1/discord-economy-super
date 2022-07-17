@@ -1,52 +1,53 @@
-import ItemData from '../interfaces/ItemData'
-import CooldownData from '../interfaces/CooldownData'
-import HistoryData from '../interfaces/HistoryData'
-import InventoryData from '../interfaces/InventoryData'
-
+import UserCooldownData from '../interfaces/UserCooldownData'
 import EconomyOptions from '../interfaces/EconomyOptions'
+import EconomyDatabase from '../interfaces/EconomyDatabase'
+
+import HistoryItem from '../classes/HistoryItem'
+import ShopItem from '../classes/ShopItem'
+import InventoryItem from '../classes/InventoryItem'
 
 /**
 * Fetch manager methods class.
 */
 declare class FetchManager {
-    constructor(options: EconomyOptions)
+    public constructor(options: EconomyOptions)
 
     /**
     * Fetches the entire database.
     * @returns {object} Database contents.
     */
-    public fetchAll(): object
+    public fetchAll(): EconomyDatabase
 
     /**
      * Shows all items in the shop.
      * @param {string} guildID Guild ID
-     * @returns {ItemData[]} The shop array.
+     * @returns {ShopItem[]} The shop array.
      */
-    public fetchShop(guildID: string): ItemData[]
+    public fetchShop(guildID: string): ShopItem[]
 
     /**
      * Fetches the user's cooldowns.
      * @param {string} memberID Member ID
      * @param {string} guildID Guild ID
-     * @returns {CooldownData} User's cooldowns object.
+     * @returns {UserCooldownData} User's cooldowns object.
      */
-    public fetchCooldowns(memberID: string, guildID: string): CooldownData
+    public fetchCooldowns(memberID: string, guildID: string): UserCooldownData
 
     /**
      * Fetches the user's purchases history.
      * @param {string} memberID Member ID
      * @param {string} guildID Guild ID
-     * @returns {HistoryData} User's purchases history.
+     * @returns {HistoryItem} User's purchases history.
      */
-    public fetchHistory(memberID: string, guildID: string): HistoryData[]
+    public fetchHistory(memberID: string, guildID: string): HistoryItem[]
 
     /**
      * Fetches the user's inventory.
      * @param {string} memberID Member ID
      * @param {string} guildID Guild ID
-     * @returns {InventoryData} User's inventory.
+     * @returns {InventoryItem} User's inventory.
      */
-    public fetchInventory(memberID: string, guildID: string): InventoryData[]
+    public fetchInventory(memberID: string, guildID: string): InventoryItem[]
 
     /**
     * Fetches the user's bank balance.

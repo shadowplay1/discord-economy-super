@@ -1,51 +1,51 @@
 import EconomyOptions from '../interfaces/EconomyOptions'
-import SettingsTypes from '../interfaces/SettingsTypes'
 
-/**
- * Settings manager methods class.
- */
+import SettingsTypes from '../interfaces/SettingsTypes'
+import SettingValueType from '../interfaces/SettingValueType'
+
+
 declare class SettingsManager {
-    constructor(options: EconomyOptions)
+    public constructor(options: EconomyOptions)
 
     /**
      * Gets the specified setting from the database.
      * 
      * Note: If the server don't have any setting specified,
      * the module will take the values from the
-     * options object or default options object.
+     * specified configuration or default configuration.
      * 
-     * @param {SettingsStrings} key The setting to fetch.
+     * @param {T} key The setting to fetch.
      * @param {string} guildID Guild ID.
-     * @returns {any} The setting from the database.
+     * @returns {SettingValueType<T>} The setting from the database.
      */
-    public get<Data>(key: SettingsStrings, guildID: string): Data
+    public get<T extends keyof SettingsTypes>(key: T, guildID: string): SettingValueType<T>
 
     /**
      * Changes the specified setting.
      * 
      * Note: If the server don't have any setting specified, 
      * the module will take the values from the 
-     * options object or default options object.
+     * specified configuration or default configuration.
      * 
-     * @param {SettingsStrings} key The setting to change.
-     * @param {any} value The value to set.`
+     * @param {T} key The setting to change.
+     * @param {SettingValueType<T>} value The value to set.
      * @param {string} guildID Guild ID.
      * @returns {SettingsTypes} The server settings object.
      */
-    public set<Data>(key: SettingsStrings, value: Data, guildID: string): SettingsTypes
+    public set<T extends keyof SettingsTypes>(key: T, value: SettingValueType<T>, guildID: string): SettingsTypes
 
     /**
      * Removes the specified setting.
      * 
      * Note: If the server don't have any setting specified, 
      * the module will take the values from the 
-     * options object or default options object.
+     * specified configuration or default configuration.
      * 
-     * @param {SettingsStrings} key The setting to remove.
+     * @param {keyof SettingsTypes} key The setting to remove.
      * @param {string} guildID Guild ID.
      * @returns {SettingsTypes} The server settings object.
      */
-    public remove(key: SettingsStrings, guildID: string): SettingsTypes
+    public remove(key: keyof SettingsTypes, guildID: string): SettingsTypes
 
     /**
      * Fetches the server's settings object.
@@ -55,7 +55,7 @@ declare class SettingsManager {
     public all(guildID: string): SettingsTypes
 
     /**
-     * Resets all the settings to setting that are in options object.
+     * Resets all the settings to setting that are in configuration.
      * @param {string} guildID Guild ID.
      * @returns {SettingsTypes} The server settings object.
      */
@@ -63,10 +63,3 @@ declare class SettingsManager {
 }
 
 export = SettingsManager
-
-type SettingsStrings =
-    'dailyAmount' | 'dailyCooldown' |
-    'workAmount' | 'workCooldown' |
-    'weeklyAmount' | 'weeklyCooldown' |
-    'dateLocale' | 'subtractOnBuy' | 
-    'sellingItemPercent'

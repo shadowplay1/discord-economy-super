@@ -1,11 +1,7 @@
 /**
  * Leaderboard data object.
  */
-declare class LeaderboardData {
-    /**
-     * User's index in the leaderboard
-     */
-    index: number
+declare interface LeaderboardData {
 
     /**
      * User ID.
@@ -13,9 +9,10 @@ declare class LeaderboardData {
     userID: string
 
     /**
-     * User's amount of money.
+     * Amount of money.
      */
     money: number
 }
+
 
 export = LeaderboardData
