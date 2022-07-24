@@ -24,7 +24,7 @@ const Emitter = require('./src/classes/util/Emitter')
 
 const EconomyProperties = {
     version: require('./package.json').version,
-    docs: 'https://des-docs.tk',
+    docs: 'https://des-docs.js.org',
 
     EconomyError,
     Emitter,
