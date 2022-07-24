@@ -15,10 +15,10 @@ declare class ShopItem<T extends object = any> {
     /**
      * Shop item class.
      * @param {string} guildID Guild ID.
+     * @param {ItemData} itemObject Shop item object.
      * @param {DatabaseManager} database Database Manager.
-     * @param {ItemData} itemObject Economy guild object.
      */
-    public constructor(guildID: string, database: DatabaseManager, itemObject: ItemData)
+    public constructor(guildID: string, itemObject: ItemData, database: DatabaseManager)
 
     /**
      * Guild ID.

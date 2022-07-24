@@ -15,14 +15,6 @@ declare class Leaderboards {
      * Gets a money leaderboard for this guild.
      * @returns {LeaderboardData[]} Balance leaderboard array.
      */
-    public balance(): LeaderboardData[]
-
-    /**
-     * Gets a money leaderboard for this guild.
-     *
-     * This method is an alias for 'Leaderboards.balance()' method.
-     * @returns {LeaderboardData[]} Balance leaderboard array.
-     */
     public money(): LeaderboardData[]
 
     /**

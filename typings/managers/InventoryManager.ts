@@ -1,6 +1,6 @@
 import Emitter from '../classes/util/Emitter'
 
-import InventoryData from '../interfaces/InventoryData'
+import InventoryItem from '../classes/InventoryItem'
 import EconomyOptions from '../interfaces/EconomyOptions'
 
 import ShopOperationInfo from '../interfaces/ShopOperationInfo'
@@ -45,9 +45,9 @@ declare class InventoryManager extends Emitter {
      * @param {string} itemID Item ID or name.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
-     * @returns {InventoryData<T>} If item not found: null; else: item info object.
+     * @returns {InventoryItem<T>} If item not found: null; else: item info object.
      */
-    public searchItem<T extends object = any>(itemID: string | number, memberID: string, guildID: string): InventoryData<T>
+    public searchItem<T extends object = any>(itemID: string | number, memberID: string, guildID: string): InventoryItem<T>
 
     /**
      * Gets the item in the inventory.
@@ -56,18 +56,18 @@ declare class InventoryManager extends Emitter {
      * @param {string} itemID Item ID or name.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
-     * @returns {InventoryData<T>} If item not found: null; else: item info object.
+     * @returns {InventoryItem<T>} If item not found: null; else: item info object.
      */
-    public findItem<T extends object = any>(itemID: string | number, memberID: string, guildID: string): InventoryData<T>
+    public findItem<T extends object = any>(itemID: string | number, memberID: string, guildID: string): InventoryItem<T>
 
     /**
      * Gets the item in the inventory.
      * @param {string} itemID Item ID or name.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
-     * @returns {InventoryData<T>} If item not found: null; else: item info object.
+     * @returns {InventoryItem<T>} If item not found: null; else: item info object.
      */
-    public getItem<T extends object = any>(itemID: string | number, memberID: string, guildID: string): InventoryData<T>
+    public getItem<T extends object = any>(itemID: string | number, memberID: string, guildID: string): InventoryItem<T>
 
     /**
      * Adds the item from the shop to user's inventory.
@@ -92,7 +92,7 @@ declare class InventoryManager extends Emitter {
      * @param {string} guildID Guild ID
      * @returns The user's inventory array.
      */
-    public fetch<T extends object = any>(memberID: string, guildID: string): InventoryData<T>[]
+    public fetch<T extends object = any>(memberID: string, guildID: string): InventoryItem<T>[]
 
     /**
      * Shows all items in user's inventory.
@@ -102,7 +102,7 @@ declare class InventoryManager extends Emitter {
      * @param {string} guildID Guild ID
      * @returns The user's inventory array.
      */
-    public get<T extends object = any>(memberID: string, guildID: string): InventoryData<T>[]
+    public get<T extends object = any>(memberID: string, guildID: string): InventoryItem<T>[]
 
     /**
     * Removes the item from user's inventory
