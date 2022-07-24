@@ -1,10 +1,10 @@
 module.exports = {
   parserOptions: {
-    ecmaVersion: 13,
+    ecmaVersion: 2020,
     sourceType: 'module',
   },
   rules: {
-    'semi': ['error', 'never'],
+    'semi': ['warn', 'never'],
     'no-plusplus': 'off',
     'implicit-arrow-linebreak': 'off',
     'operator-linebreak': 'off',
@@ -23,6 +23,7 @@ module.exports = {
     'block-spacing': ['error', 'never'],
     'no-spaced-func': 'error',
     'object-curly-spacing': ['error', 'always'],
+    'no-redeclare': 'warn',
     'no-trailing-spaces': ['error', {
       'ignoreComments': true,
     }],
@@ -30,4 +31,3 @@ module.exports = {
     'no-return-await': ['error'],
   },
 }
-
