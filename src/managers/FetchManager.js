@@ -1,7 +1,13 @@
 const { readFileSync, writeFileSync, existsSync } = require('fs')
 
 const errors = require('../structures/errors')
-const EconomyError = require('../classes/EconomyError')
+
+const EconomyError = require('../classes/util/EconomyError')
+
+const ShopItem = require('../classes/ShopItem')
+const InventoryItem = require('../classes/InventoryItem')
+const HistoryItem = require('../classes/HistoryItem')
+
 
 /**
 * Fetch manager methods class.
@@ -10,16 +16,13 @@ class FetchManager {
 
     /**
      * Fetch Manager.
-     * 
-     * @param {Object} options Economy constructor options object.
-     * There's only needed options object properties for this manager to work properly.
-     * 
-     * @param {String} options.storagePath Full path to a JSON file. Default: './storage.json'.
+     * @param {object} options Economy configuration.
+     * @param {string} options.storagePath Full path to a JSON file. Default: './storage.json'.
      */
     constructor(options = {}) {
 
         /**
-         * Economy constructor options object.
+         * Economy configuration.
          * @type {EconomyOptions}
          * @private
          */
@@ -27,7 +30,7 @@ class FetchManager {
 
         /**
          * Full path to a JSON file.
-         * @type {String}
+         * @type {string}
          * @private
          */
         this.storagePath = options.storagePath || './storage.json'
@@ -35,7 +38,7 @@ class FetchManager {
 
     /**
     * Fetches the entire database.
-    * @returns {Object} Database contents
+    * @returns {object} Database contents
     */
     fetchAll() {
         const isFileExisting = existsSync(this.storagePath)
@@ -50,19 +53,27 @@ class FetchManager {
 
     /**
     * Fetches the user's balance.
-    * @param {String} memberID Member ID
-    * @param {String} guildID Guild ID
-    * @returns {Number} User's balance.
+    * @param {string} memberID Member ID
+    * @param {string} guildID Guild ID
+    * @returns {number} User's balance.
     */
     fetchBalance(memberID, guildID) {
         const data = this.fetchAll()
 
-        if (typeof memberID !== 'string') throw new EconomyError(errors.invalidTypes.memberID + typeof memberID)
-        if (typeof guildID !== 'string') throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
+        if (typeof memberID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
+        }
+
+        if (typeof guildID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
+        }
 
         const guildData = data[guildID]
         const memberData = guildData?.[memberID]
 
+        /**
+         * @type {number}
+         */
         const money = memberData?.money || 0
 
         return money
@@ -70,19 +81,27 @@ class FetchManager {
 
     /**
      * Fetches the user's bank balance.
-     * @param {String} memberID Member ID
-     * @param {String} guildID Guild ID
-     * @returns {Number} User's bank balance.
+     * @param {string} memberID Member ID
+     * @param {string} guildID Guild ID
+     * @returns {number} User's bank balance.
      */
     fetchBank(memberID, guildID) {
         const data = this.fetchAll()
 
-        if (typeof memberID !== 'string') throw new EconomyError(errors.invalidTypes.memberID + typeof memberID)
-        if (typeof guildID !== 'string') throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
+        if (typeof memberID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
+        }
+
+        if (typeof guildID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
+        }
 
         const guildData = data[guildID]
         const memberData = guildData?.[memberID]
 
+        /**
+         * @type {number}
+         */
         const bankMoney = memberData?.bank || 0
 
         return bankMoney
@@ -90,55 +109,76 @@ class FetchManager {
 
     /**
      * Fetches the user's inventory.
-     * @param {String} memberID Member ID
-     * @param {String} guildID Guild ID
-     * @returns {InventoryData[]} User's inventory.
+     * @param {string} memberID Member ID
+     * @param {string} guildID Guild ID
+     * @returns {InventoryItem[]} User's inventory.
      */
     fetchInventory(memberID, guildID) {
         const data = this.fetchAll()
 
-        if (typeof memberID !== 'string') throw new EconomyError(errors.invalidTypes.memberID + typeof memberID)
-        if (typeof guildID !== 'string') throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
+        if (typeof memberID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
+        }
+
+        if (typeof guildID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
+        }
 
         const guildData = data[guildID]
         const memberData = guildData?.[memberID]
 
+        /**
+         * @type {InventoryData[]}
+         */
         const inventory = memberData?.inventory || []
 
-        return inventory
+        return inventory.map(item => new InventoryItem(guildID, memberID, this.options, item))
     }
 
     /**
      * Fetches the user's purchases history.
-     * @param {String} memberID Member ID
-     * @param {String} guildID Guild ID
-     * @returns {HistoryData[]} User's purchases history.
+     * @param {string} memberID Member ID
+     * @param {string} guildID Guild ID
+     * @returns {HistoryItem[]} User's purchases history.
      */
     fetchHistory(memberID, guildID) {
         const data = this.fetchAll()
 
-        if (typeof memberID !== 'string') throw new EconomyError(errors.invalidTypes.memberID + typeof memberID)
-        if (typeof guildID !== 'string') throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
+        if (typeof memberID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
+        }
+
+        if (typeof guildID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
+        }
 
         const guildData = data[guildID]
         const memberData = guildData?.[memberID]
 
+        /**
+         * @type {HistoryData[]}
+         */
         const history = memberData?.history || []
 
-        return history
+        return history.map(item => new HistoryItem(guildID, memberID, this.options, item))
     }
 
     /**
      * Fetches the user's cooldowns.
-     * @param {String} memberID Member ID
-     * @param {String} guildID Guild ID
+     * @param {string} memberID Member ID
+     * @param {string} guildID Guild ID
      * @returns {CooldownData} User's cooldowns object.
      */
     fetchCooldowns(memberID, guildID) {
         const data = this.fetchAll()
 
-        if (typeof memberID !== 'string') throw new EconomyError(errors.invalidTypes.memberID + typeof memberID)
-        if (typeof guildID !== 'string') throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
+        if (typeof memberID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
+        }
+
+        if (typeof guildID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
+        }
 
         const guildData = data[guildID]
         const memberData = guildData?.[memberID]
@@ -156,62 +196,66 @@ class FetchManager {
 
     /**
      * Shows all items in the shop.
-     * @param {String} guildID Guild ID
-     * @returns {ItemData[]} The shop array.
+     * @param {string} guildID Guild ID
+     * @returns {ShopItem[]} The shop array.
      */
     fetchShop(guildID) {
         const data = this.fetchAll()
 
-        if (typeof guildID !== 'string') throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
+        if (typeof guildID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
+        }
 
         const guildData = data[guildID]
         const shop = guildData?.shop || []
 
-        return shop
+        return shop.map(item => new ShopItem(guildID, item, this.database))
     }
 }
 
 /**
- * @typedef {Object} CooldownData User's cooldown data.
- * @property {Number} dailyCooldown User's daily cooldown.
- * @property {Number} workCooldown User's work cooldown.
- * @property {Number} weeklyCooldown User's weekly cooldown.
+ * @typedef {object} CooldownData User's cooldown data.
+ * @property {number} dailyCooldown User's daily cooldown.
+ * @property {number} workCooldown User's work cooldown.
+ * @property {number} weeklyCooldown User's weekly cooldown.
  */
 
 /**
- * @typedef {Object} HistoryData History data object.
- * @property {Number} id Item ID in history.
- * @property {String} itemName Item name.
- * @property {Number} price Item price.
- * @property {String} message The message that will be returned on item use.
- * @property {String} role ID of Discord Role that will be given to user on item use.
- * @property {String} date Date when the item was bought.
- * @property {String} memberID Member ID.
- * @property {String} guildID Guild ID.
+ * @typedef {object} HistoryData History data object.
+ * @property {number} id Item ID in history.
+ * @property {string} name Item name.
+ * @property {number} price Item price.
+ * @property {string} message The message that will be returned on item use.
+ * @property {string} role ID of Discord Role that will be given to user on item use.
+ * @property {string} date Date when the item was bought by a user.
+ * @property {string} memberID Member ID.
+ * @property {string} guildID Guild ID.
  */
 
 /**
- * @typedef {Object} InventoryData Inventory data object.
- * @property {Number} id Item ID in your inventory.
- * @property {String} itemName Item name.
- * @property {Number} price Item price.
- * @property {String} message The message that will be returned on item use.
- * @property {String} role ID of Discord Role that will be given to user on item use.
- * @property {Number} maxAmount Max amount of the item that user can hold in his inventory.
- * @property {String} date Date when the item was bought.
+ * @typedef {object} InventoryData Inventory data object.
+ * @property {number} id Item ID in your inventory.
+ * @property {string} name Item name.
+ * @property {number} price Item price.
+ * @property {string} message The message that will be returned on item use.
+ * @property {string} role ID of Discord Role that will be given to user on item use.
+ * @property {number} maxAmount Max amount of the item that user can hold in their inventory.
+ * @property {string} date Date when the item was bought by a user.
+ * @property {object} custom Custom item properties object.
  */
 
 /**
  * Item data object.
- * @typedef {Object} ItemData
- * @property {Number} id Item ID.
- * @property {String} itemName Item name.
- * @property {Number} price Item price.
- * @property {String} message The message that will be returned on item use.
- * @property {String} description Item description.
- * @property {String} role ID of Discord Role that will be given to Wuser on item use.
- * @property {Number} maxAmount Max amount of the item that user can hold in his inventory.
- * @property {String} date Date when the item was added in the shop.
+ * @typedef {object} ItemData
+ * @property {number} id Item ID.
+ * @property {string} name Item name.
+ * @property {number} price Item price.
+ * @property {string} message The message that will be returned on item use.
+ * @property {string} description Item description.
+ * @property {string} role ID of Discord Role that will be given to Wuser on item use.
+ * @property {number} maxAmount Max amount of the item that user can hold in their inventory.
+ * @property {string} date Date when the item was added in the shop.
+ * @property {object} custom Custom item properties object.
  */
 
 /**

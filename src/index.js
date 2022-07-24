@@ -1,7 +1,6 @@
 const { existsSync, readFileSync, writeFileSync } = require('fs')
 const { promisify } = require('util')
 
-
 const DatabaseManager = require('./managers/DatabaseManager')
 const FetchManager = require('./managers/FetchManager')
 
@@ -17,24 +16,19 @@ const ShopManager = require('./managers/ShopManager')
 const InventoryManager = require('./managers/InventoryManager')
 const HistoryManager = require('./managers/HistoryManager')
 
+const UserManager = require('./managers/UserManager')
 const SettingsManager = require('./managers/SettingsManager')
 
 
-const Emitter = require('./classes/Emitter')
-const EconomyError = require('./classes/EconomyError')
+const Emitter = require('./classes/util/Emitter')
+const EconomyError = require('./classes/util/EconomyError')
 
 const errors = require('./structures/errors')
+const GuildManager = require('./managers/GuildManager')
 
-const colors = {
-    red: '\x1b[31m',
-    green: '\x1b[32m',
-    yellow: '\x1b[33m',
-    blue: '\x1b[34m',
-    magenta: '\x1b[35m',
-    cyan: '\x1b[36m',
-    white: '\x1b[37m',
-    reset: '\x1b[0m'
-}
+const Logger = require('./classes/util/Logger')
+const ShopItem = require('./classes/ShopItem')
+
 
 /**
  * The main Economy class.
@@ -43,46 +37,69 @@ class Economy extends Emitter {
 
     /**
     * The Economy class.
-    * @param {EconomyOptions} options Economy options object.
+    * @param {EconomyOptions} options Economy configuration.
     */
     constructor(options = {}) {
         super()
 
         /**
          * Module ready status.
-         * @type {?Boolean}
+         * @type {?boolean}
          */
         this.ready = false
 
         /**
          * Economy errored status.
-         * @type {?Boolean}
+         * @type {?boolean}
          */
         this.errored = false
 
         /**
         * Module version.
-        * @type {String}
+        * @type {string}
         */
         this.version = require('../package.json').version
 
         /**
-         * Link to the module's documentation website.
-         * @type {String}
+         * The Logger class.
+         * @type {Logger}
+         * @private
          */
-        this.docs = 'https://des-docs.tk'
+        this._logger = new Logger(options)
+
+        if (options.debug) {
+            this._logger.debug('Economy version: ' + this.version, 'lightcyan')
+        }
 
         /**
-        * Utils manager methods object.
+         * Link to the module's documentation website.
+         * @type {string}
+         */
+        this.docs = 'https://des-docs.js.org'
+
+        /**
+        * Utils manager.
         * @type {UtilsManager}
         */
-        this.utils = new UtilsManager(options)
+        this.utils = new UtilsManager(options, new DatabaseManager(options), new FetchManager(options))
 
         /**
-         * Constructor options object.
+         * Economy configuration.
          * @type {?EconomyOptions}
          */
-        this.options = this.utils.checkOptions(options?.optionsChecker, options)
+        this.options = this.utils.checkOptions(options.optionsChecker, options)
+
+        /**
+         * Econoomy managers list. Made for optimization purposes.
+         * @type {Manager[]}
+         */
+        this.managers = []
+
+        /**
+         * Colors object.
+         * @type {LoggerColors}
+         */
+        this.colors = this._logger.colors
 
         /**
          * Database checking interval.
@@ -103,69 +120,91 @@ class Economy extends Emitter {
         this.Emitter = Emitter
 
         /**
-        * Balance methods object.
+        * Balance.
         * @type {BalanceManager}
         */
         this.balance = null
 
         /**
-        * Bank balance methods object.
+        * Bank balance.
         * @type {BankManager}
         */
         this.bank = null
 
         /**
-        * Fetch manager methods object.
+        * Fetch manager.
         * @type {FetchManager}
         */
         this.fetcher = null
 
         /**
-        * Database manager methods object.
+        * Database manager.
         * @type {DatabaseManager}
         */
         this.database = null
 
         /**
-        * Shop manager methods object.
+        * Shop manager.
         * @type {ShopManager}
         */
         this.shop = null
 
         /**
-        * Inventory manager methods object.
+        * Inventory manager.
         * @type {InventoryManager}
         */
         this.inventory = null
 
         /**
-        * History manager methods object.
+        * History manager.
         * @type {HistoryManager}
         */
         this.history = null
 
         /**
-        * Balance methods object.
-        * @type {RewardManager}
-        */
-        this.rewards = null
-
-        /**
-        * Bank balance methods object.
+        * Cooldowns manager.
         * @type {CooldownManager}
         */
         this.cooldowns = null
 
         /**
-        * Settings manager methods object.
+        * Rewards.
+        * @type {RewardManager}
+        */
+        this.rewards = null
+
+        /**
+        * Economy users.
+        * @type {UserManager}
+        */
+        this.users = new UserManager(this.options)
+
+        /**
+        * Economy guilds.
+        * @type {GuildManager}
+        */
+        this.guilds = new GuildManager(this.options)
+
+        /**
+        * Settings manager.
         * @type {SettingsManager}
         */
         this.settings = null
 
-        this.init().then(x => {
-            if (x) {
+        /**
+         * Economy instance.
+         * @type {Economy}
+         */
+        this.economy = this
+
+        this._logger.debug('Economy starting process launched.')
+
+        this.init().then(status => {
+            if (status) {
                 this.ready = true
-                this.emit('ready')
+
+                this._logger.debug('Economy is ready!', 'green')
+                this.emit('ready', this)
             }
         })
     }
@@ -179,70 +218,60 @@ class Economy extends Emitter {
 
         clearInterval(this.interval)
 
+        for (const manager of this.managers) {
+            this[manager.name] = null
+        }
 
         this.ready = false
+        this.economy = this
 
-        this.EconomyError = null
-        this.interval = null
-
-        this.balance = null
-        this.bank = null
-
-        this.utils = null
-        this.fetcher = null
-        this.database = null
-
-        this.shop = null
-        this.inventory = null
-        this.history = null
-
-        this.rewards = null
-
-        this.cooldowns = null
-        this.settings = null
-
+        this._logger.debug('Economy is killed.')
         this.emit('destroy')
+
         return this
     }
 
     /**
      * Starts the module.
-     * @returns {Promise<Boolean>} If started successfully: true; else: Error instance.
+     * @returns {Promise<boolean>} If started successfully: true.
      */
     init() {
         let attempt = 0
 
         const attempts =
-            this.options?.errorHandler?.attempts == 0 ?
+            this.options.errorHandler.attempts == 0 ?
                 Infinity :
-                this.options?.errorHandler?.attempts
+                this.options.errorHandler.attempts
 
-        const time = this.options?.errorHandler?.time
+        const time = this.options.errorHandler.time
         const retryingTime = (time / 1000).toFixed(1)
 
         const sleep = promisify(setTimeout)
 
         const check = () => new Promise(resolve => {
-            this._init().then(x => {
+            this._init().then(status => {
 
-                if (x) {
+                if (status) {
                     this.errored = false
                     this.ready = true
-                    return console.log(`${colors.green}Started successfully! :)`)
+                    return console.log(`${this.colors.green}Started successfully!`)
                 }
 
-                resolve(x)
+                resolve(status)
             }).catch(err => resolve(err))
         })
 
-        return this.options?.errorHandler?.handleErrors ? this._init().catch(async err => {
+        this._logger.debug('Checking the Node.js version...')
+
+        return this.options.errorHandler.handleErrors ? this._init().catch(async err => {
             if (!(err instanceof EconomyError)) this.errored = true
 
-            console.log(`${colors.red}Failed to start the module:${colors.cyan}`)
+            console.log(`${this.colors.red}Failed to start the module:${this.colors.cyan}`)
             console.log(err)
 
-            if (err.message.includes('This module is supporting only Node.js v14 or newer.')) process.exit(1)
-            else console.log(`${colors.magenta}Retrying in ${retryingTime} seconds...${colors.reset}`)
+            if (err.message.includes('This module is only supporting Node.js v14 or newer.')) {
+                process.exit(1)
+            } else console.log(`${this.colors.magenta}Retrying in ${retryingTime} seconds...${this.colors.reset}`)
 
             while (attempt < attempts && attempt !== -1) {
                 await sleep(time)
@@ -252,20 +281,20 @@ class Economy extends Emitter {
 
                         attempt++
 
-                        console.log(`${colors.red}Failed to start the module:${colors.cyan}`)
+                        console.log(`${this.colors.red}Failed to start the module:${this.colors.cyan}`)
                         console.log(err)
                         console.log(`\x1b[34mAttempt ${attempt}${attempts == Infinity ? '.' : `/${attempts}`}`)
 
                         if (attempt == attempts) {
                             console.log(
-                                `${colors.green}Failed to start the module within` +
-                                `${attempts} attempts...${colors.reset}`
+                                `${this.colors.green}Failed to start the module within` +
+                                `${attempts} attempts...${this.colors.reset}`
                             )
 
                             process.exit(1)
                         }
 
-                        console.log(`${colors.magenta}Retrying in ${retryingTime} seconds...`)
+                        console.log(`${this.colors.magenta}Retrying in ${retryingTime} seconds...`)
                         await sleep(time)
 
                     } else attempt = -1
@@ -276,135 +305,152 @@ class Economy extends Emitter {
 
     /**
      * Initializes the module.
-     * @returns {Promise<boolean>} If started successfully: true; else: Error instance.
+     * @returns {Promise<boolean>} If started successfully: true.
      * @private
      */
     _init() {
-        const updateCountdown = this.options?.updateCountdown
+        const reservedNames = ['package.json', 'package-lock.json', 'node_modules', 'mongo', 'mongodb']
+        const updateCountdown = this.options.updateCountdown
+
         const isReservedStorage =
-            !this.options?.storagePath?.includes('testStorage123') &&
+            !this.options.storagePath.includes('testStorage123') &&
             !__dirname.includes('discord-economy-super\\tests')
 
-        const isPathReserved =
+        const isReservedPathUsed =
             !__dirname.includes('discord-economy-super\\tests') &&
             !__dirname.includes('discord-economy-super/tests')
 
-        const isFileExist = existsSync(this.options?.storagePath)
+        const isFileExist = existsSync(this.options.storagePath)
 
         return new Promise(async (resolve, reject) => {
             try {
                 if (this.errored) return
                 if (this.ready) return
 
+                if (Number(process.version.split('.')[0].slice(1)) < 14) {
+                    return reject(new EconomyError(errors.oldNodeVersion + process.version, 'OLD_NODE_VERSION'))
+                }
+
+                this._logger.debug('Checking for updates...')
+
                 /* eslint-disable max-len */
-                if (this.options?.updater?.checkUpdates) {
+                if (this.options.updater.checkUpdates) {
                     const version = await this.utils.checkUpdates()
+
                     if (!version.updated) {
 
                         console.log('\n\n')
-                        console.log(colors.green + '╔══════════════════════════════════════════════════════════╗')
-                        console.log(colors.green + '║ @ discord-economy-super                           - [] X ║')
-                        console.log(colors.green + '║══════════════════════════════════════════════════════════║')
-                        console.log(colors.yellow + `║                 The module is ${colors.red}out of date!${colors.yellow}               ║`)
-                        console.log(colors.magenta + '║                  New version is available!               ║')
-                        console.log(colors.blue + `║                       ${version.installedVersion} --> ${version.packageVersion}                    ║`)
-                        console.log(colors.cyan + '║          Run "npm i discord-economy-super@latest"        ║')
-                        console.log(colors.cyan + '║                         to update!                       ║')
-                        console.log(colors.white + '║               View the full changelog here:              ║')
-                        console.log(colors.red + `║  https://des-docs.tk/#/docs/main/${version.packageVersion}/general/changelog ║`)
-                        console.log(colors.green + '╚══════════════════════════════════════════════════════════╝\x1b[37m')
+                        console.log(this.colors.green + '╔═══════════════════════════════════════════════════════════════╗')
+                        console.log(this.colors.green + '║ @ discord-economy-super                                - [] X ║')
+                        console.log(this.colors.green + '║═══════════════════════════════════════════════════════════════║')
+                        console.log(this.colors.yellow + `║                    The module is ${this.colors.red}out of date!${this.colors.yellow}                 ║`)
+                        console.log(this.colors.magenta + '║                     New version is available!                 ║')
+                        console.log(this.colors.blue + `║                          ${version.installedVersion} --> ${version.packageVersion}                      ║`)
+                        console.log(this.colors.cyan + '║             Run "npm i discord-economy-super@latest"          ║')
+                        console.log(this.colors.cyan + '║                            to update!                         ║')
+                        console.log(this.colors.white + '║                  View the full changelog here:                ║')
+                        console.log(this.colors.red + `║  https://des-docs.js.org/#/docs/main/${version.packageVersion}/general/changelog  ║`)
+                        console.log(this.colors.green + '╚═══════════════════════════════════════════════════════════════╝\x1b[37m')
                         console.log('\n\n')
 
                     } else {
-                        if (this.options?.updater?.upToDateMessage) {
+                        if (this.options.updater.upToDateMessage) {
 
                             console.log('\n\n')
-                            console.log(colors.green + '╔══════════════════════════════════════════════════════════╗')
-                            console.log(colors.green + '║ @ discord-economy-super                           - [] X ║')
-                            console.log(colors.green + '║══════════════════════════════════════════════════════════║')
-                            console.log(colors.yellow + `║                  The module is ${colors.cyan}up to date!${colors.yellow}               ║`)
-                            console.log(colors.magenta + '║                  No updates are available.               ║')
-                            console.log(colors.blue + `║                  Current version is ${version.packageVersion}.               ║`)
-                            console.log(colors.cyan + '║                           Enjoy!                         ║')
-                            console.log(colors.white + '║               View the full changelog here:              ║')
-                            console.log(colors.red + `║  https://des-docs.tk/#/docs/main/${version.packageVersion}/general/changelog ║`)
-                            console.log(colors.green + '╚══════════════════════════════════════════════════════════╝\x1b[37m')
+                            console.log(this.colors.green + '╔═══════════════════════════════════════════════════════════════╗')
+                            console.log(this.colors.green + '║ @ discord-economy-super                                - [] X ║')
+                            console.log(this.colors.green + '║═══════════════════════════════════════════════════════════════║')
+                            console.log(this.colors.yellow + `║                     The module is ${this.colors.cyan}up to date!${this.colors.yellow}                 ║`)
+                            console.log(this.colors.magenta + '║                     No updates are available.                 ║')
+                            console.log(this.colors.blue + `║                     Current version is ${version.packageVersion}.                 ║`)
+                            console.log(this.colors.cyan + '║                              Enjoy!                           ║')
+                            console.log(this.colors.white + '║                  View the full changelog here:                ║')
+                            console.log(this.colors.red + `║  https://des-docs.js.org/#/docs/main/${version.packageVersion}/general/changelog  ║`)
+                            console.log(this.colors.green + '╚═══════════════════════════════════════════════════════════════╝\x1b[37m')
                             console.log('\n\n')
 
                         }
                     }
-                }
+                } else this._logger.debug('Skipped updates checking...')
 
-                if (this.options?.checkStorage == undefined ? true : this.options?.checkStorage) {
-                    if (!isFileExist && isReservedStorage) writeFileSync(this.options?.storagePath, '{}')
+                if (this.options.checkStorage == undefined ? true : this.options.checkStorage) {
+                    this._logger.debug('Checking for reserved words in a storage file path...')
+
+                    if (!isFileExist && isReservedStorage) writeFileSync(this.options.storagePath, '{}')
 
                     try {
-                        if (this.options?.storagePath?.includes('testStorage123') && isPathReserved) {
-                            return reject(new EconomyError(errors.reservedName('testStorage123')))
+                        if (this.options.storagePath.includes('testStorage123') && isReservedPathUsed) {
+                            return reject(new EconomyError(errors.reservedName('testStorage123'), 'STORAGE_FILE_ERROR'))
                         }
 
-                        if (this.options?.storagePath?.endsWith('package.json')) {
-                            return reject(new EconomyError(errors.reservedName('package.json')))
+                        for (const name of reservedNames) {
+                            if (this.options.storagePath.endsWith(name)) {
+                                return reject(new EconomyError(errors.reservedName(name), 'STORAGE_FILE_ERROR'))
+                            }
                         }
 
-                        if (this.options?.storagePath?.endsWith('package-lock.json')) {
-                            return reject(new EconomyError(errors.reservedName('package-lock.json')))
-                        }
+                        this._logger.debug('Checking the data in a storage file...')
 
-                        const data = readFileSync(this.options?.storagePath)
+                        const data = readFileSync(this.options.storagePath)
                         JSON.parse(data.toString())
 
                     } catch (err) {
                         if (err.message.includes('Unexpected') && err.message.includes('JSON')) {
-                            return reject(new EconomyError(errors.wrongStorageData))
+                            return reject(new EconomyError(errors.wrongStorageData, 'STORAGE_FILE_ERROR'))
                         }
 
                         else return reject(err)
                     }
+
+                    this._logger.debug(
+                        `Using storage file: ${this.options.storagePath}` +
+                        `${this.options.checkStorage ? `, checking every ${updateCountdown}ms.` : '.'}`, 'cyan'
+                    )
                 }
 
-                if (this.options?.checkStorage == undefined ? true : this.options?.checkStorage) {
-                    const storageExists = existsSync(this.options?.storagePath)
+                if (this.options.checkStorage == undefined ? true : this.options.checkStorage) {
+                    const storageExists = existsSync(this.options.storagePath)
 
                     const interval = setInterval(() => {
                         if (!storageExists) {
+                            this._logger.debug('Checking for reserved words in a storage file path...')
+
                             try {
-                                const isPathReserved =
-                                    this.options?.storagePath?.includes('testStorage123') &&
+                                const isReservedPathUsed =
+                                    this.options.storagePath.includes('testStorage123') &&
                                     !__dirname.includes('discord-economy-super\\tests')
 
-                                if (isPathReserved) {
-                                    throw new EconomyError(errors.reservedName('testStorage123'))
+                                if (isReservedPathUsed) {
+                                    throw new EconomyError(errors.reservedName('testStorage123'), 'STORAGE_FILE_ERROR')
                                 }
 
-                                if (this.options?.storagePath?.endsWith('package.json')) {
-                                    throw new EconomyError(errors.reservedName('package.json'))
+                                for (const name of reservedNames) {
+                                    if (this.options.storagePath.endsWith(name)) {
+                                        throw new EconomyError(errors.reservedName(name), 'STORAGE_FILE_ERROR')
+                                    }
                                 }
 
-                                if (this.options?.storagePath?.endsWith('package-lock.json')) {
-                                    throw new EconomyError(errors.reservedName('package-lock.json'))
-                                }
-
-                                writeFileSync(this.options?.storagePath, '{}', 'utf-8')
+                                writeFileSync(this.options.storagePath, '{}', 'utf-8')
                             } catch (err) {
-                                throw new EconomyError(errors.notReady)
+                                throw new EconomyError(errors.notReady, 'MODULE_NOT_READY')
                             }
+
                             console.log(
-                                `${colors.red}failed to find a database file;` +
-                                `created another one...${colors.reset}`
+                                `${this.colors.red}failed to find a database file;` +
+                                `created another one...${this.colors.reset}`
                             )
                         }
 
                         try {
-                            if (!storageExists) writeFileSync(this.options?.storagePath, '{}', 'utf-8')
+                            if (!storageExists) writeFileSync(this.options.storagePath, '{}', 'utf-8')
 
-                            const data = readFileSync(this.options?.storagePath)
+                            const data = readFileSync(this.options.storagePath)
                             JSON.parse(data.toString())
 
                         } catch (err) {
                             if (err.message.includes('Unexpected token') ||
                                 err.message.includes('Unexpected end')) {
-                                reject(new EconomyError(errors.wrongStorageData))
+                                reject(new EconomyError(errors.wrongStorageData, 'STORAGE_FILE_ERROR'))
                             }
 
                             else {
@@ -417,10 +463,14 @@ class Economy extends Emitter {
                     this.interval = interval
                 }
 
+                this._logger.debug('Starting the managers...', 'lightyellow')
                 this.start()
+
                 return resolve(true)
 
             } catch (err) {
+                this._logger.debug('Failed to start.', 'red')
+
                 this.errored = true
                 reject(err)
             }
@@ -429,26 +479,96 @@ class Economy extends Emitter {
 
     /**
      * Starts all the managers.
-     * @returns {Boolean} If successfully started: true.
+     * @returns {boolean} If successfully started: true.
      * @private
      */
     start() {
-        this.utils = new UtilsManager(this.options)
+        const managers = [
+            {
+                name: 'utils',
+                manager: UtilsManager
+            },
+            {
+                name: 'balance',
+                manager: BalanceManager
+            },
+            {
+                name: 'bank',
+                manager: BankManager
+            },
+            {
+                name: 'fetcher',
+                manager: FetchManager
+            },
+            {
+                name: 'database',
+                manager: DatabaseManager
+            },
+            {
+                name: 'shop',
+                manager: ShopManager
+            },
+            {
+                name: 'inventory',
+                manager: InventoryManager
+            },
+            {
+                name: 'history',
+                manager: HistoryManager
+            },
+            {
+                name: 'rewards',
+                manager: RewardManager
+            },
+            {
+                name: 'cooldowns',
+                manager: CooldownManager
+            },
+            {
+                name: 'users',
+                manager: UserManager
+            },
+            {
+                name: 'guilds',
+                manager: GuildManager
+            },
 
-        this.balance = new BalanceManager(this.options)
-        this.bank = new BankManager(this.options)
+            {
+                name: 'settings',
+                manager: SettingsManager
+            },
+        ]
 
-        this.fetcher = new FetchManager(this.options)
-        this.database = new DatabaseManager(this.options)
+        const events = [
+            'balanceSet',
+            'balanceAdd',
+            'balanceSubtract',
+            'bankSet',
+            'bankAdd',
+            'bankSubtract',
+            'shopItemAd',
+            'shopClear',
+            'shopItemEdit',
+            'shopItemBuy',
+            'shopItemUse',
+            'ready',
+            'destroy'
+        ]
 
-        this.shop = new ShopManager(this.options)
-        this.inventory = new InventoryManager(this.options)
-        this.history = new HistoryManager(this.options)
 
-        this.rewards = new RewardManager(this.options)
-        this.cooldowns = new CooldownManager(this.options)
+        for (const manager of managers) {
+            this[manager.name] = new manager.manager(this.options, new DatabaseManager(this.options))
+            this._logger.debug(`${manager.manager.name} is started.`)
+        }
 
-        this.settings = new SettingsManager(this.options)
+        for (const event of events) {
+            this.on(event, () => {
+                this._logger.debug(`"${event}" event is emitted.`)
+            })
+        }
+
+        this.managers = managers
+        this.economy = this
 
         return true
     }
@@ -457,128 +577,138 @@ class Economy extends Emitter {
 /**
 * Emits when someone's set the money on the balance.
 * @event Economy#balanceSet
-* @param {Object} data Data object.
-* @param {String} data.type The type of operation.
-* @param {String} data.guildID Guild ID.
-* @param {String} data.memberID Member ID.
-* @param {Number} data.amount Amount of money in completed operation.
-* @param {Number} data.balance User's balance after the operation was completed successfully.
-* @param {String} data.reason The reason why the operation was completed.
+* @param {object} data Data object.
+* @param {string} data.type The type of operation.
+* @param {string} data.guildID Guild ID.
+* @param {string} data.memberID Member ID.
+* @param {number} data.amount Amount of money in completed operation.
+* @param {number} data.balance User's balance after the operation was completed successfully.
+* @param {string} data.reason The reason why the operation was completed.
 */
 
 /**
 * Emits when someone's added the money on the balance.
 * @event Economy#balanceAdd
-* @param {Object} data Data object.
-* @param {String} data.type The type of operation.
-* @param {String} data.guildID Guild ID.
-* @param {String} data.memberID Member ID.
-* @param {Number} data.amount Amount of money in completed operation.
-* @param {Number} data.balance User's balance after the operation was completed successfully.
-* @param {String} data.reason The reason why the operation was completed.
+* @param {object} data Data object.
+* @param {string} data.type The type of operation.
+* @param {string} data.guildID Guild ID.
+* @param {string} data.memberID Member ID.
+* @param {number} data.amount Amount of money in completed operation.
+* @param {number} data.balance User's balance after the operation was completed successfully.
+* @param {string} data.reason The reason why the operation was completed.
 */
 
 /**
 * Emits when someone's subtracts the money from user's balance.
 * @event Economy#balanceSubtract
-* @param {Object} data Data object.
-* @param {String} data.type The type of operation.
-* @param {String} data.guildID Guild ID.
-* @param {String} data.memberID Member ID.
-* @param {Number} data.amount Amount of money in completed operation.
-* @param {Number} data.balance User's balance after the operation was completed successfully.
-* @param {String} data.reason The reason why the operation was completed.
+* @param {object} data Data object.
+* @param {string} data.type The type of operation.
+* @param {string} data.guildID Guild ID.
+* @param {string} data.memberID Member ID.
+* @param {number} data.amount Amount of money in completed operation.
+* @param {number} data.balance User's balance after the operation was completed successfully.
+* @param {string} data.reason The reason why the operation was completed.
 */
 
 /**
 * Emits when someone's set the money on the bank balance.
 * @event Economy#bankSet
-* @param {Object} data Data object.
-* @param {String} data.type The type of operation.
-* @param {String} data.guildID Guild ID.
-* @param {String} data.memberID Member ID.
-* @param {Number} data.amount Amount of money in completed operation.
-* @param {Number} data.balance User's balance after the operation was completed successfully.
-* @param {String} data.reason The reason why the operation was completed.
+* @param {object} data Data object.
+* @param {string} data.type The type of operation.
+* @param {string} data.guildID Guild ID.
+* @param {string} data.memberID Member ID.
+* @param {number} data.amount Amount of money in completed operation.
+* @param {number} data.balance User's balance after the operation was completed successfully.
+* @param {string} data.reason The reason why the operation was completed.
 */
 
 /**
 * Emits when someone's added the money on the bank balance.
 * @event Economy#bankAdd
-* @param {Object} data Data object.
-* @param {String} data.type The type of operation.
-* @param {String} data.guildID Guild ID.
-* @param {String} data.memberID Member ID.
-* @param {Number} data.amount Amount of money in completed operation.
-* @param {Number} data.balance User's balance after the operation was completed successfully.
-* @param {String} data.reason The reason why the operation was completed.
+* @param {object} data Data object.
+* @param {string} data.type The type of operation.
+* @param {string} data.guildID Guild ID.
+* @param {string} data.memberID Member ID.
+* @param {number} data.amount Amount of money in completed operation.
+* @param {number} data.balance User's balance after the operation was completed successfully.
+* @param {string} data.reason The reason why the operation was completed.
 */
 
 /**
 * Emits when someone's subtracts the money from user's bank balance.
 * @event Economy#bankSubtract
-* @param {Object} data Data object.
-* @param {String} data.type The type of operation.
-* @param {String} data.guildID Guild ID.
-* @param {String} data.memberID Member ID.
-* @param {Number} data.amount Amount of money in completed operation.
-* @param {Number} data.balance User's balance after the operation was completed successfully.
-* @param {String} data.reason The reason why the operation was completed.
+* @param {object} data Data object.
+* @param {string} data.type The type of operation.
+* @param {string} data.guildID Guild ID.
+* @param {string} data.memberID Member ID.
+* @param {number} data.amount Amount of money in completed operation.
+* @param {number} data.balance User's balance after the operation was completed successfully.
+* @param {string} data.reason The reason why the operation was completed.
 */
 
 /**
 * Emits when someone's added an item in the shop.
-* @event Economy#shopAddItem
-* @param {Number} id Item ID.
-* @param {String} data.name Item name.
-* @param {Number} data.price Item price.
-* @param {String} data.message Item message that will be returned on item use.
-* @param {String} data.description Item description.
-* @param {Number} data.maxAmount Max amount of the item that user can hold in his inventory.
-* @param {String} data.role Role ID from your Discord server.
-* @param {String} data.date Formatted date when the item was added to the shop.
+* @event Economy#shopItemAdd
+* @param {object} data Data object.
+* @param {number} data.id Item ID.
+* @param {string} data.name Item name.
+* @param {number} data.price Item price.
+* @param {string} data.message Item message that will be returned on item use.
+* @param {string} data.description Item description.
+* @param {number} data.maxAmount Max amount of the item that user can hold in their inventory.
+* @param {string} data.role Role ID from your Discord server.
+* @param {string} data.date Formatted date when the item was added to the shop.
+*/
+
+/**
+* Emits when someone's removed an item in the shop.
+* @event Economy#shopItemRemove
+* @param {object} data Data object.
+* @param {number} data.id Item ID.
+* @param {string} data.name Item name.
+* @param {number} data.price Item price.
+* @param {string} data.message Item message that will be returned on item use.
+* @param {string} data.description Item description.
+* @param {number} data.maxAmount Max amount of the item that user can hold in their inventory.
+* @param {string} data.role Role ID from your Discord server.
+* @param {string} data.date Formatted date when the item was added to the shop.
 */
 
 /**
 * Emits when someone's added an item in the shop.
 * @event Economy#shopItemBuy
-* @param {Number} id Item ID.
-* @param {String} data.name Item name.
-* @param {Number} data.price Item price.
-* @param {String} data.message Item message that will be returned on item use.
-* @param {String} data.description Item description.
-* @param {Number} data.maxAmount Max amount of the item that user can hold in his inventory.
-* @param {String} data.role Role ID from your Discord server.
-* @param {String} data.date Formatted date when the item was added to the shop.
+* @param {ShopItem} item Shop item that was bought.
 */
 
 /**
-* Emits when someone's used an item from his inventory.
+* Emits when someone's used an item from their inventory.
 * @event Economy#shopItemUse
-* @param {Number} id Item ID.
-* @param {String} data.name Item name.
-* @param {Number} data.price Item price.
-* @param {String} data.message Item message that will be returned on item use.
-* @param {String} data.description Item description.
-* @param {Number} data.maxAmount Max amount of the item that user can hold in his inventory.
-* @param {String} data.role Role ID from your Discord server.
-* @param {String} data.date Formatted date when the item was added to the shop.
+* @param {object} data Data object.
+* @param {number} data.id Item ID.
+* @param {string} data.name Item name.
+* @param {number} data.price Item price.
+* @param {string} data.message Item message that will be returned on item use.
+* @param {string} data.description Item description.
+* @param {number} data.maxAmount Max amount of the item that user can hold in their inventory.
+* @param {string} data.role Role ID from your Discord server.
+* @param {string} data.date Formatted date when the item was added to the shop.
 */
 
 /**
 * Emits when someone's edited an item in the shop.
-* @event Economy#shopEditItem
-* @param {Number} id Item ID.
-* @param {String} data.guildID Guild ID.
-* @param {String} data.changed hat was changed in item data.
-* @param {String} data.oldValue Value before edit.
-* @param {String} data.newValue Value after edit.
+* @event Economy#shopItemEdit
+* @param {object} data Data object.
+* @param {number} data.id Item ID.
+* @param {string} data.guildID Guild ID.
+* @param {string} data.changedProperty The item property that was changed.
+* @param {string} data.oldValue Value before edit.
+* @param {string} data.newValue Value after edit.
 */
 
 /**
 * Emits when the module is ready.
 * @event Economy#ready
-* @param {void} data Void event.
+* @param {Economy} eco Economy instance that was initialized and could be used.
 */
 
 /**
@@ -587,58 +717,80 @@ class Economy extends Emitter {
 * @param {void} data Void event.
 */
 
+
 /**
- * @typedef {Object} EconomyOptions Default Economy options object.
- * @property {String} [storagePath='./storage.json'] Full path to a JSON file. Default: './storage.json'
- * @property {Boolean} [checkStorage=true] Checks the if database file exists and if it has errors. Default: true
- * @property {Number} [dailyCooldown=86400000] Cooldown for Daily Command (in ms). Default: 24 Hours (60000 * 60 * 24) ms
- * @property {Number} [workCooldown=3600000] Cooldown for Work Command (in ms). Default: 1 Hour (60000 * 60) ms
+ * @typedef {object} EconomyOptions Default Economy configuration.
+ * @property {string} [storagePath='./storage.json'] Full path to a JSON file. Default: './storage.json'
+ * @property {boolean} [checkStorage=true] Checks the if database file exists and if it has errors. Default: true
+ * @property {number} [dailyCooldown=86400000] Cooldown for Daily Command (in ms). Default: 24 hours (60000 * 60 * 24 ms)
+ * @property {number} [workCooldown=3600000] Cooldown for Work Command (in ms). Default: 1 hour (60000 * 60 ms)
  * @property {Number | Number[]} [dailyAmount=100] Amount of money for Daily Command. Default: 100.
- * @property {Number} [weeklyCooldown=604800000] Cooldown for Weekly Command (in ms). Default: 7 Days (60000 * 60 * 24 * 7) ms
- * @property {Number} [sellingItemPercent=75] 
+ * @property {number} [weeklyCooldown=604800000] Cooldown for Weekly Command (in ms). Default: 7 days (60000 * 60 * 24 * 7 ms)
+ * @property {number} [sellingItemPercent=75] 
  * Percent of the item's price it will be sold for. Default: 75.
  * 
- * @property {Boolean} [deprecationWarnings=true] 
+ * @property {boolean} [deprecationWarnings=true] 
  * If true, the deprecation warnings will be sent in the console. Default: true.
  * 
- * @property {Boolean} [savePurchasesHistory=true] If true, the module will save all the purchases history.
+ * @property {boolean} [savePurchasesHistory=true] If true, the module will save all the purchases history.
  * 
  * @property {Number | Number[]} [weeklyAmount=100] Amount of money for Weekly Command. Default: 1000.
  * @property {Number | Number[]} [workAmount=[10, 50]] Amount of money for Work Command. Default: [10, 50].
- * @property {Boolean} [subtractOnBuy=true] If true, when someone buys the item, their balance will subtract by item price. Default: false
+ * @property {boolean} [subtractOnBuy=true] If true, when someone buys the item, their balance will subtract by item price. Default: false
  * 
- * @property {Number} [updateCountdown=1000] Checks for if storage file exists in specified time (in ms). Default: 1000.
- * @property {String} [dateLocale='en'] The region (example: 'ru' or 'en') to format the date and time. Default: 'en'.
- * @property {UpdaterOptions} [updater=UpdaterOptions] Update Checker options object.
- * @property {ErrorHandlerOptions} [errorHandler=ErrorHandlerOptions] Error Handler options object.
- * @property {CheckerOptions} [optionsChecker=CheckerOptions] Options object for an 'Economy.utils.checkOptions' method.
+ * @property {number} [updateCountdown=1000] Checks for if storage file exists in specified time (in ms). Default: 1000.
+ * @property {string} [dateLocale='en'] The region (example: 'ru' or 'en') to format the date and time. Default: 'en'.
+ * @property {UpdaterOptions} [updater=UpdaterOptions] Update checker configuration.
+ * @property {ErrorHandlerOptions} [errorHandler=ErrorHandlerOptions] Error handler configuration.
+ * @property {CheckerOptions} [optionsChecker=CheckerOptions] Configuration for an 'Economy.utils.checkOptions' method.
+ * @property {boolean} [debug=false] Enables or disables the debug mode.
  */
 
 /**
- * @typedef {Object} UpdaterOptions Updatee options object.
- * @property {Boolean} [checkUpdates=true] Sends the update state message in console on start. Default: true.
- * @property {Boolean} [upToDateMessage=true] Sends the message in console on start if module is up to date. Default: true.
+ * @typedef {object} UpdaterOptions Update checker configuration.
+ * @property {boolean} [checkUpdates=true] Sends the update state message in console on start. Default: true.
+ * @property {boolean} [upToDateMessage=true] Sends the message in console on start if module is up to date. Default: true.
  */
 
 /**
- * @typedef {Object} ErrorHandlerOptions
- * @property {Boolean} [handleErrors=true] Handles all errors on startup. Default: true.
- * @property {Number} [attempts=5] Amount of attempts to load the module. Use 0 for infinity attempts. Default: 5.
- * @property {Number} [time=3000] Time between every attempt to start the module (in ms). Default: 3000.
+ * @typedef {object} ErrorHandlerOptions
+ * @property {boolean} [handleErrors=true] Handles all errors on startup. Default: true.
+ * @property {number} [attempts=5] Amount of attempts to load the module. Use 0 for infinity attempts. Default: 5.
+ * @property {number} [time=3000] Time between every attempt to start the module (in ms). Default: 3000.
  */
 
 /**
- * @typedef {Object} CheckerOptions Options object for an 'Economy.utils.checkOptions' method.
- * @property {Boolean} [ignoreInvalidTypes=false] Allows the method to ignore the options with invalid types. Default: false.
- * @property {Boolean} [ignoreUnspecifiedOptions=false] Allows the method to ignore the unspecified options. Default: false.
- * @property {Boolean} [ignoreInvalidOptions=false] Allows the method to ignore the unexisting options. Default: false.
- * @property {Boolean} [showProblems=false] Allows the method to show all the problems in the console. Default: false. 
+ * @typedef {object} CheckerOptions Configuration for an 'Economy.utils.checkOptions' method.
+ * @property {boolean} [ignoreInvalidTypes=false] Allows the method to ignore the options with invalid types. Default: false.
+ * @property {boolean} [ignoreUnspecifiedOptions=false] Allows the method to ignore the unspecified options. Default: false.
+ * @property {boolean} [ignoreInvalidOptions=false] Allows the method to ignore the unexisting options. Default: false.
+ * @property {boolean} [showProblems=false] Allows the method to show all the problems in the console. Default: false. 
  * 
- * @property {Boolean} [sendLog=false] Allows the method to send the result in the console. 
+ * @property {boolean} [sendLog=false] Allows the method to send the result in the console. 
  * Requires the 'showProblems' or 'sendLog' options to set. Default: false.
  * 
- * @property {Boolean} [sendSuccessLog=false] Allows the method to send the result if no problems were found. Default: false.
+ * @property {boolean} [sendSuccessLog=false] Allows the method to send the result if no problems were found. Default: false.
  */
+
+
+/**
+ * @typedef {object} LoggerColors
+ * @property {string} red Red color.
+ * @property {string} green Green color.
+ * @property {string} yellow Yellow color.
+ * @property {string} blue Blue color.
+ * @property {string} magenta Magenta color.
+ * @property {string} cyan Cyan color.
+ * @property {string} white White color.
+ * @property {string} reset Reset color.
+ */
+
+/**
+ * @typedef {object} Manager
+ * @property {string} name The manager's short name.
+ * @property {Function} manager The manager class.
+ */
+
 
 /**
  * The Economy class.

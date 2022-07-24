@@ -1,13 +1,15 @@
-const { inspect } = require('util')
+const EconomyError = require('../classes/util/EconomyError')
+const Emitter = require('../classes/util/Emitter')
 
-const EconomyError = require('../classes/EconomyError')
-const Emitter = require('../classes/Emitter')
-
-const FetchManager = require('./FetchManager')
 const DatabaseManager = require('./DatabaseManager')
+const FetchManager = require('./FetchManager')
+
 const BalanceManager = require('./BalanceManager')
 
 const errors = require('../structures/errors')
+
+const InventoryItem = require('../classes/InventoryItem')
+const ShopItem = require('../classes/ShopItem')
 
 /**
  * Inventory manager methods class.
@@ -16,20 +18,17 @@ class InventoryManager extends Emitter {
 
     /**
       * Inventory Manager.
-      * 
-      * @param {Object} options Economy constructor options object.
-      * There's only needed options object properties for this manager to work properly.
-      * 
-      * @param {String} options.storagePath Full path to a JSON file. Default: './storage.json'.
-      * @param {String} options.dateLocale The region (example: 'ru' or 'en') to format date and time. Default: 'en'.
-      * @param {Boolean} options.subtractOnBuy 
+      * @param {object} options Economy configuration.
+      * @param {string} options.dateLocale The region (example: 'ru' or 'en') to format date and time. Default: 'en'.
+      * @param {boolean} options.subtractOnBuy 
       * If true, when someone buys the item, their balance will subtract by item price.
+      * @param {DatabaseManager} database Database manager.
      */
-    constructor(options = {}) {
+    constructor(options = {}, database) {
         super()
 
         /**
-         * Economy constructor options object.
+         * Economy configuration.
          * @private
          * @type {?EconomyOptions}
          */
@@ -40,38 +39,38 @@ class InventoryManager extends Emitter {
          * @type {DatabaseManager}
          * @private
          */
-        this.database = new DatabaseManager(options)
+        this.database = database
+
+        /**
+         * Fetch Manager.
+         * @type {FetchManager}
+         * @private
+         */
+        this.fetcher = new FetchManager(options)
 
         /**
          * Balance manager methods object.
          * @type {BalanceManager}
          * @private
          */
-        this.balance = new BalanceManager(options)
-
-        /**
-         * Fetch manager methods object.
-         * @type {FetchManager}
-         * @private
-         */
-        this.fetcher = new FetchManager(options)
+        this.balance = new BalanceManager(options, database)
     }
 
     /**
      * Clears the user's inventory.
-     * @param {String} memberID Member ID.
-     * @param {String} guildID Guild ID.
-     * @returns {Boolean} If cleared: true, else: false.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @returns {boolean} If cleared: true, else: false.
      */
     clear(memberID, guildID) {
         const inventory = this.fetch(memberID, guildID)
 
         if (typeof memberID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID)
+            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
         }
 
         if (typeof guildID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
+            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
         }
 
         if (!inventory) return false
@@ -80,117 +79,116 @@ class InventoryManager extends Emitter {
     }
 
     /**
-     * Searches for the item in the inventory.
-     * @param {Number | String} itemID Item ID or name.
-     * @param {String} memberID Member ID.
-     * @param {String} guildID Guild ID.
-     * @returns {InventoryData} If item not found: null; else: item info object.
+     * Gets the item in the inventory.
+     * @param {string | number} itemID Item ID or name.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @returns {InventoryItem} If item not found: null; else: item info object.
      */
-    searchItem(itemID, memberID, guildID) {
+    getItem(itemID, memberID, guildID) {
 
         /**
-        * @type {InventoryData[]}
+        * @type {InventoryItem[]}
         */
         const inventory = this.fetch(memberID, guildID)
-        const item = inventory.find(x => x.id == itemID || x.itemName == itemID)
+        const item = inventory.find(item => item.id == itemID || item.name == itemID)
 
         if (typeof itemID !== 'number' && typeof itemID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.editItemArgs.itemID + typeof itemID)
+            throw new EconomyError(errors.invalidTypes.editItemArgs.itemID + typeof itemID, 'INVALID_TYPE')
         }
 
         if (typeof memberID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID)
+            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
         }
 
         if (typeof guildID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
+            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
         }
 
         if (!item) return null
-        return item
+        return new InventoryItem(guildID, memberID, this.options, item, this.database)
     }
 
     /**
-     * Searches for the item in the inventory.
+     * Gets the item in the inventory.
      * 
-     * This method is an alias for the `InventoryManager.searchItem()` method.
-     * @param {Number | String} itemID Item ID or name.
-     * @param {String} memberID Member ID.
-     * @param {String} guildID Guild ID.
-     * @returns {InventoryData} If item not found: null; else: item info object.
+     * This method is an alias for the `InventoryManager.getItem()` method.
+     * @param {number | string} itemID Item ID or name.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @returns {InventoryItem} If item not found: null; else: item info object.
      */
     findItem(itemID, memberID, guildID) {
-        return this.searchItem(itemID, memberID, guildID)
+        return this.getItem(itemID, memberID, guildID)
     }
 
     /**
      * Fetches the user's inventory.
-     * @param {String} memberID Member ID.
-     * @param {String} guildID Guild ID.
-     * @returns {InventoryData[]} User's inventory array.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @returns {InventoryItem[]} User's inventory array.
      */
     fetch(memberID, guildID) {
         const inventory = this.fetcher.fetchInventory(memberID, guildID)
 
         if (typeof memberID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID)
+            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
         }
 
         if (typeof guildID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
+            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
         }
 
-        return inventory
+        return inventory.map(item => {
+            return new InventoryItem(guildID, memberID, this.options, item, this.database)
+        })
     }
 
     /**
      * Fetches the user's inventory.
      * 
      * This method is an alias for the `InventoryManager.fetch()` method.
-     * @param {String} memberID Member ID.
-     * @param {String} guildID Guild ID.
-     * @returns {InventoryData[]} User's inventory array.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @returns {InventoryItem[]} User's inventory array.
      */
-    list(memberID, guildID) {
+    get(memberID, guildID) {
         return this.fetch(memberID, guildID)
     }
 
     /**
      * Uses the item from user's inventory.
-     * @param {Number | String} itemID Item ID or name.
-     * @param {String} memberID Member ID.
-     * @param {String} guildID Guild ID.
-     * @param {Client} [client] The Discord Client. [Optional]
-     * @returns {String} Item message or null if item not found.
+     * @param {number | string} itemID Item ID or name.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @param {Client} [client] Discord Client [Specify if the role will be given in a Discord server].
+     * @returns {string} Item message.
      */
     useItem(itemID, memberID, guildID, client) {
-
-        /**
-         * @type {InventoryData[]}
-         */
         const inventory = this.fetch(memberID, guildID)
 
-        const itemObject = this.searchItem(itemID, memberID, guildID)
-        const itemIndex = inventory.findIndex(x => x.id == itemObject?.id)
+        const itemObject = this.getItem(itemID, memberID, guildID)
+        const itemIndex = inventory.findIndex(invItem => invItem.id == itemObject?.id)
 
         const item = inventory[itemIndex]
 
         if (typeof itemID !== 'number' && typeof itemID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.editItemArgs.itemID + typeof itemID)
+            throw new EconomyError(errors.invalidTypes.editItemArgs.itemID + typeof itemID, 'INVALID_TYPE')
         }
+
         if (typeof memberID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID)
+            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
         }
 
         if (typeof guildID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
+            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
         }
 
         if (!item) return null
 
         if (item.role) {
             if (item.role && !client) {
-                throw new EconomyError(errors.noClient)
+                throw new EconomyError(errors.noClient, 'NO_DISCORD_CLIENT')
             }
 
             const guild = client.guilds.cache.get(guildID)
@@ -201,7 +199,7 @@ class InventoryManager extends Emitter {
 
                 member.roles.add(role).catch(err => {
                     if (!role) {
-                        return console.error(new EconomyError(errors.roleNotFound + roleID))
+                        return console.error(new EconomyError(errors.roleNotFound + roleID, 'ROLE_NOT_FOUND'))
                     }
 
                     console.error(
@@ -216,12 +214,11 @@ class InventoryManager extends Emitter {
         }
 
         this.removeItem(itemID, memberID, guildID)
-        this.emit('shopItemUse', item)
 
         let msg
         const string = item?.message || 'You have used this item!'
 
-        if (string.includes('[random=')) {
+        if (string?.includes('[random=')) {
             const s = string.slice(string.indexOf('[')).replace('random=', '')
 
             let errored = false
@@ -245,6 +242,14 @@ class InventoryManager extends Emitter {
         }
 
         else msg = string
+
+        this.emit('shopItemUse', {
+            guildID,
+            usedBy: memberID,
+            item,
+            receivedMessage: msg
+        })
+
         return msg
     }
 
@@ -252,11 +257,11 @@ class InventoryManager extends Emitter {
      * Uses the item from user's inventory.
      * 
      * This method is an alias for the `InventoryManager.useItem()` method.
-     * @param {Number | String} itemID Item ID or name.
-     * @param {String} memberID Member ID.
-     * @param {String} guildID Guild ID.
-     * @param {Client} [client] The Discord Client. [Optional]
-     * @returns {String} Item message or null if item not found.
+     * @param {number | string} itemID Item ID or name.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @param {Client} [client] The Discord Client. [Specify if the role will be given in a Discord server].
+     * @returns {string} Item message.
      */
     use(itemID, memberID, guildID, client) {
         return this.useItem(itemID, memberID, guildID, client)
@@ -264,203 +269,267 @@ class InventoryManager extends Emitter {
 
     /**
      * Removes the item from user's inventory.
-     * @param {String | Number} itemID Item ID or name.
-     * @param {String} memberID Member ID.
-     * @param {String} guildID Guild ID.
-     * @returns {Boolean} If removed successfully: true, else: false.
+     * @param {string | number} itemID Item ID or name.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @param {number} [quantity=1] Quantity of items to remove.
+     * @returns {boolean} If removed successfully: true, else: false.
      */
-    removeItem(itemID, memberID, guildID) {
+    removeItem(itemID, memberID, guildID, quantity = 1) {
 
         /**
-        * @type {InventoryData[]}
+        * @type {InventoryItem[]}
         */
-        const inventory = this.fetch(memberID, guildID)
+        const inventory = this.fetch(memberID, guildID) || []
+        const inventoryObjects = inventory.map(item => item.itemObject)
 
-        const item = this.searchItem(itemID, memberID, guildID)
-        const itemIndex = inventory.findIndex(x => x.id == item?.id)
+        const item = inventory.find(invItem => invItem.id == itemID || invItem.name == itemID)
+        const itemQuantity = inventoryObjects.filter(item => item.id == itemID).length
 
         if (typeof itemID !== 'number' && typeof itemID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.editItemArgs.itemID + typeof itemID)
+            throw new EconomyError(errors.invalidTypes.editItemArgs.itemID + typeof itemID, 'INVALID_TYPE')
         }
+
         if (typeof memberID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID)
+            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
         }
 
         if (typeof guildID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
+            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
         }
 
         if (!item) return false
 
-        return this.database
-            .removeElement(`${guildID}.${memberID}.inventory`, itemIndex)
+        const newInventory = [
+            ...inventoryObjects.filter(invItem => invItem.id != item.id),
+            ...Array(itemQuantity - quantity).fill(item.itemObject)
+        ]
+
+        const result = this.database.set(`${guildID}.${memberID}.inventory`, newInventory)
+        return result
     }
+
 
     /**
      * Adds the item from the shop to user's inventory.
-     * @param {String | Number} itemID Item ID or name.
-     * @param {String} memberID Member ID.
-     * @param {String} guildID Guild ID.
-     * @returns {Boolean} If added successfully: true, else: false.
+     * @param {string | number} itemID Item ID or name.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @param {number} [quantity=1] Quantity of items to add. Default: 1.
+     * @returns {ShopOperationInfo} If added successfully: true, else: false.
      */
-    addItem(itemID, memberID, guildID) {
+    addItem(itemID, memberID, guildID, quantity = 1) {
 
         /**
-        * @type {ItemData[]}
+        * @type {ShopItem[]}
         */
-        const shop = this.fetcher.fetchShop(guildID)
-        const item = shop.find(x => x.id == itemID || x.itemName == itemID)
+        const shop = this.fetcher.fetchShop(guildID).map(item => {
+            return new ShopItem(guildID, item, this.database)
+        })
+
+        const item = shop.find(shopItem => shopItem.id == itemID || shopItem.name == itemID)
 
         /**
-        * @type {InventoryData[]}
+        * @type {InventoryItem[]}
         */
         const inventory = this.fetcher.fetchInventory(memberID, guildID)
-        const inventoryItems = inventory.filter(x => x.itemName == item.itemName)
+        const inventoryItems = inventory.filter(invItem => invItem.name == item.name)
 
         if (typeof itemID !== 'number' && typeof itemID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.editItemArgs.itemID + typeof itemID)
+            throw new EconomyError(errors.invalidTypes.editItemArgs.itemID + typeof itemID, 'INVALID_TYPE')
         }
 
         if (typeof memberID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID)
+            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
         }
 
         if (typeof guildID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
+            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
         }
 
-        if (!item) return false
-        if (item.maxAmount && inventoryItems.length >= item.maxAmount) return 'max'
-
-        const itemData = {
-            id: inventory.length ? inventory[inventory.length - 1].id + 1 : 1,
-            itemName: item.itemName,
-            price: item.price,
-            message: item.message,
-            description: item.description,
-            role: item.role || null,
-            maxAmount: item.maxAmount,
-            date: new Date().toLocaleString(this.options.dateLocale || 'en')
+        if (!item) return {
+            status: false,
+            message: 'item not found',
+            item: null,
+            quantity: 0,
+            totalPrice: 0
         }
 
-        return this.database.push(`${guildID}.${memberID}.inventory`, itemData)
+
+        const totalPrice = item.price * quantity
+        const arrayOfItems = Array(quantity).fill(item.itemObject ? item.itemObject : item)
+
+        const newInventory = [...inventory, ...arrayOfItems]
+
+        if (
+            item.maxAmount &&
+            inventoryItems.length >= item.maxAmount &&
+            (inventoryItems.length + quantity) < item.maxAmount
+        ) return {
+            status: false,
+            message: `maximum items reached (${item.maxAmount})`,
+            item,
+            quantity,
+            totalPrice
+        }
+
+
+        this.database.set(`${guildID}.${memberID}.inventory`, newInventory)
+
+        return {
+            status: true,
+            message: 'OK',
+            item,
+            quantity,
+            totalPrice: item.price * quantity
+        }
     }
 
     /**
      * Removes the item from user's inventory
-     * and adds its price to the user' balance.
+     * and adds its price to the user's balance.
      * This is the same as selling something.
-     * @param {String | Number} itemID Item ID or name.
-     * @param {String} memberID Member ID.
-     * @param {String} guildID Guild ID.
-     * @returns {Number} The price the item was sold for.
+     * @param {string | number} itemID Item ID or name.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @param {number} [quantity=1] Quantity of items to sell.
+     * @param {string} [reason='sold the item from the inventory'] The reason why the item was sold.
+     * @returns {ShopOperationInfo} Selling operation info.
      */
-    sellItem(itemID, memberID, guildID, reason = 'sold the item from the inventory') {
-        const item = this.searchItem(itemID, memberID, guildID)
+    sellItem(itemID, memberID, guildID, quantity = 1, reason = 'sold the item from the inventory') {
+        const inventory = this.fetch(memberID, guildID)
 
-        const percent = this.options.sellingItemPercent
+        const item = this.findItem(itemID, memberID, guildID)
+        const itemQuantity = inventory.filter(invItem => invItem.id == item.id).length
+
+        const percent = this.database.fetch(`${guildID}.settings.sellingItemPercent`)
+            || this.options.sellingItemPercent
+
         const sellingPrice = Math.floor((item?.price / 100) * percent)
+        const totalSellingPrice = sellingPrice * quantity
 
         if (typeof itemID !== 'number' && typeof itemID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.editItemArgs.itemID + typeof itemID)
+            throw new EconomyError(errors.invalidTypes.editItemArgs.itemID + typeof itemID, 'INVALID_TYPE')
         }
         if (typeof memberID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID)
+            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
         }
 
         if (typeof guildID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
+            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
         }
 
-        if (!item) return null
+        if (!item) return {
+            status: false,
+            message: 'item not found',
+            item: null,
+            quantity: 0,
+            totalPrice: 0
+        }
 
-        this.balance
-            .add(sellingPrice, memberID, guildID, reason)
+        if (quantity > itemQuantity || quantity < 1) {
+            return {
+                status: false,
+                message: `not enough items to sell (${itemQuantity} < ${quantity})`,
+                item,
+                quantity,
+                totalPrice: totalSellingPrice
+            }
+        }
 
-        this.removeItem(itemID, memberID, guildID)
-        return sellingPrice
+        this.balance.add(totalSellingPrice, memberID, guildID, reason)
+        this.removeItem(itemID, memberID, guildID, quantity)
+
+        return {
+            status: true,
+            message: 'OK',
+            item,
+            quantity,
+            totalPrice: totalSellingPrice
+        }
+    }
+
+    /**
+     * Removes the item from user's inventory
+     * and adds its price to the user's balance.
+     * This is the same as selling something.
+     * 
+     * This method is an alias for 'InventoryManager.sellItem()' method.
+     * @param {string | number} itemID Item ID or name.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @param {number} [quantity=1] Quantity of items to sell.
+     * @param {string} [reason='sold the item from the inventory'] The reason why the item was sold.
+     * @returns {ShopOperationInfo} Selling operation info.
+     */
+    sell(itemID, memberID, guildID, quantity = 1, reason = 'sold the item from the inventory') {
+        return this.sellItem(itemID, memberID, guildID, quantity, reason)
     }
 }
 
 /**
- * @typedef {Object} AddItemOptions Options object with item info for 'Economy.shop.addItem' method.
- * @property {String} itemName Item name.
- * @property {Number} price Item price.
- * @property {String} [message='You have used this item!'] Item message that will be returned on use.
- * @property {String} [description='Very mysterious item.'] Item description.
- * @property {Number} [maxAmount=null] Max amount of the item that user can hold in his inventory.
- * @property {String} [role=null] Role ID from your Discord server.
- * @returns {ItemData} Item info.
+ * @typedef {object} AddItemOptions Configuration with item info for 'Economy.shop.addItem' method.
+ * @property {string} name Item name.
+ * @property {number} price Item price.
+ * @property {string} [message='You have used this item!'] Item message that will be returned on use.
+ * @property {string} [description='Very mysterious item.'] Item description.
+ * @property {number} [maxAmount=null] Max amount of the item that user can hold in their inventory.
+ * @property {string} [role=null] Role ID from your Discord server.
+ */
+
+/**
+ * @typedef {object} ShopOperationInfo
+ * @property {boolean} status Operation status.
+ * @property {string} message Operation message.
+ * @property {ShopItem | InventoryItem} item Item object.
+ * @property {number} quantity Item quantity.
+ * @property {number} totalPrice Total price of the items.
  */
 
 /**
  * History data object.
- * @typedef {Object} HistoryData
- * @property {Number} id Item ID in history.
- * @property {String} itemName Item name.
- * @property {Number} price Item price.
- * @property {String} message The message that will be returned on item use.
- * @property {String} role ID of Discord Role that will be given to user on item use.
- * @property {String} date Date when the item was bought.
- * @property {String} memberID Member ID.
- * @property {String} guildID Guild ID.
+ * @typedef {object} HistoryData
+ * @property {number} id Item ID in history.
+ * @property {string} name Item name.
+ * @property {number} price Item price.
+ * @property {string} message The message that will be returned on item use.
+ * @property {string} role ID of Discord Role that will be given to user on item use.
+ * @property {string} date Date when the item was bought by a user.
+ * @property {string} memberID Member ID.
+ * @property {string} guildID Guild ID.
  */
 
 /**
- * Item data object.
- * @typedef {Object} ItemData
- * @property {Number} id Item ID.
- * @property {String} itemName Item name.
- * @property {Number} price Item price.
- * @property {String} message The message that will be returned on item use.
- * @property {String} description Item description.
- * @property {String} role ID of Discord Role that will be given to Wuser on item use.
- * @property {Number} maxAmount Max amount of the item that user can hold in his inventory.
- * @property {String} date Date when the item was added in the shop.
- */
-
-/**
- * Inventory data object.
- * @typedef {Object} InventoryData
- * @property {Number} id Item ID in your inventory.
- * @property {String} itemName Item name.
- * @property {Number} price Item price.
- * @property {String} message The message that will be returned on item use.
- * @property {String} role ID of Discord Role that will be given to user on item use.
- * @property {Number} maxAmount Max amount of the item that user can hold in his inventory.
- * @property {String} date Date when the item was bought.
- */
-
-/**
- * @typedef {Object} EconomyOptions Default Economy options object.
- * @property {String} [storagePath='./storage.json'] Full path to a JSON file. Default: './storage.json'
- * @property {Boolean} [checkStorage=true] Checks the if database file exists and if it has errors. Default: true
- * @property {Number} [dailyCooldown=86400000] 
- * Cooldown for Daily Command (in ms). Default: 24 Hours (60000 * 60 * 24) ms
+ * @typedef {object} EconomyOptions Default Economy configuration.
+ * @property {string} [storagePath='./storage.json'] Full path to a JSON file. Default: './storage.json'
+ * @property {boolean} [checkStorage=true] Checks the if database file exists and if it has errors. Default: true
+ * @property {number} [dailyCooldown=86400000] 
+ * Cooldown for Daily Command (in ms). Default: 24 hours (60000 * 60 * 24 ms)
  * 
- * @property {Number} [workCooldown=3600000] Cooldown for Work Command (in ms). Default: 1 Hour (60000 * 60) ms
+ * @property {number} [workCooldown=3600000] Cooldown for Work Command (in ms). Default: 1 hour (60000 * 60 ms)
  * @property {Number | Number[]} [dailyAmount=100] Amount of money for Daily Command. Default: 100.
- * @property {Number} [weeklyCooldown=604800000] 
- * Cooldown for Weekly Command (in ms). Default: 7 Days (60000 * 60 * 24 * 7) ms
+ * @property {number} [weeklyCooldown=604800000] 
+ * Cooldown for Weekly Command (in ms). Default: 7 days (60000 * 60 * 24 * 7 ms)
  *
- * @property {Number} [sellingItemPercent=75]
+ * @property {number} [sellingItemPercent=75]
  * Percent of the item's price it will be sold for. Default: 75.
  * 
- * @property {Boolean} [deprecationWarnings=true] 
+ * @property {boolean} [deprecationWarnings=true] 
  * If true, the deprecation warnings will be sent in the console.
  * 
- * @property {Boolean} [savePurchasesHistory=true] If true, the module will save all the purchases history.
+ * @property {boolean} [savePurchasesHistory=true] If true, the module will save all the purchases history.
  * 
  * @property {Number | Number[]} [weeklyAmount=100] Amount of money for Weekly Command. Default: 1000.
  * @property {Number | Number[]} [workAmount=[10, 50]] Amount of money for Work Command. Default: [10, 50].
- * @property {Boolean} [subtractOnBuy=true] 
+ * @property {boolean} [subtractOnBuy=true] 
  * If true, when someone buys the item, their balance will subtract by item price. Default: false
  * 
- * @property {Number} [updateCountdown=1000] Checks for if storage file exists in specified time (in ms). Default: 1000.
- * @property {String} [dateLocale='en'] The region (example: 'ru' or 'en') to format the date and time. Default: 'en'.
- * @property {UpdaterOptions} [updater=UpdaterOptions] Update Checker options object.
- * @property {ErrorHandlerOptions} [errorHandler=ErrorHandlerOptions] Error Handler options object.
- * @property {CheckerOptions} [optionsChecker=CheckerOptions] Options object for an 'Economy.utils.checkOptions' method.
+ * @property {number} [updateCountdown=1000] Checks for if storage file exists in specified time (in ms). Default: 1000.
+ * @property {string} [dateLocale='en'] The region (example: 'ru' or 'en') to format the date and time. Default: 'en'.
+ * @property {UpdaterOptions} [updater=UpdaterOptions] Update checker configuration.
+ * @property {ErrorHandlerOptions} [errorHandler=ErrorHandlerOptions] Error handler configuration.
+ * @property {CheckerOptions} [optionsChecker=CheckerOptions] Configuration for an 'Economy.utils.checkOptions' method.
+ * @property {boolean} [debug=false] Enables or disables the debug mode.
  */
 
 

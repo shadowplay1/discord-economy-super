@@ -1,26 +1,27 @@
-const FetchManager = require('./FetchManager')
 const DatabaseManager = require('./DatabaseManager')
+const EconomyError = require('../classes/util/EconomyError')
 
-const EconomyError = require('../classes/EconomyError')
 const errors = require('../structures/errors')
 
+const HistoryItem = require('../classes/HistoryItem')
 
+/**
+ * History manager methods class.
+ */
 class HistoryManager {
 
     /**
     * History Manager.
-    * 
-    * @param {Object} options Economy constructor options object.
-    * There's only needed options object properties for this manager to work properly.
-    * 
-    * @param {String} options.storagePath Full path to a JSON file. Default: './storage.json'.
-    * @param {String} options.dateLocale The region (example: 'ru' or 'en') to format date and time. Default: 'en'.
-    * @param {Boolean} options.savePurchasesHistory If true, the module will save all the purchases history.
+    * @param {object} options Economy configuration.
+    * @param {string} options.storagePath Full path to a JSON file. Default: './storage.json'.
+    * @param {string} options.dateLocale The region (example: 'ru' or 'en') to format date and time. Default: 'en'.
+    * @param {boolean} options.savePurchasesHistory If true, the module will save all the purchases history.
     */
-    constructor(options = {}) {
+    constructor(options = {}, database) {
+
 
         /**
-         * Economy constructor options object.
+         * Economy configuration.
          * @type {EconomyOptions}
          * @private
          */
@@ -28,65 +29,73 @@ class HistoryManager {
 
         /**
          * Full path to a JSON file.
-         * @type {String}
+         * @type {string}
          * @private
          */
         this.storagePath = options.storagePath || './storage.json'
-
-        /**
-         * Fetch Manager.
-         * @type {FetchManager}
-         * @private
-         */
-        this.fetcher = new FetchManager(options)
 
         /**
         * Database Manager.
         * @type {DatabaseManager}
         * @private
         */
-        this.database = new DatabaseManager(options)
+        this.database = database
     }
 
     /**
-     * Shows the user's purchase history.
-     * @param {String} memberID Member ID
-     * @param {String} guildID Guild ID
-     * @returns {HistoryData[]} User's purchase history.
+     * Shows the user's purchases history.
+     * @param {string} memberID Member ID
+     * @param {string} guildID Guild ID
+     * @returns {HistoryItem[]} User's purchases history.
      */
     fetch(memberID, guildID) {
-        const history = this.fetcher.fetchHistory(memberID, guildID)
+        const history = this.database.fetch(`${guildID}.${memberID}.history`) || []
 
         if (!this.options.savePurchasesHistory) {
-            throw new EconomyError(errors.savingHistoryDisabled)
+            throw new EconomyError(errors.savingHistoryDisabled, 'PURCHASES_HISTORY_DISABLED')
         }
 
         if (typeof memberID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID)
+            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
         }
 
         if (typeof guildID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
+            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
         }
 
-        return history
+        return history.map(
+            historyItem =>
+                new HistoryItem(guildID, memberID, this.options, historyItem, this.database)
+        )
+    }
+
+    /**
+    * Shows the user's purchases history.
+    * 
+    * This method is an alias for `HistoryManager.fetch()` method.
+    * @param {string} memberID Member ID
+    * @param {string} guildID Guild ID
+    * @returns {HistoryItem[]} User's purchases history.
+    */
+    get(memberID, guildID) {
+        return this.fetch(memberID, guildID)
     }
 
     /**
     * Clears the user's purchases history.
-    * @param {String} memberID Member ID.
-    * @param {String} guildID Guild ID.
-    * @returns {Boolean} If cleared: true, else: false.
+    * @param {string} memberID Member ID.
+    * @param {string} guildID Guild ID.
+    * @returns {boolean} If cleared: true, else: false.
     */
     clear(memberID, guildID) {
         const history = this.fetch(memberID, guildID)
 
         if (typeof memberID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID)
+            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
         }
 
         if (typeof guildID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
+            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
         }
 
         if (!history) return false
@@ -95,68 +104,81 @@ class HistoryManager {
 
     /**
      * Adds the item from the shop to the purchases history.
-     * @param {String | Number} itemID Item ID or name.
-     * @param {String} memberID Member ID.
-     * @param {String} guildID Guild ID.
-     * @returns {Boolean} If added: true, else: false.
+     * @param {string | number} itemID Item ID or name.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @param {number} [quantity=1] Quantity of the item.
+     * @returns {boolean} If added: true, else: false.
      */
-    add(itemID, memberID, guildID) {
-        const shop = this.fetcher.fetchShop(guildID)
-        const history = this.fetcher.fetchHistory(memberID, guildID)
+    async add(itemID, memberID, guildID, quantity = 1) {
+        const shop = (await this.database.fetch(`${guildID}.shop`)) || []
+        const history = (await this.database.fetch(`${guildID}.${memberID}.history`)) || []
 
-        const item = shop.find(x => x.id == itemID || x.itemName == itemID)
+        const item = shop.find(item => item.id == itemID || item.name == itemID)
+        const totalPrice = item.price * quantity
 
 
         if (typeof itemID !== 'number' && typeof itemID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.editItemArgs.itemID + typeof itemID)
+            throw new EconomyError(errors.invalidTypes.editItemArgs.itemID + typeof itemID, 'INVALID_TYPE')
         }
 
         if (typeof memberID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID)
+            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
         }
 
         if (typeof guildID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
+            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
         }
 
         if (!item) return false
 
-        return this.database.push(`${guildID}.${memberID}.history`, {
+        const result = await this.database.push(`${guildID}.${memberID}.history`, {
             id: history.length ? history[history.length - 1].id + 1 : 1,
             memberID,
             guildID,
-            itemName: item.itemName,
+            name: item.name,
             price: item.price,
+            quantity,
+            totalPrice,
             role: item.role || null,
             maxAmount: item.maxAmount,
-            date: new Date().toLocaleString(this.options.dateLocale || 'en')
+            date: new Date().toLocaleString(this.options.dateLocale || 'en'),
+            custom: item.custom || {}
         })
+
+        return result
     }
 
     /**
-     * Removes the specified item from history.
-     * @param {String | Number} id History item ID.
-     * @param {String} memberID Member ID.
-     * @param {String} guildID Guild ID.
-     * @returns {Boolean} If removed: true, else: false.
+     * Removes the specified item from purchases history.
+     * @param {string | number} id History item ID.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @returns {boolean} If removed: true, else: false.
      */
     remove(id, memberID, guildID) {
         if (typeof id !== 'number' && typeof id !== 'string') {
-            throw new EconomyError(errors.invalidTypes.id + typeof id)
+            throw new EconomyError(errors.invalidTypes.id + typeof id, 'INVALID_TYPE')
         }
 
         if (typeof memberID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID)
+            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
         }
 
         if (typeof guildID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
+            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
         }
 
         const history = this.fetch(memberID, guildID)
-        const historyItem = this.find(id, memberID, guildID)
 
-        const historyItemIndex = history.findIndex(x => x.id == historyItem.id)
+        const historyItem = this.findItem(
+            historyItem =>
+                historyItem.id == id &&
+                historyItem.memberID == memberID &&
+                historyItem.guildID == guildID
+        )
+
+        const historyItemIndex = history.findIndex(histItem => histItem.id == historyItem.id)
 
         if (!historyItem) return false
         history.splice(historyItemIndex, 1)
@@ -165,128 +187,104 @@ class HistoryManager {
     }
 
     /**
-     * Searches for the specified item from history.
-     * @param {String | Number} id History item ID.
-     * @param {String} memberID Member ID.
-     * @param {String} guildID Guild ID.
-     * @returns {HistoryData} If removed: true, else: false.
+     * Gets the specified item from history.
+     * @param {string | number} id History item ID.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @returns {HistoryItem} Purchases history item.
      */
-    find(id, memberID, guildID) {
+    findItem(id, memberID, guildID) {
         const history = this.fetch(memberID, guildID)
 
         if (typeof id !== 'number' && typeof id !== 'string') {
-            throw new EconomyError(errors.invalidTypes.id + typeof id)
+            throw new EconomyError(errors.invalidTypes.id + typeof id, 'INVALID_TYPE')
         }
 
         if (typeof memberID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID)
+            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
         }
 
         if (typeof guildID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
+            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
         }
 
 
-        const historyItem = history.find(x => x.id == id)
-        return historyItem || null
+        const historyItem = history.find(historyItem => historyItem.id == id)
+        return new HistoryItem(guildID, memberID, this.options, historyItem) || null
     }
 
     /**
-     * Searches for the specified item from history.
+     * Gets the specified item from history.
      * 
-     * This method is an alias for the `HistoryManager.find()` method.
-     * @param {String | Number} id History item ID.
-     * @param {String} memberID Member ID.
-     * @param {String} guildID Guild ID.
-     * @returns {HistoryData} If removed: true, else: false.
+     * This method is an alias for `HistoryManager.findItem()` method.
+     * @param {string | number} id History item ID.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @returns {HistoryItem} Purchases history item.
      */
-    search(id, memberID, guildID) {
-        if (typeof id !== 'number' && typeof id !== 'string') {
-            throw new EconomyError(errors.invalidTypes.id + typeof id)
-        }
-
-        if (typeof memberID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID)
-        }
-
-        if (typeof guildID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
-        }
-
-
-        const historyItem = this.find(id, memberID, guildID)
-        return historyItem
+    getItem(id, memberID, guildID) {
+        return this.findItem(id, memberID, guildID)
     }
 }
 
 /**
- * History data object.
- * @typedef {Object} HistoryData
- * @property {Number} id Item ID in history.
- * @property {String} itemName Item name.
- * @property {Number} price Item price.
- * @property {String} message The message that will be returned on item use.
- * @property {String} role ID of Discord Role that will be given to user on item use.
- * @property {String} date Date when the item was bought.
- * @property {String} memberID Member ID.
- * @property {String} guildID Guild ID.
- */
-
-/**
  * Item data object.
- * @typedef {Object} ItemData
- * @property {Number} id Item ID.
- * @property {String} itemName Item name.
- * @property {Number} price Item price.
- * @property {String} message The message that will be returned on item use.
- * @property {String} description Item description.
- * @property {String} role ID of Discord Role that will be given to Wuser on item use.
- * @property {Number} maxAmount Max amount of the item that user can hold in his inventory.
- * @property {String} date Date when the item was added in the shop.
+ * @typedef {object} ItemData
+ * @property {number} id Item ID.
+ * @property {string} name Item name.
+ * @property {number} price Item price.
+ * @property {string} message The message that will be returned on item use.
+ * @property {string} description Item description.
+ * @property {string} role ID of Discord Role that will be given to Wuser on item use.
+ * @property {number} maxAmount Max amount of the item that user can hold in their inventory.
+ * @property {string} date Date when the item was added in the shop.
+ * @property {object} custom Custom item properties object.
  */
 
 /**
  * Inventory data object.
- * @typedef {Object} InventoryData
- * @property {Number} id Item ID in your inventory.
- * @property {String} itemName Item name.
- * @property {Number} price Item price.
- * @property {String} message The message that will be returned on item use.
- * @property {String} role ID of Discord Role that will be given to user on item use.
- * @property {Number} maxAmount Max amount of the item that user can hold in his inventory.
- * @property {String} date Date when the item was bought.
+ * @typedef {object} InventoryData
+ * @property {number} id Item ID in your inventory.
+ * @property {string} name Item name.
+ * @property {number} price Item price.
+ * @property {string} message The message that will be returned on item use.
+ * @property {string} role ID of Discord Role that will be given to user on item use.
+ * @property {number} maxAmount Max amount of the item that user can hold in their inventory.
+ * @property {string} date Date when the item was bought by a user.
+ * @property {object} custom Custom item properties object.
  */
 
 /**
- * @typedef {Object} EconomyOptions Default Economy options object.
- * @property {String} [storagePath='./storage.json'] Full path to a JSON file. Default: './storage.json'
- * @property {Boolean} [checkStorage=true] Checks the if database file exists and if it has errors. Default: true
- * @property {Number} [dailyCooldown=86400000]
- * Cooldown for Daily Command (in ms). Default: 24 Hours (60000 * 60 * 24) ms
+ * @typedef {object} EconomyOptions Default Economy configuration.
+ * @property {string} [storagePath='./storage.json'] Full path to a JSON file. Default: './storage.json'
+ * @property {boolean} [checkStorage=true] Checks the if database file exists and if it has errors. Default: true
+ * @property {number} [dailyCooldown=86400000]
+ * Cooldown for Daily Command (in ms). Default: 24 hours (60000 * 60 * 24 ms)
  *
- * @property {Number} [workCooldown=3600000] Cooldown for Work Command (in ms). Default: 1 Hour (60000 * 60) ms
+ * @property {number} [workCooldown=3600000] Cooldown for Work Command (in ms). Default: 1 hour (60000 * 60 ms)
  * @property {Number | Number[]} [dailyAmount=100] Amount of money for Daily Command. Default: 100.
- * @property {Number} [weeklyCooldown=604800000]
- * Cooldown for Weekly Command (in ms). Default: 7 Days (60000 * 60 * 24 * 7) ms
+ * @property {number} [weeklyCooldown=604800000]
+ * Cooldown for Weekly Command (in ms). Default: 7 days (60000 * 60 * 24 * 7 ms)
  *
- * @property {Boolean} [deprecationWarnings=true]
+ * @property {boolean} [deprecationWarnings=true]
  * If true, the deprecation warnings will be sent in the console. Default: true.
  *
- * @property {Boolean} [savePurchasesHistory=true] If true, the module will save all the purchases history.
+ * @property {boolean} [savePurchasesHistory=true] If true, the module will save all the purchases history.
  *
- * @property {Number} [sellingItemPercent=75]
+ * @property {number} [sellingItemPercent=75]
  * Percent of the item's price it will be sold for. Default: 75.
  *
  * @property {Number | Number[]} [weeklyAmount=100] Amount of money for Weekly Command. Default: 1000.
  * @property {Number | Number[]} [workAmount=[10, 50]] Amount of money for Work Command. Default: [10, 50].
- * @property {Boolean} [subtractOnBuy=true]
+ * @property {boolean} [subtractOnBuy=true]
  * If true, when someone buys the item, their balance will subtract by item price. Default: false
  *
- * @property {Number} [updateCountdown=1000] Checks for if storage file exists in specified time (in ms). Default: 1000.
- * @property {String} [dateLocale='en'] The region (example: 'ru' or 'en') to format the date and time. Default: 'en'.
- * @property {UpdaterOptions} [updater=UpdaterOptions] Update Checker options object.
- * @property {ErrorHandlerOptions} [errorHandler=ErrorHandlerOptions] Error Handler options object.
- * @property {CheckerOptions} [optionsChecker=CheckerOptions] Options object for an 'Economy.utils.checkOptions' method.
+ * @property {number} [updateCountdown=1000] Checks for if storage file exists in specified time (in ms). Default: 1000.
+ * @property {string} [dateLocale='en'] The region (example: 'ru' or 'en') to format the date and time. Default: 'en'.
+ * @property {UpdaterOptions} [updater=UpdaterOptions] Update checker configuration.
+ * @property {ErrorHandlerOptions} [errorHandler=ErrorHandlerOptions] Error handler configuration.
+ * @property {CheckerOptions} [optionsChecker=CheckerOptions] Configuration for an 'Economy.utils.checkOptions' method.
+ * @property {boolean} [debug=false] Enables or disables the debug mode.
  */
 
 module.exports = HistoryManager

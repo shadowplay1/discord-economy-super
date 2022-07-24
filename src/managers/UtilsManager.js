@@ -1,13 +1,18 @@
-const { readFileSync, writeFileSync } = require('fs')
+const { readFileSync, writeFileSync, existsSync } = require('fs')
 
 const fetch = require('node-fetch')
+const { dirname } = require('path')
 
 const FetchManager = require('./FetchManager')
 const DatabaseManager = require('./DatabaseManager')
 
-const DefaultOptions = require('../structures/DefaultOptions')
+const DefaultConfiguration = require('../structures/DefaultConfiguration')
 const errors = require('../structures/errors')
-const defaultObject = require('../structures/DefaultObject')
+const defaultUserObject = require('../structures/DefaultUserObject')
+
+const Logger = require('../classes/util/Logger')
+const EconomyUser = require('../classes/EconomyUser')
+
 
 function unset(object, key) {
     const isObject = item => {
@@ -34,6 +39,7 @@ function unset(object, key) {
     }
 }
 
+
 /**
 * Utils manager methods class.
 */
@@ -42,24 +48,29 @@ class UtilsManager {
     /**
      * Utils Manager.
      * 
-     * @param {Object} options Economy constructor options object.
-     * There's only needed options object properties for this manager to work properly.
-     * 
-     * @param {String} options.storagePath Full path to a JSON file. Default: './storage.json'.
+     * @param {object} options Economy configuration.
+     * @param {string} options.storagePath Full path to a JSON file. Default: './storage.json'.
      */
-    constructor(options = {}) {
+    constructor(options = {}, database, fetcher) {
 
         /**
-         * Economy constructor options object.
+         * Economy configuration.
          * @type {?EconomyOptions}
          * @private
          */
         this.options = options
 
         /**
-         * Full path to a JSON file.
+         * Economy Logger.
+         * @type {Logger}
          * @private
-         * @type {String}
+         */
+        this._logger = new Logger(options)
+
+        /**
+        * Full path to a JSON file.
+        * @private
+        * @type {string}
         */
         this.storagePath = options.storagePath || './storage.json'
 
@@ -68,48 +79,52 @@ class UtilsManager {
          * @type {FetchManager}
          * @private
          */
-        this.fetcher = new FetchManager(options)
+        this.fetcher = fetcher
 
         /**
          * Database manager methods object.
          * @type {DatabaseManager}
          * @private
          */
-        this.database = new DatabaseManager(options)
+        this.database = database
     }
 
     /**
-     * Checks for if the module is up to date.
-     * @returns {Promise<VersionData>} 
-     * This method will show is the module updated, latest version and installed version.
-     */
+    * Checks for the module updates.
+    * @returns {Promise<VersionData>} Is the module updated, latest version and installed version.
+    */
     async checkUpdates() {
         const version = require('../../package.json').version
-        const packageData = await fetch('https://registry.npmjs.com/discord-economy-super').then(text => text.json())
+
+        const packageData = await fetch('https://registry.npmjs.com/discord-economy-super')
+            .then(text => text.json())
+
         if (version == packageData['dist-tags'].latest) return {
             updated: true,
             installedVersion: version,
             packageVersion: packageData['dist-tags'].latest
         }
+
         return {
             updated: false,
             installedVersion: version,
             packageVersion: packageData['dist-tags'].latest
         }
     }
+
     /**
     * Fetches the entire database.
-    * @returns {Object} Database contents
+    * @returns {object} Database contents
     */
     all() {
-        return this.fetcher.fetchAll()
+        return this.database.all()
     }
 
     /**
      * Writes the data to file.
-     * @param {String} path File path to write.
+     * @param {string} path File path to write.
      * @param {any} data Any data to write
-     * @returns {Boolean} If successfully written: true; else: false.
+     * @returns {boolean} If successfully written: true; else: false.
      */
     write(path, data) {
         if (!path) return false
@@ -124,9 +139,9 @@ class UtilsManager {
 
     /**
      * Clears the storage file.
-     * @returns {Boolean} If cleared successfully: true; else: false
+     * @returns {boolean} If cleared successfully: true; else: false
      */
-    clearStorage() {
+    clearDatabase() {
         const data = this.all()
         const stringData = String(data)
 
@@ -138,8 +153,8 @@ class UtilsManager {
 
     /**
     * Fully removes the guild from database.
-    * @param {String} guildID Guild ID
-    * @returns {Boolean} If cleared successfully: true; else: false
+    * @param {string} guildID Guild ID
+    * @returns {boolean} If cleared successfully: true; else: false
     */
     removeGuild(guildID) {
         const data = this.fetcher.fetchAll()
@@ -154,9 +169,9 @@ class UtilsManager {
 
     /**
      * Removes the user from database.
-     * @param {String} memberID Member ID
-     * @param {String} guildID Guild ID
-     * @returns {Boolean} If cleared successfully: true; else: false
+     * @param {string} memberID Member ID
+     * @param {string} guildID Guild ID
+     * @returns {boolean} If cleared successfully: true; else: false
      */
     removeUser(memberID, guildID) {
         const data = this.fetcher.fetchAll()
@@ -174,53 +189,97 @@ class UtilsManager {
 
     /**
      * Sets the default user object for the specified member.
-     * @param {String} memberID Member ID.
-     * @param {String} guildID Guild ID.
-     * @returns {Boolean} If resetted successfully: true; else: false.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @returns {EconomyUser} If reset successfully: new user object
      */
-    reset(memberID, guildID) {
-        if (!guildID) return false
-        if (!memberID) return false
+    resetUser(memberID, guildID) {
+        if (!guildID) return null
+        if (!memberID) return null
 
-        return this.database.set(`${guildID}.${memberID}`, defaultObject)
+        const defaultObj = defaultUserObject
+
+        defaultObj.id = memberID
+        defaultObj.guildID = guildID
+
+        this.database.set(`${guildID}.${memberID}`, defaultObj)
+
+        const newUser = new EconomyUser(memberID, guildID, this.options, defaultObj, this.database)
+        return newUser
     }
 
     /**
-     * Checks the Economy options object, fixes the problems in it and returns the fixed options object.
+     * Checks the Economy configuration, fixes the problems and returns it.
      * @param {CheckerOptions} options Option checker options.
-     * @param {EconomyOptions} ecoOptions Economy options object to check.
-     * @returns {EconomyOptions} Fixed economy options object.
+     * @param {EconomyOptions} ecoOptions Economy configuration to check.
+     * @returns {EconomyOptions} Fixed Economy configuration.
      */
     checkOptions(options = {}, ecoOptions) {
-        const problems = []
-        let output = {}
+        this._logger.debug('Debug mode is enabled.', 'lightcyan')
+        this._logger.debug('Checking the configuration...')
 
-        const keys = Object.keys(DefaultOptions)
+        const filePathArray = require.main.filename.replaceAll('\\', '/').split('/')
+        const fileName = filePathArray[filePathArray.length - 1]
+
+        const isTSFileAllowed = fileName.endsWith('.ts')
+        const dirName = dirname(require.main.filename).replace('/' + fileName, '').replace('\\' + fileName, '')
+
+        let fileExtension = isTSFileAllowed ? 'ts' : 'js'
+        let optionsFileExists = existsSync(`./economy.config.${fileExtension}`)
+
+        if (!optionsFileExists && fileExtension == 'ts' && isTSFileAllowed) {
+            fileExtension = 'js'
+            optionsFileExists = existsSync(`./economy.config.${fileExtension}`)
+        }
+
+        if (optionsFileExists) {
+            const slash = dirName.includes('\\') ? '\\' : '/'
+
+            this._logger.debug(
+                `Using configuration file at ${dirName}${slash}economy.config.${fileExtension}...`, 'cyan'
+            )
+
+            try {
+                const optionsObject = require(`${dirName}/economy.config.${fileExtension}`)
+
+                options = optionsObject.optionsChecker
+                ecoOptions = optionsObject
+            } catch (err) {
+                this._logger.error(`Failed to open the configuration file:\n${err.stack}`)
+                this._logger.debug('Using the configuration specified in a constructor...', 'cyan')
+            }
+        } else this._logger.debug('Using the configuration specified in a constructor...', 'cyan')
+
+
+        const problems = []
+        const output = {}
+
+        const keys = Object.keys(DefaultConfiguration)
         const optionKeys = Object.keys(ecoOptions || {})
 
-        if(!options.ignoreUnspecifiedOptions) options.ignoreUnspecifiedOptions = true
-        if(!options.sendLog) options.sendLog = true
-        if(!options.showProblems) options.showProblems = true
+        if (!options.ignoreUnspecifiedOptions) options.ignoreUnspecifiedOptions = true
+        if (!options.sendLog) options.sendLog = true
+        if (!options.showProblems) options.showProblems = true
 
         if (typeof ecoOptions !== 'object' && !Array.isArray(ecoOptions)) {
             problems.push('options is not an object. Received type: ' + typeof ecoOptions)
-            output = DefaultOptions
+            output = DefaultConfiguration
         } else {
             for (const i of keys) {
                 if (ecoOptions[i] == undefined) {
 
-                    output[i] = DefaultOptions[i]
+                    output[i] = DefaultConfiguration[i]
                     if (!options.ignoreUnspecifiedOptions) problems.push(`options.${i} is not specified.`)
                 }
                 else {
                     output[i] = ecoOptions[i]
                 }
 
-                for (const y of Object.keys(DefaultOptions[i]).filter(x => isNaN(x))) {
+                for (const y of Object.keys(DefaultConfiguration[i]).filter(key => isNaN(key))) {
 
                     if (ecoOptions[i]?.[y] == undefined || output[i]?.[y] == undefined) {
                         try {
-                            output[i][y] = DefaultOptions[i][y]
+                            output[i][y] = DefaultConfiguration[i][y]
                         } catch (_) { }
 
                         if (!options.ignoreUnspecifiedOptions) problems.push(`options.${i}.${y} is not specified.`)
@@ -229,7 +288,7 @@ class UtilsManager {
                     else { }
                 }
 
-                if (typeof output[i] !== typeof DefaultOptions[i]) {
+                if (typeof output[i] !== typeof DefaultConfiguration[i]) {
                     if (!options.ignoreInvalidTypes) {
                         const isRewardOption = i == 'dailyAmount' || i == 'workAmount' || i == 'weeklyAmount'
 
@@ -239,16 +298,16 @@ class UtilsManager {
                                     `options.${i} is not a number or array.` +
                                     `Received type: ${typeof output[i]}.`
                                 )
-                                output[i] = DefaultOptions[i]
+                                output[i] = DefaultConfiguration[i]
                             }
 
                         } else {
                             problems.push(
-                                `options.${i} is not a ${typeof DefaultOptions[i]}. ` +
+                                `options.${i} is not a ${typeof DefaultConfiguration[i]}. ` +
                                 `Received type: ${typeof output[i]}.`
                             )
 
-                            output[i] = DefaultOptions[i]
+                            output[i] = DefaultConfiguration[i]
                         }
                     }
                 }
@@ -266,16 +325,16 @@ class UtilsManager {
                 }
 
 
-                for (const y of Object.keys(DefaultOptions[i]).filter(x => isNaN(x))) {
+                for (const y of Object.keys(DefaultConfiguration[i]).filter(key => isNaN(key))) {
 
-                    if (typeof output[i]?.[y] !== typeof DefaultOptions[i][y]) {
+                    if (typeof output[i]?.[y] !== typeof DefaultConfiguration[i][y]) {
                         if (!options.ignoreInvalidTypes) {
                             problems.push(
-                                `options.${i}.${y} is not a ${typeof DefaultOptions[i][y]}. ` +
+                                `options.${i}.${y} is not a ${typeof DefaultConfiguration[i][y]}. ` +
                                 `Received type: ${typeof output[i][y]}.`
                             )
                         }
-                        output[i][y] = DefaultOptions[i][y]
+                        output[i][y] = DefaultConfiguration[i][y]
                     }
 
                     else { }
@@ -284,10 +343,10 @@ class UtilsManager {
 
             for (const i of optionKeys) {
                 const defaultIndex = keys.indexOf(i)
-                const objectKeys = Object.keys(ecoOptions[i]).filter(x => isNaN(x))
+                const objectKeys = Object.keys(ecoOptions[i]).filter(key => isNaN(key))
 
                 for (const y of objectKeys) {
-                    const allKeys = Object.keys(DefaultOptions[i])
+                    const allKeys = Object.keys(DefaultConfiguration[i])
                     const index = allKeys.indexOf(y)
 
                     if (!allKeys[index]) {
@@ -319,80 +378,81 @@ class UtilsManager {
             }
         }
 
-        if (output == DefaultOptions) return ecoOptions
+        if (output == DefaultConfiguration) return ecoOptions
         else return output
     }
 }
 
 /**
 * Module update state.
-* @typedef {Object} VersionData
-* @property {Boolean} updated Is the module updated.
-* @property {String} installedVersion Installed version.
-* @property {String} packageVersion Avaible version.
+* @typedef {object} VersionData
+* @property {boolean} updated Is the module updated.
+* @property {string} installedVersion Installed version.
+* @property {string} packageVersion Avaible version.
 */
 
 /**
- * @typedef {Object} EconomyOptions Default Economy options object.
- * @property {String} [storagePath='./storage.json'] Full path to a JSON file. Default: './storage.json'
- * @property {Boolean} [checkStorage=true] Checks the if database file exists and if it has errors. Default: true
- * @property {Number} [dailyCooldown=86400000] 
- * Cooldown for Daily Command (in ms). Default: 24 Hours (60000 * 60 * 24) ms
+ * @typedef {object} EconomyOptions Default Economy configuration.
+ * @property {string} [storagePath='./storage.json'] Full path to a JSON file. Default: './storage.json'
+ * @property {boolean} [checkStorage=true] Checks the if database file exists and if it has errors. Default: true
+ * @property {number} [dailyCooldown=86400000] 
+ * Cooldown for Daily Command (in ms). Default: 24 hours (60000 * 60 * 24 ms)
  * 
- * @property {Number} [workCooldown=3600000] Cooldown for Work Command (in ms). Default: 1 Hour (60000 * 60) ms
+ * @property {number} [workCooldown=3600000] Cooldown for Work Command (in ms). Default: 1 hour (60000 * 60 ms)
  * @property {Number | Number[]} [dailyAmount=100] Amount of money for Daily Command. Default: 100.
- * @property {Number} [weeklyCooldown=604800000] 
- * Cooldown for Weekly Command (in ms). Default: 7 Days (60000 * 60 * 24 * 7) ms
+ * @property {number} [weeklyCooldown=604800000] 
+ * Cooldown for Weekly Command (in ms). Default: 7 days (60000 * 60 * 24 * 7 ms)
  * 
  * @property {Number | Number[]} [weeklyAmount=100] Amount of money for Weekly Command. Default: 1000.
  * @property {Number | Number[]} [workAmount=[10, 50]] Amount of money for Work Command. Default: [10, 50].
- * @property {Boolean} [subtractOnBuy=true] 
+ * @property {boolean} [subtractOnBuy=true] 
  * If true, when someone buys the item, their balance will subtract by item price. Default: false
  * 
- * @property {Number} [sellingItemPercent=75] 
+ * @property {number} [sellingItemPercent=75] 
  * Percent of the item's price it will be sold for. Default: 75.
  * 
- * @property {Boolean} [deprecationWarnings=true] 
+ * @property {boolean} [deprecationWarnings=true] 
  * If true, the deprecation warnings will be sent in the console. Default: true.
  * 
- * @property {Boolean} [savePurchasesHistory=true] If true, the module will save all the purchases history.
+ * @property {boolean} [savePurchasesHistory=true] If true, the module will save all the purchases history.
  * 
- * @property {Number} [updateCountdown=1000] Checks for if storage file exists in specified time (in ms). Default: 1000.
- * @property {String} [dateLocale='en'] The region (example: 'ru'; 'en') to format the date and time. Default: 'en'.
- * @property {UpdaterOptions} [updater=UpdaterOptions] Update Checker options object.
- * @property {ErrorHandlerOptions} [errorHandler=ErrorHandlerOptions] Error Handler options object.
- * @property {CheckerOptions} [optionsChecker=CheckerOptions] Options object for an 'Economy.utils.checkOptions' method.
+ * @property {number} [updateCountdown=1000] Checks for if storage file exists in specified time (in ms). Default: 1000.
+ * @property {string} [dateLocale='en'] The region (example: 'ru'; 'en') to format the date and time. Default: 'en'.
+ * @property {UpdaterOptions} [updater=UpdaterOptions] Update checker configuration.
+ * @property {ErrorHandlerOptions} [errorHandler=ErrorHandlerOptions] Error handler configuration.
+ * @property {CheckerOptions} [optionsChecker=CheckerOptions] Configuration for an 'Economy.utils.checkOptions' method.
+ * @property {boolean} [debug=false] Enables or disables the debug mode.
  */
 
 /**
- * @typedef {Object} UpdaterOptions Updatee options object.
- * @property {Boolean} [checkUpdates=true] Sends the update state message in console on start. Default: true.
- * @property {Boolean} [upToDateMessage=true] 
+ * @typedef {object} UpdaterOptions Update checker configuration.
+ * @property {boolean} [checkUpdates=true] Sends the update state message in console on start. Default: true.
+ * @property {boolean} [upToDateMessage=true] 
  * Sends the message in console on start if module is up to date. Default: true.
  */
 
 /**
- * @typedef {Object} ErrorHandlerOptions
- * @property {Boolean} [handleErrors=true] Handles all errors on startup. Default: true.
- * @property {Number} [attempts=5] Amount of attempts to load the module. Use 0 for infinity attempts. Default: 5.
- * @property {Number} [time=3000] Time between every attempt to start the module (in ms). Default: 3000.
+ * @typedef {object} ErrorHandlerOptions
+ * @property {boolean} [handleErrors=true] Handles all errors on startup. Default: true.
+ * @property {number} [attempts=5] Amount of attempts to load the module. Use 0 for infinity attempts. Default: 5.
+ * @property {number} [time=3000] Time between every attempt to start the module (in ms). Default: 3000.
  */
 
 /**
- * @typedef {Object} CheckerOptions Options object for an 'Economy.utils.checkOptions' method.
- * @property {Boolean} [ignoreInvalidTypes=false] 
+ * @typedef {object} CheckerOptions Configuration for an 'Economy.utils.checkOptions' method.
+ * @property {boolean} [ignoreInvalidTypes=false] 
  * Allows the method to ignore the options with invalid types. Default: false.
  * 
- * @property {Boolean} [ignoreUnspecifiedOptions=true] 
+ * @property {boolean} [ignoreUnspecifiedOptions=true] 
  * Allows the method to ignore the unspecified options. Default: true.
  * 
- * @property {Boolean} [ignoreInvalidOptions=false] Allows the method to ignore the unexisting options. Default: false.
- * @property {Boolean} [showProblems=true] Allows the method to show all the problems in the console. Default: true. 
+ * @property {boolean} [ignoreInvalidOptions=false] Allows the method to ignore the unexisting options. Default: false.
+ * @property {boolean} [showProblems=true] Allows the method to show all the problems in the console. Default: true. 
  * 
- * @property {Boolean} [sendLog=true] Allows the method to send the result in the console. 
+ * @property {boolean} [sendLog=true] Allows the method to send the result in the console. 
  * Requires the 'showProblems' or 'sendLog' options to set. Default: true.
  * 
- * @property {Boolean} [sendSuccessLog=false] 
+ * @property {boolean} [sendSuccessLog=false] 
  * Allows the method to send the result if no problems were found. Default: false.
  */
 

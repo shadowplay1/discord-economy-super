@@ -1,5 +1,6 @@
-const Emitter = require('../classes/Emitter')
-const EconomyError = require('../classes/EconomyError')
+const Emitter = require('../classes/util/Emitter')
+
+const EconomyError = require('../classes/util/EconomyError')
 
 const FetchManager = require('./FetchManager')
 const DatabaseManager = require('./DatabaseManager')
@@ -16,30 +17,29 @@ class BalanceManager extends Emitter {
     /**
      * Balance Manager.
      * 
-     * @param {Object} options Economy constructor options object.
-     * There's only needed options object properties for this manager to work properly.
-     * 
-     * @param {String} options.storagePath Full path to a JSON file. Default: './storage.json'.
+     * @param {object} options Economy configuration.
+     * @param {string} options.storagePath Full path to a JSON file. Default: './storage.json'.
      */
     constructor(options = {}) {
         super(options)
 
+
         /**
-         * Economy constructor options object.
+         * Economy configuration.
          * @type {EconomyOptions}
          * @private
          */
         this.options = options
 
         /**
-         * Fetch manager methods object.
+         * Fetch manager.
          * @type {FetchManager}
          * @private
          */
         this.fetcher = new FetchManager(options)
 
         /**
-         * Fetch manager methods object.
+         * Database manager.
          * @type {DatabaseManager}
          * @private
          */
@@ -48,43 +48,55 @@ class BalanceManager extends Emitter {
 
     /**
     * Fetches the user's balance.
-    * @param {String} memberID Member ID
-    * @param {String} guildID Guild ID
-    * @returns {Number} User's balance
+    * @param {string} memberID Member ID
+    * @param {string} guildID Guild ID
+    * @returns {number} User's balance
     */
     fetch(memberID, guildID) {
         if (typeof memberID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID)
+            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
         }
 
         if (typeof guildID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
+            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
         }
 
         return this.fetcher.fetchBalance(memberID, guildID)
     }
 
     /**
+    * Gets the user's balance.
+    * 
+    * This method is an alias of `BalanceManager.fetch()` method.
+    * @param {string} memberID Member ID
+    * @param {string} guildID Guild ID
+    * @returns {number} User's balance
+    */
+    get(memberID, guildID) {
+        return this.fetch(memberID, guildID)
+    }
+
+    /**
      * Sets the money amount on user's balance.
-     * @param {Number} amount Money amount.
-     * @param {String} memberID Member ID.
-     * @param {String} guildID Guild ID.
-     * @param {String} reason The reason why you add the money.
-     * @returns {Number} Money amount.
+     * @param {number} amount Money amount.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @param {string} reason The reason why you set the money.
+     * @returns {number} Money amount.
      */
     set(amount, memberID, guildID, reason = null) {
         const balance = this.fetcher.fetchBalance(memberID, guildID)
 
         if (isNaN(amount)) {
-            throw new EconomyError(errors.invalidTypes.amount + typeof amount)
+            throw new EconomyError(errors.invalidTypes.amount + typeof amount, 'INVALID_TYPE')
         }
 
         if (typeof memberID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID)
+            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
         }
 
         if (typeof guildID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
+            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
         }
 
         this.database.set(`${guildID}.${memberID}.money`, amount)
@@ -103,25 +115,25 @@ class BalanceManager extends Emitter {
 
     /**
      * Adds the money amount on user's balance.
-     * @param {Number} amount Money amount.
-     * @param {String} memberID Member ID.
-     * @param {String} guildID Guild ID.
-     * @param {String} reason The reason why you add the money.
-     * @returns {Number} Money amount.
+     * @param {number} amount Money amount.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @param {string} reason The reason why you add the money.
+     * @returns {number} Money amount.
      */
     add(amount, memberID, guildID, reason = null) {
         const balance = this.fetcher.fetchBalance(memberID, guildID)
 
         if (isNaN(amount)) {
-            throw new EconomyError(errors.invalidTypes.amount + typeof amount)
+            throw new EconomyError(errors.invalidTypes.amount + typeof amount, 'INVALID_TYPE')
         }
 
         if (typeof memberID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID)
+            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
         }
 
         if (typeof guildID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
+            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
         }
 
         this.database.add(`${guildID}.${memberID}.money`, amount)
@@ -140,25 +152,25 @@ class BalanceManager extends Emitter {
 
     /**
      * Subtracts the money amount on user's balance.
-     * @param {Number} amount Money amount.
-     * @param {String} memberID Member ID.
-     * @param {String} guildID Guild ID.
-     * @param {String} reason The reason why you add the money.
-     * @returns {Number} Money amount.
+     * @param {number} amount Money amount.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @param {string} reason The reason why you add the money.
+     * @returns {number} Money amount.
      */
     subtract(amount, memberID, guildID, reason = null) {
         const balance = this.fetcher.fetchBalance(memberID, guildID)
 
         if (isNaN(amount)) {
-            throw new EconomyError(errors.invalidTypes.amount + typeof amount)
+            throw new EconomyError(errors.invalidTypes.amount + typeof amount, 'INVALID_TYPE')
         }
 
         if (typeof memberID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID)
+            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
         }
 
         if (typeof guildID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
+            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
         }
 
         this.database.subtract(`${guildID}.${memberID}.money`, amount)
@@ -176,80 +188,116 @@ class BalanceManager extends Emitter {
     }
 
     /**
-     * Shows a money leaderboard for your server
-     * @param {String} guildID Guild ID
-     * @returns {BalanceLeaderboard[]} Sorted leaderboard array
+     * Shows a money leaderboard for your server.
+     * @param {string} guildID Guild ID.
+     * @returns {BalanceLeaderboard[]} Sorted leaderboard array.
      */
     leaderboard(guildID) {
         const lb = []
         const data = this.fetcher.fetchAll()
 
         if (typeof guildID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
+            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
         }
 
         const guildData = data[guildID]
         if (!guildData) return []
 
         const users = Object.keys(guildData)
-        const ranks = Object.values(guildData).map(x => x.money).filter(x => !isNaN(x))
+        const ranks = Object.values(guildData).map(user => user.money).filter(userID => !isNaN(userID))
 
-        for (const i in ranks) lb.push({
-            index: Number(i) + 1,
-            userID: users[i],
-            money: Number(ranks[i])
+        for (const rank in ranks) lb.push({
+            userID: users[rank],
+            money: Number(ranks[rank])
         })
 
-        return lb.sort((a, b) => a.money + b.money)
+        return lb.sort((a, b) => b.money - a.money)
     }
 
     /**
-     * Sends the money to the specified user.
-     * @param {String} guildID Guild ID.
-     * @param {PayingOptions} options Paying options.
-     * @returns {Number} How much money was sent.
+     * Sends the money to a specified user.
+     * @param {string} guildID Guild ID.
+     * @param {TransferringOptions} options Transferring options.
+     * @returns {TransferringResult} Transferring result object.
      */
-    pay(guildID, options = {}) {
+    transfer(guildID, options) {
         const {
             amount, senderMemberID,
-            recipientMemberID,
+            receiverMemberID,
             sendingReason, receivingReason
-        } = options
+        } = options || {}
 
         if (typeof guildID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID)
+            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
         }
 
         if (isNaN(amount)) {
-            throw new EconomyError(errors.invalidTypes.amount + typeof amount)
+            throw new EconomyError(errors.invalidTypes.amount + typeof amount, 'INVALID_TYPE')
         }
 
         if (typeof senderMemberID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.senderMemberID + typeof memberID)
+            throw new EconomyError(errors.invalidTypes.senderMemberID + typeof memberID, 'INVALID_TYPE')
         }
 
-        if (typeof recipientMemberID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.recipientMemberID + typeof memberID)
+        if (typeof receiverMemberID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.receiverMemberID + typeof memberID, 'INVALID_TYPE')
         }
 
-        this.add(amount, recipientMemberID, guildID, receivingReason || 'receiving money from user')
+        this.add(amount, receiverMemberID, guildID, receivingReason || 'receiving money from user')
         this.subtract(amount, senderMemberID, guildID, sendingReason || 'sending money to user')
 
-        return true
+        return {
+            success: true,
+            guildID,
+
+            senderBalance: this.fetch(senderMemberID, guildID),
+            receiverBalance: this.fetch(receiverMemberID, guildID),
+
+            amount,
+
+            senderMemberID,
+            receiverMemberID,
+
+            sendingReason,
+            receivingReason,
+        }
     }
 }
 
+
 /**
- * Paying options.
- * @typedef {Object} PayingOptions
- * @property {Number} amount Amount of money to send.
- * @property {String} senderMemberID A member ID who will send the money.
- * @property {String} recipientMemberID A member ID who will receive the money.
- * @property {String} [sendingReason='sending money to user'] 
- * The reason of subtracting the money from sender. (example: "sending money to {'user}")
- * @property {String} [receivingReason='receiving money from user']
- * The reason of subtracting the money from sender. (example: "receiving money from {user}")
+ * @typedef {Object} TransferringResult
+ * @property {boolean} success Whether the transfer was successful or not.
+ * @property {string} guildID Guild ID.
+ * @property {number} amount Amount of money that was sent.
+ * @property {string} senderMemberID Sender member ID.
+ * @property {string} receiverMemberID Receiver member ID.
+ * @property {string} sendingReason Sending reason.
+ * @property {string} receivingReason Receiving reason.
+ * @property {number} senderBalance New sender balance.
+ * @property {number} receiverBalance New receiver balance.
  */
+
+/**
+ * Transferring options.
+ * @typedef {object} TransferringOptions
+ * @property {number} amount Amount of money to send.
+ * @property {string} senderMemberID A member ID who will send the money.
+ * @property {string} receiverMemberID A member ID who will receive the money.
+ * @property {string} [sendingReason='sending money to user'] 
+ * The reason of subtracting the money from sender. (example: "sending money to {user}")
+ * @property {string} [receivingReason='receiving money from user']
+ * The reason of adding a money to receiver. (example: "receiving money from {user}")
+ */
+
+/**
+ * Balance leaderboard object.
+ * @typedef {object} BalanceLeaderboard
+ * @property {number} index User's place in the leaderboard.
+ * @property {string} userID User ID.
+ * @property {number} money Amount of money.
+ */
+
 
 /**
  * Balance manager class.
