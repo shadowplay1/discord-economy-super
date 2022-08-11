@@ -96,6 +96,7 @@ client.on('messageCreate', async message => {
         user = guild.users.create(message.author.id)
     }
 
+
     if (command == prefix + 'help') {
         message.channel.send(
             `${message.author}, here's the help for this bot [**32 commands**]:\n\n` +
