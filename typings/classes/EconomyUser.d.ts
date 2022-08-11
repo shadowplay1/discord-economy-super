@@ -47,6 +47,12 @@ declare class EconomyUser {
     public guildID: string
 
     /**
+    * Determine if the guild exists in the database.
+    * @type {boolean}
+    */
+    public exists: true
+
+    /**
      * User's balance.
      * @type {number}
      */

@@ -10,7 +10,7 @@ import EconomyGuild from '../classes/EconomyGuild'
 /**
  * Guild Manager.
  */
-declare class GuildManager extends BaseManager<EconomyGuild> {
+declare class GuildManager extends BaseManager<EconomyGuild, EmptyEconomyGuild> {
 
     /**
      * Guild Manager.
@@ -23,7 +23,7 @@ declare class GuildManager extends BaseManager<EconomyGuild> {
      * @param {string} guildID Guild ID.
      * @returns {EconomyGuild} User object.
     */
-    public get(guildID: string): EconomyGuild
+    public get(guildID: string): EconomyGuild | EmptyEconomyGuild
 
     /**
      * Creates an economy guild object in database.

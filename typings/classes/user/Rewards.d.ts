@@ -2,9 +2,21 @@ import RewardObject from '../../interfaces/RewardObject'
 import EconomyOptions from '../../interfaces/EconomyOptions'
 import DatabaseManager from '../../managers/DatabaseManager'
 
+import { RewardType } from '../../interfaces/RewardTypes'
+
 
 declare class Rewards {
     public constructor(memberID: string, guildID: string, options: EconomyOptions, database: DatabaseManager)
+
+    /**
+    * Adds a specified reward on user's balance
+    * @param reward Reward to give.
+    * @param reason The reason why the money was added.
+    * @returns Reward object.
+    */
+    public receive<
+        isRewardArray extends boolean = false
+    >(reward: RewardType, reason?: string): RewardObject<isRewardArray, typeof reward>
 
     /**
     * Adds a daily reward on user's balance.

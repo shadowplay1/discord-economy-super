@@ -31,6 +31,12 @@ declare class EconomyGuild {
     public users: UserManager<false>
 
     /**
+    * Determine if the guild exists in the database.
+    * @type {boolean}
+    */
+    public exists: true
+
+    /**
     * Guild ID.
     */
     public id: string

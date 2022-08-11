@@ -44,8 +44,8 @@ const client = new Client<true>({
 let eco = new Economy<true>({
     connection: {
         connectionURI: config.connectionURI,
-        dbName: 'test321',
-        collectionName: 'test321'
+        dbName: 'database-name',
+        collectionName: 'economy'
     },
 
     dailyAmount: 100,

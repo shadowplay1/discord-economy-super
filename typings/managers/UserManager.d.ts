@@ -3,18 +3,25 @@ import If from '../interfaces/If'
 import EconomyOptions from '../interfaces/EconomyOptions'
 import BaseManager from './BaseManager'
 import EconomyUser from '../classes/EconomyUser'
+import { EmptyEconomyUser } from '../../mongodb/EconomyItems'
 
-type UserFunction<MemberIDRequired extends boolean, ReturnType = EconomyUser> =
+type UserFunction<
+    MemberIDRequired extends boolean,
+    ReturnType = EconomyUser,
+    EmptyReturnType = EmptyEconomyUser
+    > =
     If<
         MemberIDRequired,
-        (memberID: string, guildID: string) => ReturnType,
-        (guildID: string) => ReturnType
-    >
+        (memberID: string, guildID: string) =>
+            EmptyReturnType extends null ? ReturnType : ReturnType | EmptyReturnType,
+        (guildID: string) =>
+            EmptyReturnType extends null ? ReturnType : ReturnType | EmptyReturnType
 
+    >
 /**
  * User Manager.
  */
-declare class UserManager<MemberIDRequired extends boolean> extends BaseManager<EconomyUser> {
+declare class UserManager<MemberIDRequired extends boolean> extends BaseManager<EconomyUser, EmptyEconomyUser> {
 
     /**
      * User Manager.
@@ -26,7 +33,7 @@ declare class UserManager<MemberIDRequired extends boolean> extends BaseManager<
     * Gets the array of ALL users in database.
     * @returns {EconomyUser[]}
     */
-    public all: UserFunction<MemberIDRequired, EconomyUser[]>
+    public all: UserFunction<MemberIDRequired, EconomyUser[], null>
 
     /**
      * Gets the user by it's ID and guild ID.
@@ -42,14 +49,14 @@ declare class UserManager<MemberIDRequired extends boolean> extends BaseManager<
     * @param {string} guildID Guild ID.
     * @returns {EconomyUser} Economy user object.
     */
-    public create: UserFunction<MemberIDRequired>
+    public create: UserFunction<MemberIDRequired, EconomyUser, null>
 
     /**
     * Sets the default user object for a specified member.
     * @param {string} userID User ID.
     * @returns {boolean} If reset successfully: true; else: false.
     */
-    public reset: UserFunction<MemberIDRequired, boolean>
+    public reset: UserFunction<MemberIDRequired, boolean, null>
 }
 
 export = UserManager

@@ -16,7 +16,11 @@ declare class InventoryItem<T extends object = any> {
      * @param {EconomyOptions} ecoOptions Economy configuration.
      * @param {InventoryData} itemObject User inventory object.
      */
-    public constructor(guildID: string, ecoOptions: EconomyOptions, itemObject: InventoryData)
+    public constructor(
+        guildID: string,
+        ecoOptions: EconomyOptions,
+        itemObject: InventoryData<T>
+    )
 
 
     /**

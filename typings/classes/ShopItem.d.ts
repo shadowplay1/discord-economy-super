@@ -18,7 +18,11 @@ declare class ShopItem<T extends object = any> {
      * @param {ItemData} itemObject Shop item object.
      * @param {DatabaseManager} database Database Manager.
      */
-    public constructor(guildID: string, itemObject: ItemData, database: DatabaseManager)
+    public constructor(
+        guildID: string,
+        itemObject: ItemData<T>,
+        database: DatabaseManager
+    )
 
     /**
      * Guild ID.

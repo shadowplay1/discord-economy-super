@@ -33,7 +33,7 @@
 const config = require('./config')
 const { Client, ActivityType, OAuth2Scopes } = require('discord.js')
 
-const Economy = require('../../mongodb')
+const Economy = require('discord-economy-super/mongodb')
 
 
 const client = new Client({

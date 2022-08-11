@@ -1,5 +1,5 @@
 import EconomyOptions from '../interfaces/EconomyOptions'
-import ItemData from '../interfaces/ItemData'
+import HistoryData from '../interfaces/HistoryData'
 
 import CustomItemData from '../interfaces/CustomItemData'
 
@@ -15,7 +15,11 @@ declare class HistoryItem<T extends object = any> {
      * @param {EconomyOptions} ecoOptions Economy configuration.
      * @param {HistoryData} itemObject User purchases history item object.
      */
-    public constructor(guildID: string, ecoOptions: EconomyOptions, itemObject: ItemData)
+    public constructor(
+        guildID: string,
+        ecoOptions: EconomyOptions,
+        itemObject: HistoryData<T>
+    )
 
 
     /**
