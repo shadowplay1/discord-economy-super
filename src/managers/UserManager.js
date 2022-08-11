@@ -1,4 +1,5 @@
 const EconomyUser = require('../classes/EconomyUser')
+const EmptyEconomyUser = require('../classes/EmptyEconomyUser')
 
 const BaseManager = require('./BaseManager')
 const DatabaseManager = require('./DatabaseManager')
@@ -18,7 +19,7 @@ class UserManager extends BaseManager {
      * @param {string} guildID Guild ID.
      */
     constructor(options, guildID) {
-        super(options, null, guildID, EconomyUser)
+        super(options, null, guildID, EconomyUser, EmptyEconomyUser)
 
         /**
          * Economy configuration.
@@ -41,11 +42,11 @@ class UserManager extends BaseManager {
      * @param {string} [guildID] Guild ID.
      * @returns {EconomyUser} User object.
      */
-    get(userID, guildID) {
-        const user = this.all()
-            .find(user => user.id == userID && user.guildID == (guildID || this.guildID))
+    async get(userID, guildID) {
+        const allUsers = this.all()
+        const result = allUsers.find(user => user.guildID == (guildID || this.guildID) && user.id == userID)
 
-        return user
+        return result || new EmptyEconomyUser(userID, guildID, this.options, this.database, this.cache)
     }
 
     /**

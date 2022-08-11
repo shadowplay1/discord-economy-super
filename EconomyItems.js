@@ -23,6 +23,9 @@ const BaseManager = require('./src/managers/BaseManager')
 const EconomyGuild = require('./src/classes/EconomyGuild')
 const EconomyUser = require('./src/classes/EconomyUser')
 
+const EmptyEconomyGuild = require('./src/classes/EmptyEconomyGuild')
+const EmptyEconomyUser = require('./src/classes/EmptyEconomyUser')
+
 const ShopItem = require('./src/classes/ShopItem')
 const InventoryItem = require('./src/classes/InventoryItem')
 const HistoryItem = require('./src/classes/HistoryItem')
@@ -46,6 +49,9 @@ module.exports = {
 
     EconomyUser: EconomyUser,
     EconomyGuild: EconomyGuild,
+
+    EmptyEconomyUser: EmptyEconomyUser,
+    EmptyEconomyGuild: EmptyEconomyGuild,
 
     DatabaseManager: DatabaseManager,
     UtilsManager: UtilsManager,

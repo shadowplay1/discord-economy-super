@@ -1,4 +1,5 @@
 const EconomyGuild = require('../classes/EconomyGuild')
+const EmptyEconomyGuild = require('../classes/EmptyEconomyGuild')
 
 const BaseManager = require('./BaseManager')
 
@@ -23,7 +24,7 @@ class GuildManager extends BaseManager {
      * @param {EconomyOptions} options Economy configuration.
      */
     constructor(options) {
-        super(options, null, null, EconomyGuild)
+        super(options, null, null, EconomyGuild, EmptyEconomyGuild)
 
         /**
          * Economy configuration.
@@ -57,18 +58,19 @@ class GuildManager extends BaseManager {
     /**
      * Gets the guild by it's ID.
      * @param {string} guildID Guild ID.
-     * @returns {EconomyGuild} User object.
+     * @returns {EconomyGuild} Guild object.
      */
-    get(guildID) {
-        const user = this.all().find(guild => guild.id == guildID)
+    async get(guildID) {
+        const allGuilds = this.all()
+        const guild = allGuilds.find(guild => guild.id == guildID)
 
-        return user
+        return guild || new EmptyEconomyGuild(guildID, this.options, this.database, this.cache)
     }
 
     /**
      * Creates an economy guild object in database.
      * @param {string} guildID The guild ID to set.
-     * @returns {Promise<EconomyGuild>} New guild instance.
+     * @returns {EconomyGuild} New guild instance.
      */
     create(guildID) {
         return this.reset(guildID)

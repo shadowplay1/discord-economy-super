@@ -27,14 +27,14 @@ function checkValueType(key, value) {
                 (Array.isArray(value) && typeof value[0] !== 'number' && typeof value[1] !== 'number')
                 || !Array.isArray(value) && typeof value !== 'number'
             ) {
-                throw new EconomyError(errors.settingsManager.invalidType(key, 'number', typeof value), 'INVALID_TYPE')
+                throw new EconomyError(errors.invalidType(key, 'number', typeof value), 'INVALID_TYPE')
             }
 
             break
 
         case 'dailyCooldown':
             if (typeof value !== 'number') {
-                throw new EconomyError(errors.settingsManager.invalidType(key, 'number', typeof value), 'INVALID_TYPE')
+                throw new EconomyError(errors.invalidType(key, 'number', typeof value), 'INVALID_TYPE')
             }
 
             break
@@ -45,14 +45,14 @@ function checkValueType(key, value) {
                 (Array.isArray(value) && typeof value[0] !== 'number' && typeof value[1] !== 'number')
                 || !Array.isArray(value) && typeof value !== 'number'
             ) {
-                throw new EconomyError(errors.settingsManager.invalidType(key, 'number', typeof value), 'INVALID_TYPE')
+                throw new EconomyError(errors.invalidType(key, 'number', typeof value), 'INVALID_TYPE')
             }
 
             break
 
         case 'workCooldown':
             if (typeof value !== 'number') {
-                throw new EconomyError(errors.settingsManager.invalidType(key, 'number', typeof value), 'INVALID_TYPE')
+                throw new EconomyError(errors.invalidType(key, 'number', typeof value), 'INVALID_TYPE')
             }
 
             break
@@ -63,14 +63,14 @@ function checkValueType(key, value) {
                 (Array.isArray(value) && typeof value[0] !== 'number' && typeof value[1] !== 'number')
                 || !Array.isArray(value) && typeof value !== 'number'
             ) {
-                throw new EconomyError(errors.settingsManager.invalidType(key, 'number', typeof value), 'INVALID_TYPE')
+                throw new EconomyError(errors.invalidType(key, 'number', typeof value), 'INVALID_TYPE')
             }
 
             break
 
         case 'weeklyCooldown':
             if (typeof value !== 'number') {
-                throw new EconomyError(errors.settingsManager.invalidType(key, 'number', typeof value), 'INVALID_TYPE')
+                throw new EconomyError(errors.invalidType(key, 'number', typeof value), 'INVALID_TYPE')
             }
 
             break
@@ -78,28 +78,28 @@ function checkValueType(key, value) {
 
         case 'dateLocale':
             if (typeof value !== 'string') {
-                throw new EconomyError(errors.settingsManager.invalidType(key, 'string', typeof value), 'INVALID_TYPE')
+                throw new EconomyError(errors.invalidType(key, 'string', typeof value), 'INVALID_TYPE')
             }
 
             break
 
         case 'subtractOnBuy':
             if (typeof value !== 'boolean') {
-                throw new EconomyError(errors.settingsManager.invalidType(key, 'boolean', typeof value), 'INVALID_TYPE')
+                throw new EconomyError(errors.invalidType(key, 'boolean', typeof value), 'INVALID_TYPE')
             }
 
             break
 
         case 'sellingItemPercent':
             if (typeof value !== 'number') {
-                throw new EconomyError(errors.settingsManager.invalidType(key, 'number', typeof value), 'INVALID_TYPE')
+                throw new EconomyError(errors.invalidType(key, 'number', typeof value), 'INVALID_TYPE')
             }
 
             break
 
         case 'savePurchasesHistory':
             if (typeof value !== 'boolean') {
-                throw new EconomyError(errors.settingsManager.invalidType(key, 'boolean', typeof value), 'INVALID_TYPE')
+                throw new EconomyError(errors.invalidType(key, 'boolean', typeof value), 'INVALID_TYPE')
             }
 
             break

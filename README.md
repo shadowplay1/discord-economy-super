@@ -8,7 +8,7 @@
 ## ❓ | Why?
 <ul>
 <li><b>Clean TypeScript Defenitions 📘</b></li>
-<li><b><a href="https://des-docs.js.org/#/docs/main/1.6.1/general/migrating">MongoDB Support 🍃</a></b></li>
+<li><b><a href="https://des-docs.js.org/#/docs/main/1.6.2/general/migrating">MongoDB Support 🍃</a></b></li>
 <li><b>Flexible and Customizable ⚙️</b></li>
 <li><b>Easy to use 👍</b></li>
 <li><b>Beginner Friendly 😄</b></li>
@@ -28,9 +28,10 @@ $ pnpm add discord-economy-super
 
 ## [[Module Documentation]](https://des-docs.js.org)
 
-## Examples
-[JavaScript Examples](https://github.com/shadowplay1/discord-economy-super/tree/main/examples/js)
-[TypeScript Examples](https://github.com/shadowplay1/discord-economy-super/tree/main/examples/ts)
+## 🛠️ | Examples
+[MongoDB Examples](https://github.com/shadowplay1/discord-economy-super/tree/main/examples/mongodb)
+
+[JSON Examples](https://github.com/shadowplay1/discord-economy-super/tree/main/examples/json)
 
 ## 🤔 | Help
 <b>If you don't understand something in the documentation or you are experiencing problems, feel free to join our <a href = "https://discord.gg/4pWKq8vUnb">Support Server</a>.</b>
