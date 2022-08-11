@@ -62,7 +62,7 @@ declare class EconomyUser {
      * Determine if the user exists in the database.
      * @type {boolean}
      */
-    public exists: true
+    public exists: boolean
 
     /**
      * Database Manager.

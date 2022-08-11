@@ -51,7 +51,7 @@ declare class EconomyGuild {
     /**
      * Determine if the guild exists in the database.
      */
-    public exists: true
+    public exists: boolean
 
     /**
      * Database Manager.

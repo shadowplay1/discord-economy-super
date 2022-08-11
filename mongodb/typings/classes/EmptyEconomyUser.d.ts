@@ -26,11 +26,6 @@ declare class EmptyEconomyUser extends EconomyUser {
         database: DatabaseManager,
         cache: CacheManager
     )
-
-    /**
-     * Determine if the guild exists in the database.
-     */
-    public exists: false
 }
 
 export = EmptyEconomyUser
