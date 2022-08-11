@@ -30,6 +30,7 @@ import CacheManager from './managers/CacheManager'
 declare class Economy<Ready extends boolean = boolean> extends Emitter {
     public constructor(options?: EconomyOptions)
 
+
     /**
      * Module ready status.
      * @type {?boolean}

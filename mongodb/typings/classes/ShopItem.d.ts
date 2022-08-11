@@ -21,7 +21,7 @@ declare class ShopItem<T extends object = any> {
      */
     public constructor(
         guildID: string,
-        itemObject: ItemData,
+        itemObject: ItemData<T>,
         database: DatabaseManager,
         cache: CacheManager
     )

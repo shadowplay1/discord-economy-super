@@ -9,12 +9,13 @@ import {
     CachedGuilds,
     CachedUsers,
     CachedCooldowns,
+    CachedBalance,
     CachedShop,
     CachedHistory,
     CachedInventory
 } from '../cached/CachedItems'
 
-type CachedItemNames = 'guilds' | 'users' | 'cooldowns' | 'shop' | 'inventory' | 'history'
+type CachedItemNames = 'guilds' | 'users' | 'cooldowns' | 'balance' | 'shop' | 'inventory' | 'history'
 type ArrayElements<T extends readonly string[]> = T[number]
 
 type NonRequirable<CacheItemNamesArray extends readonly CachedItemNames[]> =
@@ -25,7 +26,7 @@ type MemberIDRequired<CacheItemNamesArray extends readonly CachedItemNames[]> =
         true,
         Extract<
             ArrayElements<CacheItemNamesArray>,
-            'users' | 'cooldowns' | 'inventory' | 'history'
+            'users' | 'cooldowns' | 'balance' | 'inventory' | 'history'
         > extends never
         ? false
         : true
@@ -51,6 +52,12 @@ declare class CacheManager {
      * @type {CachedCooldowns}
      */
     public cooldowns: CachedCooldowns
+
+    /**
+     * Cached balance.
+     * @type {CachedBalance}
+     */
+    public balance: CachedBalance
 
     /**
      * Cached shop.

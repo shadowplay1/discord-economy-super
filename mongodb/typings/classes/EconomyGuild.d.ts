@@ -1,4 +1,5 @@
 import EconomyOptions from '../interfaces/EconomyOptions'
+import RawEconomyUser from '../interfaces/RawEconomyUser'
 
 import DatabaseManager from '../managers/DatabaseManager'
 import CacheManager from '../managers/CacheManager'
@@ -29,7 +30,9 @@ declare class EconomyGuild {
     public constructor(
         id: string,
         ecoOptions: EconomyOptions,
-        guildObject: any,
+        guildObject: {
+            [userID: string]: RawEconomyUser
+        },
         database: DatabaseManager,
         cache: CacheManager
     )
@@ -44,6 +47,11 @@ declare class EconomyGuild {
     * Guild ID.
     */
     public id: string
+
+    /**
+     * Determine if the guild exists in the database.
+     */
+    public exists: true
 
     /**
      * Database Manager.

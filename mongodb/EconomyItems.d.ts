@@ -65,6 +65,9 @@ export import CachedItems = require('./typings/cached/CachedItems')
 export import EconomyGuild = require('./typings/classes/EconomyGuild')
 export import EconomyUser = require('./typings/classes/EconomyUser')
 
+export import EmptyEconomyGuild = require('./typings/classes/EmptyEconomyGuild')
+export import EmptyEconomyUser = require('./typings/classes/EmptyEconomyUser')
+
 export import ShopItem = require('./typings/classes/ShopItem')
 export import InventoryItem = require('./typings/classes/InventoryItem')
 export import HistoryItem = require('./typings/classes/HistoryItem')

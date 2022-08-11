@@ -53,17 +53,17 @@ declare class History extends BaseManager<HistoryItem<any>> {
 
     /**
      * Gets the specified item from history.
-     * @param {string | SVGAnimatedNumberList} id History item ID.
+     * @param {string | number} id History item ID.
      * @returns {Promise<HistoryItem>} Purchases history item.
      */
-    public findItem<T extends object = any>(id: string | SVGAnimatedNumberList): Promise<HistoryItem<T>>
+    public findItem<T extends object = any>(id: string | number): Promise<HistoryItem<T>>
 
     /**
      * Gets the specified item from history.
-     * @param {string | SVGAnimatedNumberList} id History item ID.
+     * @param {string | number} id History item ID.
      * @returns {Promise<HistoryItem>} Purchases history item.
      */
-    public getItem<T extends object = any>(id: string | SVGAnimatedNumberList): Promise<HistoryItem<T>>
+    public getItem<T extends object = any>(id: string | number): Promise<HistoryItem<T>>
 }
 
 export = History

@@ -1,10 +1,10 @@
 import EconomyOptions from '../interfaces/EconomyOptions'
-import ItemData from '../interfaces/ItemData'
 
 import DatabaseManager from '../managers/DatabaseManager'
 import CacheManager from '../managers/CacheManager'
 
 import CustomItemData from '../interfaces/CustomItemData'
+import HistoryData from '../interfaces/HistoryData'
 
 
 /**
@@ -23,7 +23,7 @@ declare class HistoryItem<T extends object = any> {
     public constructor(
         guildID: string,
         ecoOptions: EconomyOptions,
-        itemObject: ItemData,
+        itemObject: HistoryData<T>,
         database: DatabaseManager,
         cache: CacheManager
     )

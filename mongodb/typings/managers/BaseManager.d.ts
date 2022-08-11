@@ -4,7 +4,6 @@ import UtilsManager from './UtilsManager'
 import EconomyOptions from '../interfaces/EconomyOptions'
 
 /**
- * /**
  * The default manager with its default methods.
  * 
  * [!] This manager cannot be used directly.
@@ -17,6 +16,7 @@ import EconomyOptions from '../interfaces/EconomyOptions'
  * Type parameters:
  * 
  * - T: The main item class.
+ * - E: The class to replace the result if it is empty.
  * 
  * @example
  * const BaseManager = require('./BaseManager')
@@ -38,13 +38,29 @@ import EconomyOptions from '../interfaces/EconomyOptions'
  *  }
  * }
  */
-declare class BaseManager<T> {
+declare class BaseManager<T, E = any> {
 
     /**
      * Base Manager.
      * @param {EconomyOptions} options Economy configuration.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @param {T} constructor A constructor (EconomyUser, ShopItem, etc.) to work with.
+     * @param {DatabaseManager} database Database manager.
+     * @param {CacheManager} cache Cache Manager.
+     * 
+     * @param {E} [emptyBaseConstructor] 
+     * An empty constructor (EmptyEconomyUser, EmptyEconomyGuild, etc.) to replace the `undefined` value with.
      */
-    public constructor(options: EconomyOptions, memberID: string, guildID: string, database: DatabaseManager)
+    public constructor(
+        options: EconomyOptions,
+        memberID: string,
+        guildID: string,
+        constructor: T,
+        database: DatabaseManager,
+        cache: CacheManager,
+        emptyBaseConstructor?: E
+    )
 
     /**
      * Member ID.
@@ -89,13 +105,20 @@ declare class BaseManager<T> {
      * Gets the first user in specified guild.
      * @returns {Promise<P>} First object in the array.
      */
-    public first<P = T>(): Promise<P>
+    public first<P = T>(): Promise<E extends any ? P : P | E>
 
     /**
      * Gets the last user in specified guild.
      * @returns {Promise<P>} Last object in the array.
      */
-    public last<P = T>(): Promise<P>
+    public last<P = T>(): Promise<E extends any ? P : P | E>
+
+    /**
+     * Gets the element at the specified index in the elements array.
+     * @param {number} index Index of the user.
+     * @returns {P} Object at the specified index.
+     */
+    public at<P = T>(index: number): Promise<E extends any ? P : P | E>
 
     /**
      * Returns an array of elements in specified guild.
@@ -120,7 +143,7 @@ declare class BaseManager<T> {
         index: number,
         array: P[]) => boolean,
         thisArg?: P
-    ): Promise<P>
+    ): Promise<E extends any ? P : P | E>
 
     /**
      * This method is the same as `Array.findIndex()`. 

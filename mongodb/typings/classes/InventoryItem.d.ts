@@ -24,7 +24,7 @@ declare class InventoryItem<T extends object = any> {
     public constructor(
         guildID: string,
         ecoOptions: EconomyOptions,
-        itemObject: InventoryData,
+        itemObject: InventoryData<T>,
         database: DatabaseManager,
         cache: CacheManager
     )

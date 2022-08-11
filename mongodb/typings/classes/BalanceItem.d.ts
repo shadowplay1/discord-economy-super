@@ -7,7 +7,7 @@ import DatabaseManager from '../managers/DatabaseManager'
 /**
 * Cooldown item class.
 */
-declare class CooldownItem {
+declare class BalanceItem {
 
     /**
      * User cooldowns class.
@@ -23,9 +23,8 @@ declare class CooldownItem {
         guildID: string,
         ecoOptions: EconomyOptions,
         cooldownsObject: {
-            daily: number
-            work: number
-            weekly: number
+            money: number
+            bank: number
         },
         database: DatabaseManager,
         cache: CacheManager
@@ -45,22 +44,16 @@ declare class CooldownItem {
 
 
     /**
-     * Daily cooldown.
+     * User's balance.
      * @type {number}
      */
-    public daily: number
+    public money: number
 
     /**
-     * Work cooldown.
+     * User's bank balance.
      * @type {number}
      */
-    public work: number
-
-    /**
-     * Weekly cooldown.
-     * @type {number}
-     */
-    public weekly: number
+    public bank: number
 }
 
-export = CooldownItem
+export = BalanceItem

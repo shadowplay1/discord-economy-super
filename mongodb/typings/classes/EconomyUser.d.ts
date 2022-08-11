@@ -59,6 +59,12 @@ declare class EconomyUser {
     public money: number
 
     /**
+     * Determine if the user exists in the database.
+     * @type {boolean}
+     */
+    public exists: true
+
+    /**
      * Database Manager.
      * @type {DatabaseManager}
      * @private

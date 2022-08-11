@@ -7,10 +7,13 @@ import EconomyDatabase from '../interfaces/EconomyDatabase'
 
 import DataIdentifier from '../interfaces/DataIdentifier'
 import EconomyConstructors from '../interfaces/EconomyConstructors'
+import EmptyEconomyUser from '../classes/EmptyEconomyUser'
+import EmptyEconomyGuild from '../classes/EmptyEconomyGuild'
 
 
 declare class CachedItem<
     T extends EconomyConstructors,
+    E extends EmptyEconomyUser | EmptyEconomyGuild = any,
     MemberIDRequired extends boolean = true,
     IsDataArray extends boolean = false,
     RequiresParam extends boolean = false
@@ -59,7 +62,7 @@ declare class CachedItem<
         (id: DataIdentifier<MemberIDRequired>): If<
             IsDataArray,
             If<RequiresParam, Param[], T[]>,
-            If<RequiresParam, Param, T>
+            If<RequiresParam, Param, E extends null ? T : T | E>
         >
 
     /**

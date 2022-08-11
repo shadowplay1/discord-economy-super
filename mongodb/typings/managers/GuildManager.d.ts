@@ -2,13 +2,15 @@
 import EconomyOptions from '../interfaces/EconomyOptions'
 
 import BaseManager from './BaseManager'
+
 import EconomyGuild from '../classes/EconomyGuild'
+import EmptyEconomyGuild from '../classes/EmptyEconomyGuild'
 
 
 /**
  * Guild Manager.
  */
-declare class GuildManager extends BaseManager<EconomyGuild> {
+declare class GuildManager extends BaseManager<EconomyGuild, EmptyEconomyGuild> {
 
     /**
      * Guild Manager.
@@ -21,7 +23,7 @@ declare class GuildManager extends BaseManager<EconomyGuild> {
      * @param {string} guildID Guild ID.
      * @returns {Promise<EconomyGuild>} User object.
     */
-    public get(guildID: string): Promise<EconomyGuild>
+    public get(guildID: string): Promise<EconomyGuild | EmptyEconomyGuild>
 
     /**
      * Creates an economy guild object in database.
