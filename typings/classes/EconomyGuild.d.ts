@@ -34,7 +34,7 @@ declare class EconomyGuild {
     * Determine if the guild exists in the database.
     * @type {boolean}
     */
-    public exists: true
+    public exists: boolean
 
     /**
     * Guild ID.

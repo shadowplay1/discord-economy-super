@@ -50,7 +50,7 @@ declare class EconomyUser {
     * Determine if the guild exists in the database.
     * @type {boolean}
     */
-    public exists: true
+    public exists: boolean
 
     /**
      * User's balance.
