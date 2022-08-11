@@ -4,6 +4,7 @@ const {
     CachedGuilds,
     CachedUsers,
     CachedCooldowns,
+    CachedBalance,
     CachedShop,
     CachedHistory,
     CachedInventory
@@ -26,6 +27,12 @@ class CacheManager {
          * @type {CachedUsers}
          */
         this.users = new CachedUsers(null, null, options, database, this)
+
+        /**
+         * Cached balance.
+         * @type {CachedBalance}
+         */
+        this.balance = new CachedBalance(null, null, options, database, this)
 
         /**
          * Cached cooldowns.
@@ -179,5 +186,5 @@ module.exports = CacheManager
  */
 
 /**
- * @typedef {'guilds' | 'users' | 'cooldowns' | 'shop' | 'inventory' | 'history'} CacheItemName
+ * @typedef {'guilds' | 'users' | 'cooldowns' | 'balance' | 'shop' | 'inventory' | 'history'} CacheItemName
  */

@@ -37,6 +37,17 @@ module.exports = {
     noConnectionData: 'No connection data is provided.',
     savingHistoryDisabled: 'Saving purchases history is disabled.',
 
+    /**
+     * Returns a message for an INVALID_TYPE error.
+     * @param {string} key 
+     * @param {string} type 
+     * @param {string} received 
+     * @returns {string} {key} must be a {type}. Received type: {received}.
+     */
+    invalidType(key, type, received) {
+        return `${key} must be a ${type}. Received type: ${received}.`
+    },
+
     invalidTypes: {
         memberID: 'memberID must be a string. Received type: ',
         guildID: 'guildID must be a string. Received type: ',
@@ -62,13 +73,13 @@ module.exports = {
                 availableItemProps.map(prop => `'${prop}'`).join(', ') +
                 '. Received: ',
 
-            noValue: 'no value specified. Received: '
+            noValue: 'No value specified. Received: '
         },
     },
 
     workAmount: {
         tooManyElements: 'options.workAmount array cannot have more than 2 elements;' +
-            'it must have min and max values as first and second element of the array (example: [10, 20]).',
+            'it must have "min" and "max" values as first and second element of the array (example: [10, 20]).',
     },
 
     databaseManager: {
@@ -94,10 +105,6 @@ module.exports = {
 
         valueNotFound(setting, value) {
             return `Cannot find the value "${value}" in a setting "${setting}".`
-        },
-
-        invalidType(key, type, received) {
-            return `${key} must be a ${type}. Received type: ${received} `
         }
     },
 

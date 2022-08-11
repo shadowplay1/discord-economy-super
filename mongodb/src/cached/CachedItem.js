@@ -1,6 +1,9 @@
 const EconomyError = require('../classes/util/EconomyError')
 const errors = require('../structures/errors')
 
+const EmptyEconomyGuild = require('../classes/EmptyEconomyGuild')
+const EmptyEconomyUser = require('../classes/EmptyEconomyUser')
+
 const DatabaseManager = require('../managers/DatabaseManager')
 const CacheManager = require('../managers/CacheManager')
 
@@ -63,9 +66,15 @@ class CachedItem {
 
         let params = this.constructorParams
 
-        if (!result) return null
-
         if (this.baseConstructor.name == 'EconomyUser') {
+            if (!result) {
+                return new EmptyEconomyUser(
+                    id.memberID, id.guildID,
+                    this.options,
+                    this._database, this.cacheManager
+                )
+            }
+
             return new this.baseConstructor(
                 id.memberID, id.guildID,
                 this.options, result,
@@ -74,11 +83,20 @@ class CachedItem {
         }
 
         if (this.baseConstructor.name == 'EconomyGuild') {
+            if (!result) {
+                return new EmptyEconomyGuild(
+                    id.guildID, this.options,
+                    this._database, this.cacheManager
+                )
+            }
+
             return new this.baseConstructor(
                 id.guildID, this.options, result,
                 this._database, this.cacheManager
             )
         }
+
+        if (!result) return null
 
         if (this.baseConstructor.name == 'ShopItem') {
             return result.map(item =>
@@ -173,6 +191,29 @@ class CachedItem {
 
                 cooldownsCache[id.memberID] = cooldownObject
                 this.set(id.guildID, cooldownsCache)
+
+                return Promise.resolve()
+
+            case 'BalanceItem':
+                const balanceCache = {}
+
+                if (!id.memberID || !id.guildID) {
+                    throw new EconomyError(errors.cache.invalidIdentifiers(
+                        constructorName,
+                        ['memberID', 'guildID'],
+                        Object.keys(id)
+                    ), 'INVALID_CACHING_IDENTIFIERS')
+                }
+
+                const rawUser = await this._database.fetch(`${id.guildID}.${id.memberID}`)
+
+                const balanceObject = {
+                    money: rawUser.money,
+                    bank: rawUser.bank,
+                }
+
+                balanceCache[id.memberID] = balanceObject
+                this.set(id.guildID, balanceCache)
 
                 return Promise.resolve()
 

@@ -11,6 +11,7 @@ const UserManager = require('./UserManager')
 
 const EconomyError = require('../classes/util/EconomyError')
 const errors = require('../structures/errors')
+const EmptyEconomyGuild = require('../classes/EmptyEconomyGuild')
 
 
 /**
@@ -26,7 +27,7 @@ class GuildManager extends BaseManager {
      * @param {CacheManager} cache Cache manager.
      */
     constructor(options, database, cache) {
-        super(options, null, null, EconomyGuild, database, cache)
+        super(options, null, null, EconomyGuild, database, cache, EmptyEconomyGuild)
 
         /**
          * Economy configuration.
@@ -67,13 +68,13 @@ class GuildManager extends BaseManager {
     /**
      * Gets the guild by it's ID.
      * @param {string} guildID Guild ID.
-     * @returns {Promise<EconomyGuild>} User object.
+     * @returns {Promise<EconomyGuild>} Guild object.
      */
     async get(guildID) {
-        const allUsers = await this.all()
-        const user = allUsers.find(guild => guild.id == guildID)
+        const allGuilds = await this.all()
+        const guild = allGuilds.find(guild => guild.id == guildID)
 
-        return user
+        return guild || new EmptyEconomyGuild(guildID, this.options, this.database, this.cache)
     }
 
     /**

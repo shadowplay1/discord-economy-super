@@ -315,7 +315,7 @@ class InventoryManager extends Emitter {
         if (!item) return false
 
         const newInventory = [
-            ...inventoryObjects.filter(invItem => invItem.id != item.id),
+            ...inventoryObjects.filter(invItem => invItem.id !== item.id),
             ...Array(itemQuantity - quantity).fill(item.itemObject)
         ]
 
@@ -458,10 +458,10 @@ class InventoryManager extends Emitter {
             }
         }
 
-        this.balance.add(totalSellingPrice, memberID, guildID, reason)
-        await this.removeItem(itemID, memberID, guildID, quantity)
+        await this.balance.add(totalSellingPrice, memberID, guildID, reason)
+        this.removeItem(itemID, memberID, guildID, quantity)
 
-        this.cache.updateSpecified(['users', 'inventory'], {
+        this.cache.updateSpecified(['users', 'inventory', 'balance'], {
             guildID,
             memberID
         })

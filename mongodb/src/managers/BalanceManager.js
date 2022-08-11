@@ -100,7 +100,7 @@ class BalanceManager extends Emitter {
 
         await this.database.set(`${guildID}.${memberID}.money`, amount)
 
-        this.cache.users.update({
+        this.cache.updateSpecified(['users', 'balance'], {
             memberID,
             guildID
         })
@@ -142,7 +142,7 @@ class BalanceManager extends Emitter {
 
         await this.database.add(`${guildID}.${memberID}.money`, amount)
 
-        this.cache.users.update({
+        this.cache.updateSpecified(['users', 'balance'], {
             memberID,
             guildID
         })
@@ -184,7 +184,7 @@ class BalanceManager extends Emitter {
 
         await this.database.subtract(`${guildID}.${memberID}.money`, amount)
 
-        this.cache.users.update({
+        this.cache.updateSpecified(['users', 'balance'], {
             memberID,
             guildID
         })
@@ -260,7 +260,15 @@ class BalanceManager extends Emitter {
         this.add(amount, receiverMemberID, guildID, receivingReason || 'receiving money from user')
         await this.subtract(amount, senderMemberID, guildID, sendingReason || 'sending money to user')
 
-        await this.cache.users.updateMany({
+        await this.cache.balance.updateMany({
+            senderMemberID,
+            guildID
+        }, {
+            receiverMemberID,
+            guildID
+        })
+
+        this.cache.users.updateMany({
             senderMemberID,
             guildID
         }, {
@@ -269,8 +277,15 @@ class BalanceManager extends Emitter {
         })
 
         const [senderBalance, receiverBalance] = [
-            this.cache.users.cache[guildID][senderMemberID].money,
-            this.cache.users.cache[guildID][receiverMemberID].money
+            this.cache.balance.get({
+                senderMemberID,
+                guildID
+            }).money,
+
+            this.cache.balance.get({
+                receiverMemberID,
+                guildID
+            }).money
         ]
 
         return {

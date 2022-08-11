@@ -424,22 +424,33 @@ class ShopManager extends Emitter {
      * @returns {Promise<ShopOperationInfo>} Operation information object.
      */
     async buy(itemID, memberID, guildID, quantity = 1, reason = 'received the item from the shop') {
-        const balance = (await this.database.fetch(`${guildID}.${memberID}.money`)) || []
+        const balance = this.cache.balance.get({
+            memberID,
+            guildID
+        }) || []
 
-        const shop = (await this.fetch(guildID)) || []
+        const shop = this.cache.shop.get({
+            guildID
+        }) || []
+
         const item = shop.find(item => item.id == itemID || item.name == itemID)
 
-        const inventory = (await this.database.fetch(`${guildID}.${memberID}.inventory`)) || []
+        const inventory = this.cache.inventory.get({
+            memberID,
+            guildID
+        }) || []
+
         const inventoryItems = inventory.filter(invItem => invItem.name == item.name)
 
+        const settings = await this.database.fetch(`${guildID}.settings`) || {}
 
-        const dateLocale = (await this.database.fetch(`${guildID}.settings.dateLocale`))
+        const dateLocale = settings.dateLocale
             || this.options.dateLocale
 
-        const subtractOnBuy = (await this.database.fetch(`${guildID}.settings.subtractOnBuy`))
+        const subtractOnBuy = settings.subtractOnBuy
             || this.options.subtractOnBuy
 
-        const savePurchasesHistory = (await this.database.fetch(`${guildID}.settings.savePurchasesHistory`))
+        const savePurchasesHistory = settings.savePurchasesHistory
             || this.options.savePurchasesHistory
 
 
@@ -468,6 +479,7 @@ class ShopManager extends Emitter {
         const arrayOfItems = Array(quantity).fill(item.itemObject ? item.itemObject : item)
 
         const newInventory = [...inventory, ...arrayOfItems]
+            .map(item => item.itemObject ? item.itemObject : item)
 
         if (
             item.maxAmount &&
@@ -482,7 +494,12 @@ class ShopManager extends Emitter {
         }
 
         if (subtractOnBuy) {
-            this.database.subtract(`${guildID}.${memberID}.money`, totalPrice)
+            await this.database.subtract(`${guildID}.${memberID}.money`, totalPrice)
+
+            this.cache.balance.update({
+                guildID,
+                memberID
+            })
 
             this.emit('balanceSubtract', {
                 type: 'subtract',
@@ -496,16 +513,11 @@ class ShopManager extends Emitter {
 
         await this.database.set(`${guildID}.${memberID}.inventory`, newInventory)
 
-        this.cache.inventory.update({
-            guildID,
-            memberID
-        })
-
         if (savePurchasesHistory) {
-            const shop = (await this.database.fetch(`${guildID}.shop`)) || []
-            const history = (await this.database.fetch(`${guildID}.${memberID}.history`)) || []
-
-            const item = shop.find(item => item.id == itemID || item.name == itemID)
+            const history = this.cache.history.get({
+                memberID,
+                guildID
+            }) || []
 
             await this.database.push(`${guildID}.${memberID}.history`, {
                 id: history.length ? history[history.length - 1].id + 1 : 1,
@@ -526,6 +538,11 @@ class ShopManager extends Emitter {
                 memberID
             })
         }
+
+        await this.cache.updateSpecified(['users', 'inventory'], {
+            memberID,
+            guildID
+        })
 
         this.emit('shopItemBuy', {
             guildID,

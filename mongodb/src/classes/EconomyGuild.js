@@ -40,6 +40,12 @@ class EconomyGuild {
         this.id = id
 
         /**
+         * Determine if the guild exists in the database.
+         * @type {boolean}
+         */
+        this.exists = true
+
+        /**
          * Database Manager.
          * @type {DatabaseManager}
          * @private

@@ -282,10 +282,10 @@ class InventoryItem extends Emitter {
             }
         }
 
-        this.database.add(`${this.guildID}.${this.memberID}.money`, totalSellingPrice)
-        await this.remove(quantity)
+        await this.database.add(`${this.guildID}.${this.memberID}.money`, totalSellingPrice)
+        this.remove(quantity)
 
-        this.cache.updateSpecified(['users', 'inventory'], {
+        this.cache.updateSpecified(['users', 'inventory', 'balance'], {
             guildID: this.guildID,
             memberID: this.memberID
         })

@@ -1,6 +1,7 @@
 const ms = require('../structures/ms')
 
 const EconomyError = require('../classes/util/EconomyError')
+const errors = require('../structures/errors')
 
 const BalanceManager = require('./BalanceManager')
 const CooldownManager = require('./CooldownManager')
@@ -8,7 +9,11 @@ const CooldownManager = require('./CooldownManager')
 const DatabaseManager = require('./DatabaseManager')
 const CacheManager = require('./CacheManager')
 
-const errors = require('../structures/errors')
+const RewardType = {
+    DAILY: 0,
+    WORK: 1,
+    WEEKLY: 2
+}
 
 const parse = ms => ({
     days: Math.floor(ms / 86400000),
@@ -66,6 +71,50 @@ class RewardManager {
          * @private
          */
         this.cache = cache
+    }
+
+    /**
+     * Adds a reward on user's balance.
+     * @param {RewardType} reward Reward to give.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @param {string} reason The reason why the money was added.
+     * @returns {Promise<RewardData>} Daily reward object.
+    */
+    async receive(reward, memberID, guildID, reason) {
+        const rewardTypes = ['daily', 'work', 'weekly']
+
+        if (typeof memberID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
+        }
+
+        if (typeof guildID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
+        }
+
+        if (isNaN(reward) || !rewardTypes[reward]) {
+            throw new EconomyError(
+                errors.invalidType('reward', 'key of RewardType enum', typeof reward),
+                'INVALID_TYPE'
+            )
+        }
+
+        switch (reward) {
+            case RewardType.DAILY:
+                return this.getDaily(memberID, guildID, reason)
+
+            case RewardType.WORK:
+                return this.getWork(memberID, guildID, reason)
+
+            case RewardType.WEEKLY:
+                return this.getWeekly(memberID, guildID, reason)
+
+            default:
+                throw new EconomyError(
+                    errors.invalidType('reward', 'key of RewardType enum', typeof reward),
+                    'INVALID_TYPE'
+                )
+        }
     }
 
     /**
@@ -128,7 +177,7 @@ class RewardManager {
         this.balance.add(reward, memberID, guildID, reason)
         await this.database.set(`${guildID}.${memberID}.dailyCooldown`, Date.now())
 
-        this.cache.updateSpecified(['users', 'cooldowns'], {
+        this.cache.updateSpecified(['users', 'cooldowns', 'balance'], {
             memberID,
             guildID
         })
@@ -197,10 +246,10 @@ class RewardManager {
             }
         }
 
-        this.balance.add(reward, memberID, guildID, reason)
-        await this.database.set(`${guildID}.${memberID}.workCooldown`, Date.now())
+        await this.balance.add(reward, memberID, guildID, reason)
+        this.database.set(`${guildID}.${memberID}.workCooldown`, Date.now())
 
-        this.cache.updateSpecified(['users', 'cooldowns'], {
+        this.cache.updateSpecified(['users', 'cooldowns', 'balance'], {
             memberID,
             guildID
         })
@@ -269,10 +318,10 @@ class RewardManager {
             }
         }
 
-        this.balance.add(reward, memberID, guildID, reason)
-        await this.database.set(`${guildID}.${memberID}.weeklyCooldown`, Date.now())
+        await this.balance.add(reward, memberID, guildID, reason)
+        this.database.set(`${guildID}.${memberID}.weeklyCooldown`, Date.now())
 
-        this.cache.updateSpecified(['users', 'cooldowns'], {
+        this.cache.updateSpecified(['users', 'cooldowns', 'balance'], {
             memberID,
             guildID
         })

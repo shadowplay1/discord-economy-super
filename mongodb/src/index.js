@@ -226,7 +226,9 @@ class Economy extends Emitter {
             this.init().then(async status => {
                 if (status) {
                     const usersCache = {}
+
                     const cooldownsCache = {}
+                    const balanceCache = {}
 
                     const inventoryCache = {}
                     const historyCache = {}
@@ -249,11 +251,18 @@ class Economy extends Emitter {
                                 weekly: userObject.weeklyCooldown
                             }
 
+                            balanceCache[userID] = {
+                                money: userObject.money,
+                                bank: userObject.bank,
+                            }
+
                             inventoryCache[userID] = userObject.inventory
                             historyCache[userID] = userObject.history
 
                             this.cache.users.set(guildID, usersCache)
+
                             this.cache.cooldowns.set(guildID, cooldownsCache)
+                            this.cache.balance.set(guildID, balanceCache)
 
                             this.cache.inventory.set(guildID, inventoryCache)
                             this.cache.history.set(guildID, historyCache)
@@ -544,6 +553,18 @@ class Economy extends Emitter {
         return true
     }
 }
+
+
+/**
+* @typedef {object} RawEconomyUser Raw economy user object from database.
+* @property {number} dailyCooldown User's daily cooldown.
+* @property {number} workCooldown User's work cooldown.
+* @property {number} weeklyCooldown User's weekly cooldown.
+* @property {number} money User's balance.
+* @property {number} bank User's bank balance.
+* @property {InventoryData} inventory User's inventory.
+* @property {HistoryData} history User's purchases history.
+*/
 
 
 /**

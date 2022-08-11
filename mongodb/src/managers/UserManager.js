@@ -6,6 +6,7 @@ const CacheManager = require('./CacheManager')
 const BaseManager = require('./BaseManager')
 
 const defaultUserObject = require('../structures/DefaultUserObject')
+const EmptyEconomyUser = require('../classes/EmptyEconomyUser')
 
 
 /**
@@ -22,7 +23,7 @@ class UserManager extends BaseManager {
      * @param {CacheManager} cache Cache manager.
      */
     constructor(options, database, guildID, cache) {
-        super(options, null, guildID, EconomyUser, database, cache)
+        super(options, null, guildID, EconomyUser, database, cache, EmptyEconomyUser)
 
         /**
          * Economy configuration.
@@ -54,7 +55,9 @@ class UserManager extends BaseManager {
      */
     async get(userID, guildID) {
         const allUsers = await this.all()
-        return allUsers.find(user => user.guildID == (guildID || this.guildID) && user.id == userID)
+        const result = allUsers.find(user => user.guildID == (guildID || this.guildID) && user.id == userID)
+
+        return result || new EmptyEconomyUser(userID, guildID, this.options, this.database, this.cache)
     }
 
     /**

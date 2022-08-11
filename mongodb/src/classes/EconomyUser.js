@@ -49,6 +49,11 @@ class EconomyUser {
          */
         this.money = userObject.money
 
+        /**
+         * Determine if the user exists in the database.
+         * @type {boolean}
+         */
+        this.exists = true
 
         /**
          * Economy configuration.

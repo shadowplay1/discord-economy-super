@@ -3,6 +3,7 @@ const Emitter = require('../classes/util/Emitter')
 const DatabaseManager = require('./DatabaseManager')
 const CacheManager = require('./CacheManager')
 
+
 /**
  * The default manager with its default methods.
  * 
@@ -44,8 +45,11 @@ class BaseManager extends Emitter {
      * @param {any} constructor A constructor (EconomyUser, ShopItem, etc.) to work with.
      * @param {DatabaseManager} database Database manager.
      * @param {CacheManager} cache Cache Manager.
+     * 
+     * @param {any} [emptyBaseConstructor] 
+     * An empty constructor (EmptyEconomyUser, EmptyEconomyGuild, etc.) to replace the `undefined` value with.
      */
-    constructor(options, memberID, guildID, constructor, database, cache) {
+    constructor(options, memberID, guildID, constructor, database, cache, emptyBaseConstructor) {
         super()
 
         delete options.connection
@@ -87,8 +91,16 @@ class BaseManager extends Emitter {
         /**
          * A constructor (EconomyUser, ShopItem, etc.) to work with.
          * @type {any}
+         * @private
          */
         this.baseConstructor = constructor
+
+        /**
+         * An empty constructor (EmptyEconomyUser, EmptyEconomyGuild, etc.) to replace the `undefined` value with.
+         * @type {any}
+         * @private
+         */
+        this.emptyBaseConstructor = emptyBaseConstructor
 
         /**
          * Number of specific element in database.
@@ -110,6 +122,21 @@ class BaseManager extends Emitter {
         const firstElement = array[0]
 
         this.length = array.length
+
+        if (!firstElement) {
+            if (this.emptyBaseConstructor.name === 'EconomyUser') {
+                return new this.emptyBaseConstructor(
+                    this.memberID, this.guildID,
+                    this.options,
+                    this.database, this.cache
+                )
+            }
+
+            return new this.emptyBaseConstructor(
+                this.guildID, this.options,
+                this.database, this.cache
+            )
+        }
 
         if (!this.memberID) {
             return new this.baseConstructor(
@@ -142,10 +169,25 @@ class BaseManager extends Emitter {
      * @returns {Promise<any>} Last database object.
      */
     async last() {
-        const array = this.all()
+        const array = await this.all()
         const lastElement = array[array.length - 1]
 
         this.length = array.length
+
+        if (!lastElement) {
+            if (this.emptyBaseConstructor.name === 'EconomyUser') {
+                return new this.emptyBaseConstructor(
+                    this.memberID, this.guildID,
+                    this.options,
+                    this.database, this.cache
+                )
+            }
+
+            return new this.emptyBaseConstructor(
+                this.guildID, this.options,
+                this.database, this.cache
+            )
+        }
 
         if (!this.memberID) {
             return new this.baseConstructor(
@@ -237,7 +279,72 @@ class BaseManager extends Emitter {
         const allArray = await this.all()
         this.length = allArray.length
 
-        return allArray.find(predicate, thisArg)
+        const result = allArray.find(predicate, thisArg)
+
+        if (!result) {
+            if (this.emptyBaseConstructor.name === 'EconomyUser') {
+                return new this.emptyBaseConstructor(
+                    this.memberID, this.guildID,
+                    this.options,
+                    this.database, this.cache
+                )
+            }
+
+            return new this.emptyBaseConstructor(
+                this.guildID, this.options,
+                this.database, this.cache
+            )
+        }
+    }
+
+    /**
+     * Gets the element at the specified index in the elements array.
+     * @param {number} index Index of the user.
+     * @returns {Promise<any>} Object at the specified index.
+     */
+    async at(index) {
+        const array = await this.all()
+        this.length = array.length
+
+        if (!array[index]) {
+            if (this.emptyBaseConstructor.name === 'EconomyUser') {
+                return new this.emptyBaseConstructor(
+                    this.memberID, this.guildID,
+                    this.options,
+                    this.database, this.cache
+                )
+            }
+
+            return new this.emptyBaseConstructor(
+                this.guildID, this.options,
+                this.database, this.cache
+            )
+        }
+
+        if (!this.memberID) {
+            return new this.baseConstructor(
+                this.guildID, this.options,
+                array[index],
+                this.database, this.cache
+            )
+        }
+
+        else if (this.memberID && this.guildID) {
+            return new this.baseConstructor(
+                this.memberID, this.guildID,
+                this.options, array[index],
+                this.database, this.cache
+            )
+        }
+
+        else {
+            return new this.baseConstructor(
+                array[index].memberID || array[index].id,
+                array[index].guildID,
+                this.options, array[index],
+                this.database, this.cache
+            )
+        }
     }
 
     /**

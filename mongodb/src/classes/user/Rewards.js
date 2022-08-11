@@ -1,4 +1,12 @@
 const RewardManager = require('../../managers/RewardManager')
+const EconomyError = require('../util/EconomyError')
+
+const RewardType = {
+    DAILY: 0,
+    WORK: 1,
+    WEEKLY: 2
+}
+
 
 /**
  * User rewards.
@@ -39,6 +47,48 @@ class Rewards {
          * @private
          */
         this._rewards = new RewardManager(options, database, cache)
+    }
+
+    /**
+     * Adds a reward on user's balance.
+     * @param {RewardType} reward Reward to give.
+     * @param {string} reason The reason why the money was added.
+     * @returns {Promise<RewardData>} Daily reward object.
+    */
+    async receive(reward, reason) {
+        const rewardTypes = ['daily', 'work', 'weekly']
+
+        if (typeof memberID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
+        }
+
+        if (typeof guildID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
+        }
+
+        if (isNaN(reward) || !rewardTypes[reward]) {
+            throw new EconomyError(
+                errors.invalidType('reward', 'key of RewardType enum', typeof reward),
+                'INVALID_TYPE'
+            )
+        }
+
+        switch (reward) {
+            case RewardType.DAILY:
+                return this.getDaily(this.memberID, this.guildID, reason)
+
+            case RewardType.WORK:
+                return this.getWork(this.memberID, this.guildID, reason)
+
+            case RewardType.WEEKLY:
+                return this.getWeekly(this.memberID, this.guildID, reason)
+
+            default:
+                throw new EconomyError(
+                    errors.invalidType('reward', 'key of RewardType enum', typeof reward),
+                    'INVALID_TYPE'
+                )
+        }
     }
 
     /**
