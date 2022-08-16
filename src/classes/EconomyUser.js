@@ -84,6 +84,8 @@ class EconomyUser {
          */
         this.balance = new Balance(id, guildID, ecoOptions)
 
+        delete userObject.bank
+
         /**
          * User bank balance.
          * @type {Bank}

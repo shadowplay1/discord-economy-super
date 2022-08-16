@@ -365,7 +365,7 @@ class ShopManager extends Emitter {
             throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
         }
 
-        const shop = this.database.fetch(`${guildID}.shop`)
+        const shop = this.database.fetch(`${guildID}.shop`) || []
         return shop.map(item => new ShopItem(guildID, item, this.database))
     }
 

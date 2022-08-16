@@ -60,7 +60,7 @@ class GuildManager extends BaseManager {
      * @param {string} guildID Guild ID.
      * @returns {EconomyGuild} Guild object.
      */
-    async get(guildID) {
+    get(guildID) {
         const allGuilds = this.all()
         const guild = allGuilds.find(guild => guild.id == guildID)
 
@@ -79,7 +79,7 @@ class GuildManager extends BaseManager {
     /**
      * Resets the guild in database.
      * @param {string} guildID Guild ID.
-     * @returns {Promise<EconomyGuild>} New guild instance.
+     * @returns {EconomyGuild} New guild instance.
      */
     reset(guildID) {
         const emptyGuildObject = {

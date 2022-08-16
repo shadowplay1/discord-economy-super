@@ -46,7 +46,7 @@ class InventoryManager extends Emitter {
          * @type {FetchManager}
          * @private
          */
-        this.fetcher = new FetchManager(options)
+        this.fetcher = new FetchManager(options, database)
 
         /**
          * Balance manager methods object.

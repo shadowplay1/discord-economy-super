@@ -118,7 +118,7 @@ module.exports = {
     oldNodeVersion: 'This module is supporting only Node.js v14 or newer. Installed version is ',
 
     reservedName(name = 'testStorage123') {
-        return `'${name}' is a reserved storage file name.You cannot use it.`
+        return `'${name}' is a reserved storage file name. You cannot use it.`
     },
 
     invalidStorage: 'Storage file is not valid.',

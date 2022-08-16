@@ -110,9 +110,9 @@ class HistoryManager {
      * @param {number} [quantity=1] Quantity of the item.
      * @returns {boolean} If added: true, else: false.
      */
-    async add(itemID, memberID, guildID, quantity = 1) {
-        const shop = (await this.database.fetch(`${guildID}.shop`)) || []
-        const history = (await this.database.fetch(`${guildID}.${memberID}.history`)) || []
+    add(itemID, memberID, guildID, quantity = 1) {
+        const shop = this.database.fetch(`${guildID}.shop`) || []
+        const history = this.database.fetch(`${guildID}.${memberID}.history`) || []
 
         const item = shop.find(item => item.id == itemID || item.name == itemID)
         const totalPrice = item.price * quantity
@@ -132,7 +132,7 @@ class HistoryManager {
 
         if (!item) return false
 
-        const result = await this.database.push(`${guildID}.${memberID}.history`, {
+        const result = this.database.push(`${guildID}.${memberID}.history`, {
             id: history.length ? history[history.length - 1].id + 1 : 1,
             memberID,
             guildID,

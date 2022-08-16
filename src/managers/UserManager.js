@@ -42,7 +42,7 @@ class UserManager extends BaseManager {
      * @param {string} [guildID] Guild ID.
      * @returns {EconomyUser} User object.
      */
-    async get(userID, guildID) {
+    get(userID, guildID) {
         const allUsers = this.all()
         const result = allUsers.find(user => user.guildID == (guildID || this.guildID) && user.id == userID)
 

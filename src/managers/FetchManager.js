@@ -16,10 +16,10 @@ class FetchManager {
 
     /**
      * Fetch Manager.
-     * @param {object} options Economy configuration.
-     * @param {string} options.storagePath Full path to a JSON file. Default: './storage.json'.
+     * @param {EconomyOptions} options Economy configuration.
+     * @param {DatabaseManager} database Database Manager.
      */
-    constructor(options = {}) {
+    constructor(options = {}, database) {
 
         /**
          * Economy configuration.
@@ -34,6 +34,13 @@ class FetchManager {
          * @private
          */
         this.storagePath = options.storagePath || './storage.json'
+
+        /**
+         * Database Manager.
+         * @type {DatabaseManager}
+         * @private
+         */
+        this.database = database
     }
 
     /**
@@ -132,7 +139,7 @@ class FetchManager {
          */
         const inventory = memberData?.inventory || []
 
-        return inventory.map(item => new InventoryItem(guildID, memberID, this.options, item))
+        return inventory.map(item => new InventoryItem(guildID, memberID, this.options, item, this.database))
     }
 
     /**
@@ -160,7 +167,7 @@ class FetchManager {
          */
         const history = memberData?.history || []
 
-        return history.map(item => new HistoryItem(guildID, memberID, this.options, item))
+        return history.map(item => new HistoryItem(guildID, memberID, this.options, item, this.database))
     }
 
     /**

@@ -77,9 +77,9 @@ class RewardManager {
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
      * @param {string} reason The reason why the money was added.
-     * @returns {Promise<RewardData>} Daily reward object.
+     * @returns {RewardData} Daily reward object.
     */
-    async receive(reward, memberID, guildID, reason) {
+    receive(reward, memberID, guildID, reason) {
         const rewardTypes = ['daily', 'work', 'weekly']
 
         if (typeof memberID !== 'string') {
@@ -203,7 +203,7 @@ class RewardManager {
         let reward
 
         if (Array.isArray(defaultWorkReward)) {
-            const [min, max] = defaultDailyReward
+            const [min, max] = defaultWorkReward
 
             if (defaultWorkReward.length == 1) reward = min
             else reward = Math.floor(Math.random() * (Number(min) - Number(max)) + Number(max))

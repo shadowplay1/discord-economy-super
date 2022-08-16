@@ -51,9 +51,9 @@ class Rewards {
      * Adds a reward on user's balance.
      * @param {RewardType} reward Reward to give.
      * @param {string} reason The reason why the money was added.
-     * @returns {Promise<RewardData>} Daily reward object.
+     * @returns {RewardData} Daily reward object.
     */
-    async receive(reward, reason) {
+    receive(reward, reason) {
         const rewardTypes = ['daily', 'work', 'weekly']
 
         if (typeof memberID !== 'string') {
