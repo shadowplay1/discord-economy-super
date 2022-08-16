@@ -16,6 +16,7 @@ module.exports = {
     'max-classes-per-file': 'off',
     'prefer-const': 'warn',
     'camelcase': 'warn',
+    'eol-last': 'warn',
     'max-len': ['warn', { 'code': 120 }],
     'dot-notation': 'warn',
     'no-continue': 'warn',
