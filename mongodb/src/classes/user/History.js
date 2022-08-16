@@ -232,6 +232,7 @@ class History extends BaseManager {
  * @property {boolean} [debug=false] Enables or disables the debug mode.
  */
 
+
 /**
  * User's purchases history class.
  * @type {History}

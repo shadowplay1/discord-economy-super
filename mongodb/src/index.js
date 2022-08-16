@@ -280,15 +280,13 @@ class Economy extends Emitter {
             })
 
         }).catch(err => {
-            if (err.message.includes('Command failed:')) {
-                console.log(
-                    `${this.colors.cyan}[Economy] ${this.colors.red}Failed to install ` +
-                    `${this.colors.yellow}'quick-mongo-super'${this.colors.red}. ` +
-                    `See the error details above.${this.colors.reset}`
-                )
+            console.log(
+                `${this.colors.cyan}[Economy] ${this.colors.red}Failed to connect to the ` +
+                `${this.colors.yellow}database${this.colors.red}. ` +
+                this.colors.reset
+            )
 
-                process.exit(1)
-            }
+            throw err
         })
     }
 

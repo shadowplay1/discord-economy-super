@@ -25,7 +25,8 @@ class Emitter {
      * @returns {Emitter} Economy Emitter.
      */
     on(event, listener) {
-        return emitter.on(event, listener)
+        emitter.on(event, listener)
+        return this
     }
 
     /**
@@ -35,7 +36,8 @@ class Emitter {
      * @returns {Emitter} Economy Emitter.
      */
     once(event, listener) {
-        return emitter.once(event, listener)
+        emitter.once(event, listener)
+        return this
     }
 
     /**
