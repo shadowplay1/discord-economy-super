@@ -16,7 +16,7 @@ type UserFunction<
         (memberID: string, guildID: string) => Promise<
             EmptyReturnType extends null ? ReturnType : ReturnType | EmptyReturnType
         >,
-        (guildID: string) => Promise<
+        (userID: string) => Promise<
             EmptyReturnType extends null ? ReturnType : ReturnType | EmptyReturnType
         >
     >
