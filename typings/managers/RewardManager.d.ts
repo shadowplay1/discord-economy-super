@@ -31,7 +31,7 @@ declare class RewardManager {
     */
     public getDaily<
         isRewardArray extends boolean = false
-    >(memberID: string, guildID: string, reason?: string): RewardObject<isRewardArray, 'daily'>
+    >(memberID: string, guildID: string, reason?: string): RewardObject<isRewardArray, RewardType.DAILY>
 
     /**
     * Adds a work reward on user's balance
@@ -42,7 +42,7 @@ declare class RewardManager {
     */
     public getWork<
         isRewardArray extends boolean = true
-    >(memberID: string, guildID: string, reason?: string): RewardObject<isRewardArray, 'work'>
+    >(memberID: string, guildID: string, reason?: string): RewardObject<isRewardArray, RewardType.WORK>
 
     /**
     * Adds a weekly reward on user's balance
@@ -53,7 +53,7 @@ declare class RewardManager {
     */
     public getWeekly<
         isRewardArray extends boolean = false
-    >(memberID: string, guildID: string, reason?: string): RewardObject<isRewardArray, 'weekly'>
+    >(memberID: string, guildID: string, reason?: string): RewardObject<isRewardArray, RewardType.WEEKLY>
 }
 
 export = RewardManager

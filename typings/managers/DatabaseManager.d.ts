@@ -1,4 +1,4 @@
-import EconomyDatabase from '../../mongodb/typings/interfaces/EconomyDatabase'
+import EconomyDatabase from '../../typings/interfaces/EconomyDatabase'
 import EconomyOptions from '../interfaces/EconomyOptions'
 
 /**

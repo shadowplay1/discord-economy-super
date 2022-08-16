@@ -581,7 +581,9 @@ client.on('messageCreate', async message => {
 
     if (command == prefix + 'shop_edit') {
         const itemProperties = ['description', 'price', 'name', 'message', 'maxAmount', 'role']
-        const [itemID, itemProperty, newValue] = args
+
+        const [itemID, itemProperty] = args
+        const newValue = args.slice(2).join(' ')
 
         const item = shop.find(item => item.id == parseInt(itemID) || item.name == itemID)
 

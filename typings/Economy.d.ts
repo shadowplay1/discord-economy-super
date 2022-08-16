@@ -143,7 +143,7 @@ declare class Economy<Ready extends boolean = boolean> extends Emitter {
     * Economy user manager.
     * @type {?UserManager}
     */
-    public readonly users: If<Ready, UserManager>
+    public readonly users: If<Ready, UserManager<true>>
 
     /**
     * Economy guild manager.

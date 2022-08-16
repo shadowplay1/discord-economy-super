@@ -2,22 +2,24 @@ import If from '../interfaces/If'
 
 import EconomyOptions from '../interfaces/EconomyOptions'
 import BaseManager from './BaseManager'
+
 import EconomyUser from '../classes/EconomyUser'
-import { EmptyEconomyUser } from '../../mongodb/EconomyItems'
+import EmptyEconomyUser from '../classes/EmptyEconomyUser'
 
 type UserFunction<
     MemberIDRequired extends boolean,
     ReturnType = EconomyUser,
     EmptyReturnType = EmptyEconomyUser
-    > =
+> =
     If<
         MemberIDRequired,
         (memberID: string, guildID: string) =>
             EmptyReturnType extends null ? ReturnType : ReturnType | EmptyReturnType,
-        (guildID: string) =>
+        (userID: string) =>
             EmptyReturnType extends null ? ReturnType : ReturnType | EmptyReturnType
 
     >
+
 /**
  * User Manager.
  */

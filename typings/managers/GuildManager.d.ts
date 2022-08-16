@@ -1,10 +1,9 @@
-
 import EconomyOptions from '../interfaces/EconomyOptions'
 
 import BaseManager from './BaseManager'
-import ShopManager from './ShopManager'
 
 import EconomyGuild from '../classes/EconomyGuild'
+import EmptyEconomyGuild from '../classes/EmptyEconomyGuild'
 
 
 /**

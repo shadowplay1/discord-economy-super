@@ -25,7 +25,7 @@ declare class Rewards {
     */
     public getDaily<
         isRewardArray extends boolean = false
-    >(reason?: string): RewardObject<isRewardArray, 'daily'>
+    >(reason?: string): RewardObject<isRewardArray, RewardType.DAILY>
 
     /**
     * Adds a work reward on user's balance.
@@ -34,7 +34,7 @@ declare class Rewards {
     */
     public getWork<
         isRewardArray extends boolean = true
-    >(reason?: string): RewardObject<isRewardArray, 'work'>
+    >(reason?: string): RewardObject<isRewardArray, RewardType.WORK>
 
     /**
     * Adds a weekly reward on user's balance.
@@ -43,7 +43,7 @@ declare class Rewards {
     */
     public getWeekly<
         isRewardArray extends boolean = false
-    >(reason?: string): RewardObject<isRewardArray, 'weekly'>
+    >(reason?: string): RewardObject<isRewardArray, RewardType.WEEKLY>
 }
 
 export = Rewards

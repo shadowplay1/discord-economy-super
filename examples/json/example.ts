@@ -50,7 +50,7 @@ let eco = new Economy<true>({
 })
 
 
-const getUser = (userID: string) => client.users.cache.get(userID) as User
+const getUser = (userID: string): User => client.users.cache.get(userID) as User
 
 client.on('messageCreate', async msg => {
     const message = msg as Message<true>
@@ -72,10 +72,10 @@ client.on('messageCreate', async msg => {
     let argumentUser = eco.users.get(userID, message.guild.id)
 
 
-    let shop = eco.shop.get<CustomItemData>(message.guild.id) || []
+    const shop = eco.shop.get<CustomItemData>(message.guild.id) || []
 
-    let inventory = eco.inventory.get<CustomItemData>(message.author.id, message.guild.id) || []
-    let history = eco.history.get<CustomItemData>(message.author.id, message.guild.id) || []
+    const inventory = eco.inventory.get<CustomItemData>(message.author.id, message.guild.id) || []
+    const history = eco.history.get<CustomItemData>(message.author.id, message.guild.id) || []
 
     if (message.author.bot) return
 
@@ -155,7 +155,7 @@ client.on('messageCreate', async msg => {
         const editingLatency = msg.createdTimestamp - message.createdTimestamp
 
         msg.edit(
-            `🏓 | **__Core:__**\n` +
+            '🏓 | **__Core:__**\n' +
             `Bot Latency: **${editingLatency}ms**\n` +
             `WebSocket latency: **${client.ws.ping}ms**`
         )
@@ -390,7 +390,7 @@ client.on('messageCreate', async msg => {
         if (senderBalance < amount) {
             return message.channel.send(
                 `${message.author}, you don't have enough coins` +
-                `to perform this transfer.`
+                'to perform this transfer.'
             )
         }
 
@@ -418,7 +418,7 @@ client.on('messageCreate', async msg => {
         if (userBalance < amount || !userBalance) {
             return message.channel.send(
                 `${message.author}, you don't have enough coins ` +
-                `to perform this deposit.`
+                'to perform this deposit.'
             )
         }
 
@@ -439,7 +439,7 @@ client.on('messageCreate', async msg => {
         if (userBankBalance < amount || !userBankBalance) {
             return message.channel.send(
                 `${message.author}, you don't have enough coins ` +
-                `in your bank to perform this withdraw.`
+                'in your bank to perform this withdraw.'
             )
         }
 
@@ -582,7 +582,9 @@ client.on('messageCreate', async msg => {
 
     if (command == prefix + 'shop_edit') {
         const itemProperties = ['description', 'price', 'name', 'message', 'maxAmount', 'role']
-        const [itemID, itemProperty, newValue] = args
+
+        const [itemID, itemProperty] = args
+        const newValue = args.slice(2).join(' ')
 
         const item = shop.find(item => item.id == parseInt(itemID) || item.name == itemID)
 
