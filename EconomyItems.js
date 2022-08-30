@@ -44,48 +44,54 @@ const Rewards = require('./src/classes/user/Rewards')
 
 
 module.exports = {
-    EconomyError: EconomyError,
-    Emitter: Emitter,
+    EconomyError,
+    Emitter,
 
-    EconomyUser: EconomyUser,
-    EconomyGuild: EconomyGuild,
+    EconomyUser,
+    EconomyGuild,
 
-    EmptyEconomyUser: EmptyEconomyUser,
-    EmptyEconomyGuild: EmptyEconomyGuild,
+    EmptyEconomyUser,
+    EmptyEconomyGuild,
 
-    DatabaseManager: DatabaseManager,
-    UtilsManager: UtilsManager,
+    DatabaseManager,
+    UtilsManager,
 
-    BalanceManager: BalanceManager,
-    BankManager: BankManager,
+    BalanceManager,
+    BankManager,
 
-    RewardManager: RewardManager,
-    CooldownManager: CooldownManager,
+    RewardManager,
+    CooldownManager,
 
-    ShopManager: ShopManager,
-    InventoryManager: InventoryManager,
+    ShopManager,
+    InventoryManager,
 
-    HistoryManager: HistoryManager,
+    HistoryManager,
 
-    UserManager: UserManager,
-    GuildManager: GuildManager,
+    UserManager,
+    GuildManager,
 
-    SettingsManager: SettingsManager,
-    BaseManager: BaseManager,
+    SettingsManager,
+    BaseManager,
 
-    ShopItem: ShopItem,
-    InventoryItem: InventoryItem,
-    HistoryItem: HistoryItem,
+    ShopItem,
+    InventoryItem,
+    HistoryItem,
 
-    Leaderboards: Leaderboards,
-    Settings: Settings,
-    Shop: Shop,
+    Leaderboards,
+    Settings,
+    Shop,
 
-    Balance: Balance,
-    Bank: Bank,
-    Cooldowns: Cooldowns,
-    History: History,
-    Inventory: Inventory,
-    Items: Items,
-    Rewards: Rewards
+    Balance,
+    Bank,
+    Cooldowns,
+    History,
+    Inventory,
+    Items,
+    Rewards,
+
+    RewardType: {
+        DAILY: 0,
+        WORK: 1,
+        WEEKLY: 2
+    }
 }

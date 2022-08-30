@@ -211,7 +211,7 @@ class DatabaseManager {
     /**
      * Pushes a value to a specified array from the database.
      * @param {string} key The key in database.
-     * @param {any} value The key in database.
+     * @param {any} value Any value to push.
      * @returns {boolean} If cleared: true; else: false.
      */
     push(key, value) {

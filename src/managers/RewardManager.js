@@ -265,7 +265,7 @@ class RewardManager {
         let reward
 
         if (Array.isArray(defaultWeeklyReward)) {
-            const [min, max] = defaultDailyReward
+            const [min, max] = defaultWeeklyReward
 
             if (defaultWeeklyReward.length == 1) reward = min
             else reward = Math.floor(Math.random() * (Number(min) - Number(max)) + Number(max))

@@ -252,7 +252,7 @@ class UtilsManager {
 
 
         const problems = []
-        const output = {}
+        let output = {}
 
         const keys = Object.keys(DefaultConfiguration)
         const optionKeys = Object.keys(ecoOptions || {})
