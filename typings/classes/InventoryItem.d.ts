@@ -27,7 +27,7 @@ declare class InventoryItem<T extends object = any> {
      * Guild ID.
      * @param {string}
      */
-    public guildID
+    public guildID: string
 
     /**
      * Shop item ID.
