@@ -13,7 +13,7 @@ import EmptyEconomyGuild from '../classes/EmptyEconomyGuild'
 
 declare class CachedItem<
     T extends EconomyConstructors,
-    E extends EmptyEconomyUser | EmptyEconomyGuild = any,
+    E extends EmptyEconomyUser | EmptyEconomyGuild | null = any,
     MemberIDRequired extends boolean = true,
     IsDataArray extends boolean = false,
     RequiresParam extends boolean = false

@@ -1,4 +1,4 @@
-import { RewardCooldownData } from '../../interfaces/RewardCooldownData'
+import RewardCooldownData from '../../interfaces/RewardCooldownData'
 import { RewardType } from '../../interfaces/RewardTypes'
 
 import RawEconomyUser from '../../interfaces/RawEconomyUser'

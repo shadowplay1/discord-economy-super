@@ -2,6 +2,7 @@ import DatabaseManager from './DatabaseManager'
 import UtilsManager from './UtilsManager'
 
 import EconomyOptions from '../interfaces/EconomyOptions'
+import CacheManager from '..//managers/CacheManager'
 
 /**
  * The default manager with its default methods.
