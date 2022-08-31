@@ -82,8 +82,6 @@ class CacheManager {
         await this.shop.update(id)
         await this.history.update(id)
         await this.inventory.update(id)
-
-        return
     }
 
     /**
@@ -94,6 +92,7 @@ class CacheManager {
         this.guilds.clear()
         this.users.clear()
         this.cooldowns.clear()
+        this.balance.clear()
         this.shop.clear()
         this.history.clear()
         this.inventory.clear()
@@ -110,29 +109,11 @@ class CacheManager {
     async updateSpecified(cacheItemNames, id) {
         const promises = []
 
-        for (const i of cacheItemNames) {
-            switch (i) {
-                case 'guilds':
-                    promises.push(this.guilds.update(id))
-                    break
-                case 'users':
-                    promises.push(this.users.update(id))
-                    break
-                case 'cooldowns':
-                    promises.push(this.cooldowns.update(id))
-                    break
-                case 'shop':
-                    promises.push(this.shop.update(id))
-                    break
-                case 'history':
-                    promises.push(this.history.update(id))
-                    break
-                case 'inventory':
-                    promises.push(this.inventory.update(id))
-                    break
-
-                default:
-                    throw new EconomyError(errors.cache.invalidCacheNames, 'INVALID_CACHE_ITEM_NAME')
+        for (const cacheItemName of cacheItemNames) {
+            if (this[cacheItemName]) {
+                promises.push(this[cacheItemName].update(id))
+            } else {
+                throw new EconomyError(errors.cache.invalidCacheNames, 'INVALID_CACHE_ITEM_NAME')
             }
         }
 
@@ -148,36 +129,18 @@ class CacheManager {
      * @returns {void}
      */
     clearSpecified(cacheItemNames) {
-        for (const i of cacheItemNames) {
-            switch (i) {
-                case 'guilds':
-                    this.guilds.clear()
-                    break
-                case 'users':
-                    this.users.clear()
-                    break
-                case 'cooldowns':
-                    this.cooldowns.clear()
-                    break
-                case 'shop':
-                    this.shop.clear()
-                    break
-                case 'history':
-                    this.history.clear()
-                    break
-                case 'inventory':
-                    this.inventory.clear()
-                    break
-
-                default:
-                    throw new EconomyError(errors.cache.invalidCacheNames, 'INVALID_CACHE_ITEM_NAME')
+        for (const cacheItemName of cacheItemNames) {
+            if (this[cacheItemName]) {
+                promises.push(this[cacheItemName].clear(id))
+            } else {
+                throw new EconomyError(errors.cache.invalidCacheNames, 'INVALID_CACHE_ITEM_NAME')
             }
         }
     }
-
 }
 
 module.exports = CacheManager
+
 
 /**
  * @typedef {Object} DataIdentifier
