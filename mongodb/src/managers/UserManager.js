@@ -57,7 +57,7 @@ class UserManager extends BaseManager {
         const allUsers = await this.all()
         const result = allUsers.find(user => user.guildID == (guildID || this.guildID) && user.id == userID)
 
-        return result || new EmptyEconomyUser(userID, guildID, this.options, this.database, this.cache)
+        return result || new EmptyEconomyUser(userID, guildID || this.guildID, this.options, this.database, this.cache)
     }
 
     /**
