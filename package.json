@@ -1,6 +1,6 @@
 {
 	"name": "discord-economy-super",
-	"version": "1.6.2",
+	"version": "1.6.6",
 	"types": "./typings/Economy.d.ts",
 	"description": "Easy and customizable economy module for your Discord Bot.",
 	"main": "index.js",
@@ -44,12 +44,13 @@
 	"license": "MIT",
 	"dependencies": {
 		"node-fetch": "^2.6.7",
-		"quick-mongo-super": "^1.0.8"
+		"quick-mongo-super": "^1.0.9"
 	},
 	"engines": {
 		"node": ">=14.0.0"
 	},
 	"directories": {
+		"lib": "./src",
 		"example": "./examples"
 	},
 	"repository": {
