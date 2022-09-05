@@ -10,10 +10,9 @@ class EmptyEconomyGuild extends EconomyGuild {
      * @param {string} guildID Guild ID.
      * @param {EconomyOptions} options Economy configuration.
      * @param {DatabaseManager} database Database manager.
-     * @param {CacheManager} cache Cache manager.
      */
-    constructor(guildID, options, database, cache) {
-        super(guildID, options, {}, database, cache)
+    constructor(guildID, options, database) {
+        super(guildID, options, {}, database)
 
         /**
          * Determine if the guild exists in the database.

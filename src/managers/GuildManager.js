@@ -52,7 +52,7 @@ class GuildManager extends BaseManager {
          * @type {UtilsManager}
          * @private
          */
-        this.utils = new UtilsManager(options, this.database, new FetchManager(options))
+        this.utils = new UtilsManager(options, this.database, new FetchManager(options, this.database))
     }
 
     /**
@@ -64,7 +64,7 @@ class GuildManager extends BaseManager {
         const allGuilds = this.all()
         const guild = allGuilds.find(guild => guild.id == guildID)
 
-        return guild || new EmptyEconomyGuild(guildID, this.options, this.database, this.cache)
+        return guild || new EmptyEconomyGuild(guildID, this.options, this.database)
     }
 
     /**
@@ -90,7 +90,7 @@ class GuildManager extends BaseManager {
         if (!guildID) throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
 
         this.database.set(guildID, emptyGuildObject)
-        return new EconomyGuild(guildID, this.options, emptyGuildObject, this.database, this.cache)
+        return new EconomyGuild(guildID, this.options, emptyGuildObject, this.database)
     }
 
     /**

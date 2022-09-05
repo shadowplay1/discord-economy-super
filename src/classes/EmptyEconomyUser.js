@@ -12,10 +12,9 @@ class EmptyEconomyUser extends EconomyUser {
      * @param {string} guildID Guild ID.
      * @param {EconomyOptions} options Economy configuration.
      * @param {DatabaseManager} database Database Manager.
-     * @param {CacheManager} cache Cache manager.
      */
-    constructor(userID, guildID, options, database, cache) {
-        super(userID, guildID, options, defaultUserObject, database, cache)
+    constructor(userID, guildID, options, database) {
+        super(userID, guildID, options, defaultUserObject, database)
 
         /**
          * Determine if the user exists in the database.

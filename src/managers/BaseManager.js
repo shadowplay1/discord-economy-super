@@ -104,7 +104,7 @@ class BaseManager extends Emitter {
         const firstElement = array[0]
 
         if (!firstElement) {
-            if (this.emptyBaseConstructor.name === 'EconomyUser') {
+            if (this.emptyBaseConstructor.name == 'EmptyEconomyUser') {
                 return new this.emptyBaseConstructor(
                     this.memberID, this.guildID,
                     this.options,
@@ -153,7 +153,7 @@ class BaseManager extends Emitter {
         const lastElement = array[array.length - 1]
 
         if (!lastElement) {
-            if (this.emptyBaseConstructor.name === 'EconomyUser') {
+            if (this.emptyBaseConstructor.name == 'EmptyEconomyUser') {
                 return new this.emptyBaseConstructor(
                     this.memberID, this.guildID,
                     this.options,
@@ -238,7 +238,7 @@ class BaseManager extends Emitter {
         const result = allArray.find(predicate, thisArg)
 
         if (!result) {
-            if (this.emptyBaseConstructor.name === 'EconomyUser') {
+            if (this.emptyBaseConstructor.name == 'EmptyEconomyUser') {
                 return new this.emptyBaseConstructor(
                     this.memberID, this.guildID,
                     this.options,
@@ -262,17 +262,17 @@ class BaseManager extends Emitter {
         const array = this.all()
 
         if (!array[index]) {
-            if (this.emptyBaseConstructor.name === 'EconomyUser') {
+            if (this.emptyBaseConstructor.name == 'EmptyEconomyUser') {
                 return new this.emptyBaseConstructor(
                     this.memberID, this.guildID,
                     this.options,
-                    this.database, this.cache
+                    this.database
                 )
             }
 
             return new this.emptyBaseConstructor(
                 this.guildID, this.options,
-                this.database, this.cache
+                this.database
             )
         }
 
@@ -280,7 +280,7 @@ class BaseManager extends Emitter {
             return new this.baseConstructor(
                 this.guildID, this.options,
                 array[index],
-                this.database, this.cache
+                this.database
             )
         }
 
@@ -288,7 +288,7 @@ class BaseManager extends Emitter {
             return new this.baseConstructor(
                 this.memberID, this.guildID,
                 this.options, array[index],
-                this.database, this.cache
+                this.database
             )
         }
 
@@ -297,7 +297,7 @@ class BaseManager extends Emitter {
                 array[index].memberID || array[index].id,
                 array[index].guildID,
                 this.options, array[index],
-                this.database, this.cache
+                this.database
             )
         }
     }
