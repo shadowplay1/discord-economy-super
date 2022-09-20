@@ -41,7 +41,7 @@ class Leaderboards {
      * @returns {BalanceLeaderboard[]} Balance leaderboard array.
      */
     money() {
-        return this.balance()
+        return this._balance.leaderboard(this.guildID)
     }
 
     /**
