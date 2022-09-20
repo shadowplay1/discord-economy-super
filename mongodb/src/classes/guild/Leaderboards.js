@@ -43,7 +43,7 @@ class Leaderboards {
      * @returns {Promise<BalanceLeaderboard[]>} Balance leaderboard array.
      */
     money() {
-        return this.balance()
+        return this._balance.leaderboard(this.guildID)
     }
 
     /**
