@@ -15,6 +15,7 @@ declare class HistoryItem<T extends object = any> {
     /**
      * History item class.
      * @param {string} guildID Guild ID.
+	 * @param {string} memberID Member ID.
      * @param {EconomyOptions} ecoOptions Economy configuration.
      * @param {HistoryData} itemObject User purchases history item object.
      * @param {DatabaseManager} database Database manager.
@@ -22,6 +23,7 @@ declare class HistoryItem<T extends object = any> {
      */
     public constructor(
         guildID: string,
+		memberID: string,
         ecoOptions: EconomyOptions,
         itemObject: HistoryData<T>,
         database: DatabaseManager,

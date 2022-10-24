@@ -3,26 +3,24 @@ import DatabaseManager from '../managers/DatabaseManager'
 
 
 /**
-* Cooldown item class.
+* User bank balance item class.
 */
-declare class CooldownItem {
+declare class BankBalanceItem {
 
     /**
-     * User cooldowns class.
+     * User bank balance item class.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
      * @param {EconomyOptions} ecoOptions Economy configuration.
-     * @param {CooldownsObject} cooldownsObject User cooldowns object.
+     * @param {BalanceObject} balanceObject User bank balance object.
      * @param {DatabaseManager} database Database manager.
      */
     public constructor(
         memberID: string,
         guildID: string,
         ecoOptions: EconomyOptions,
-        cooldownsObject: {
-            daily: number
-            work: number
-            weekly: number
+        balanceObject: {
+            balance: number
         },
         database: DatabaseManager
     )
@@ -39,24 +37,11 @@ declare class CooldownItem {
      */
     public guildID: string
 
-
     /**
-     * Daily cooldown.
+     * User's bank balance.
      * @type {number}
      */
-    public daily: number
-
-    /**
-     * Work cooldown.
-     * @type {number}
-     */
-    public work: number
-
-    /**
-     * Weekly cooldown.
-     * @type {number}
-     */
-    public weekly: number
+    public balance: number
 }
 
-export = CooldownItem
+export = BankBalanceItem

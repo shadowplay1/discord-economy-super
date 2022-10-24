@@ -10,6 +10,7 @@ import {
     CachedUsers,
     CachedCooldowns,
     CachedBalance,
+	CachedBank,
     CachedShop,
     CachedHistory,
     CachedInventory
@@ -59,6 +60,12 @@ declare class CacheManager {
      */
     public balance: CachedBalance
 
+	/**
+	 * Cached bank balance.
+	 * @type {CachedBank}
+	 */
+	public bank: CachedBank
+
     /**
      * Cached shop.
      * @type {CachedShop}
@@ -93,13 +100,25 @@ declare class CacheManager {
     /**
      * Updates the specified cached items.
      * @param cacheItemNames Names of the cache items to update.
-     * @param id Identifiers object (memberID, guildID) to get value from cache.
-     * @returns
+     * @param id Identifiers object (memberID, guildID) to get value from the cache.
+     * @returns {Promise<void[]>}
      */
     public updateSpecified<T extends readonly CachedItemNames[]>(
         cacheItemNames: T,
         id: DataIdentifier<MemberIDRequired<T>>
     ): Promise<void[]>
+
+	/**
+	 * Updates the specified cached items.
+	 *
+	 * This method is an alias for `CacheManager.updateSpecified` method.
+	 * @param cacheItemNames Names of the cache items to update
+	 * @param id Identifiers object (memberID, guildID) to get value from the cache
+	 */.
+	public updateMany<T extends readonly CachedItemNames[]>(
+		cacheItemNames: T,
+		id: DataIdentifier<MemberIDRequired<T>>
+	): Promise<void[]>
 
     /**
      * Clears the specified cached items.

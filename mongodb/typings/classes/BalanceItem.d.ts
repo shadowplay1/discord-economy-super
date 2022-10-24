@@ -1,33 +1,29 @@
 import EconomyOptions from '../interfaces/EconomyOptions'
-
-import CacheManager from '../managers/CacheManager'
 import DatabaseManager from '../managers/DatabaseManager'
 
 
 /**
-* Cooldown item class.
+* User balance item class.
 */
 declare class BalanceItem {
 
     /**
-     * User cooldowns class.
+     * User balance item class.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
      * @param {EconomyOptions} ecoOptions Economy configuration.
-     * @param {CooldownsObject} cooldownsObject User cooldowns object.
+     * @param {BalanceObject} balanceObject User balance object.
      * @param {DatabaseManager} database Database manager.
-     * @param {CacheManager} cache Cache manager.
      */
     public constructor(
         memberID: string,
         guildID: string,
         ecoOptions: EconomyOptions,
-        cooldownsObject: {
+        balanceObject: {
             money: number
             bank: number
         },
-        database: DatabaseManager,
-        cache: CacheManager
+        database: DatabaseManager
     )
 
     /**

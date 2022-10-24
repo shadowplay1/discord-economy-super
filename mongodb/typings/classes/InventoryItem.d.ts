@@ -16,6 +16,7 @@ declare class InventoryItem<T extends object = any> {
     /**
      * Inventory item class.
      * @param {string} guildID Guild ID.
+	 * @param {string} memberID Member ID.
      * @param {EconomyOptions} ecoOptions Economy configuration.
      * @param {InventoryData} itemObject User inventory object.
      * @param {DatabaseManager} database Database manager.
@@ -23,6 +24,7 @@ declare class InventoryItem<T extends object = any> {
      */
     public constructor(
         guildID: string,
+		memberID: string,
         ecoOptions: EconomyOptions,
         itemObject: InventoryData<T>,
         database: DatabaseManager,
