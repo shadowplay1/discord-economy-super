@@ -33,7 +33,9 @@ const InventoryItem = require('./src/classes/InventoryItem')
 const HistoryItem = require('./src/classes/HistoryItem')
 
 const CooldownItem = require('./src/classes/CooldownItem')
+
 const BalanceItem = require('./src/classes/BalanceItem')
+const BankBalanceItem = require('./src/classes/BankBalanceItem')
 
 const Leaderboards = require('./src/classes/guild/Leaderboards')
 const Settings = require('./src/classes/guild/Settings')
@@ -85,7 +87,9 @@ module.exports = {
     HistoryItem,
 
     CooldownItem,
+
     BalanceItem,
+    BankBalanceItem,
 
     Leaderboards,
     Settings,

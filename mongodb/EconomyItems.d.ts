@@ -68,6 +68,11 @@ export import EconomyUser = require('./typings/classes/EconomyUser')
 export import EmptyEconomyGuild = require('./typings/classes/EmptyEconomyGuild')
 export import EmptyEconomyUser = require('./typings/classes/EmptyEconomyUser')
 
+export import CooldownItem = require('./typings/classes/CooldownItem')
+
+export import BalanceItem = require('./typings/classes/BalanceItem')
+export import BankBalanceItem = require('./typings/classes/BankBalanceItem')
+
 export import ShopItem = require('./typings/classes/ShopItem')
 export import InventoryItem = require('./typings/classes/InventoryItem')
 export import HistoryItem = require('./typings/classes/HistoryItem')
