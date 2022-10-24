@@ -5,6 +5,7 @@ const {
     CachedUsers,
     CachedCooldowns,
     CachedBalance,
+	CachedBank,
     CachedShop,
     CachedHistory,
     CachedInventory
@@ -33,6 +34,12 @@ class CacheManager {
          * @type {CachedBalance}
          */
         this.balance = new CachedBalance(null, null, options, database, this)
+
+		/**
+		 * Cached bank balance.
+		 * @type {CachedBank}
+		 */
+		this.bank = new CachedBank(null, null, options, database, this)
 
         /**
          * Cached cooldowns.
@@ -78,10 +85,16 @@ class CacheManager {
 
         await this.guilds.update(id)
         await this.users.update(id)
+
         await this.cooldowns.update(id)
+
+		await this.balance.update(id)
+		await this.bank.update(id)
+
         await this.shop.update(id)
-        await this.history.update(id)
         await this.inventory.update(id)
+
+		await this.history.update(id)
     }
 
     /**
@@ -91,11 +104,16 @@ class CacheManager {
     clearAll() {
         this.guilds.clear()
         this.users.clear()
+
         this.cooldowns.clear()
+
         this.balance.clear()
+		this.bank.clear()
+
         this.shop.clear()
-        this.history.clear()
         this.inventory.clear()
+
+		this.history.clear()
     }
 
     /**
@@ -120,6 +138,20 @@ class CacheManager {
         const result = await Promise.all(promises)
         return result
     }
+
+	/**
+	 * Updates the specified cached items.
+	 *
+	 * This method is an alias for `CacheManager.updateSpecified()` method.
+	 * @param {CacheItemName[]} cacheItemNames
+	 * Names of the cache items to update.
+	 *
+	 * @param {DataIdentifier} id Identifiers object (memberID, guildID) to get value from cache.
+	 * @returns {Promise<void[]>}
+	 */
+	updateMany(cacheItemNames, id) {
+		return this.updateSpecified(cacheItemNames, id)
+	}
 
     /**
      * Clears the specified cached items.

@@ -1,6 +1,3 @@
-const CooldownManager = require('../managers/CooldownManager')
-
-const DatabaseManager = require('../managers/DatabaseManager')
 const CacheManager = require('../managers/CacheManager')
 
 
@@ -16,9 +13,8 @@ class CooldownItem {
      * @param {EconomyOptions} ecoOptions Economy configuration.
      * @param {CooldownsObject} cooldownsObject User cooldowns object.
      * @param {DatabaseManager} database Database manager.
-     * @param {CacheManager} cache Cache manager.
      */
-    constructor(memberID, guildID, ecoOptions, cooldownsObject, database, cache) {
+    constructor(memberID, guildID, ecoOptions, cooldownsObject, database) {
 
         /**
          * Member ID.
@@ -50,14 +46,6 @@ class CooldownItem {
          * @type {number}
          */
         this.weekly = cooldownsObject.weekly
-
-
-        /**
-         * Cooldown Manager.
-         * @type {CooldownManager}
-         * @private
-         */
-        this._cooldowns = new CooldownManager(ecoOptions, database, cache)
     }
 }
 

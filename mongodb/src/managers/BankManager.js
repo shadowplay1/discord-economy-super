@@ -100,7 +100,7 @@ class BankManager extends Emitter {
 
         await this.database.set(`${guildID}.${memberID}.bank`, Number(amount))
 
-        this.cache.users.update({
+        this.cache.updateMany(['bank', 'users'], {
             guildID,
             memberID,
         })
@@ -142,7 +142,7 @@ class BankManager extends Emitter {
 
         await this.database.add(`${guildID}.${memberID}.bank`, Number(amount))
 
-        this.cache.users.update({
+        this.cache.updateMany(['bank', 'users'], {
             guildID,
             memberID,
         })
@@ -184,7 +184,7 @@ class BankManager extends Emitter {
 
         await this.database.subtract(`${guildID}.${memberID}.bank`, Number(amount))
 
-        this.cache.users.update({
+        this.cache.updateMany(['bank', 'users'], {
             guildID,
             memberID,
         })

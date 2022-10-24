@@ -1,11 +1,12 @@
 const CachedItem = require('./CachedItem')
 
-
 const EconomyGuild = require('../classes/EconomyGuild')
 const EconomyUser = require('../classes/EconomyUser')
 
 const CooldownItem = require('../classes/CooldownItem')
+
 const BalanceItem = require('../classes/BalanceItem')
+const BankBalanceItem = require('../classes/BankBalanceItem')
 
 const ShopItem = require('../classes/ShopItem')
 const InventoryItem = require('../classes/InventoryItem')
@@ -36,6 +37,12 @@ class CachedBalance extends CachedItem {
     }
 }
 
+class CachedBank extends CachedItem {
+	constructor(userID, guildID, options, database, cache) {
+		super(BankBalanceItem, [userID, guildID], options, database, cache)
+	}
+}
+
 class CachedShop extends CachedItem {
     constructor(guildID, options, database, cache) {
         super(ShopItem, [guildID], options, database, cache)
@@ -59,6 +66,7 @@ module.exports = {
     CachedUsers,
     CachedCooldowns,
     CachedBalance,
+	CachedBank,
     CachedShop,
     CachedInventory,
     CachedHistory

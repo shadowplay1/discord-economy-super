@@ -226,9 +226,10 @@ class Economy extends Emitter {
             this.init().then(async status => {
                 if (status) {
                     const usersCache = {}
-
                     const cooldownsCache = {}
+
                     const balanceCache = {}
+					const bankBalanceCache = {}
 
                     const inventoryCache = {}
                     const historyCache = {}
@@ -256,13 +257,18 @@ class Economy extends Emitter {
                                 bank: userObject.bank,
                             }
 
+							bankBalanceCache[userID] = {
+								balance: userObject.bank
+							}
+
                             inventoryCache[userID] = userObject.inventory
                             historyCache[userID] = userObject.history
 
                             this.cache.users.set(guildID, usersCache)
-
                             this.cache.cooldowns.set(guildID, cooldownsCache)
+
                             this.cache.balance.set(guildID, balanceCache)
+							this.cache.bank.set(guildID, bankBalanceCache)
 
                             this.cache.inventory.set(guildID, inventoryCache)
                             this.cache.history.set(guildID, historyCache)

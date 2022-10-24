@@ -96,7 +96,9 @@ class CachedItem {
             )
         }
 
-        if (!result) return null
+        if (!result) {
+			return null
+		}
 
         if (this.baseConstructor.name == 'ShopItem') {
             return result.map(item =>
@@ -208,8 +210,8 @@ class CachedItem {
                 const rawUser = await this._database.fetch(`${id.guildID}.${id.memberID}`)
 
                 const balanceObject = {
-                    money: rawUser.money,
-                    bank: rawUser.bank,
+                    money: rawUser?.money,
+                    bank: rawUser?.bank,
                 }
 
                 balanceCache[id.memberID] = balanceObject
@@ -303,7 +305,7 @@ class CachedItem {
                     ), 'INVALID_CACHING_IDENTIFIERS')
                 }
 
-                delete this.cache[id.guildID][id.memberID]
+                delete this.cache[id.guildID]?.[id.memberID]
                 break
 
             case 'CooldownItem':
@@ -315,7 +317,7 @@ class CachedItem {
                     ), 'INVALID_CACHING_IDENTIFIERS')
                 }
 
-                delete this.cache[id.guildID][id.memberID]
+                delete this.cache[id.guildID]?.[id.memberID]
                 break
 
             case 'EconomyGuild':

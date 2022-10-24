@@ -1,19 +1,19 @@
 const DatabaseManager = require('../managers/DatabaseManager')
 
 /**
-* Balance item class.
+* Bank balance item class.
 */
-class BalanceItem {
+class BankBalanceItem {
 
     /**
-     * User balance class.
+     * User bank balance class.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
      * @param {EconomyOptions} ecoOptions Economy configuration.
-     * @param {BalanceObject} balanceObject User balance object.
+     * @param {BalanceObject} bankBalanceObject User bank balance object.
      * @param {DatabaseManager} database Database manager.
      */
-    constructor(memberID, guildID, ecoOptions, balanceObject, database) {
+    constructor(memberID, guildID, ecoOptions, bankBalanceObject, database) {
 
         /**
          * Member ID.
@@ -28,25 +28,18 @@ class BalanceItem {
         this.guildID = guildID
 
         /**
-         * User's balance.
+         * User bank balance object.
          * @type {number}
          */
-        this.money = balanceObject.money
-
-        /**
-         * User balance object.
-         * @type {number}
-         */
-        this.bank = balanceObject.bank
+        this.balance = bankBalanceObject.balance
     }
 }
 
 
 /**
- * Balance object.
- * @typedef {Object} BalanceObject
- * @property {number} money User's money amount.
- * @property {number} bank User's bank balance.
+ * Bank balance object.
+ * @typedef {Object} BankBalanceObject
+ * @property {number} balance User's bank balance.
  */
 
-module.exports = BalanceItem
+module.exports = BankBalanceItem
