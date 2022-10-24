@@ -44,9 +44,7 @@ const client = new Client<true>({
 let eco = new Economy<true>({
     dailyAmount: 100,
     workAmount: [50, 200],
-    weeklyAmount: 5000,
-
-    debug: true
+    weeklyAmount: 5000
 })
 
 

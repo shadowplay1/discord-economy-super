@@ -49,9 +49,7 @@ let eco = new Economy({
 
     dailyAmount: 100,
     workAmount: [50, 200],
-    weeklyAmount: 5000,
-
-    debug: true
+    weeklyAmount: 5000
 })
 
 
@@ -304,9 +302,9 @@ client.on('messageCreate', async message => {
 
 
         const economyUser = member ? argumentUser : user
-        const userData = eco.cache.users.cache?.[message.guild.id]?.[economyUser.id]
+        const balanceData = eco.cache.balance.get({ memberID: member.id, guildID: message.guild.id })
 
-        const [balance, bank] = [userData?.money, userData?.bank]
+        const [balance, bank] = [balanceData.money, balanceData.bank]
 
         message.channel.send(
             `${getUser(economyUser.id)}'s balance:\n` +

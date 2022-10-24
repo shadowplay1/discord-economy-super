@@ -284,7 +284,7 @@ class InventoryManager extends Emitter {
         const inventoryObjects = inventory.map(item => item.itemObject)
 
         const item = inventory.find(invItem => invItem.id == itemID || invItem.name == itemID)
-        const itemQuantity = inventoryObjects.filter(item => item.id == itemID).length || 1;
+        const itemQuantity = inventoryObjects.filter(item => item.id == itemID).length
 
         if (typeof itemID !== 'number' && typeof itemID !== 'string') {
             throw new EconomyError(errors.invalidTypes.editItemArgs.itemID + typeof itemID, 'INVALID_TYPE')
