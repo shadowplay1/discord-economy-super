@@ -1,3 +1,5 @@
+import DatabaseManager from '../managers/DatabaseManager'
+
 import EconomyOptions from '../interfaces/EconomyOptions'
 import HistoryData from '../interfaces/HistoryData'
 
@@ -12,13 +14,17 @@ declare class HistoryItem<T extends object = any> {
     /**
      * History item class.
      * @param {string} guildID Guild ID.
+	 * @param {string} memberID Member ID.
      * @param {EconomyOptions} ecoOptions Economy configuration.
      * @param {HistoryData} itemObject User purchases history item object.
+	 * @param {DatabaseManager} database Database Manager.
      */
     public constructor(
         guildID: string,
+		memberID: string,
         ecoOptions: EconomyOptions,
-        itemObject: HistoryData<T>
+        itemObject: HistoryData<T>,
+		database: DatabaseManager
     )
 
 
