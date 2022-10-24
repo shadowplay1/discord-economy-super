@@ -17,7 +17,7 @@ declare class CachedItem<
     MemberIDRequired extends boolean = true,
     IsDataArray extends boolean = false,
     RequiresParam extends boolean = false
-    > {
+> {
     public constructor(
         baseConstructor: T,
         constructorParams: any[],

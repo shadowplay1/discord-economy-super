@@ -37,7 +37,7 @@ export class CachedBalance extends CachedItem<BalanceItem, null, true, false, fa
 }
 
 export class CachedBank extends CachedItem<BankBalanceItem, null, true, false, false> {
-	public constructor(userID: string, guildID: string, options: any[], database: DatabaseManager, cache: CacheManager)
+    public constructor(userID: string, guildID: string, options: any[], database: DatabaseManager, cache: CacheManager)
 }
 
 export class CachedShop extends CachedItem<ShopItem, null, false, true, true> {
