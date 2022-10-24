@@ -7,7 +7,22 @@ const EmptyEconomyUser = require('../classes/EmptyEconomyUser')
 const DatabaseManager = require('../managers/DatabaseManager')
 const CacheManager = require('../managers/CacheManager')
 
+/**
+ * Cached item class. Used to work with data in Economy cache 
+ * (e.g. getting balance data, shop data, etc. from the cache).
+ */
 class CachedItem {
+
+    /**
+     * Cached item class. Used to work with data in Economy cache 
+     * (e.g. getting balance data, shop data, etc. from the cache).
+     * 
+     * @param {any} baseConstructor Constructor that will be called in the methods.
+     * @param {any[]} constructorParams Array of parameters for `baseConstructor` to pass in.
+     * @param {EconomyOptions} options Economy configuration object.
+     * @param {DatabaseManager} database Database manager instance.
+     * @param {CacheManager} cacheManager Cache manager instance.
+     */
     constructor(baseConstructor, constructorParams, options, database, cacheManager) {
 
         /**
@@ -97,8 +112,8 @@ class CachedItem {
         }
 
         if (!result) {
-			return null
-		}
+            return null
+        }
 
         if (this.baseConstructor.name == 'ShopItem') {
             return result.map(item =>

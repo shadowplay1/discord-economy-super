@@ -14,7 +14,16 @@ const {
 const EconomyError = require('../classes/util/EconomyError')
 const errors = require('../structures/errors')
 
+/**
+ * Economy Cache manager.
+ */
 class CacheManager {
+
+    /**
+     * Economy Cache manager.
+     * @param {EconomyOptions} options Economy configuration object.
+     * @param {DatabaseManager} database Database manager instance.
+     */
     constructor(options, database) {
 
         /**
