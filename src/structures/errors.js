@@ -58,6 +58,9 @@ module.exports = {
         value: 'value must be specified. Received: ',
         id: 'id must be a string or a number. Received type: ',
 
+        depositInvalidInput: 'Cannot deposit a negative amount of money.',
+        withdrawInvalidInput: 'Cannot withdraw a negative amount of money.',
+
         addItemOptions: {
             name: 'options.name must be a string. Received type: ',
             price: 'options.price must be a number. Received type: ',
@@ -132,7 +135,7 @@ module.exports = {
      * @param {string} oldMethod 
      * @param {string} newManager 
      * @param {string} newMethod
-     * @param {String[]} argumentsList
+     * @param {string[]} argumentsList
      * @returns {string} Deprecation warning message.
      */
     deprecationWarning(oldManager, oldMethod, newManager, newMethod, argumentsList = [], newArgumentsList = []) {

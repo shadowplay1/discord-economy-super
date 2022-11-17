@@ -20,12 +20,12 @@ class DotParser {
         /**
          * Economy configuration.
          * @private
-         * @type {EconomyOptions}
+         * @type {EconomyConfiguration}
          */
         this.options = options
 
         /**
-         * Fetch manager methods object.
+         * Fetch manager methods class.
          * @type {FetchManager}
          * @private
          */

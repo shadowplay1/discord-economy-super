@@ -16,14 +16,14 @@ class FetchManager {
 
     /**
      * Fetch Manager.
-     * @param {EconomyOptions} options Economy configuration.
+     * @param {EconomyConfiguration} options Economy configuration.
      * @param {DatabaseManager} database Database Manager.
      */
     constructor(options = {}, database) {
 
         /**
          * Economy configuration.
-         * @type {EconomyOptions}
+         * @type {EconomyConfiguration}
          * @private
          */
         this.options = options
@@ -78,12 +78,8 @@ class FetchManager {
         const guildData = data[guildID]
         const memberData = guildData?.[memberID]
 
-        /**
-         * @type {number}
-         */
-        const money = memberData?.money || 0
-
-        return money
+        const money = memberData?.money
+        return money || 0
     }
 
     /**
@@ -106,12 +102,8 @@ class FetchManager {
         const guildData = data[guildID]
         const memberData = guildData?.[memberID]
 
-        /**
-         * @type {number}
-         */
-        const bankMoney = memberData?.bank || 0
-
-        return bankMoney
+        const bankMoney = memberData?.bank
+        return bankMoney || 0
     }
 
     /**
@@ -134,11 +126,7 @@ class FetchManager {
         const guildData = data[guildID]
         const memberData = guildData?.[memberID]
 
-        /**
-         * @type {InventoryData[]}
-         */
         const inventory = memberData?.inventory || []
-
         return inventory.map(item => new InventoryItem(guildID, memberID, this.options, item, this.database))
     }
 
@@ -162,11 +150,7 @@ class FetchManager {
         const guildData = data[guildID]
         const memberData = guildData?.[memberID]
 
-        /**
-         * @type {HistoryData[]}
-         */
         const history = memberData?.history || []
-
         return history.map(item => new HistoryItem(guildID, memberID, this.options, item, this.database))
     }
 
@@ -190,9 +174,9 @@ class FetchManager {
         const guildData = data[guildID]
         const memberData = guildData?.[memberID]
 
-        const dailyCooldown = memberData?.dailyCooldown
-        const workCooldown = memberData?.workCooldown
-        const weeklyCooldown = memberData?.weeklyCooldown
+        const dailyCooldown = memberData?.dailyCooldown || 0
+        const workCooldown = memberData?.workCooldown || 0
+        const weeklyCooldown = memberData?.weeklyCooldown || 0
 
         return {
             dailyCooldown,

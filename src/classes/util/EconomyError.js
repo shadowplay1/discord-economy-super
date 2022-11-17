@@ -4,6 +4,8 @@ const errorCodes = [
     'INVALID_TYPE',
     'UNKNOWN_ERROR',
     'PARAMETER_NOT_SPECIFIED',
+    'ITEM_PROPERTY_INVALID',
+    'INVALID_INPUT',
     'OLD_NODE_VERSION',
     'NO_DISCORD_CLIENT',
     'ROLE_NOT_FOUND',
@@ -27,6 +29,8 @@ class EconomyError extends Error {
      * 'UNKNOWN_ERROR' | 
      * 'PARAMETER_NOT_SPECIFIED' |
      * 'OLD_NODE_VERSION' |
+     * 'ITEM_PROPERTY_INVALID' |
+     * 'INVALID_INPUT' |
      * 'NO_DISCORD_CLIENT' | 
      * 'ROLE_NOT_FOUND' |
      * 'PURCHASES_HISTORY_DISABLED' |

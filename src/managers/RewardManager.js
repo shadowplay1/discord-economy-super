@@ -38,33 +38,33 @@ class RewardManager {
       * @param {number} options.weeklyCooldown
       * Cooldown for Weekly Command (in ms). Default: 7 days (60000 * 60 * 24 * 7 ms)
       * @param {number} options.weeklyAmount Amount of money for Weekly Command. Default: 1000.
-      * @param {Number | Array} options.workAmount Amount of money for Work Command. Default: [10, 50].
+      * @param {number | number[]} options.workAmount Amount of money for Work Command. Default: [10, 50].
      */
     constructor(options) {
 
         /**
          * Economy configuration.
-         * @type {EconomyOptions}
+         * @type {EconomyConfiguration}
          * @private
          */
         this.options = options
 
         /**
-        * Database manager methods object.
+        * Database manager methods class.
         * @type {DatabaseManager}
         * @private
         */
         this.database = new DatabaseManager(options)
 
         /**
-         * Cooldown manager methods object.
+         * Cooldown manager methods class.
          * @type {CooldownManager}
          * @private
          */
         this.cooldowns = new CooldownManager(options)
 
         /**
-         * Balance manager methods object.
+         * Balance manager methods class.
          * @type {BalanceManager}
          * @private
          */
@@ -76,7 +76,7 @@ class RewardManager {
      * @param {RewardType} reward Reward to give.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
-     * @param {string} reason The reason why the money was added.
+     * @param {string} [reason] The reason why the money was added.
      * @returns {RewardData} Daily reward object.
     */
     receive(reward, memberID, guildID, reason) {
@@ -119,7 +119,7 @@ class RewardManager {
      * Adds a daily reward on user's balance.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
-     * @param {string} reason The reason why the money was added. Default: 'claimed the daily reward'.
+     * @param {string} [reason] The reason why the money was added. Default: 'claimed the daily reward'.
      * @returns {RewardData} Daily reward object.
     */
     getDaily(memberID, guildID, reason = 'claimed the daily reward') {
@@ -182,7 +182,7 @@ class RewardManager {
      * Adds a work reward on user's balance.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
-     * @param {string} reason The reason why the money was added. Default: 'claimed the work reward'.
+     * @param {string} [reason] The reason why the money was added. Default: 'claimed the work reward'.
      * @returns {RewardData} Work reward object.
      */
     getWork(memberID, guildID, reason = 'claimed the work reward') {
@@ -244,7 +244,7 @@ class RewardManager {
      * Adds a weekly reward on user's balance.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
-     * @param {string} reason The reason why the money was added. Default: 'claimed the weekly reward'.
+     * @param {string} [reason] The reason why the money was added. Default: 'claimed the weekly reward'.
      * @returns {RewardData} Weekly reward object.
      */
     getWeekly(memberID, guildID, reason = 'claimed the weekly reward') {

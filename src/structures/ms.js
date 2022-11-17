@@ -15,10 +15,10 @@ var y = d * 365.25
  *
  *  - `long` verbose formatting [false]
  *
- * @param {String|Number} val
+ * @param {string | number} val
  * @param {object} [options]
  * @throws {Error} throw an error if val is not a non-empty string or a number
- * @return {String|Number}
+ * @return {string | number}
  * @api public
  */
 

@@ -25,7 +25,7 @@ class BankManager extends Emitter {
 
         /**
          * Economy configuration.
-         * @type {EconomyOptions}
+         * @type {EconomyConfiguration}
          * @private
          */
         this.options = options
@@ -80,7 +80,7 @@ class BankManager extends Emitter {
      * @param {number} amount Money amount.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
-     * @param {string} reason The reason why you add the money.
+     * @param {string} [reason] The reason why you set the money.
      * @returns {number} Money amount.
      */
     set(amount, memberID, guildID, reason = null) {
@@ -117,7 +117,7 @@ class BankManager extends Emitter {
      * @param {number} amount Money amount.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
-     * @param {string} reason The reason why you add the money.
+     * @param {string} [reason] The reason why you add the money.
      * @returns {number} Money amount.
      */
     add(amount, memberID, guildID, reason = null) {
@@ -154,7 +154,7 @@ class BankManager extends Emitter {
      * @param {number} amount Money amount.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
-     * @param {string} reason The reason why you add the money.
+     * @param {string} [reason] The reason why you subtract the money.
      * @returns {number} Money amount.
      */
     subtract(amount, memberID, guildID, reason = null) {
@@ -187,7 +187,59 @@ class BankManager extends Emitter {
     }
 
     /**
-     * Shows a money leaderboard for your server.
+     * Withdraws the specified amount of money.
+     * @param {number} amount Money amount.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @param {string} [reason] The reason of the operation.
+     * @returns {number} Money amount.
+     */
+    withdraw(amount, memberID, guildID, reason = null) {
+        const balance = this.fetcher.fetchBalance(memberID, guildID)
+        const bank = this.fetcher.fetchBank(memberID, guildID)
+
+        if (isNaN(amount)) {
+            throw new EconomyError(errors.invalidTypes.amount + typeof amount, 'INVALID_TYPE')
+        }
+
+        if (amount < 0) {
+            throw new EconomyError(errors.invalidTypes.withdrawInvalidInput, 'INVALID_INPUT')
+        }
+
+        if (typeof memberID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
+        }
+
+        if (typeof guildID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
+        }
+
+        this.database.subtract(`${guildID}.${memberID}.money`, amount)
+        this.database.add(`${guildID}.${memberID}.bank`, amount)
+
+        this.emit('balanceAdd', {
+            type: 'add',
+            guildID,
+            memberID,
+            amount: Number(amount),
+            balance: balance + amount,
+            reason
+        })
+
+        this.emit('bankSubtract', {
+            type: 'subtract',
+            guildID,
+            memberID,
+            amount: Number(amount),
+            balance: bank - amount,
+            reason
+        })
+
+        return amount
+    }
+
+    /**
+     * Gets a balance leaderboard for specified server.
      * @param {string} guildID Guild ID.
      * @returns {BankLeaderboard[]} Sorted leaderboard array.
      */
@@ -210,7 +262,9 @@ class BankManager extends Emitter {
             money: Number(ranks[rank])
         })
 
-        return lb.sort((a, b) => b.money - a.money)
+        return lb
+            .sort((previous, current) => current.money - previous.money)
+            .filter(entry => entry.userID !== 'shop')
     }
 }
 

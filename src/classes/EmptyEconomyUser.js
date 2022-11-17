@@ -3,6 +3,7 @@ const EconomyUser = require('./EconomyUser')
 
 /**
  * Empty economy user class.
+ * @extends {EconomyUser}
  */
 class EmptyEconomyUser extends EconomyUser {
 
@@ -10,7 +11,7 @@ class EmptyEconomyUser extends EconomyUser {
      * Economy user class.
      * @param {string} userID User ID.
      * @param {string} guildID Guild ID.
-     * @param {EconomyOptions} options Economy configuration.
+     * @param {EconomyConfiguration} options Economy configuration.
      * @param {DatabaseManager} database Database Manager.
      */
     constructor(userID, guildID, options, database) {

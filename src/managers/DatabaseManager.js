@@ -28,7 +28,7 @@ class DatabaseManager {
         this._logger = new Logger(options)
 
         /**
-         * Fetch manager methods object.
+         * Fetch manager methods class.
          * @type {FetchManager}
          * @private
          */
@@ -42,7 +42,7 @@ class DatabaseManager {
         this.storagePath = options.storagePath || './storage.json'
 
         /**
-         * Dot parser methods object.
+         * Dot parser methods class.
          * @private
          * @type {DotParser}
          */
@@ -54,7 +54,7 @@ class DatabaseManager {
     /**
      * Gets a list of keys in database.
      * @param {string} key The key in database.
-     * @returns {String[]} An array with all keys in database or 'null' if nothing found.
+     * @returns {string[]} An array with all keys in database or 'null' if nothing found.
      */
     keysList(key) {
         const storageData = this.all()
