@@ -1,4 +1,4 @@
-import EconomyOptions from '../../interfaces/EconomyOptions'
+import EconomyConfiguration from '../../interfaces/EconomyConfiguration'
 
 import ShopOperationInfo from '../../interfaces/ShopOperationInfo'
 import SellingOperationInfo from '../../interfaces/SellingOperationInfo'
@@ -13,9 +13,9 @@ declare class Items {
      * User Items.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
-     * @param {EconomyOptions} ecoOptions Economy configuratuion.
+     * @param {EconomyConfiguration} ecoOptions Economy configuratuion.
      */
-    public constructor(memberID: string, guildID: string, ecoOptions: EconomyOptions, database: DatabaseManager)
+    public constructor(memberID: string, guildID: string, ecoOptions: EconomyConfiguration, database: DatabaseManager)
 
     /**
      * Buys the item from the shop.
@@ -53,6 +53,12 @@ declare class Items {
      * @returns {Promise<string>} Item message.
      */
     public use(itemID: number | string, client?: any): Promise<string>
+
+    /**
+     * Fetches the user's inventory.
+     * @returns {Promise<InventoryItem[]>} User's inventory array.
+     */
+    public all(): Promise<InventoryItem[]>
 
     /**
      * Removes the item from user's inventory.

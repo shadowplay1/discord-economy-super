@@ -1,18 +1,21 @@
+import DatabaseManager from './DatabaseManager'
+import CacheManager from './CacheManager'
+
 import Emitter from '../classes/util/Emitter'
 import InventoryItem from '../classes/InventoryItem'
 
-import EconomyOptions from '../interfaces/EconomyOptions'
+import EconomyConfiguration from '../interfaces/EconomyConfiguration'
 
 import ShopOperationInfo from '../interfaces/ShopOperationInfo'
 import SellingOperationInfo from '../interfaces/SellingOperationInfo'
 
 
 /**
-* Inventory manager methods object.
+* Inventory manager methods class.
 * @extends {Emitter}
 */
 declare class InventoryManager extends Emitter {
-    public constructor(options: EconomyOptions)
+    public constructor(options: EconomyConfiguration, database: DatabaseManager, cache: CacheManager)
 
     /**
      * Uses the item from the user's inventory.

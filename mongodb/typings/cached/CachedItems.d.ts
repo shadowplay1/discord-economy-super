@@ -1,7 +1,7 @@
 import CacheManager from '../managers/CacheManager'
 import DatabaseManager from '../managers/DatabaseManager'
 
-import EconomyOptions from '../interfaces/EconomyOptions'
+import EconomyConfiguration from '../interfaces/EconomyConfiguration'
 
 import CachedItem from './CachedItem'
 

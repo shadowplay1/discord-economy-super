@@ -1,5 +1,7 @@
+import DatabaseManager from './DatabaseManager'
+import CacheManager from './CacheManager'
 
-import EconomyOptions from '../interfaces/EconomyOptions'
+import EconomyConfiguration from '../interfaces/EconomyConfiguration'
 
 import BaseManager from './BaseManager'
 
@@ -14,9 +16,9 @@ declare class GuildManager extends BaseManager<EconomyGuild, EmptyEconomyGuild> 
 
     /**
      * Guild Manager.
-     * @param {EconomyOptions} options Economy configuration.
+     * @param {EconomyConfiguration} options Economy configuration.
      */
-    public constructor(options: EconomyOptions)
+    public constructor(options: EconomyConfiguration, database: DatabaseManager, cache: CacheManager)
 
     /**
      * Gets the guild by it's ID.

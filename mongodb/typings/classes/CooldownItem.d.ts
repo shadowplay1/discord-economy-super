@@ -1,4 +1,4 @@
-import EconomyOptions from '../interfaces/EconomyOptions'
+import EconomyConfiguration from '../interfaces/EconomyConfiguration'
 import DatabaseManager from '../managers/DatabaseManager'
 
 
@@ -11,14 +11,14 @@ declare class CooldownItem {
      * User cooldowns class.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
-     * @param {EconomyOptions} ecoOptions Economy configuration.
+     * @param {EconomyConfiguration} ecoOptions Economy configuration.
      * @param {CooldownsObject} cooldownsObject User cooldowns object.
      * @param {DatabaseManager} database Database manager.
      */
     public constructor(
-        memberID: string,
         guildID: string,
-        ecoOptions: EconomyOptions,
+		memberID: string,
+        ecoOptions: EconomyConfiguration,
         cooldownsObject: {
             daily: number
             work: number

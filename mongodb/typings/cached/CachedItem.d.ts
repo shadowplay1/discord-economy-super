@@ -2,7 +2,7 @@ import If from '../interfaces/If'
 
 import DatabaseManager from '../managers/DatabaseManager'
 
-import EconomyOptions from '../interfaces/EconomyOptions'
+import EconomyConfiguration from '../interfaces/EconomyConfiguration'
 import EconomyDatabase from '../interfaces/EconomyDatabase'
 
 import DataIdentifier from '../interfaces/DataIdentifier'
@@ -21,15 +21,15 @@ declare class CachedItem<
     public constructor(
         baseConstructor: T,
         constructorParams: any[],
-        options: EconomyOptions,
+        options: EconomyConfiguration,
         database: DatabaseManager
     )
 
     /**
      * Economy options.
-     * @type {EconomyOptions}
+     * @type {EconomyConfiguration}
      */
-    public options: EconomyOptions
+    public options: EconomyConfiguration
 
     /**
      * A constructor (EconomyUser, ShopItem, etc.) to work with.

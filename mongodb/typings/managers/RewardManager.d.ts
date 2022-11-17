@@ -1,13 +1,17 @@
+import DatabaseManager from './DatabaseManager'
+import CacheManager from './CacheManager'
+
 import RewardObject from '../interfaces/RewardObject'
-import EconomyOptions from '../interfaces/EconomyOptions'
+import EconomyConfiguration from '../interfaces/EconomyConfiguration'
 
 import { RewardType } from '../interfaces/RewardTypes'
 
+
 /**
- * Reward manager methods object.
+ * Reward manager methods class.
  */
 declare class RewardManager {
-    public constructor(options: EconomyOptions)
+    public constructor(options: EconomyConfiguration, database: DatabaseManager, cache: CacheManager)
 
     /**
     * Adds a specified reward on user's balance.

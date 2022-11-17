@@ -1,12 +1,12 @@
 import RewardObject from '../../interfaces/RewardObject'
 import { RewardType } from '../../interfaces/RewardTypes'
 
-import EconomyOptions from '../../interfaces/EconomyOptions'
+import EconomyConfiguration from '../../interfaces/EconomyConfiguration'
 import DatabaseManager from '../../managers/DatabaseManager'
 
 
 declare class Rewards {
-    public constructor(memberID: string, guildID: string, options: EconomyOptions, database: DatabaseManager)
+    public constructor(memberID: string, guildID: string, options: EconomyConfiguration, database: DatabaseManager)
 
     /**
     * Adds a specified reward on user's balance

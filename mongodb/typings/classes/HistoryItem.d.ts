@@ -1,4 +1,4 @@
-import EconomyOptions from '../interfaces/EconomyOptions'
+import EconomyConfiguration from '../interfaces/EconomyConfiguration'
 
 import DatabaseManager from '../managers/DatabaseManager'
 import CacheManager from '../managers/CacheManager'
@@ -16,7 +16,7 @@ declare class HistoryItem<T extends object = any> {
      * History item class.
      * @param {string} guildID Guild ID.
 	 * @param {string} memberID Member ID.
-     * @param {EconomyOptions} ecoOptions Economy configuration.
+     * @param {EconomyConfiguration} ecoOptions Economy configuration.
      * @param {HistoryData} itemObject User purchases history item object.
      * @param {DatabaseManager} database Database manager.
      * @param {CacheManager} cache Cache manager.
@@ -24,7 +24,7 @@ declare class HistoryItem<T extends object = any> {
     public constructor(
         guildID: string,
 		memberID: string,
-        ecoOptions: EconomyOptions,
+        ecoOptions: EconomyConfiguration,
         itemObject: HistoryData<T>,
         database: DatabaseManager,
         cache: CacheManager

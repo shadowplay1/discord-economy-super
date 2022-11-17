@@ -3,7 +3,7 @@ import BaseManager from '../../managers/BaseManager'
 
 import ShopItem from '../ShopItem'
 
-import EconomyOptions from '../../interfaces/EconomyOptions'
+import EconomyConfiguration from '../../interfaces/EconomyConfiguration'
 import AddItemOptions from '../../interfaces/AddItemOptions'
 
 import { ItemProperties, ItemPropertyType } from '../../interfaces/ItemProperties'
@@ -11,7 +11,7 @@ import CustomItemData from '../../interfaces/CustomItemData'
 
 
 declare class Shop extends BaseManager<ShopItem<any>> {
-    public constructor(guildID: string, options: EconomyOptions, database: DatabaseManager)
+    public constructor(guildID: string, options: EconomyConfiguration, database: DatabaseManager)
 
     /**
       * Creates an item in shop.

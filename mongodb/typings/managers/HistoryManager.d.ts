@@ -1,11 +1,16 @@
-import EconomyOptions from '../interfaces/EconomyOptions'
+import DatabaseManager from './DatabaseManager'
+import CacheManager from './CacheManager'
+
+import EconomyConfiguration from '../interfaces/EconomyConfiguration'
+
 import HistoryItem from '../classes/HistoryItem'
 
+
 /**
-* History manager methods object.
+* History manager methods class.
 */
 declare class HistoryManager {
-    public constructor(options: EconomyOptions)
+    public constructor(options: EconomyConfiguration, database: DatabaseManager, cache: CacheManager)
 
     /**
      * Shows the user's purchase history.

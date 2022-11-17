@@ -1,12 +1,12 @@
 import HistoryItem from '../HistoryItem'
 
-import EconomyOptions from '../../interfaces/EconomyOptions'
+import EconomyConfiguration from '../../interfaces/EconomyConfiguration'
 import BaseManager from '../../managers/BaseManager'
 import DatabaseManager from '../../managers/DatabaseManager'
 
 
 declare class History extends BaseManager<HistoryItem<any>> {
-    public constructor(memberID: string, guildID: string, options: EconomyOptions, database: DatabaseManager)
+    public constructor(memberID: string, guildID: string, options: EconomyConfiguration, database: DatabaseManager)
 
     /**
      * Gets all the items in user's purchases history.

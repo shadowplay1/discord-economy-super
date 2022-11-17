@@ -1,16 +1,20 @@
+import DatabaseManager from './DatabaseManager'
+import CacheManager from './CacheManager'
+
 import If from '../interfaces/If'
-import EconomyOptions from '../interfaces/EconomyOptions'
+import EconomyConfiguration from '../interfaces/EconomyConfiguration'
 
 import BaseManager from './BaseManager'
 
 import EconomyUser from '../classes/EconomyUser'
 import EmptyEconomyUser from '../classes/EmptyEconomyUser'
 
+
 type UserFunction<
     MemberIDRequired extends boolean,
     ReturnType = EconomyUser,
     EmptyReturnType = EmptyEconomyUser
-    > =
+> =
     If<
         MemberIDRequired,
         (memberID: string, guildID: string) => Promise<
@@ -21,6 +25,7 @@ type UserFunction<
         >
     >
 
+
 /**
  * User Manager.
  */
@@ -28,9 +33,15 @@ declare class UserManager<MemberIDRequired extends boolean> extends BaseManager<
 
     /**
      * User Manager.
-     * @param {EconomyOptions} options Economy configuration.
+     * @param {EconomyConfiguration} options Economy configuration.
      */
-    public constructor(options: EconomyOptions)
+    public constructor(
+        options: EconomyConfiguration,
+        database: DatabaseManager,
+        guildID: string,
+        cache: CacheManager
+    )
+
     /**
     * Gets the array of ALL users in database.
     * @returns {EconomyUser[]}

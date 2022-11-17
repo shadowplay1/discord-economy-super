@@ -1,4 +1,4 @@
-import EconomyOptions from '../interfaces/EconomyOptions'
+import EconomyConfiguration from '../interfaces/EconomyConfiguration'
 
 import DatabaseManager from '../managers/DatabaseManager'
 import CacheManager from '../managers/CacheManager'
@@ -14,13 +14,13 @@ declare class EmptyEconomyGuild extends EconomyGuild {
     /**
      * Economy guild class.
      * @param {string} guildID Guild ID.
-     * @param {EconomyOptions} options Economy configuration.
+     * @param {EconomyConfiguration} options Economy configuration.
      * @param {DatabaseManager} database Database manager.
      * @param {CacheManager} cache Cache manager.
      */
     public constructor(
         guildID: string,
-        options: EconomyOptions,
+        options: EconomyConfiguration,
         database: DatabaseManager,
         cache: CacheManager
     )

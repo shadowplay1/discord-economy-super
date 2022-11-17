@@ -1,10 +1,10 @@
 
 import Emitter from '../util/Emitter'
-import EconomyOptions from '../../interfaces/EconomyOptions'
+import EconomyConfiguration from '../../interfaces/EconomyConfiguration'
 import DatabaseManager from '../../managers/DatabaseManager'
 
 declare class Bank extends Emitter {
-    public constructor(memberID: string, guildID: string, options: EconomyOptions, database: DatabaseManager)
+    public constructor(memberID: string, guildID: string, options: EconomyConfiguration, database: DatabaseManager)
 
     /**
      * Sets the money amount on user's bank balance.
@@ -29,6 +29,14 @@ declare class Bank extends Emitter {
      * @returns {Promise<number>} Money amount.
      */
     public subtract(amount: number, reason?: string): Promise<number>
+
+    /**
+     * Withdraws the specified amount of money.
+     * @param {number} amount Money amount.
+     * @param {string} [reason] The reason of the operation.
+     * @returns {Promise<number>} Money amount.
+     */
+    public withdraw(amount: number, reason?: string): Promise<number>
 
     /**
      * Fetches the user's bank balance.

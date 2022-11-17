@@ -1,4 +1,4 @@
-import EconomyOptions from '../../interfaces/EconomyOptions'
+import EconomyConfiguration from '../../interfaces/EconomyConfiguration'
 
 import SettingsTypes from '../../interfaces/SettingsTypes'
 import SettingValueType from '../../interfaces/SettingValueType'
@@ -6,7 +6,7 @@ import DatabaseManager from '../../managers/DatabaseManager'
 
 
 declare class Settings {
-    public constructor(guildID: string, options: EconomyOptions, database: DatabaseManager)
+    public constructor(guildID: string, options: EconomyConfiguration, database: DatabaseManager)
 
     /**
      * Gets the specified setting from the database.
@@ -40,8 +40,34 @@ declare class Settings {
      * the module will take the values from the
      * specified configuration or default configuration.
      *
-     * @param {keyof SettingsTypes} key The setting to remove..
+     * @param {keyof SettingsTypes} key The setting to remove.
      * @returns {SettingsTypes} The server settings object.
+     */
+    public remove(key: keyof SettingsTypes): Promise<SettingsTypes>
+
+    /**
+     * Deletes the specified setting from the guild.
+     *
+     * Note: If the server don't have any setting specified,
+     * the module will take the values from the
+     * specified configuration or default configuration.
+     *
+     * @param {Settings} key The setting to delete.
+     * @returns {Promise<SettingsTypes>} The server settings object.
+     */
+    public delete(key: keyof SettingsTypes): Promise<SettingsTypes>
+
+    /**
+     * Deletes the specified setting from the guild.
+     *
+     * Note: If the server don't have any setting specified,
+     * the module will take the values from the
+     * specified configuration or default configuration.
+     * 
+     * This method is an alias for `Settings.delete()` method.
+     *
+     * @param {Settings} key The setting to delete.
+     * @returns {Promise<SettingsTypes>} The server settings object.
      */
     public remove(key: keyof SettingsTypes): Promise<SettingsTypes>
 

@@ -1,3 +1,6 @@
+import DatabaseManager from './DatabaseManager'
+import CacheManager from './CacheManager'
+
 import Emitter from '../classes/util/Emitter'
 import ShopItem from '../classes/ShopItem'
 
@@ -7,14 +10,15 @@ import ShopOperationInfo from '../interfaces/ShopOperationInfo'
 import { ItemProperties, ItemPropertyType } from '../interfaces/ItemProperties'
 import CustomItemData from '../interfaces/CustomItemData'
 
-import EconomyOptions from '../interfaces/EconomyOptions'
+import EconomyConfiguration from '../interfaces/EconomyConfiguration'
+
 
 /**
-* Shop manager methods object.
+* Shop manager methods class.
 * @extends {Emitter}
 */
 declare class ShopManager extends Emitter {
-    public constructor(options: EconomyOptions)
+    public constructor(options: EconomyConfiguration, database: DatabaseManager, cache: CacheManager)
 
     /**
      * Creates an item in shop.

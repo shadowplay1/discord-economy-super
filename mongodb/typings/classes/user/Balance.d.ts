@@ -1,10 +1,10 @@
 import Emitter from '../util/Emitter'
 
-import EconomyOptions from '../../interfaces/EconomyOptions'
+import EconomyConfiguration from '../../interfaces/EconomyConfiguration'
 import DatabaseManager from '../../managers/DatabaseManager'
 
-import TransferringOptions from '../../interfaces/TransferringOptions'
-import TransferringResult from '../../interfaces/TransferringResult'
+import TransferingOptions from '../../interfaces/TransferingOptions'
+import TransferingResult from '../../interfaces/TransferingResult'
 
 
 declare class Balance extends Emitter {
@@ -13,9 +13,9 @@ declare class Balance extends Emitter {
      * User balance class.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
-     * @param {EconomyOptions} ecoOptions Economy configuration.
+     * @param {EconomyConfiguration} ecoOptions Economy configuration.
      */
-    public constructor(memberID: string, guildID: string, ecoOptions: EconomyOptions, database: DatabaseManager)
+    public constructor(memberID: string, guildID: string, ecoOptions: EconomyConfiguration, database: DatabaseManager)
 
     /**
      * Sets the money amount on user's balance.
@@ -50,17 +50,25 @@ declare class Balance extends Emitter {
     public get(): Promise<number>
 
     /**
+     * Deposits the specified amount of money.
+     * @param {number} amount Money amount.
+     * @param {string} [reason] The reason of the operation.
+     * @returns {Promise<number>} Money amount.
+     */
+    public deposit(amount: number, reason?: string): Promise<number>
+
+    /**
      * Fetches the user's balance.
      * @returns {Promise<number>} User's balance.
      */
     public fetch(): Promise<number>
 
     /**
-     * Sends the money to a specified user.
-     * @param {TransferringOptions} options Transferring options.
-     * @returns {Promise<TransferringResult>} Transferring result object.
+     * Transfers the money to a specified user.
+     * @param {TransferingOptions} options Transfering options.
+     * @returns {Promise<TransferingResult>} Transfering result object.
      */
-    public transfer(options: Omit<TransferringOptions, 'receiverMemberID'>): Promise<TransferringResult>
+    public transfer(options: Omit<TransferingOptions, 'receiverMemberID'>): Promise<TransferingResult>
 }
 
 export = Balance

@@ -1,8 +1,10 @@
 import DatabaseManager from './DatabaseManager'
+import CacheManager from './CacheManager'
+
 import UtilsManager from './UtilsManager'
 
-import EconomyOptions from '../interfaces/EconomyOptions'
-import CacheManager from '..//managers/CacheManager'
+import EconomyConfiguration from '../interfaces/EconomyConfiguration'
+
 
 /**
  * The default manager with its default methods.
@@ -35,15 +37,15 @@ import CacheManager from '..//managers/CacheManager'
  *  
  *  async all() {
  *      const shop = (await this.database.fetch(`${this.guildID}.shop`)) || []
-        return shop.map(item => new ShopItem(this.guildID, item, this.database, this.cache))
- *  }
+ *      return shop.map(item => new ShopItem(this.guildID, item, this.database, this.cache))
+ *   }
  * }
  */
 declare class BaseManager<T, E = any> {
 
     /**
      * Base Manager.
-     * @param {EconomyOptions} options Economy configuration.
+     * @param {EconomyConfiguration} options Economy configuration.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
      * @param {T} constructor A constructor (EconomyUser, ShopItem, etc.) to work with.
@@ -54,7 +56,7 @@ declare class BaseManager<T, E = any> {
      * An empty constructor (EmptyEconomyUser, EmptyEconomyGuild, etc.) to replace the `undefined` value with.
      */
     public constructor(
-        options: EconomyOptions,
+        options: EconomyConfiguration,
         memberID: string,
         guildID: string,
         constructor: T,
@@ -77,10 +79,10 @@ declare class BaseManager<T, E = any> {
 
     /**
      * Economy configuration.
-     * @type {EconomyOptions}
+     * @type {EconomyConfiguration}
      * @private
      */
-    private options: EconomyOptions
+    private options: EconomyConfiguration
 
     /**
      * Database Manager.

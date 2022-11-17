@@ -1,16 +1,19 @@
-import CheckerOptions from '../interfaces/CheckerOptions'
+import DatabaseManager from './DatabaseManager'
+import CacheManager from './CacheManager'
+
+import CheckerConfiguration from '../interfaces/CheckerConfiguration'
 
 import EconomyDatabase from '../interfaces/EconomyDatabase'
-import EconomyOptions from '../interfaces/EconomyOptions'
+import EconomyConfiguration from '../interfaces/EconomyConfiguration'
 
 import VersionData from '../interfaces/VersionData'
 
 
 /**
- * Utils manager methods object.
+ * Utils manager methods class.
  */
 declare class UtilsManager {
-    public constructor(options: EconomyOptions)
+    public constructor(options: EconomyConfiguration, database: DatabaseManager, cache: CacheManager)
     
     /**
     * Fetches the entire database.
@@ -47,10 +50,10 @@ declare class UtilsManager {
 
     /**
      * Checks the Economy configuration, fixes the problems returns it.
-     * @param {CheckerOptions} options Option checker options.
-     * @returns {EconomyOptions} Fixed Economy configuration.
+     * @param {CheckerConfiguration} options Option checker options.
+     * @returns {EconomyConfiguration} Fixed Economy configuration.
      */
-    public checkOptions(options?: CheckerOptions): EconomyOptions
+    public checkOptions(options?: CheckerConfiguration): EconomyConfiguration
 
     /**
      * Sets the default user object for the specified member.
