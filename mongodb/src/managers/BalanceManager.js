@@ -24,7 +24,7 @@ class BalanceManager extends Emitter {
 
         /**
          * Economy configuration.
-         * @type {EconomyOptions}
+         * @type {EconomyConfiguration}
          * @private
          */
         this.options = options
@@ -59,8 +59,8 @@ class BalanceManager extends Emitter {
             throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
         }
 
-        const result = await this.database.fetch(`${guildID}.${memberID}.money`) || 0
-        return result
+        const result = await this.database.fetch(`${guildID}.${memberID}.money`)
+        return result || 0
     }
 
     /**
@@ -80,7 +80,7 @@ class BalanceManager extends Emitter {
      * @param {number} amount Money amount.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
-     * @param {string} reason The reason why you set the money.
+     * @param {string} [reason] The reason why you set the money.
      * @returns {Promise<number>} Money amount.
      */
     async set(amount, memberID, guildID, reason = null) {
@@ -100,7 +100,7 @@ class BalanceManager extends Emitter {
 
         await this.database.set(`${guildID}.${memberID}.money`, amount)
 
-        this.cache.updateSpecified(['users', 'balance'], {
+        this.cache.updateMany(['users', 'balance'], {
             memberID,
             guildID
         })
@@ -122,7 +122,7 @@ class BalanceManager extends Emitter {
      * @param {number} amount Money amount.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
-     * @param {string} reason The reason why you add the money.
+     * @param {string} [reason] The reason why you add the money.
      * @returns {Promise<number>} Money amount.
      */
     async add(amount, memberID, guildID, reason = null) {
@@ -142,7 +142,7 @@ class BalanceManager extends Emitter {
 
         await this.database.add(`${guildID}.${memberID}.money`, amount)
 
-        this.cache.updateSpecified(['users', 'balance'], {
+        this.cache.updateMany(['users', 'balance'], {
             memberID,
             guildID
         })
@@ -164,7 +164,7 @@ class BalanceManager extends Emitter {
      * @param {number} amount Money amount.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
-     * @param {string} reason The reason why you add the money.
+     * @param {string} [reason] The reason why you subtract the money.
      * @returns {Promise<number>} Money amount.
      */
     async subtract(amount, memberID, guildID, reason = null) {
@@ -184,7 +184,7 @@ class BalanceManager extends Emitter {
 
         await this.database.subtract(`${guildID}.${memberID}.money`, amount)
 
-        this.cache.updateSpecified(['users', 'balance'], {
+        this.cache.updateMany(['users', 'balance'], {
             memberID,
             guildID
         })
@@ -202,7 +202,64 @@ class BalanceManager extends Emitter {
     }
 
     /**
-     * Shows a money leaderboard for your server.
+     * Deposits the specified amount of money.
+     * @param {number} amount Money amount.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @param {string} [reason] The reason of the operation.
+     * @returns {Promise<number>} Money amount.
+     */
+    async deposit(amount, memberID, guildID, reason = null) {
+        const balance = await this.fetch(memberID, guildID)
+        const bank = await this.database.get(`${guildID}.${memberID}.bank`)
+
+        if (isNaN(amount)) {
+            throw new EconomyError(errors.invalidTypes.amount + typeof amount, 'INVALID_TYPE')
+        }
+
+        if (amount < 0) {
+            throw new EconomyError(errors.invalidTypes.depositInvalidInput, 'INVALID_INPUT')
+        }
+
+        if (typeof memberID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
+        }
+
+        if (typeof guildID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
+        }
+
+        await this.database.subtract(`${guildID}.${memberID}.money`, amount)
+        await this.database.add(`${guildID}.${memberID}.bank`, amount)
+
+        this.cache.updateMany(['users', 'balance', 'bank'], {
+            memberID,
+            guildID
+        })
+
+        this.emit('balanceSubtract', {
+            type: 'subtract',
+            guildID,
+            memberID,
+            amount: Number(amount),
+            balance: balance - amount,
+            reason
+        })
+
+        this.emit('bankAdd', {
+            type: 'add',
+            guildID,
+            memberID,
+            amount: Number(amount),
+            balance: bank + amount,
+            reason
+        })
+
+        return amount
+    }
+
+    /**
+     * Gets a balance leaderboard for specified guild.
      * @param {string} guildID Guild ID.
      * @returns {Promise<BalanceLeaderboard[]>} Sorted leaderboard array.
      */
@@ -225,14 +282,16 @@ class BalanceManager extends Emitter {
             money: Number(ranks[rank])
         })
 
-        return lb.sort((a, b) => b.money - a.money)
+        return lb
+            .sort((previous, current) => current.money - previous.money)
+            .filter(entry => entry.userID !== 'shop')
     }
 
     /**
-     * Sends the money to a specified user.
+     * Transfers the money to a specified user.
      * @param {string} guildID Guild ID.
-     * @param {TransferringOptions} options Transferring options.
-     * @returns {Promise<TransferringResult>} Transferring result object.
+     * @param {TransferingOptions} options Transfering options.
+     * @returns {Promise<TransferingResult>} Transfering result object.
      */
     async transfer(guildID, options) {
         const {
@@ -308,7 +367,7 @@ class BalanceManager extends Emitter {
 
 
 /**
- * @typedef {Object} TransferringResult
+ * @typedef {Object} TransferingResult
  * @property {boolean} success Whether the transfer was successful or not.
  * @property {string} guildID Guild ID.
  * @property {number} amount Amount of money that was sent.
@@ -321,8 +380,8 @@ class BalanceManager extends Emitter {
  */
 
 /**
- * Transferring options.
- * @typedef {object} TransferringOptions
+ * Transfering options.
+ * @typedef {object} TransferingOptions
  * @property {number} amount Amount of money to send.
  * @property {string} senderMemberID A member ID who will send the money.
  * @property {string} receiverMemberID A member ID who will receive the money.

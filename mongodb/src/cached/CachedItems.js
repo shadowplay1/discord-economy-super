@@ -21,7 +21,7 @@ class CachedGuilds extends CachedItem {
     /**
      * Cached guilds class. Allows to get Economy guilds from the cache.
      * @param {string} guildID Guild ID.
-     * @param {EconomyOptions} options Economy configuration object.
+     * @param {EconomyConfiguration} options Economy configuration object.
      * @param {DatabaseManager} database Database manager instance.
      * @param {CacheManager} cacheManager Cache manager instance.
      */
@@ -39,7 +39,7 @@ class CachedUsers extends CachedItem {
      * Cached guilds class. Allows to get Economy guilds from the cache.
      * @param {string} userID User ID.
      * @param {string} guildID Guild ID.
-     * @param {EconomyOptions} options Economy configuration object.
+     * @param {EconomyConfiguration} options Economy configuration object.
      * @param {DatabaseManager} database Database manager instance.
      * @param {CacheManager} cacheManager Cache manager instance.
      */
@@ -57,7 +57,7 @@ class CachedCooldowns extends CachedItem {
      * Cached cooldowns class. Allows to get cooldowns from the cache.
      * @param {string} userID User ID.
      * @param {string} guildID Guild ID.
-     * @param {EconomyOptions} options Economy configuration object.
+     * @param {EconomyConfiguration} options Economy configuration object.
      * @param {DatabaseManager} database Database manager instance.
      * @param {CacheManager} cacheManager Cache manager instance.
      */
@@ -75,7 +75,7 @@ class CachedBalance extends CachedItem {
      * Cached balance class. Allows to get balance from the cache.
      * @param {string} userID User ID.
      * @param {string} guildID Guild ID.
-     * @param {EconomyOptions} options Economy configuration object.
+     * @param {EconomyConfiguration} options Economy configuration object.
      * @param {DatabaseManager} database Database manager instance.
      * @param {CacheManager} cacheManager Cache manager instance.
      */
@@ -93,7 +93,7 @@ class CachedBank extends CachedItem {
      * Cached bank balance class. Allows to get bank balance from the cache.
      * @param {string} userID User ID.
      * @param {string} guildID Guild ID.
-     * @param {EconomyOptions} options Economy configuration object.
+     * @param {EconomyConfiguration} options Economy configuration object.
      * @param {DatabaseManager} database Database manager instance.
      * @param {CacheManager} cacheManager Cache manager instance.
      */
@@ -110,7 +110,7 @@ class CachedShop extends CachedItem {
     /**
      * Cached shop class. Allows to get shop from the cache.
      * @param {string} guildID Guild ID.
-     * @param {EconomyOptions} options Economy configuration object.
+     * @param {EconomyConfiguration} options Economy configuration object.
      * @param {DatabaseManager} database Database manager instance.
      * @param {CacheManager} cacheManager Cache manager instance.
      */
@@ -128,7 +128,7 @@ class CachedInventory extends CachedItem {
      * Cached inventory class. Allows to get inventory from the cache.
      * @param {string} userID User ID.
      * @param {string} guildID Guild ID.
-     * @param {EconomyOptions} options Economy configuration object.
+     * @param {EconomyConfiguration} options Economy configuration object.
      * @param {DatabaseManager} database Database manager instance.
      * @param {CacheManager} cacheManager Cache manager instance.
      */
@@ -146,7 +146,7 @@ class CachedHistory extends CachedItem {
      * Cached history class. Allows to get history from the cache.
      * @param {string} userID User ID.
      * @param {string} guildID Guild ID.
-     * @param {EconomyOptions} options Economy configuration object.
+     * @param {EconomyConfiguration} options Economy configuration object.
      * @param {DatabaseManager} database Database manager instance.
      * @param {CacheManager} cacheManager Cache manager instance.
      */

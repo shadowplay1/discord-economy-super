@@ -9,7 +9,7 @@ class EmptyEconomyGuild extends EconomyGuild {
     /**
      * Economy guild class.
      * @param {string} guildID Guild ID.
-     * @param {EconomyOptions} options Economy configuration.
+     * @param {EconomyConfiguration} options Economy configuration.
      * @param {DatabaseManager} database Database manager.
      * @param {CacheManager} cache Cache manager.
      */

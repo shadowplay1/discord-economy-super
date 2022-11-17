@@ -3,7 +3,10 @@ const errors = require('../../structures/errors')
 const errorCodes = [
     'INVALID_TYPE',
     'NO_CACHE_IDENTIFIERS',
+	'INVALID_CACHING_IDENTIFIERS',
     'INVALID_CACHE_ITEM_NAME',
+    'ITEM_PROPERTY_INVALID',
+    'INVALID_INPUT',
     'UNKNOWN_ERROR',
     'PARAMETER_NOT_SPECIFIED',
     'OLD_NODE_VERSION',
@@ -27,7 +30,9 @@ class EconomyError extends Error {
      * @param {'INVALID_TYPE' | 
      * 'INVALID_CACHING_IDENTIFIERS' | 
      * 'INVALID_CACHE_ITEM_NAME' |
-     * 'UNKNOWN_ERROR' | 
+     * 'UNKNOWN_ERROR' |
+     * 'ITEM_PROPERTY_INVALID' |
+     * 'INVALID_INPUT' |
      * 'PARAMETER_NOT_SPECIFIED' |
      * 'OLD_NODE_VERSION' |
      * 'NO_DISCORD_CLIENT' | 

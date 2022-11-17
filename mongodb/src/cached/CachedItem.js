@@ -6,6 +6,8 @@ const EmptyEconomyUser = require('../classes/EmptyEconomyUser')
 
 const DatabaseManager = require('../managers/DatabaseManager')
 const CacheManager = require('../managers/CacheManager')
+const defaultUserObject = require('../structures/DefaultUserObject')
+const Bank = require('../classes/user/Bank')
 
 /**
  * Cached item class. Used to work with data in Economy cache 
@@ -19,7 +21,7 @@ class CachedItem {
      * 
      * @param {any} baseConstructor Constructor that will be called in the methods.
      * @param {any[]} constructorParams Array of parameters for `baseConstructor` to pass in.
-     * @param {EconomyOptions} options Economy configuration object.
+     * @param {EconomyConfiguration} options Economy configuration object.
      * @param {DatabaseManager} database Database manager instance.
      * @param {CacheManager} cacheManager Cache manager instance.
      */
@@ -34,7 +36,7 @@ class CachedItem {
 
         /**
          * Economy options.
-         * @type {EconomyOptions}
+         * @type {EconomyConfiguration}
          */
         this.options = options
 
@@ -83,18 +85,34 @@ class CachedItem {
 
         if (this.baseConstructor.name == 'EconomyUser') {
             if (!result) {
-                return new EmptyEconomyUser(
+                const economyUser = new EmptyEconomyUser(
                     id.memberID, id.guildID,
                     this.options,
                     this._database, this.cacheManager
                 )
+
+                economyUser.bank = new Bank(
+                    id.memberID, id.guildID,
+                    this.options,
+                    this._database, this.cacheManager
+                )
+
+                return economyUser
             }
 
-            return new this.baseConstructor(
+            const economyUser = new this.baseConstructor(
                 id.memberID, id.guildID,
                 this.options, result,
                 this._database, this.cacheManager
             )
+
+            economyUser.bank = new Bank(
+                id.memberID, id.guildID,
+                this.options,
+                this._database, this.cacheManager
+            )
+
+            return economyUser
         }
 
         if (this.baseConstructor.name == 'EconomyGuild') {
@@ -198,12 +216,12 @@ class CachedItem {
                     ), 'INVALID_CACHING_IDENTIFIERS')
                 }
 
-                const rawUserObject = await this._database.fetch(`${id.guildID}.${id.memberID}`)
+                const rawUserObject = await this._database.fetch(`${id.guildID}.${id.memberID}`) || defaultUserObject
 
                 const cooldownObject = {
-                    daily: rawUserObject.dailyCooldown,
-                    work: rawUserObject.workCooldown,
-                    weekly: rawUserObject.weeklyCooldown
+                    daily: rawUserObject?.dailyCooldown,
+                    work: rawUserObject?.workCooldown,
+                    weekly: rawUserObject?.weeklyCooldown
                 }
 
                 cooldownsCache[id.memberID] = cooldownObject
@@ -222,7 +240,7 @@ class CachedItem {
                     ), 'INVALID_CACHING_IDENTIFIERS')
                 }
 
-                const rawUser = await this._database.fetch(`${id.guildID}.${id.memberID}`)
+                const rawUser = await this._database.fetch(`${id.guildID}.${id.memberID}`) || defaultUserObject
 
                 const balanceObject = {
                     money: rawUser?.money,
@@ -231,6 +249,28 @@ class CachedItem {
 
                 balanceCache[id.memberID] = balanceObject
                 this.set(id.guildID, balanceCache)
+
+                return Promise.resolve()
+
+            case 'BankBalanceItem':
+                const bankBalanceCache = {}
+
+                if (!id.memberID || !id.guildID) {
+                    throw new EconomyError(errors.cache.invalidIdentifiers(
+                        constructorName,
+                        ['memberID', 'guildID'],
+                        Object.keys(id)
+                    ), 'INVALID_CACHING_IDENTIFIERS')
+                }
+
+                const rawBankUser = await this._database.fetch(`${id.guildID}.${id.memberID}`) || defaultUserObject
+
+                const bankBalanceObject = {
+                    balance: rawBankUser?.bank,
+                }
+
+                bankBalanceCache[id.memberID] = bankBalanceObject
+                this.set(id.guildID, bankBalanceCache)
 
                 return Promise.resolve()
 

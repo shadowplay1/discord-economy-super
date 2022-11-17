@@ -24,7 +24,7 @@ class BankManager extends Emitter {
 
         /**
          * Economy configuration.
-         * @type {EconomyOptions}
+         * @type {EconomyConfiguration}
          * @private
          */
         this.options = options
@@ -59,8 +59,8 @@ class BankManager extends Emitter {
             throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
         }
 
-        const result = await this.database.fetch(`${guildID}.${memberID}.bank`) || 0
-        return result
+        const result = await this.database.fetch(`${guildID}.${memberID}.bank`)
+        return result || 0
     }
 
     /**
@@ -80,7 +80,7 @@ class BankManager extends Emitter {
      * @param {number} amount Money amount.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
-     * @param {string} reason The reason why you add the money.
+     * @param {string} [reason] The reason why you set the money.
      * @returns {Promise<number>} Money amount.
      */
     async set(amount, memberID, guildID, reason = null) {
@@ -100,7 +100,7 @@ class BankManager extends Emitter {
 
         await this.database.set(`${guildID}.${memberID}.bank`, Number(amount))
 
-        this.cache.updateMany(['bank', 'users'], {
+        this.cache.updateMany(['bank', 'balance', 'users'], {
             guildID,
             memberID,
         })
@@ -122,7 +122,7 @@ class BankManager extends Emitter {
      * @param {number} amount Money amount.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
-     * @param {string} reason The reason why you add the money.
+     * @param {string} [reason] The reason why you add the money.
      * @returns {Promise<number>} Money amount.
      */
     async add(amount, memberID, guildID, reason = null) {
@@ -142,7 +142,7 @@ class BankManager extends Emitter {
 
         await this.database.add(`${guildID}.${memberID}.bank`, Number(amount))
 
-        this.cache.updateMany(['bank', 'users'], {
+        this.cache.updateMany(['bank', 'balance', 'users'], {
             guildID,
             memberID,
         })
@@ -164,7 +164,7 @@ class BankManager extends Emitter {
      * @param {number} amount Money amount.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
-     * @param {string} reason The reason why you add the money.
+     * @param {string} [reason] The reason why you subtract the money.
      * @returns {Promise<number>} Money amount.
      */
     async subtract(amount, memberID, guildID, reason = null) {
@@ -184,7 +184,7 @@ class BankManager extends Emitter {
 
         await this.database.subtract(`${guildID}.${memberID}.bank`, Number(amount))
 
-        this.cache.updateMany(['bank', 'users'], {
+        this.cache.updateMany(['bank', 'balance', 'users'], {
             guildID,
             memberID,
         })
@@ -202,7 +202,65 @@ class BankManager extends Emitter {
     }
 
     /**
-     * Shows a money leaderboard for your server.
+     * Withdraws the specified amount of money.
+     * @param {number} amount Money amount.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @param {string} [reason] The reason of the operation.
+     * @returns {Promise<number>} Money amount.
+     */
+    async withdraw(amount, memberID, guildID, reason = null) {
+        const balance = await this.fetch(memberID, guildID)
+        const bank = await this.database.get(`${guildID}.${memberID}.bank`)
+
+        if (isNaN(amount)) {
+            throw new EconomyError(errors.invalidTypes.amount + typeof amount, 'INVALID_TYPE')
+        }
+
+        if (amount < 0) {
+            throw new EconomyError(errors.invalidTypes.withdrawInvalidInput, 'INVALID_INPUT')
+        }
+
+        if (typeof memberID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
+        }
+
+        if (typeof guildID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
+        }
+
+        await this.database.add(`${guildID}.${memberID}.money`, amount)
+        await this.database.subtract(`${guildID}.${memberID}.bank`, amount)
+
+        this.cache.updateMany(['users', 'bank', 'balance'], {
+            memberID,
+            guildID
+        })
+
+        this.emit('bankSubtract', {
+            type: 'subtract',
+            guildID,
+            memberID,
+            amount: Number(amount),
+            balance: bank - amount,
+            reason
+        })
+
+        this.emit('balanceAdd', {
+            type: 'add',
+            guildID,
+            memberID,
+            amount: Number(amount),
+            balance: balance + amount,
+            reason
+        })
+
+
+        return amount
+    }
+
+    /**
+     * Gets a balance leaderboard for specified server.
      * @param {string} guildID Guild ID.
      * @returns {Promise<BankLeaderboard[]>} Sorted leaderboard array.
      */
@@ -225,7 +283,9 @@ class BankManager extends Emitter {
             money: Number(ranks[rank])
         })
 
-        return lb.sort((a, b) => b.money - a.money)
+        return lb
+            .sort((previous, current) => current.money - previous.money)
+            .filter(entry => entry.userID !== 'shop')
     }
 }
 

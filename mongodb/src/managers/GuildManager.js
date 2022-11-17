@@ -22,7 +22,7 @@ class GuildManager extends BaseManager {
 
     /**
      * Guild Manager.
-     * @param {EconomyOptions} options Economy configuration.
+     * @param {EconomyConfiguration} options Economy configuration.
      * @param {DatabaseManager} database Database manager.
      * @param {CacheManager} cache Cache manager.
      */
@@ -31,7 +31,7 @@ class GuildManager extends BaseManager {
 
         /**
          * Economy configuration.
-         * @type {EconomyOptions}
+         * @type {EconomyConfiguration}
          * @private
          */
         this.options = options
@@ -101,7 +101,7 @@ class GuildManager extends BaseManager {
 
         await this.database.set(guildID, emptyGuildObject)
 
-        this.cache.updateSpecified(['guilds', 'shop'], {
+        this.cache.updateMany(['guilds', 'shop'], {
             guildID
         })
 
@@ -134,12 +134,12 @@ class GuildManager extends BaseManager {
 }
 
 /**
- * @typedef {object} EconomyOptions Default Economy configuration.
+ * @typedef {object} EconomyConfiguration Default Economy configuration.
  * @property {number} [dailyCooldown=86400000] 
  * Cooldown for Daily Command (in ms). Default: 24 hours (60000 * 60 * 24 ms)
  * 
  * @property {number} [workCooldown=3600000] Cooldown for Work Command (in ms). Default: 1 hour (60000 * 60 ms)
- * @property {Number | Number[]} [dailyAmount=100] Amount of money for Daily Command. Default: 100.
+ * @property {number | number[]} [dailyAmount=100] Amount of money for Daily Command. Default: 100.
  * @property {number} [weeklyCooldown=604800000] 
  * Cooldown for Weekly Command (in ms). Default: 7 days (60000 * 60 * 24 * 7 ms)
  * 
@@ -151,15 +151,17 @@ class GuildManager extends BaseManager {
  * @property {number} [sellingItemPercent=75] 
  * Percent of the item's price it will be sold for. Default: 75.
  * 
- * @property {Number | Number[]} [weeklyAmount=100] Amount of money for Weekly Command. Default: 1000.
- * @property {Number | Number[]} [workAmount=[10, 50]] Amount of money for Work Command. Default: [10, 50].
+ * @property {number | number[]} [weeklyAmount=100] Amount of money for Weekly Command. Default: 1000.
+ * @property {number | number[]} [workAmount=[10, 50]] Amount of money for Work Command. Default: [10, 50].
  * @property {boolean} [subtractOnBuy=true] 
  * If true, when someone buys the item, their balance will subtract by item price. Default: false
  * 
  * @property {string} [dateLocale='en'] The region (example: 'ru' or 'en') to format the date and time. Default: 'en'.
  * @property {UpdaterOptions} [updater=UpdaterOptions] Update checker configuration.
- * @property {ErrorHandlerOptions} [errorHandler=ErrorHandlerOptions] Error handler configuration.
- * @property {CheckerOptions} [optionsChecker=CheckerOptions] Configuration for an 'Economy.utils.checkOptions' method.
+ * @property {ErrorHandlerConfiguration} [errorHandler=ErrorHandlerConfiguration] Error handler configuration.
+
+ * @property {CheckerConfiguration} [optionsChecker=CheckerConfiguration] 
+ * Configuration for an 'Economy.utils.checkOptions' method.
  * @property {boolean} [debug=false] Enables or disables the debug mode.
  */
 

@@ -22,7 +22,7 @@ class CooldownManager {
 
         /**
          * Economy configuration.
-         * @type {EconomyOptions}
+         * @type {EconomyConfiguration}
          * @private
          */
         this.options = options
@@ -114,7 +114,13 @@ class CooldownManager {
             throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
         }
 
-        const result = await this.database.remove(`${guildID}.${memberID}.dailyCooldown`)
+        const result = await this.database.delete(`${guildID}.${memberID}.dailyCooldown`)
+
+        this.cache.updateMany(['cooldowns', 'users'], {
+            memberID,
+            guildID
+        })
+
         return result
     }
 
@@ -133,7 +139,13 @@ class CooldownManager {
             throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
         }
 
-        const result = await this.database.remove(`${guildID}.${memberID}.workCooldown`)
+        const result = await this.database.delete(`${guildID}.${memberID}.workCooldown`)
+
+        this.cache.updateMany(['cooldowns', 'users'], {
+            memberID,
+            guildID
+        })
+
         return result
     }
 
@@ -152,7 +164,13 @@ class CooldownManager {
             throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
         }
 
-        const result = await this.database.remove(`${guildID}.${memberID}.weeklyCooldown`)
+        const result = await this.database.delete(`${guildID}.${memberID}.weeklyCooldown`)
+
+        this.cache.updateMany(['cooldowns', 'users'], {
+            memberID,
+            guildID
+        })
+
         return result
     }
 }

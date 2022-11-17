@@ -1,6 +1,5 @@
 const { promisify } = require('util')
 
-
 const DatabaseManager = require('./managers/DatabaseManager')
 const CacheManager = require('./managers/CacheManager')
 
@@ -37,7 +36,7 @@ class Economy extends Emitter {
 
     /**
     * The Economy class.
-    * @param {EconomyOptions} options Economy configuration.
+    * @param {EconomyConfiguration} options Economy configuration.
     */
     constructor(options = {}) {
         super()
@@ -108,14 +107,14 @@ class Economy extends Emitter {
             this.docs = 'https://des-docs.js.org'
 
             /**
-            * Utils manager methods object.
+            * Utils manager methods class.
             * @type {UtilsManager}
             */
             this.utils = new UtilsManager(options)
 
             /**
              * Economy configuration.
-             * @type {?EconomyOptions}
+             * @type {?EconomyConfiguration}
              */
             this.options = this.utils.checkOptions(options.optionsChecker, options)
 
@@ -144,49 +143,49 @@ class Economy extends Emitter {
             this.Emitter = Emitter
 
             /**
-            * Balance methods object.
+            * Balance methods class.
             * @type {BalanceManager}
             */
             this.balance = null
 
             /**
-            * Bank balance methods object.
+            * Bank balance methods class.
             * @type {BankManager}
             */
             this.bank = null
 
             /**
-            * Database manager methods object.
+            * Database manager methods class.
             * @type {DatabaseManager}
             */
             this.database = null
 
             /**
-            * Shop manager methods object.
+            * Shop manager methods class.
             * @type {ShopManager}
             */
             this.shop = null
 
             /**
-            * Inventory manager methods object.
+            * Inventory manager methods class.
             * @type {InventoryManager}
             */
             this.inventory = null
 
             /**
-            * History manager methods object.
+            * History manager methods class.
             * @type {HistoryManager}
             */
             this.history = null
 
             /**
-            * Cooldowns methods object.
+            * Cooldowns methods class.
             * @type {CooldownManager}
             */
             this.cooldowns = null
 
             /**
-            * Rewards methods object.
+            * Rewards methods class.
             * @type {RewardManager}
             */
             this.rewards = null
@@ -210,7 +209,7 @@ class Economy extends Emitter {
             this.guilds = null
 
             /**
-            * Settings manager methods object.
+            * Settings manager methods class.
             * @type {SettingsManager}
             */
             this.settings = null
@@ -288,7 +287,7 @@ class Economy extends Emitter {
         }).catch(err => {
             console.log(
                 `${this.colors.cyan}[Economy] ${this.colors.red}Failed to connect to the ` +
-                `${this.colors.yellow}database${this.colors.red}. ` +
+                `database${this.colors.red}. ` +
                 this.colors.reset
             )
 
@@ -737,12 +736,10 @@ class Economy extends Emitter {
 
 
 /**
- * @typedef {object} EconomyOptions Default Economy configuration.
- * @property {string} [storagePath='./storage.json'] Full path to a JSON file. Default: './storage.json'
- * @property {boolean} [checkStorage=true] Checks the if database file exists and if it has errors. Default: true
+ * @typedef {object} EconomyConfiguration Default Economy configuration.
  * @property {number} [dailyCooldown=86400000] Cooldown for Daily Command (in ms). Default: 24 hours (60000 * 60 * 24 ms)
  * @property {number} [workCooldown=3600000] Cooldown for Work Command (in ms). Default: 1 hour (60000 * 60 ms)
- * @property {Number | Number[]} [dailyAmount=100] Amount of money for Daily Command. Default: 100.
+ * @property {number | number[]} [dailyAmount=100] Amount of money for Daily Command. Default: 100.
  * @property {number} [weeklyCooldown=604800000] Cooldown for Weekly Command (in ms). Default: 7 days (60000 * 60 * 24 * 7 ms)
  * @property {number} [sellingItemPercent=75] 
  * Percent of the item's price it will be sold for. Default: 75.
@@ -752,15 +749,16 @@ class Economy extends Emitter {
  * 
  * @property {boolean} [savePurchasesHistory=true] If true, the module will save all the purchases history.
  * 
- * @property {Number | Number[]} [weeklyAmount=100] Amount of money for Weekly Command. Default: 1000.
- * @property {Number | Number[]} [workAmount=[10, 50]] Amount of money for Work Command. Default: [10, 50].
+ * @property {number | number[]} [weeklyAmount=100] Amount of money for Weekly Command. Default: 1000.
+ * @property {number | number[]} [workAmount=[10, 50]] Amount of money for Work Command. Default: [10, 50].
  * @property {boolean} [subtractOnBuy=true] If true, when someone buys the item, their balance will subtract by item price. Default: false
  * 
- * @property {number} [updateCountdown=1000] Checks for if storage file exists in specified time (in ms). Default: 1000.
  * @property {string} [dateLocale='en'] The region (example: 'ru' or 'en') to format the date and time. Default: 'en'.
  * @property {UpdaterOptions} [updater=UpdaterOptions] Update checker configuration.
- * @property {ErrorHandlerOptions} [errorHandler=ErrorHandlerOptions] Error handler configuration.
- * @property {CheckerOptions} [optionsChecker=CheckerOptions] Configuration for an 'Economy.utils.checkOptions' method.
+ * @property {ErrorHandlerConfiguration} [errorHandler=ErrorHandlerConfiguration] Error handler configuration.
+
+ * @property {CheckerConfiguration} [optionsChecker=CheckerConfiguration] 
+ * Configuration for an 'Economy.utils.checkOptions' method.
  * @property {boolean} [debug=false] Enables or disables the debug mode.
  */
 
@@ -771,14 +769,14 @@ class Economy extends Emitter {
  */
 
 /**
- * @typedef {object} ErrorHandlerOptions
+ * @typedef {object} ErrorHandlerConfiguration
  * @property {boolean} [handleErrors=true] Handles all errors on startup. Default: true.
  * @property {number} [attempts=5] Amount of attempts to load the module. Use 0 for infinity attempts. Default: 5.
  * @property {number} [time=3000] Time between every attempt to start the module (in ms). Default: 3000.
  */
 
 /**
- * @typedef {object} CheckerOptions Configuration for an 'Economy.utils.checkOptions' method.
+ * @typedef {object} CheckerConfiguration Configuration for an 'Economy.utils.checkOptions' method.
  * @property {boolean} [ignoreInvalidTypes=false] Allows the method to ignore the options with invalid types. Default: false.
  * @property {boolean} [ignoreUnspecifiedOptions=false] Allows the method to ignore the unspecified options. Default: false.
  * @property {boolean} [ignoreInvalidOptions=false] Allows the method to ignore the unexisting options. Default: false.

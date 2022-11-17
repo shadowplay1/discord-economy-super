@@ -21,7 +21,7 @@ class CacheManager {
 
     /**
      * Economy Cache manager.
-     * @param {EconomyOptions} options Economy configuration object.
+     * @param {EconomyConfiguration} options Economy configuration object.
      * @param {DatabaseManager} database Database manager instance.
      */
     constructor(options, database) {
@@ -127,9 +127,7 @@ class CacheManager {
 
     /**
      * Updates the specified cached items.
-     * @param {CacheItemName[]} cacheItemNames 
-     * Names of the cache items to update.
-     * 
+     * @param {CacheItemName[]} cacheItemNames Names of the cache items to update.
      * @param {DataIdentifier} id Identifiers object (memberID, guildID) to get value from cache.
      * @returns {Promise<void[]>}
      */
@@ -152,9 +150,7 @@ class CacheManager {
 	 * Updates the specified cached items.
 	 *
 	 * This method is an alias for `CacheManager.updateSpecified()` method.
-	 * @param {CacheItemName[]} cacheItemNames
-	 * Names of the cache items to update.
-	 *
+	 * @param {CacheItemName[]} cacheItemNames Names of the cache items to update.s
 	 * @param {DataIdentifier} id Identifiers object (memberID, guildID) to get value from cache.
 	 * @returns {Promise<void[]>}
 	 */
@@ -164,9 +160,7 @@ class CacheManager {
 
     /**
      * Clears the specified cached items.
-     * @param {CacheItemName[]} cacheItemNames 
-     * Names of the cache items to clear.
-     * 
+     * @param {CacheItemName[]} cacheItemNames Names of the cache items to clear.
      * @returns {void}
      */
     clearSpecified(cacheItemNames) {
@@ -177,6 +171,17 @@ class CacheManager {
                 throw new EconomyError(errors.cache.invalidCacheNames, 'INVALID_CACHE_ITEM_NAME')
             }
         }
+    }
+
+    /**
+     * Clears the specified cached items.
+     * 
+     * This method is an alias for `CacheManager.clearSpecified` method.
+     * @param {CacheItemName[]} cacheItemNames Names of the cache items to clear.
+     * @returns {void}
+     */
+    clearMany(cacheItemNames) {
+        return this.clearSpecified(cacheItemNames)
     }
 }
 
@@ -190,5 +195,5 @@ module.exports = CacheManager
  */
 
 /**
- * @typedef {'guilds' | 'users' | 'cooldowns' | 'balance' | 'shop' | 'inventory' | 'history'} CacheItemName
+ * @typedef {'guilds' | 'users' | 'cooldowns' | 'balance' | 'bank' | 'shop' | 'inventory' | 'history'} CacheItemName
  */

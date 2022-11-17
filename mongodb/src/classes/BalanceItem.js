@@ -9,11 +9,11 @@ class BalanceItem {
      * User balance class.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
-     * @param {EconomyOptions} ecoOptions Economy configuration.
+     * @param {EconomyConfiguration} ecoOptions Economy configuration.
      * @param {BalanceObject} balanceObject User balance object.
      * @param {DatabaseManager} database Database manager.
      */
-    constructor(memberID, guildID, ecoOptions, balanceObject, database) {
+    constructor(guildID, memberID,  ecoOptions, balanceObject, database) {
 
         /**
          * Member ID.
@@ -31,13 +31,13 @@ class BalanceItem {
          * User's balance.
          * @type {number}
          */
-        this.money = balanceObject.money
+        this.money = balanceObject.money || 0
 
         /**
          * User balance object.
          * @type {number}
          */
-        this.bank = balanceObject.bank
+        this.bank = balanceObject.bank || 0
     }
 }
 

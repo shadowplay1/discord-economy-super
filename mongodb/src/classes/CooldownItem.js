@@ -10,11 +10,11 @@ class CooldownItem {
      * User cooldowns class.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
-     * @param {EconomyOptions} ecoOptions Economy configuration.
+     * @param {EconomyConfiguration} ecoOptions Economy configuration.
      * @param {CooldownsObject} cooldownsObject User cooldowns object.
      * @param {DatabaseManager} database Database manager.
      */
-    constructor(memberID, guildID, ecoOptions, cooldownsObject, database) {
+    constructor(guildID, memberID, ecoOptions, cooldownsObject, database) {
 
         /**
          * Member ID.
@@ -33,19 +33,19 @@ class CooldownItem {
          * Daily cooldown.
          * @type {number}
          */
-        this.daily = cooldownsObject.daily
+        this.daily = cooldownsObject.daily || 0
 
         /**
          * Work cooldown.
          * @type {number}
          */
-        this.work = cooldownsObject.work
+        this.work = cooldownsObject.work || 0
 
         /**
          * Weekly cooldown.
          * @type {number}
          */
-        this.weekly = cooldownsObject.weekly
+        this.weekly = cooldownsObject.weekly || 0
     }
 }
 
