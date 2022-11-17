@@ -1,18 +1,18 @@
 import Emitter from '../classes/util/Emitter'
 
-import EconomyOptions from '../interfaces/EconomyOptions'
+import EconomyConfiguration from '../interfaces/EconomyConfiguration'
 import LeaderboardData from '../interfaces/LeaderboardData'
 
-import TransferringOptions from '../interfaces/TransferringOptions'
-import TransferringResult from '../interfaces/TransferringResult'
+import TransferingOptions from '../interfaces/TransferingOptions'
+import TransferingResult from '../interfaces/TransferingResult'
 
 
 /**
-* Balance manager methods object.
+* Balance manager methods class.
 * @extends {Emitter}
 */
 declare class BalanceManager extends Emitter {
-    public constructor(options: EconomyOptions)
+    public constructor(options: EconomyConfiguration)
 
     /**
     * Fetches the user's balance.
@@ -37,7 +37,7 @@ declare class BalanceManager extends Emitter {
     * @param {number} amount Amount of money that you want to set
     * @param {string} memberID Member ID
     * @param {string} guildID Guild ID
-    * @param {string} reason The reason why you set the money
+    * @param {string} [reason] The reason why you set the money
     * @returns Money amount
     */
     public set(amount: number, memberID: string, guildID: string, reason?: string): number
@@ -47,7 +47,7 @@ declare class BalanceManager extends Emitter {
     * @param {number} amount Amount of money that you want to add
     * @param {string} memberID Member ID
     * @param {string} guildID Guild ID
-    * @param {string} reason The reason why you add the money
+    * @param {string} [reason] The reason why you add the money
     * @returns Money amount
     */
     public add(amount: number, memberID: string, guildID: string, reason?: string): number
@@ -57,25 +57,35 @@ declare class BalanceManager extends Emitter {
     * @param {number} amount Amount of money that you want to subtract
     * @param {string} memberID Member ID
     * @param {string} guildID Guild ID
-    * @param {string} reason The reason why you subtract the money
+    * @param {string} [reason] The reason why you subtract the money
     * @returns Money amount
     */
     public subtract(amount: number, memberID: string, guildID: string, reason?: string): number
 
     /**
-    * Shows a money leaderboard for your server
+     * Deposits the specified amount of money.
+     * @param {number} amount Money amount.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @param {string} [reason] The reason of the operation.
+     * @returns {number} Money amount.
+     */
+    public deposit(amount: number, memberID: string, guildID: string, reason?: string): number
+
+    /**
+    * Gets a balance leaderboard for specified server
     * @param {string} guildID Guild ID
     * @returns Sorted leaderboard array
     */
     public leaderboard(guildID: string): LeaderboardData[]
 
     /**
-     * Sends the money to the specified user.
+     * Transfers the money to specified user.
      * @param {string} guildID Guild ID.
-     * @param {TransferringOptions} options Transferring options.
-     * @returns {TransferringResult} Transferring result object.
+     * @param {TransferingOptions} options Transfering options.
+     * @returns {TransferingResult} Transfering result object.
      */
-    public transfer(guildID: string, options: TransferringOptions): TransferringResult
+    public transfer(guildID: string, options: TransferingOptions): TransferingResult
 }
 
 export = BalanceManager

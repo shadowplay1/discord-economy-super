@@ -1,6 +1,6 @@
 import DatabaseManager from '../managers/DatabaseManager'
 
-import EconomyOptions from '../interfaces/EconomyOptions'
+import EconomyConfiguration from '../interfaces/EconomyConfiguration'
 import InventoryData from '../interfaces/InventoryData'
 
 import CustomItemData from '../interfaces/CustomItemData'
@@ -16,14 +16,14 @@ declare class InventoryItem<T extends object = any> {
      * Inventory item class.
      * @param {string} guildID Guild ID.
 	 * @param {string} memberID Member ID.
-     * @param {EconomyOptions} ecoOptions Economy configuration.
+     * @param {EconomyConfiguration} ecoOptions Economy configuration.
      * @param {InventoryData} itemObject User inventory object.
 	 * @param {DatabaseManager} database Database Manager.
      */
     public constructor(
         guildID: string,
 		memberID: string,
-        ecoOptions: EconomyOptions,
+        ecoOptions: EconomyConfiguration,
         itemObject: InventoryData<T>,
 		database: DatabaseManager
     )

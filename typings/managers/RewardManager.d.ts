@@ -1,14 +1,14 @@
 import RewardObject from '../interfaces/RewardObject'
-import EconomyOptions from '../interfaces/EconomyOptions'
+import EconomyConfiguration from '../interfaces/EconomyConfiguration'
 
 import { RewardType } from '../interfaces/RewardTypes'
 
 
 /**
- * Reward manager methods object.
+ * Reward manager methods class.
  */
 declare class RewardManager {
-    public constructor(options: EconomyOptions)
+    public constructor(options: EconomyConfiguration)
 
     /**
     * Adds a specified reward on user's balance.
@@ -26,7 +26,7 @@ declare class RewardManager {
     * Adds a daily reward on user's balance
     * @param {string} memberID Member ID
     * @param {string} guildID Guild ID
-    * @param {string} reason The reason why the money was added. Default: 'claimed the daily reward'
+    * @param {string} [reason] The reason why the money was added. Default: 'claimed the daily reward'
     * @returns Daily money amount or time before next claim
     */
     public getDaily<
@@ -37,7 +37,7 @@ declare class RewardManager {
     * Adds a work reward on user's balance
     * @param {string} memberID Member ID
     * @param {string} guildID Guild ID
-    * @param {string} reason The reason why the money was added. Default: 'claimed the work reward'
+    * @param {string} [reason] The reason why the money was added. Default: 'claimed the work reward'
     * @returns Work money amount or time before next claim
     */
     public getWork<
@@ -48,7 +48,7 @@ declare class RewardManager {
     * Adds a weekly reward on user's balance
     * @param {string} memberID Member ID
     * @param {string} guildID Guild ID
-    * @param {string} reason The reason why the money was added. Default: 'claimed the weekly reward'
+    * @param {string} [reason] The reason why the money was added. Default: 'claimed the weekly reward'
     * @returns Weekly money amount or time before next claim
     */
     public getWeekly<

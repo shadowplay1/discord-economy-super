@@ -1,5 +1,7 @@
+import DatabaseManager from './DatabaseManager'
+
 import UserCooldownData from '../interfaces/UserCooldownData'
-import EconomyOptions from '../interfaces/EconomyOptions'
+import EconomyConfiguration from '../interfaces/EconomyConfiguration'
 import EconomyDatabase from '../interfaces/EconomyDatabase'
 
 import HistoryItem from '../classes/HistoryItem'
@@ -10,7 +12,7 @@ import InventoryItem from '../classes/InventoryItem'
 * Fetch manager methods class.
 */
 declare class FetchManager {
-    public constructor(options: EconomyOptions)
+    public constructor(options: EconomyConfiguration, database: DatabaseManager)
 
     /**
     * Fetches the entire database.

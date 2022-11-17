@@ -1,4 +1,4 @@
-import EconomyOptions from '../interfaces/EconomyOptions'
+import EconomyConfiguration from '../interfaces/EconomyConfiguration'
 
 import DatabaseManager from '../managers/DatabaseManager'
 import UtilsManager from '../managers/UtilsManager'
@@ -23,13 +23,13 @@ declare class EconomyUser {
      * Economy user class.
      * @param {string} id User ID.
      * @param {string} guildID Guild ID.
-     * @param {EconomyOptions} ecoOptions Economy configuration.
+     * @param {EconomyConfiguration} ecoOptions Economy configuration.
      * @param {RawEconomyUser} userObject Economy user object.
      */
     public constructor(
         id: string,
         guildID: string,
-        ecoOptions: EconomyOptions,
+        ecoOptions: EconomyConfiguration,
         userObject: RawEconomyUser
     )
 
@@ -138,6 +138,12 @@ declare class EconomyUser {
      * @returns {boolean} If reset successfully: true; else: false.
      */
     public reset(): boolean
+
+	/**
+	 * Creates an economy user object in database.
+	 * @returns {boolean} If created successfully: true, else: false.
+	 */
+	public create(): boolean
 }
 
 export = EconomyUser

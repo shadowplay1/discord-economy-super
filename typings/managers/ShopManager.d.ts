@@ -7,17 +7,17 @@ import ShopOperationInfo from '../interfaces/ShopOperationInfo'
 import { ItemProperties, ItemPropertyType } from '../interfaces/ItemProperties'
 import CustomItemData from '../interfaces/CustomItemData'
 
-import EconomyOptions from '../interfaces/EconomyOptions'
+import EconomyConfiguration from '../interfaces/EconomyConfiguration'
 import InventoryData from '../interfaces/InventoryData'
 import HistoryData from '../interfaces/HistoryData'
 
 
 /**
-* Shop manager methods object.
+* Shop manager methods class.
 * @extends {Emitter}
 */
 declare class ShopManager extends Emitter {
-    public constructor(options: EconomyOptions)
+    public constructor(options: EconomyConfiguration)
 
     /**
      * Creates an item in shop.

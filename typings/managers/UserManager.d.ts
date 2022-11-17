@@ -1,6 +1,6 @@
 import If from '../interfaces/If'
 
-import EconomyOptions from '../interfaces/EconomyOptions'
+import EconomyConfiguration from '../interfaces/EconomyConfiguration'
 import BaseManager from './BaseManager'
 
 import EconomyUser from '../classes/EconomyUser'
@@ -27,9 +27,9 @@ declare class UserManager<MemberIDRequired extends boolean> extends BaseManager<
 
     /**
      * User Manager.
-     * @param {EconomyOptions} options Economy configuration.
+     * @param {EconomyConfiguration} options Economy configuration.
      */
-    public constructor(options: EconomyOptions)
+    public constructor(options: EconomyConfiguration, guildID: string)
 
     /**
     * Gets the array of ALL users in database.
