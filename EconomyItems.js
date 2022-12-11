@@ -23,6 +23,9 @@ const BaseManager = require('./src/managers/BaseManager')
 const EconomyGuild = require('./src/classes/EconomyGuild')
 const EconomyUser = require('./src/classes/EconomyUser')
 
+const EmptyEconomyGuild = require('./src/classes/EmptyEconomyGuild')
+const EmptyEconomyUser = require('./src/classes/EmptyEconomyUser')
+
 const ShopItem = require('./src/classes/ShopItem')
 const InventoryItem = require('./src/classes/InventoryItem')
 const HistoryItem = require('./src/classes/HistoryItem')
@@ -41,45 +44,54 @@ const Rewards = require('./src/classes/user/Rewards')
 
 
 module.exports = {
-    EconomyError: EconomyError,
-    Emitter: Emitter,
+    EconomyError,
+    Emitter,
 
-    EconomyUser: EconomyUser,
-    EconomyGuild: EconomyGuild,
+    EconomyUser,
+    EconomyGuild,
 
-    DatabaseManager: DatabaseManager,
-    UtilsManager: UtilsManager,
+    EmptyEconomyUser,
+    EmptyEconomyGuild,
 
-    BalanceManager: BalanceManager,
-    BankManager: BankManager,
+    DatabaseManager,
+    UtilsManager,
 
-    RewardManager: RewardManager,
-    CooldownManager: CooldownManager,
+    BalanceManager,
+    BankManager,
 
-    ShopManager: ShopManager,
-    InventoryManager: InventoryManager,
+    RewardManager,
+    CooldownManager,
 
-    HistoryManager: HistoryManager,
+    ShopManager,
+    InventoryManager,
 
-    UserManager: UserManager,
-    GuildManager: GuildManager,
+    HistoryManager,
 
-    SettingsManager: SettingsManager,
-    BaseManager: BaseManager,
+    UserManager,
+    GuildManager,
 
-    ShopItem: ShopItem,
-    InventoryItem: InventoryItem,
-    HistoryItem: HistoryItem,
+    SettingsManager,
+    BaseManager,
 
-    Leaderboards: Leaderboards,
-    Settings: Settings,
-    Shop: Shop,
+    ShopItem,
+    InventoryItem,
+    HistoryItem,
 
-    Balance: Balance,
-    Bank: Bank,
-    Cooldowns: Cooldowns,
-    History: History,
-    Inventory: Inventory,
-    Items: Items,
-    Rewards: Rewards
+    Leaderboards,
+    Settings,
+    Shop,
+
+    Balance,
+    Bank,
+    Cooldowns,
+    History,
+    Inventory,
+    Items,
+    Rewards,
+
+    RewardType: {
+        DAILY: 0,
+        WORK: 1,
+        WEEKLY: 2
+    }
 }
