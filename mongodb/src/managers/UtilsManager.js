@@ -56,7 +56,7 @@ class UtilsManager {
 
         /**
          * Economy configuration.
-         * @type {?EconomyOptions}
+         * @type {?EconomyConfiguration}
          * @private
          */
         this.options = options
@@ -69,7 +69,7 @@ class UtilsManager {
         this._logger = new Logger(options)
 
         /**
-         * Database manager methods object.
+         * Database manager methods class.
          * @type {DatabaseManager}
          * @private
          */
@@ -122,7 +122,7 @@ class UtilsManager {
         const keys = await this.database.keysList('')
 
         for (const key of keys) {
-            this.database.remove(key)
+            this.database.delete(key)
         }
 
         this.cache.clearAll()
@@ -140,7 +140,7 @@ class UtilsManager {
         if (!guildID) return false
         if (!guild) return false
 
-        this.database.remove(guildID)
+        this.database.delete(guildID)
 
         this.cache.guilds.remove({
             guildID
@@ -163,7 +163,7 @@ class UtilsManager {
 
         if (!user) return false
 
-        await this.database.remove(`${guildID}.${memberID}`)
+        await this.database.delete(`${guildID}.${memberID}`)
 
         this.cache.updateAll({
             guildID,
@@ -202,9 +202,9 @@ class UtilsManager {
 
     /**
      * Checks the Economy configuration, fixes the problems and returns it.
-     * @param {CheckerOptions} options Option checker options.
-     * @param {EconomyOptions} ecoOptions Economy configuration to check.
-     * @returns {EconomyOptions} Fixed Economy configuration.
+     * @param {CheckerConfiguration} options Option checker options.
+     * @param {EconomyConfiguration} ecoOptions Economy configuration to check.
+     * @returns {EconomyConfiguration} Fixed Economy configuration.
      */
     checkOptions(options = {}, ecoOptions) {
         this._logger.debug('Debug mode is enabled.', 'lightcyan')
@@ -219,16 +219,16 @@ class UtilsManager {
         let fileExtension = isTSFileAllowed ? 'ts' : 'js'
         let optionsFileExists = existsSync(`./economy.config.${fileExtension}`)
 
+		const slash = dirName.includes('\\') ? '\\' : '/'
+
         if (!optionsFileExists && fileExtension == 'ts' && isTSFileAllowed) {
             fileExtension = 'js'
             optionsFileExists = existsSync(`./economy.config.${fileExtension}`)
         }
 
         if (optionsFileExists) {
-            const slash = dirName.includes('\\') ? '\\' : '/'
-
             this._logger.debug(
-                `Using configuration file at ${dirName}${slash}economy.config.${fileExtension}...`, 'cyan'
+                `Using configuration file in ${dirName}${slash}economy.config.${fileExtension}...`, 'cyan'
             )
 
             try {
@@ -338,7 +338,7 @@ class UtilsManager {
                 const objectKeys = Object.keys(ecoOptions[i]).filter(key => isNaN(key))
 
                 for (const y of objectKeys) {
-                    const allKeys = Object.keys(DefaultConfiguration[i])
+                    const allKeys = Object.keys(DefaultConfiguration[i] || {})
                     const index = allKeys.indexOf(y)
 
                     if (!allKeys[index]) {
@@ -357,16 +357,30 @@ class UtilsManager {
 
         if (options.sendLog) {
             if (options.showProblems && problems.length) {
-                console.log(`Checked the options: ${problems.length ?
+                console.log(`Checked the configuration: ${problems.length ?
                     `${problems.length} problems found:\n\n${problems.join('\n')}` :
                     '0 problems found.'}`)
+
+				console.log(
+					'Configuration from ' +
+						`${optionsFileExists ?
+								`${dirName}${slash}economy.config.${fileExtension}` :
+								'the constructor.'}`
+				)
             }
 
             if (options.sendSuccessLog && !options.showProblems) {
                 console.log(
-                    `Checked the options: ${problems.length} ` +
+                    `Checked the configuration: ${problems.length} ` +
                     `${problems.length == 1 ? 'problem' : 'problems'} found.`
                 )
+
+				console.log(
+					'Configuration from ' +
+					`${optionsFileExists ?
+							`${dirName}${slash}economy.config.${fileExtension}` :
+							'the constructor.'}`
+				)
             }
         }
 
@@ -384,17 +398,17 @@ class UtilsManager {
 */
 
 /**
- * @typedef {object} EconomyOptions Default Economy configuration.
+ * @typedef {object} EconomyConfiguration Default Economy configuration.
  * @property {number} [dailyCooldown=86400000] 
  * Cooldown for Daily Command (in ms). Default: 24 hours (60000 * 60 * 24 ms)
  * 
  * @property {number} [workCooldown=3600000] Cooldown for Work Command (in ms). Default: 1 hour (60000 * 60 ms)
- * @property {Number | Number[]} [dailyAmount=100] Amount of money for Daily Command. Default: 100.
+ * @property {number | number[]} [dailyAmount=100] Amount of money for Daily Command. Default: 100.
  * @property {number} [weeklyCooldown=604800000] 
  * Cooldown for Weekly Command (in ms). Default: 7 days (60000 * 60 * 24 * 7 ms)
  * 
- * @property {Number | Number[]} [weeklyAmount=100] Amount of money for Weekly Command. Default: 1000.
- * @property {Number | Number[]} [workAmount=[10, 50]] Amount of money for Work Command. Default: [10, 50].
+ * @property {number | number[]} [weeklyAmount=100] Amount of money for Weekly Command. Default: 1000.
+ * @property {number | number[]} [workAmount=[10, 50]] Amount of money for Work Command. Default: [10, 50].
  * @property {boolean} [subtractOnBuy=true] 
  * If true, when someone buys the item, their balance will subtract by item price. Default: false
  * 
@@ -408,8 +422,10 @@ class UtilsManager {
  * 
  * @property {string} [dateLocale='en'] The region (example: 'ru'; 'en') to format the date and time. Default: 'en'.
  * @property {UpdaterOptions} [updater=UpdaterOptions] Update checker configuration.
- * @property {ErrorHandlerOptions} [errorHandler=ErrorHandlerOptions] Error handler configuration.
- * @property {CheckerOptions} [optionsChecker=CheckerOptions] Configuration for an 'Economy.utils.checkOptions' method.
+ * @property {ErrorHandlerConfiguration} [errorHandler=ErrorHandlerConfiguration] Error handler configuration.
+
+ * @property {CheckerConfiguration} [optionsChecker=CheckerConfiguration] 
+ * Configuration for an 'Economy.utils.checkOptions' method.
  * @property {boolean} [debug=false] Enables or disables the debug mode.
  */
 
@@ -421,14 +437,14 @@ class UtilsManager {
  */
 
 /**
- * @typedef {object} ErrorHandlerOptions
+ * @typedef {object} ErrorHandlerConfiguration
  * @property {boolean} [handleErrors=true] Handles all errors on startup. Default: true.
  * @property {number} [attempts=5] Amount of attempts to load the module. Use 0 for infinity attempts. Default: 5.
  * @property {number} [time=3000] Time between every attempt to start the module (in ms). Default: 3000.
  */
 
 /**
- * @typedef {object} CheckerOptions Configuration for an 'Economy.utils.checkOptions' method.
+ * @typedef {object} CheckerConfiguration Configuration for an 'Economy.utils.checkOptions' method.
  * @property {boolean} [ignoreInvalidTypes=false] 
  * Allows the method to ignore the options with invalid types. Default: false.
  * 

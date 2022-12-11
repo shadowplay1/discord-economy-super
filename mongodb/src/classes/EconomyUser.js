@@ -24,7 +24,7 @@ class EconomyUser {
      * Economy user class.
      * @param {string} id User ID.
      * @param {string} guildID Guild ID.
-     * @param {EconomyOptions} ecoOptions Economy configuration.
+     * @param {EconomyConfiguration} ecoOptions Economy configuration.
      * @param {RawEconomyUser} userObject Economy user object.
      * @param {DatabaseManager} database Database Manager.
      * @param {CacheManager} cache Cache manager.
@@ -49,10 +49,15 @@ class EconomyUser {
          */
         this.money = userObject.money
 
+        /**
+         * Determine if the user exists in the database.
+         * @type {boolean}
+         */
+        this.exists = true
 
         /**
          * Economy configuration.
-         * @type {EconomyOptions}
+         * @type {EconomyConfiguration}
          * @private
          */
         this.options = ecoOptions
@@ -121,12 +126,24 @@ class EconomyUser {
         }
     }
 
+	/**
+	 * Creates an economy user object in database.
+	 * @returns {Promise<boolean>} If created successfully: true, else: false.
+	 */
+	async create() {
+		if (!this.exists) {
+			return this.reset()
+		}
+
+		return this.exists
+	}
+
     /**
      * Deletes the user from database.
      * @returns {Promise<EconomyUser>} Deleted user object.
      */
     async delete() {
-        await this._shop.database.remove(`${this.guildID}.${this.id}`)
+        await this._shop.database.delete(`${this.guildID}.${this.id}`)
 
         this._cache.users.update({
             memberID: this.id,
@@ -153,7 +170,7 @@ class EconomyUser {
             guildID: this.guildID,
         })
 
-        return result
+        return true
     }
 }
 
@@ -202,24 +219,24 @@ class EconomyUser {
  * @property {number} price Item price.
  * @property {string} message The message that will be returned on item use.
  * @property {string} description Item description.
- * @property {string} role ID of Discord Role that will be given to Wuser on item use.
+ * @property {string} role ID of Discord Role that will be given to the user on item use.
  * @property {number} maxAmount Max amount of the item that user can hold in their inventory.
  * @property {string} date Date when the item was added in the shop.
  * @property {object} custom Custom item properties object.
  */
 
 /**
- * @typedef {object} EconomyOptions Default Economy configuration.
+ * @typedef {object} EconomyConfiguration Default Economy configuration.
  * @property {number} [dailyCooldown=86400000] 
  * Cooldown for Daily Command (in ms). Default: 24 hours (60000 * 60 * 24 ms)
  * 
  * @property {number} [workCooldown=3600000] Cooldown for Work Command (in ms). Default: 1 hour (60000 * 60 ms)
- * @property {Number | Number[]} [dailyAmount=100] Amount of money for Daily Command. Default: 100.
+ * @property {number | number[]} [dailyAmount=100] Amount of money for Daily Command. Default: 100.
  * @property {number} [weeklyCooldown=604800000] 
  * Cooldown for Weekly Command (in ms). Default: 7 days (60000 * 60 * 24 * 7 ms)
  * 
- * @property {Number | Number[]} [weeklyAmount=100] Amount of money for Weekly Command. Default: 1000.
- * @property {Number | Number[]} [workAmount=[10, 50]] Amount of money for Work Command. Default: [10, 50].
+ * @property {number | number[]} [weeklyAmount=100] Amount of money for Weekly Command. Default: 1000.
+ * @property {number | number[]} [workAmount=[10, 50]] Amount of money for Work Command. Default: [10, 50].
  * @property {boolean} [subtractOnBuy=true] 
  * If true, when someone buys the item, their balance will subtract by item price. Default: false
  * 
@@ -233,8 +250,10 @@ class EconomyUser {
  * 
  * @property {string} [dateLocale='en'] The region (example: 'ru'; 'en') to format the date and time. Default: 'en'.
  * @property {UpdaterOptions} [updater=UpdaterOptions] Update checker configuration.
- * @property {ErrorHandlerOptions} [errorHandler=ErrorHandlerOptions] Error handler configuration.
- * @property {CheckerOptions} [optionsChecker=CheckerOptions] Configuration for an 'Economy.utils.checkOptions' method.
+ * @property {ErrorHandlerConfiguration} [errorHandler=ErrorHandlerConfiguration] Error handler configuration.
+
+ * @property {CheckerConfiguration} [optionsChecker=CheckerConfiguration] 
+ * Configuration for an 'Economy.utils.checkOptions' method.
  * @property {boolean} [debug=false] Enables or disables the debug mode.
  */
 

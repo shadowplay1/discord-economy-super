@@ -1,6 +1,5 @@
 const { promisify } = require('util')
 
-
 const DatabaseManager = require('./managers/DatabaseManager')
 const CacheManager = require('./managers/CacheManager')
 
@@ -8,6 +7,8 @@ const UtilsManager = require('./managers/UtilsManager')
 
 const BalanceManager = require('./managers/BalanceManager')
 const BankManager = require('./managers/BankManager')
+
+const CurrencyManager = require('./managers/CurrencyManager')
 
 const RewardManager = require('./managers/RewardManager')
 const CooldownManager = require('./managers/CooldownManager')
@@ -18,7 +19,6 @@ const HistoryManager = require('./managers/HistoryManager')
 
 const UserManager = require('./managers/UserManager')
 const SettingsManager = require('./managers/SettingsManager')
-
 
 const Emitter = require('./classes/util/Emitter')
 const EconomyError = require('./classes/util/EconomyError')
@@ -37,7 +37,7 @@ class Economy extends Emitter {
 
     /**
     * The Economy class.
-    * @param {EconomyOptions} options Economy configuration.
+    * @param {EconomyConfiguration} options Economy configuration.
     */
     constructor(options = {}) {
         super()
@@ -108,14 +108,14 @@ class Economy extends Emitter {
             this.docs = 'https://des-docs.js.org'
 
             /**
-            * Utils manager methods object.
+            * Utils manager methods class.
             * @type {UtilsManager}
             */
             this.utils = new UtilsManager(options)
 
             /**
              * Economy configuration.
-             * @type {?EconomyOptions}
+             * @type {?EconomyConfiguration}
              */
             this.options = this.utils.checkOptions(options.optionsChecker, options)
 
@@ -144,49 +144,55 @@ class Economy extends Emitter {
             this.Emitter = Emitter
 
             /**
-            * Balance methods object.
+            * Balance methods class.
             * @type {BalanceManager}
             */
             this.balance = null
 
             /**
-            * Bank balance methods object.
+            * Bank balance methods class.
             * @type {BankManager}
             */
             this.bank = null
 
+            /*
+             * Currency manager methods class.
+             * @type {CurrencyManager}
+             */
+            this.currencies = null
+
             /**
-            * Database manager methods object.
+            * Database manager methods class.
             * @type {DatabaseManager}
             */
             this.database = null
 
             /**
-            * Shop manager methods object.
+            * Shop manager methods class.
             * @type {ShopManager}
             */
             this.shop = null
 
             /**
-            * Inventory manager methods object.
+            * Inventory manager methods class.
             * @type {InventoryManager}
             */
             this.inventory = null
 
             /**
-            * History manager methods object.
+            * History manager methods class.
             * @type {HistoryManager}
             */
             this.history = null
 
             /**
-            * Cooldowns methods object.
+            * Cooldowns methods class.
             * @type {CooldownManager}
             */
             this.cooldowns = null
 
             /**
-            * Rewards methods object.
+            * Rewards methods class.
             * @type {RewardManager}
             */
             this.rewards = null
@@ -210,7 +216,7 @@ class Economy extends Emitter {
             this.guilds = null
 
             /**
-            * Settings manager methods object.
+            * Settings manager methods class.
             * @type {SettingsManager}
             */
             this.settings = null
@@ -227,6 +233,9 @@ class Economy extends Emitter {
                 if (status) {
                     const usersCache = {}
                     const cooldownsCache = {}
+
+                    const balanceCache = {}
+                    const bankBalanceCache = {}
 
                     const inventoryCache = {}
                     const historyCache = {}
@@ -249,15 +258,30 @@ class Economy extends Emitter {
                                 weekly: userObject.weeklyCooldown
                             }
 
+                            balanceCache[userID] = {
+                                money: userObject.money,
+                                bank: userObject.bank,
+                            }
+
+                            bankBalanceCache[userID] = {
+                                balance: userObject.bank
+                            }
+
+
                             inventoryCache[userID] = userObject.inventory
                             historyCache[userID] = userObject.history
 
                             this.cache.users.set(guildID, usersCache)
                             this.cache.cooldowns.set(guildID, cooldownsCache)
 
+                            this.cache.balance.set(guildID, balanceCache)
+                            this.cache.bank.set(guildID, bankBalanceCache)
+
                             this.cache.inventory.set(guildID, inventoryCache)
                             this.cache.history.set(guildID, historyCache)
                         }
+
+                        this.cache.currencies.set(guildID, guildObject.currencies || {})
 
                         this.cache.guilds.set(guildID, guildObject)
                         this.cache.shop.set(guildID, guildObject.shop)
@@ -271,15 +295,13 @@ class Economy extends Emitter {
             })
 
         }).catch(err => {
-            if (err.message.includes('Command failed:')) {
-                console.log(
-                    `${this.colors.cyan}[Economy] ${this.colors.red}Failed to install ` +
-                    `${this.colors.yellow}'quick-mongo-super'${this.colors.red}. ` +
-                    `See the error details above.${this.colors.reset}`
-                )
+            console.log(
+                `${this.colors.cyan}[Economy] ${this.colors.red}Failed to connect to the ` +
+                `database${this.colors.red}. ` +
+                this.colors.reset
+            )
 
-                process.exit(1)
-            }
+            throw err
         })
     }
 
@@ -323,22 +345,36 @@ class Economy extends Emitter {
         const sleep = promisify(setTimeout)
 
         const check = () => new Promise(resolve => {
-            this._init().then(status => {
+            try {
+                this._init().then(status => {
+                    try {
+                        if (status) {
+                            this.errored = false
+                            this.ready = true
 
-                if (status) {
-                    this.errored = false
-                    this.ready = true
-                    return console.log(`${this.colors.green}Started successfully!`)
-                }
+                            this._logger.debug('Resolved the startup error.')
+                            return console.log(`${this.colors.green}Started successfully!${this.colors.reset}`)
+                        }
 
-                resolve(status)
-            }).catch(err => resolve(err))
+                        resolve(status)
+
+                    } catch (err) {
+                        resolve(err)
+                    }
+                }).catch(err => {
+                    resolve(err)
+                })
+            } catch (err) {
+                resolve(err)
+            }
         })
 
         this._logger.debug('Checking the Node.js version...')
 
         return this.options.errorHandler.handleErrors ? this._init().catch(async err => {
             if (!(err instanceof EconomyError)) this.errored = true
+
+            delete require.cache
 
             console.log(`${this.colors.red}Failed to start the module:${this.colors.cyan}`)
             console.log(err)
@@ -352,7 +388,7 @@ class Economy extends Emitter {
 
                 if (attempt < attempts) check().then(async res => {
                     if (res.message) {
-
+                        delete require.cache
                         attempt++
 
                         console.log(`${this.colors.red}Failed to start the module:${this.colors.cyan}`)
@@ -361,7 +397,7 @@ class Economy extends Emitter {
 
                         if (attempt == attempts) {
                             console.log(
-                                `${this.colors.green}Failed to start the module within` +
+                                `${this.colors.green}Failed to start the module within ` +
                                 `${attempts} attempts...${this.colors.reset}`
                             )
 
@@ -385,8 +421,8 @@ class Economy extends Emitter {
     _init() {
         return new Promise(async (resolve, reject) => {
             try {
-                if (this.errored) return
-                if (this.ready) return
+                if (this.errored) return reject(new EconomyError('Errored.', 'UNKNOWN_ERROR'))
+                if (this.ready) return reject(new EconomyError(errors.notReady, 'MODULE_NOT_READY'))
 
                 if (Number(process.version.split('.')[0].slice(1)) < 14) {
                     return reject(new EconomyError(errors.oldNodeVersion + process.version, 'OLD_NODE_VERSION'))
@@ -469,6 +505,10 @@ class Economy extends Emitter {
                 manager: BankManager
             },
             {
+                name: 'currencies',
+                manager: CurrencyManager
+            },
+            {
                 name: 'shop',
                 manager: ShopManager
             },
@@ -544,6 +584,18 @@ class Economy extends Emitter {
         return true
     }
 }
+
+
+/**
+* @typedef {object} RawEconomyUser Raw economy user object from database.
+* @property {number} dailyCooldown User's daily cooldown.
+* @property {number} workCooldown User's work cooldown.
+* @property {number} weeklyCooldown User's weekly cooldown.
+* @property {number} money User's balance.
+* @property {number} bank User's bank balance.
+* @property {InventoryData} inventory User's inventory.
+* @property {HistoryData} history User's purchases history.
+*/
 
 
 /**
@@ -640,6 +692,45 @@ class Economy extends Emitter {
 */
 
 /**
+* Emits when someone's custom currency was set.
+* @event Economy#customCurrencySet
+* @param {object} data Data object.
+* @param {string} data.type The type of operation.
+* @param {number} data.currencyID Currency ID that was changed.
+* @param {string} data.guildID Guild ID.
+* @param {string} data.memberID Member ID.
+* @param {number} data.amount Amount of money in completed operation.
+* @param {number} data.balance User's balance after the operation was completed successfully.
+* @param {string} data.reason The reason why the operation was completed.
+*/
+
+/**
+* Emits when someone's custom currency was added.
+* @event Economy#customCurrencyAdd
+* @param {object} data Data object.
+* @param {string} data.type The type of operation.
+* @param {number} data.currencyID Currency ID that was changed.
+* @param {string} data.guildID Guild ID.
+* @param {string} data.memberID Member ID.
+* @param {number} data.amount Amount of money in completed operation.
+* @param {number} data.balance User's balance after the operation was completed successfully.
+* @param {string} data.reason The reason why the operation was completed.
+*/
+
+/**
+* Emits when someone's custom currency was subtracted.
+* @event Economy#customCurrencySubtract
+* @param {object} data Data object.
+* @param {string} data.type The type of operation.
+* @param {number} data.currencyID Currency ID that was changed.
+* @param {string} data.guildID Guild ID.
+* @param {string} data.memberID Member ID.
+* @param {number} data.amount Amount of money in completed operation.
+* @param {number} data.balance User's balance after the operation was completed successfully.
+* @param {string} data.reason The reason why the operation was completed.
+*/
+
+/**
 * Emits when someone's added an item in the shop.
 * @event Economy#shopItemAdd
 * @param {object} data Data object.
@@ -712,12 +803,10 @@ class Economy extends Emitter {
 
 
 /**
- * @typedef {object} EconomyOptions Default Economy configuration.
- * @property {string} [storagePath='./storage.json'] Full path to a JSON file. Default: './storage.json'
- * @property {boolean} [checkStorage=true] Checks the if database file exists and if it has errors. Default: true
+ * @typedef {object} EconomyConfiguration Default Economy configuration.
  * @property {number} [dailyCooldown=86400000] Cooldown for Daily Command (in ms). Default: 24 hours (60000 * 60 * 24 ms)
  * @property {number} [workCooldown=3600000] Cooldown for Work Command (in ms). Default: 1 hour (60000 * 60 ms)
- * @property {Number | Number[]} [dailyAmount=100] Amount of money for Daily Command. Default: 100.
+ * @property {number | number[]} [dailyAmount=100] Amount of money for Daily Command. Default: 100.
  * @property {number} [weeklyCooldown=604800000] Cooldown for Weekly Command (in ms). Default: 7 days (60000 * 60 * 24 * 7 ms)
  * @property {number} [sellingItemPercent=75] 
  * Percent of the item's price it will be sold for. Default: 75.
@@ -727,15 +816,16 @@ class Economy extends Emitter {
  * 
  * @property {boolean} [savePurchasesHistory=true] If true, the module will save all the purchases history.
  * 
- * @property {Number | Number[]} [weeklyAmount=100] Amount of money for Weekly Command. Default: 1000.
- * @property {Number | Number[]} [workAmount=[10, 50]] Amount of money for Work Command. Default: [10, 50].
+ * @property {number | number[]} [weeklyAmount=100] Amount of money for Weekly Command. Default: 1000.
+ * @property {number | number[]} [workAmount=[10, 50]] Amount of money for Work Command. Default: [10, 50].
  * @property {boolean} [subtractOnBuy=true] If true, when someone buys the item, their balance will subtract by item price. Default: false
  * 
- * @property {number} [updateCountdown=1000] Checks for if storage file exists in specified time (in ms). Default: 1000.
  * @property {string} [dateLocale='en'] The region (example: 'ru' or 'en') to format the date and time. Default: 'en'.
  * @property {UpdaterOptions} [updater=UpdaterOptions] Update checker configuration.
- * @property {ErrorHandlerOptions} [errorHandler=ErrorHandlerOptions] Error handler configuration.
- * @property {CheckerOptions} [optionsChecker=CheckerOptions] Configuration for an 'Economy.utils.checkOptions' method.
+ * @property {ErrorHandlerConfiguration} [errorHandler=ErrorHandlerConfiguration] Error handler configuration.
+
+ * @property {CheckerConfiguration} [optionsChecker=CheckerConfiguration] 
+ * Configuration for an 'Economy.utils.checkOptions' method.
  * @property {boolean} [debug=false] Enables or disables the debug mode.
  */
 
@@ -746,14 +836,14 @@ class Economy extends Emitter {
  */
 
 /**
- * @typedef {object} ErrorHandlerOptions
+ * @typedef {object} ErrorHandlerConfiguration
  * @property {boolean} [handleErrors=true] Handles all errors on startup. Default: true.
  * @property {number} [attempts=5] Amount of attempts to load the module. Use 0 for infinity attempts. Default: 5.
  * @property {number} [time=3000] Time between every attempt to start the module (in ms). Default: 3000.
  */
 
 /**
- * @typedef {object} CheckerOptions Configuration for an 'Economy.utils.checkOptions' method.
+ * @typedef {object} CheckerConfiguration Configuration for an 'Economy.utils.checkOptions' method.
  * @property {boolean} [ignoreInvalidTypes=false] Allows the method to ignore the options with invalid types. Default: false.
  * @property {boolean} [ignoreUnspecifiedOptions=false] Allows the method to ignore the unspecified options. Default: false.
  * @property {boolean} [ignoreInvalidOptions=false] Allows the method to ignore the unexisting options. Default: false.

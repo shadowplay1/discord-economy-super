@@ -33,23 +33,46 @@ class DatabaseManager {
     /**
      * Gets a list of keys in database.
      * @param {string} key The key in database.
-     * @returns {Promise<String[]>} An array with all keys in database or 'null' if nothing found.
+     * @returns {Promise<string>} An array with all keys in database or 'null' if nothing found.
      */
     keysList(key) {
         return this._mongo.keysList(key)
     }
 
     /**
+     * Returns a boolean value that indicates whether the Promise is resolved or rejected.
+     * @param {Promise<any>} promise The promise to check.
+     * @returns {Promise<boolean>} Operation completion status.
+     */
+    _getPromiseResult(promise) {
+        return new Promise(resolve => {
+            try {
+                promise
+                    .then(() => resolve(true))
+                    .catch(() => resolve(false))
+            } catch {
+                resolve(false)
+            }
+        })
+    }
+
+    /**
      * Sets data in a property in database.
      * @param {string} key The key in database.
      * @param {any} value Any data to set in property.
-     * @param {boolean} [debug=false] If true, debug log will be sent.
      * @returns {Promise<boolean>} If set successfully: true; else: false
      */
-    set(key, value, debug) {
-        return this._mongo.set(key, value, debug).then(() => {
+    async set(key, value) {
+        const promise = this._mongo.set(key, value)
+        const promiseResult = await this._getPromiseResult(promise)
+
+        if (promiseResult) {
             this._logger.debug(`Performed "set" operation on key "${key}".`)
-        })
+        } else {
+            this._logger.debug(`Failed to perform "set" operation on key "${key}".`)
+        }
+
+        return promiseResult
     }
 
     /**
@@ -58,10 +81,17 @@ class DatabaseManager {
      * @param {number} value Any number to add.
      * @returns {Promise<boolean>} If added successfully: true; else: false
      */
-    add(key, value) {
-        return this._mongo.add(key, value).then(() => {
+    async add(key, value) {
+        const promise = this._mongo.add(key, value)
+        const promiseResult = await this._getPromiseResult(promise)
+
+        if (promiseResult) {
             this._logger.debug(`Performed "add" operation on key "${key}".`)
-        })
+        } else {
+            this._logger.debug(`Failed to perform "add" operation on key "${key}".`)
+        }
+
+        return promiseResult
     }
 
     /**
@@ -70,10 +100,17 @@ class DatabaseManager {
      * @param {number} value Any number to subtract.
      * @returns {Promise<boolean>} If set successfully: true; else: false
      */
-    subtract(key, value) {
-        return this._mongo.subtract(key, value).then(() => {
+    async subtract(key, value) {
+        const promise = this._mongo.subtract(key, value)
+        const promiseResult = await this._getPromiseResult(promise)
+
+        if (promiseResult) {
             this._logger.debug(`Performed "subtract" operation on key "${key}".`)
-        })
+        } else {
+            this._logger.debug(`Failed to perform "subtract" operation on key "${key}".`)
+        }
+
+        return promiseResult
     }
 
     /**
@@ -112,10 +149,17 @@ class DatabaseManager {
      * @param {string} key The key in database.
      * @returns {Promise<boolean>} If cleared: true; else: false.
      */
-    remove(key) {
-        return this._mongo.remove(key).then(() => {
+    async remove(key) {
+        const promise = this._mongo.remove(key)
+        const promiseResult = await this._getPromiseResult(promise)
+
+        if (promiseResult) {
             this._logger.debug(`Performed "remove" operation on key "${key}".`)
-        })
+        } else {
+            this._logger.debug(`Failed to perform "remove" operation on key "${key}".`)
+        }
+
+        return promiseResult
     }
 
     /**
@@ -135,13 +179,22 @@ class DatabaseManager {
      */
     async clear() {
         const keys = await this.keysList('')
+        const keysPromiseResult = await this._getPromiseResult(this.keysList())
 
-        for (const key of keys) {
-            await this.remove(key)
+        if (keysPromiseResult) {
+            if (!keys.length) {
+                return false
+            }
+
+            for (const key of keys) {
+                await this.remove(key)
+            }
+
+            this._logger.debug('Performed "clear" operation on the database.')
+            return true
         }
 
-        this._logger.debug('Performed "clear" operation on a whole database.')
-        return true
+        return false
     }
 
     /**
@@ -160,10 +213,17 @@ class DatabaseManager {
      * @param {any} value The key in database.
      * @returns {Promise<boolean>} If cleared: true; else: false.
      */
-    push(key, value) {
-        return this._mongo.push(key, value).then(() => {
+    async push(key, value) {
+        const promise = this._mongo.push(key, value)
+        const promiseResult = await this._getPromiseResult(promise)
+
+        if (promiseResult) {
             this._logger.debug(`Performed "push" operation on key "${key}".`)
-        })
+        } else {
+            this._logger.debug(`Failed to perform "push" operation on key "${key}".`)
+        }
+
+        return promiseResult
     }
 
     /**
@@ -172,10 +232,17 @@ class DatabaseManager {
      * @param {number} index The index in the array.
      * @returns {Promise<boolean>} If cleared: true; else: false.
      */
-    pop(key, index) {
-        return this._mongo.pop(key, index).then(() => {
+    async pop(key, index) {
+        const promise = this._mongo.pop(key, index)
+        const promiseResult = await this._getPromiseResult(promise)
+
+        if (promiseResult) {
             this._logger.debug(`Performed "pop" operation on key "${key}".`)
-        })
+        } else {
+            this._logger.debug(`Failed to perform "pop" operation on key "${key}".`)
+        }
+
+        return promiseResult
     }
 
     /**
@@ -197,10 +264,17 @@ class DatabaseManager {
     * @param {any} newValue The new value to set.
     * @returns {Promise<boolean>} If cleared: true; else: false.
     */
-    pull(key, index, newValue) {
-        return this._mongo.pull(key, index, newValue).then(() => {
+    async pull(key, index, newValue) {
+        const promise = this._mongo.pull(key, index, newValue)
+        const promiseResult = await this._getPromiseResult(promise)
+
+        if (promiseResult) {
             this._logger.debug(`Performed "pull" operation on key "${key}".`)
-        })
+        } else {
+            this._logger.debug(`Failed to perform "pull" operation on key "${key}".`)
+        }
+
+        return promiseResult
     }
 
     /**

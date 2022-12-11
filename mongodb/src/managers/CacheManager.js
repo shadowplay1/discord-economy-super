@@ -4,6 +4,9 @@ const {
     CachedGuilds,
     CachedUsers,
     CachedCooldowns,
+    CachedBalance,
+    CachedCurrency,
+    CachedBank,
     CachedShop,
     CachedHistory,
     CachedInventory
@@ -12,7 +15,16 @@ const {
 const EconomyError = require('../classes/util/EconomyError')
 const errors = require('../structures/errors')
 
+/**
+ * Economy Cache manager.
+ */
 class CacheManager {
+
+    /**
+     * Economy Cache manager.
+     * @param {EconomyConfiguration} options Economy configuration object.
+     * @param {DatabaseManager} database Database manager instance.
+     */
     constructor(options, database) {
 
         /**
@@ -26,6 +38,24 @@ class CacheManager {
          * @type {CachedUsers}
          */
         this.users = new CachedUsers(null, null, options, database, this)
+
+        /**
+         * Cached balance.
+         * @type {CachedBalance}
+         */
+        this.balance = new CachedBalance(null, null, options, database, this)
+
+        /**
+         * Cached bank balance.
+         * @type {CachedBank}
+         */
+        this.bank = new CachedBank(null, null, options, database, this)
+
+        /**
+         * Cached currencies
+         * @type {CachedCurrency}
+         */
+        this.currencies = new CachedCurrency(null, null, options, database, this)
 
         /**
          * Cached cooldowns.
@@ -71,12 +101,17 @@ class CacheManager {
 
         await this.guilds.update(id)
         await this.users.update(id)
+
         await this.cooldowns.update(id)
+
+        await this.balance.update(id)
+        await this.bank.update(id)
+        await this.currencies.update(id)
+
         await this.shop.update(id)
-        await this.history.update(id)
         await this.inventory.update(id)
 
-        return
+        await this.history.update(id)
     }
 
     /**
@@ -86,46 +121,33 @@ class CacheManager {
     clearAll() {
         this.guilds.clear()
         this.users.clear()
+
         this.cooldowns.clear()
+
+        this.balance.clear()
+        this.bank.clear()
+        this.currencies.clear()
+
         this.shop.clear()
-        this.history.clear()
         this.inventory.clear()
+
+        this.history.clear()
     }
 
     /**
      * Updates the specified cached items.
-     * @param {CacheItemName[]} cacheItemNames 
-     * Names of the cache items to update.
-     * 
+     * @param {CacheItemName[]} cacheItemNames Names of the cache items to update.
      * @param {DataIdentifier} id Identifiers object (memberID, guildID) to get value from cache.
      * @returns {Promise<void[]>}
      */
     async updateSpecified(cacheItemNames, id) {
         const promises = []
 
-        for (const i of cacheItemNames) {
-            switch (i) {
-                case 'guilds':
-                    promises.push(this.guilds.update(id))
-                    break
-                case 'users':
-                    promises.push(this.users.update(id))
-                    break
-                case 'cooldowns':
-                    promises.push(this.cooldowns.update(id))
-                    break
-                case 'shop':
-                    promises.push(this.shop.update(id))
-                    break
-                case 'history':
-                    promises.push(this.history.update(id))
-                    break
-                case 'inventory':
-                    promises.push(this.inventory.update(id))
-                    break
-
-                default:
-                    throw new EconomyError(errors.cache.invalidCacheNames, 'INVALID_CACHE_ITEM_NAME')
+        for (const cacheItemName of cacheItemNames) {
+            if (this[cacheItemName]) {
+                promises.push(this[cacheItemName].update(id))
+            } else {
+                throw new EconomyError(errors.cache.invalidCacheNames, 'INVALID_CACHE_ITEM_NAME')
             }
         }
 
@@ -134,43 +156,46 @@ class CacheManager {
     }
 
     /**
+     * Updates the specified cached items.
+     *
+     * This method is an alias for `CacheManager.updateSpecified()` method.
+     * @param {CacheItemName[]} cacheItemNames Names of the cache items to update.s
+     * @param {DataIdentifier} id Identifiers object (memberID, guildID) to get value from cache.
+     * @returns {Promise<void[]>}
+     */
+    updateMany(cacheItemNames, id) {
+        return this.updateSpecified(cacheItemNames, id)
+    }
+
+    /**
      * Clears the specified cached items.
-     * @param {CacheItemName[]} cacheItemNames 
-     * Names of the cache items to clear.
-     * 
+     * @param {CacheItemName[]} cacheItemNames Names of the cache items to clear.
      * @returns {void}
      */
     clearSpecified(cacheItemNames) {
-        for (const i of cacheItemNames) {
-            switch (i) {
-                case 'guilds':
-                    this.guilds.clear()
-                    break
-                case 'users':
-                    this.users.clear()
-                    break
-                case 'cooldowns':
-                    this.cooldowns.clear()
-                    break
-                case 'shop':
-                    this.shop.clear()
-                    break
-                case 'history':
-                    this.history.clear()
-                    break
-                case 'inventory':
-                    this.inventory.clear()
-                    break
-
-                default:
-                    throw new EconomyError(errors.cache.invalidCacheNames, 'INVALID_CACHE_ITEM_NAME')
+        for (const cacheItemName of cacheItemNames) {
+            if (this[cacheItemName]) {
+                promises.push(this[cacheItemName].clear(id))
+            } else {
+                throw new EconomyError(errors.cache.invalidCacheNames, 'INVALID_CACHE_ITEM_NAME')
             }
         }
     }
 
+    /**
+     * Clears the specified cached items.
+     * 
+     * This method is an alias for `CacheManager.clearSpecified` method.
+     * @param {CacheItemName[]} cacheItemNames Names of the cache items to clear.
+     * @returns {void}
+     */
+    clearMany(cacheItemNames) {
+        return this.clearSpecified(cacheItemNames)
+    }
 }
 
 module.exports = CacheManager
+
 
 /**
  * @typedef {Object} DataIdentifier
@@ -178,6 +203,9 @@ module.exports = CacheManager
  * @property {string} memberID Member ID.
  */
 
+
+/* eslint-disable */
+
 /**
- * @typedef {'guilds' | 'users' | 'cooldowns' | 'shop' | 'inventory' | 'history'} CacheItemName
+ * @typedef {'guilds' | 'users' | 'cooldowns' | 'balance' | 'bank' | 'currencies' | 'shop' | 'inventory' | 'history'} CacheItemName
  */

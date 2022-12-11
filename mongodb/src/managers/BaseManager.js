@@ -3,6 +3,7 @@ const Emitter = require('../classes/util/Emitter')
 const DatabaseManager = require('./DatabaseManager')
 const CacheManager = require('./CacheManager')
 
+
 /**
  * The default manager with its default methods.
  * 
@@ -30,22 +31,25 @@ const CacheManager = require('./CacheManager')
  *  
  *  async all() {
  *      const shop = (await this.database.fetch(`${this.guildID}.shop`)) || []
-        return shop.map(item => new ShopItem(this.guildID, item, this.database, this.cache))
- *  }
+ *      return shop.map(item => new ShopItem(this.guildID, item, this.database, this.cache))
+ *   }
  * }
  */
 class BaseManager extends Emitter {
 
     /**
      * Base Manager.
-     * @param {EconomyOptions} options Economy configuration.
+     * @param {EconomyConfiguration} options Economy configuration.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
      * @param {any} constructor A constructor (EconomyUser, ShopItem, etc.) to work with.
      * @param {DatabaseManager} database Database manager.
      * @param {CacheManager} cache Cache Manager.
+     * 
+     * @param {any} [emptyBaseConstructor] 
+     * An empty constructor (EmptyEconomyUser, EmptyEconomyGuild, etc.) to replace the `undefined` value with.
      */
-    constructor(options, memberID, guildID, constructor, database, cache) {
+    constructor(options, memberID, guildID, constructor, database, cache, emptyBaseConstructor) {
         super()
 
         delete options.connection
@@ -53,7 +57,7 @@ class BaseManager extends Emitter {
 
         /**
          * Economy configuration.
-         * @type {EconomyOptions}
+         * @type {EconomyConfiguration}
          * @private
          */
         this.options = options
@@ -87,8 +91,16 @@ class BaseManager extends Emitter {
         /**
          * A constructor (EconomyUser, ShopItem, etc.) to work with.
          * @type {any}
+         * @private
          */
         this.baseConstructor = constructor
+
+        /**
+         * An empty constructor (EmptyEconomyUser, EmptyEconomyGuild, etc.) to replace the `undefined` value with.
+         * @type {any}
+         * @private
+         */
+        this.emptyBaseConstructor = emptyBaseConstructor
 
         /**
          * Number of specific element in database.
@@ -110,6 +122,21 @@ class BaseManager extends Emitter {
         const firstElement = array[0]
 
         this.length = array.length
+
+        if (!firstElement) {
+            if (this.emptyBaseConstructor.name === 'EconomyUser') {
+                return new this.emptyBaseConstructor(
+                    this.memberID, this.guildID,
+                    this.options,
+                    this.database, this.cache
+                )
+            }
+
+            return new this.emptyBaseConstructor(
+                this.guildID, this.options,
+                this.database, this.cache
+            )
+        }
 
         if (!this.memberID) {
             return new this.baseConstructor(
@@ -142,10 +169,25 @@ class BaseManager extends Emitter {
      * @returns {Promise<any>} Last database object.
      */
     async last() {
-        const array = this.all()
+        const array = await this.all()
         const lastElement = array[array.length - 1]
 
         this.length = array.length
+
+        if (!lastElement) {
+            if (this.emptyBaseConstructor.name === 'EconomyUser') {
+                return new this.emptyBaseConstructor(
+                    this.memberID, this.guildID,
+                    this.options,
+                    this.database, this.cache
+                )
+            }
+
+            return new this.emptyBaseConstructor(
+                this.guildID, this.options,
+                this.database, this.cache
+            )
+        }
 
         if (!this.memberID) {
             return new this.baseConstructor(
@@ -237,7 +279,72 @@ class BaseManager extends Emitter {
         const allArray = await this.all()
         this.length = allArray.length
 
-        return allArray.find(predicate, thisArg)
+        const result = allArray.find(predicate, thisArg)
+
+        if (!result) {
+            if (this.emptyBaseConstructor.name === 'EconomyUser') {
+                return new this.emptyBaseConstructor(
+                    this.memberID, this.guildID,
+                    this.options,
+                    this.database, this.cache
+                )
+            }
+
+            return new this.emptyBaseConstructor(
+                this.guildID, this.options,
+                this.database, this.cache
+            )
+        }
+    }
+
+    /**
+     * Gets the element at the specified index in the elements array.
+     * @param {number} index Index of the user.
+     * @returns {Promise<any>} Object at the specified index.
+     */
+    async at(index) {
+        const array = await this.all()
+        this.length = array.length
+
+        if (!array[index]) {
+            if (this.emptyBaseConstructor.name === 'EconomyUser') {
+                return new this.emptyBaseConstructor(
+                    this.memberID, this.guildID,
+                    this.options,
+                    this.database, this.cache
+                )
+            }
+
+            return new this.emptyBaseConstructor(
+                this.guildID, this.options,
+                this.database, this.cache
+            )
+        }
+
+        if (!this.memberID) {
+            return new this.baseConstructor(
+                this.guildID, this.options,
+                array[index],
+                this.database, this.cache
+            )
+        }
+
+        else if (this.memberID && this.guildID) {
+            return new this.baseConstructor(
+                this.memberID, this.guildID,
+                this.options, array[index],
+                this.database, this.cache
+            )
+        }
+
+        else {
+            return new this.baseConstructor(
+                array[index].memberID || array[index].id,
+                array[index].guildID,
+                this.options, array[index],
+                this.database, this.cache
+            )
+        }
     }
 
     /**
@@ -463,14 +570,14 @@ class BaseManager extends Emitter {
 
 
 /**
- * @typedef {object} EconomyOptions Default Economy configuration.
+ * @typedef {object} EconomyConfiguration Default Economy configuration.
  * @property {string} [storagePath='./storage.json'] Full path to a JSON file. Default: './storage.json'
  * @property {boolean} [checkStorage=true] Checks the if database file exists and if it has errors. Default: true
  * @property {number} [dailyCooldown=86400000] 
  * Cooldown for Daily Command (in ms). Default: 24 hours (60000 * 60 * 24 ms)
  * 
  * @property {number} [workCooldown=3600000] Cooldown for Work Command (in ms). Default: 1 hour (60000 * 60 ms)
- * @property {Number | Number[]} [dailyAmount=100] Amount of money for Daily Command. Default: 100.
+ * @property {number | number[]} [dailyAmount=100] Amount of money for Daily Command. Default: 100.
  * @property {number} [weeklyCooldown=604800000] 
  * Cooldown for Weekly Command (in ms). Default: 7 days (60000 * 60 * 24 * 7 ms)
  * 
@@ -482,16 +589,18 @@ class BaseManager extends Emitter {
  * @property {number} [sellingItemPercent=75] 
  * Percent of the item's price it will be sold for. Default: 75.
  * 
- * @property {Number | Number[]} [weeklyAmount=100] Amount of money for Weekly Command. Default: 1000.
- * @property {Number | Number[]} [workAmount=[10, 50]] Amount of money for Work Command. Default: [10, 50].
+ * @property {number | number[]} [weeklyAmount=100] Amount of money for Weekly Command. Default: 1000.
+ * @property {number | number[]} [workAmount=[10, 50]] Amount of money for Work Command. Default: [10, 50].
  * @property {boolean} [subtractOnBuy=true] 
  * If true, when someone buys the item, their balance will subtract by item price. Default: false
  * 
  * @property {number} [updateCountdown=1000] Checks for if storage file exists in specified time (in ms). Default: 1000.
  * @property {string} [dateLocale='en'] The region (example: 'ru' or 'en') to format the date and time. Default: 'en'.
  * @property {UpdaterOptions} [updater=UpdaterOptions] Update checker configuration.
- * @property {ErrorHandlerOptions} [errorHandler=ErrorHandlerOptions] Error handler configuration.
- * @property {CheckerOptions} [optionsChecker=CheckerOptions] Configuration for an 'Economy.utils.checkOptions' method.
+ * @property {ErrorHandlerConfiguration} [errorHandler=ErrorHandlerConfiguration] Error handler configuration.
+
+ * @property {CheckerConfiguration} [optionsChecker=CheckerConfiguration] 
+ * Configuration for an 'Economy.utils.checkOptions' method.
  * @property {boolean} [debug=false] Enables or disables the debug mode.
  */
 

@@ -1,6 +1,9 @@
 const ms = require('../structures/ms')
 
+const Emitter = require('../classes/util/Emitter')
+
 const EconomyError = require('../classes/util/EconomyError')
+const errors = require('../structures/errors')
 
 const BalanceManager = require('./BalanceManager')
 const CooldownManager = require('./CooldownManager')
@@ -8,7 +11,11 @@ const CooldownManager = require('./CooldownManager')
 const DatabaseManager = require('./DatabaseManager')
 const CacheManager = require('./CacheManager')
 
-const errors = require('../structures/errors')
+const RewardType = {
+    DAILY: 0,
+    WORK: 1,
+    WEEKLY: 2
+}
 
 const parse = ms => ({
     days: Math.floor(ms / 86400000),
@@ -21,20 +28,21 @@ const parse = ms => ({
 
 /**
 * Reward manager methods class.
+* @extends {Emitter}
 */
-class RewardManager {
-
+class RewardManager extends Emitter {
     /**
-      * Reward Manager.
-      * @param {object} options Economy configuration.
-      * @param {DatabaseManager} database Database manager.
-      * @param {CacheManager} cache Cache manager.
+     * Reward Manager.
+     * @param {object} options Economy configuration.
+     * @param {DatabaseManager} database Database manager.
+     * @param {CacheManager} cache Cache manager.
      */
     constructor(options, database, cache) {
+        super()
 
         /**
          * Economy configuration.
-         * @type {EconomyOptions}
+         * @type {EconomyConfiguration}
          * @private
          */
         this.options = options
@@ -69,10 +77,54 @@ class RewardManager {
     }
 
     /**
+     * Adds a reward on user's balance.
+     * @param {RewardType} reward Reward to give.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @param {string} [reason] The reason why the money was added.
+     * @returns {Promise<RewardData>} Daily reward object.
+    */
+    async receive(reward, memberID, guildID, reason) {
+        const rewardTypes = ['daily', 'work', 'weekly']
+
+        if (typeof memberID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
+        }
+
+        if (typeof guildID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
+        }
+
+        if (isNaN(reward) || !rewardTypes[reward]) {
+            throw new EconomyError(
+                errors.invalidType('reward', 'key of RewardType enum', typeof reward),
+                'INVALID_TYPE'
+            )
+        }
+
+        switch (reward) {
+            case RewardType.DAILY:
+                return this.getDaily(memberID, guildID, reason)
+
+            case RewardType.WORK:
+                return this.getWork(memberID, guildID, reason)
+
+            case RewardType.WEEKLY:
+                return this.getWeekly(memberID, guildID, reason)
+
+            default:
+                throw new EconomyError(
+                    errors.invalidType('reward', 'key of RewardType enum', typeof reward),
+                    'INVALID_TYPE'
+                )
+        }
+    }
+
+    /**
      * Adds a daily reward on user's balance.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
-     * @param {string} reason The reason why the money was added. Default: 'claimed the daily reward'.
+     * @param {string} [reason] The reason why the money was added. Default: 'claimed the daily reward'.
      * @returns {Promise<RewardData>} Daily reward object.
     */
     async getDaily(memberID, guildID, reason = 'claimed the daily reward') {
@@ -104,11 +156,7 @@ class RewardManager {
 
         else reward = defaultDailyReward
 
-        const userCooldown = this.cache.cooldowns.get({
-            memberID,
-            guildID
-        })?.daily
-
+        const userCooldown = await this.database.get(`${guildID}.${memberID}.dailyCooldown`) || 0
         const cooldownEnd = cooldown - (Date.now() - userCooldown)
 
         if (userCooldown !== null && cooldownEnd > 0) {
@@ -125,10 +173,10 @@ class RewardManager {
             }
         }
 
-        this.balance.add(reward, memberID, guildID, reason)
         await this.database.set(`${guildID}.${memberID}.dailyCooldown`, Date.now())
+        await this.balance.add(reward, memberID, guildID, reason)
 
-        this.cache.updateSpecified(['users', 'cooldowns'], {
+        this.cache.updateMany(['users', 'cooldowns', 'balance'], {
             memberID,
             guildID
         })
@@ -146,7 +194,7 @@ class RewardManager {
      * Adds a work reward on user's balance.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
-     * @param {string} reason The reason why the money was added. Default: 'claimed the work reward'.
+     * @param {string} [reason] The reason why the money was added. Default: 'claimed the work reward'.
      * @returns {Promise<RewardData>} Work reward object.
      */
     async getWork(memberID, guildID, reason = 'claimed the work reward') {
@@ -176,11 +224,7 @@ class RewardManager {
 
         else reward = defaultWorkReward
 
-        const userCooldown = this.cache.cooldowns.get({
-            memberID,
-            guildID
-        })?.work
-
+        const userCooldown = await this.database.get(`${guildID}.${memberID}.workCooldown`) || 0
         const cooldownEnd = cooldown - (Date.now() - userCooldown)
 
         if (userCooldown !== null && cooldownEnd > 0) {
@@ -197,10 +241,10 @@ class RewardManager {
             }
         }
 
-        this.balance.add(reward, memberID, guildID, reason)
         await this.database.set(`${guildID}.${memberID}.workCooldown`, Date.now())
+        await this.balance.add(reward, memberID, guildID, reason)
 
-        this.cache.updateSpecified(['users', 'cooldowns'], {
+        this.cache.updateMany(['users', 'cooldowns', 'balance'], {
             memberID,
             guildID
         })
@@ -218,7 +262,7 @@ class RewardManager {
      * Adds a weekly reward on user's balance.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
-     * @param {string} reason The reason why the money was added. Default: 'claimed the weekly reward'.
+     * @param {string} [reason] The reason why the money was added. Default: 'claimed the weekly reward'.
      * @returns {Promise<RewardData>} Weekly reward object.
      */
     async getWeekly(memberID, guildID, reason = 'claimed the weekly reward') {
@@ -248,11 +292,7 @@ class RewardManager {
 
         else reward = defaultWeeklyReward
 
-        const userCooldown = this.cache.cooldowns.get({
-            memberID,
-            guildID
-        })?.weekly
-
+        const userCooldown = await this.database.get(`${guildID}.${memberID}.weeklyCooldown`) || 0
         const cooldownEnd = cooldown - (Date.now() - userCooldown)
 
         if (userCooldown !== null && cooldownEnd > 0) {
@@ -269,10 +309,10 @@ class RewardManager {
             }
         }
 
-        this.balance.add(reward, memberID, guildID, reason)
         await this.database.set(`${guildID}.${memberID}.weeklyCooldown`, Date.now())
+        await this.balance.add(reward, memberID, guildID, reason)
 
-        this.cache.updateSpecified(['users', 'cooldowns'], {
+        this.cache.updateMany(['users', 'cooldowns', 'balance'], {
             memberID,
             guildID
         })

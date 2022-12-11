@@ -16,7 +16,7 @@ class ShopManager extends Emitter {
 
     /**
       * Shop Manager.
-      * @param {EconomyOptions} options Economy configuration.
+      * @param {EconomyConfiguration} options Economy configuration.
       * @param {DatabaseManager} database Database manager.
       * @param {CacheManager} cache Cache Manager.
      */
@@ -25,13 +25,13 @@ class ShopManager extends Emitter {
 
         /**
          * Economy configuration.
-         * @type {?EconomyOptions}
+         * @type {?EconomyConfiguration}
          * @private
          */
         this.options = options
 
         /**
-         * Database manager methods object.
+         * Database manager methods class.
          * @type {DatabaseManager}
          * @private
          */
@@ -128,7 +128,7 @@ class ShopManager extends Emitter {
         await this.database.push(`${guildID}.shop`, itemInfo)
         this.emit('shopItemAdd', newShopItem)
 
-        this.cache.shop.update({
+        this.cache.updateMany(['guilds', 'shop'], {
             guildID
         })
 
@@ -155,6 +155,7 @@ class ShopManager extends Emitter {
      * This argument means what thing in item you want to edit (item property). 
      * Available item properties are 'description', 'price', 'name', 'message', 'amount', 'role', 'custom'.
      * 
+     * @param {any} value Any value to set.
      * @returns {Promise<boolean>} If edited successfully: true, else: false.
      */
     async editItem(itemID, guildID, itemProperty, value) {
@@ -189,7 +190,7 @@ class ShopManager extends Emitter {
             item[itemProperty] = value
             await this.database.pull(`${guildID}.shop`, itemIndex, item)
 
-            this.cache.shop.update({
+            this.cache.updateMany(['guilds', 'shop'], {
                 guildID
             })
 
@@ -229,6 +230,10 @@ class ShopManager extends Emitter {
                 const result5 = await edit(itemProperties[5], value)
                 return result5
 
+            case itemProperties[6]:
+                const result6 = await edit(itemProperties[6], value)
+                return result6
+
             default:
                 return null
         }
@@ -243,8 +248,8 @@ class ShopManager extends Emitter {
      * @param {'description' | 'price' | 'name' | 'message' | 'maxAmount' | 'role' | 'custom'} itemProperty 
      * This argument means what thing in item you want to edit (item property). 
      * Available item properties are 'description', 'price', 'name', 'message', 'amount', 'role', 'custom'.
-     * @param {any} value Any value to set.
      * 
+     * @param {any} value Any value to set.
      * @returns {Promise<boolean>} If edited successfully: true, else: false.
      */
     edit(itemID, guildID, itemProperty, value) {
@@ -255,7 +260,7 @@ class ShopManager extends Emitter {
      * Sets a custom object for the item.
      * @param {string | number} itemID Item ID or name.
      * @param {string} guildID Guild ID.
-     * @param {object} custom Custom item data object.
+     * @param {object} customObject Custom item data object.
      * @returns {Promise<boolean>} If set successfully: true, else: false.
      */
     setCustom(itemID, guildID, customObject) {
@@ -288,7 +293,7 @@ class ShopManager extends Emitter {
 
         await this.database.pop(`${guildID}.shop`, itemIndex)
 
-        this.cache.shop.update({
+        this.cache.updateMany(['guilds', 'shop'], {
             guildID
         })
 
@@ -324,10 +329,10 @@ class ShopManager extends Emitter {
             return false
         }
 
-        await this.database.remove(`${guildID}.shop`)
+        await this.database.delete(`${guildID}.shop`)
         this.emit('shopClear', true)
 
-        this.cache.shop.update({
+        this.cache.updateMany(['guilds', 'shop'], {
             guildID
         })
 
@@ -424,22 +429,33 @@ class ShopManager extends Emitter {
      * @returns {Promise<ShopOperationInfo>} Operation information object.
      */
     async buy(itemID, memberID, guildID, quantity = 1, reason = 'received the item from the shop') {
-        const balance = (await this.database.fetch(`${guildID}.${memberID}.money`)) || []
+        const balance = this.cache.balance.get({
+            memberID,
+            guildID
+        }) || []
 
-        const shop = (await this.fetch(guildID)) || []
+        const shop = this.cache.shop.get({
+            guildID
+        }) || []
+
         const item = shop.find(item => item.id == itemID || item.name == itemID)
 
-        const inventory = (await this.database.fetch(`${guildID}.${memberID}.inventory`)) || []
+        const inventory = this.cache.inventory.get({
+            memberID,
+            guildID
+        }) || []
+
         const inventoryItems = inventory.filter(invItem => invItem.name == item.name)
 
+        const settings = await this.database.fetch(`${guildID}.settings`) || {}
 
-        const dateLocale = (await this.database.fetch(`${guildID}.settings.dateLocale`))
+        const dateLocale = settings.dateLocale
             || this.options.dateLocale
 
-        const subtractOnBuy = (await this.database.fetch(`${guildID}.settings.subtractOnBuy`))
+        const subtractOnBuy = settings.subtractOnBuy
             || this.options.subtractOnBuy
 
-        const savePurchasesHistory = (await this.database.fetch(`${guildID}.settings.savePurchasesHistory`))
+        const savePurchasesHistory = settings.savePurchasesHistory
             || this.options.savePurchasesHistory
 
 
@@ -468,6 +484,7 @@ class ShopManager extends Emitter {
         const arrayOfItems = Array(quantity).fill(item.itemObject ? item.itemObject : item)
 
         const newInventory = [...inventory, ...arrayOfItems]
+            .map(item => item.itemObject ? item.itemObject : item)
 
         if (
             item.maxAmount &&
@@ -482,7 +499,12 @@ class ShopManager extends Emitter {
         }
 
         if (subtractOnBuy) {
-            this.database.subtract(`${guildID}.${memberID}.money`, totalPrice)
+            await this.database.subtract(`${guildID}.${memberID}.money`, totalPrice)
+
+            this.cache.balance.update({
+                guildID,
+                memberID
+            })
 
             this.emit('balanceSubtract', {
                 type: 'subtract',
@@ -496,16 +518,11 @@ class ShopManager extends Emitter {
 
         await this.database.set(`${guildID}.${memberID}.inventory`, newInventory)
 
-        this.cache.inventory.update({
-            guildID,
-            memberID
-        })
-
         if (savePurchasesHistory) {
-            const shop = (await this.database.fetch(`${guildID}.shop`)) || []
-            const history = (await this.database.fetch(`${guildID}.${memberID}.history`)) || []
-
-            const item = shop.find(item => item.id == itemID || item.name == itemID)
+            const history = this.cache.history.get({
+                memberID,
+                guildID
+            }) || []
 
             await this.database.push(`${guildID}.${memberID}.history`, {
                 id: history.length ? history[history.length - 1].id + 1 : 1,
@@ -526,6 +543,11 @@ class ShopManager extends Emitter {
                 memberID
             })
         }
+
+        await this.cache.updateMany(['users', 'inventory'], {
+            memberID,
+            guildID
+        })
 
         this.emit('shopItemBuy', {
             guildID,
@@ -608,12 +630,12 @@ class ShopManager extends Emitter {
  */
 
 /**
- * @typedef {object} EconomyOptions Default Economy configuration.
+ * @typedef {object} EconomyConfiguration Default Economy configuration.
  * @property {number} [dailyCooldown=86400000]
  * Cooldown for Daily Command (in ms). Default: 24 hours (60000 * 60 * 24 ms)
  *
  * @property {number} [workCooldown=3600000] Cooldown for Work Command (in ms). Default: 1 hour (60000 * 60 ms)
- * @property {Number | Number[]} [dailyAmount=100] Amount of money for Daily Command. Default: 100.
+ * @property {number | number[]} [dailyAmount=100] Amount of money for Daily Command. Default: 100.
  * @property {number} [weeklyCooldown=604800000]
  * Cooldown for Weekly Command (in ms). Default: 7 days (60000 * 60 * 24 * 7 ms)
  *
@@ -625,15 +647,17 @@ class ShopManager extends Emitter {
  * @property {number} [sellingItemPercent=75]
  * Percent of the item's price it will be sold for. Default: 75.
  *
- * @property {Number | Number[]} [weeklyAmount=100] Amount of money for Weekly Command. Default: 1000.
- * @property {Number | Number[]} [workAmount=[10, 50]] Amount of money for Work Command. Default: [10, 50].
+ * @property {number | number[]} [weeklyAmount=100] Amount of money for Weekly Command. Default: 1000.
+ * @property {number | number[]} [workAmount=[10, 50]] Amount of money for Work Command. Default: [10, 50].
  * @property {boolean} [subtractOnBuy=true]
  * If true, when someone buys the item, their balance will subtract by item price. Default: false
  *
  * @property {string} [dateLocale='en'] The region (example: 'ru' or 'en') to format the date and time. Default: 'en'.
  * @property {UpdaterOptions} [updater=UpdaterOptions] Update checker configuration.
- * @property {ErrorHandlerOptions} [errorHandler=ErrorHandlerOptions] Error handler configuration.
- * @property {CheckerOptions} [optionsChecker=CheckerOptions] Configuration for an 'Economy.utils.checkOptions' method.
+ * @property {ErrorHandlerConfiguration} [errorHandler=ErrorHandlerConfiguration] Error handler configuration.
+
+ * @property {CheckerConfiguration} [optionsChecker=CheckerConfiguration] 
+ * Configuration for an 'Economy.utils.checkOptions' method.
  * @property {boolean} [debug=false] Enables or disables the debug mode.
  */
 

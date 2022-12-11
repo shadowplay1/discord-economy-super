@@ -27,14 +27,14 @@ function checkValueType(key, value) {
                 (Array.isArray(value) && typeof value[0] !== 'number' && typeof value[1] !== 'number')
                 || !Array.isArray(value) && typeof value !== 'number'
             ) {
-                throw new EconomyError(errors.settingsManager.invalidType(key, 'number', typeof value), 'INVALID_TYPE')
+                throw new EconomyError(errors.invalidType(key, 'number', typeof value), 'INVALID_TYPE')
             }
 
             break
 
         case 'dailyCooldown':
             if (typeof value !== 'number') {
-                throw new EconomyError(errors.settingsManager.invalidType(key, 'number', typeof value), 'INVALID_TYPE')
+                throw new EconomyError(errors.invalidType(key, 'number', typeof value), 'INVALID_TYPE')
             }
 
             break
@@ -45,14 +45,14 @@ function checkValueType(key, value) {
                 (Array.isArray(value) && typeof value[0] !== 'number' && typeof value[1] !== 'number')
                 || !Array.isArray(value) && typeof value !== 'number'
             ) {
-                throw new EconomyError(errors.settingsManager.invalidType(key, 'number', typeof value), 'INVALID_TYPE')
+                throw new EconomyError(errors.invalidType(key, 'number', typeof value), 'INVALID_TYPE')
             }
 
             break
 
         case 'workCooldown':
             if (typeof value !== 'number') {
-                throw new EconomyError(errors.settingsManager.invalidType(key, 'number', typeof value), 'INVALID_TYPE')
+                throw new EconomyError(errors.invalidType(key, 'number', typeof value), 'INVALID_TYPE')
             }
 
             break
@@ -63,14 +63,14 @@ function checkValueType(key, value) {
                 (Array.isArray(value) && typeof value[0] !== 'number' && typeof value[1] !== 'number')
                 || !Array.isArray(value) && typeof value !== 'number'
             ) {
-                throw new EconomyError(errors.settingsManager.invalidType(key, 'number', typeof value), 'INVALID_TYPE')
+                throw new EconomyError(errors.invalidType(key, 'number', typeof value), 'INVALID_TYPE')
             }
 
             break
 
         case 'weeklyCooldown':
             if (typeof value !== 'number') {
-                throw new EconomyError(errors.settingsManager.invalidType(key, 'number', typeof value), 'INVALID_TYPE')
+                throw new EconomyError(errors.invalidType(key, 'number', typeof value), 'INVALID_TYPE')
             }
 
             break
@@ -78,28 +78,28 @@ function checkValueType(key, value) {
 
         case 'dateLocale':
             if (typeof value !== 'string') {
-                throw new EconomyError(errors.settingsManager.invalidType(key, 'string', typeof value), 'INVALID_TYPE')
+                throw new EconomyError(errors.invalidType(key, 'string', typeof value), 'INVALID_TYPE')
             }
 
             break
 
         case 'subtractOnBuy':
             if (typeof value !== 'boolean') {
-                throw new EconomyError(errors.settingsManager.invalidType(key, 'boolean', typeof value), 'INVALID_TYPE')
+                throw new EconomyError(errors.invalidType(key, 'boolean', typeof value), 'INVALID_TYPE')
             }
 
             break
 
         case 'sellingItemPercent':
             if (typeof value !== 'number') {
-                throw new EconomyError(errors.settingsManager.invalidType(key, 'number', typeof value), 'INVALID_TYPE')
+                throw new EconomyError(errors.invalidType(key, 'number', typeof value), 'INVALID_TYPE')
             }
 
             break
 
         case 'savePurchasesHistory':
             if (typeof value !== 'boolean') {
-                throw new EconomyError(errors.settingsManager.invalidType(key, 'boolean', typeof value), 'INVALID_TYPE')
+                throw new EconomyError(errors.invalidType(key, 'boolean', typeof value), 'INVALID_TYPE')
             }
 
             break
@@ -116,7 +116,7 @@ class SettingsManager {
 
     /**
      * Settings Manager.
-     * @param {EconomyOptions} options Economy configuration.
+     * @param {EconomyConfiguration} options Economy configuration.
      * @param {DatabaseManager} database Database manager.
      */
     constructor(options, database) {
@@ -124,14 +124,14 @@ class SettingsManager {
 
         /**
         * Economy configuration.
-        * @type {EconomyOptions}
+        * @type {EconomyConfiguration}
         * @private
         */
         this.options = options
 
 
         /**
-        * Database manager methods object.
+        * Database manager methods class.
         * @type {DatabaseManager}
         * @private
         */
@@ -201,17 +201,17 @@ class SettingsManager {
     }
 
     /**
-     * Removes the specified setting.
+     * Deletes the specified setting.
      * 
      * Note: If the server don't have any setting specified, 
      * the module will take the values from the 
      * specified configuration or default configuration.
      * 
-     * @param {Settings} key The setting to remove.
+     * @param {Settings} key The setting to delete.
      * @param {string} guildID Guild ID.
      * @returns {Promise<SettingsTypes>} The server settings object.
      */
-    async remove(key, guildID) {
+    async delete(key, guildID) {
         if (typeof key !== 'string') {
             throw new EconomyError(errors.databaseManager.invalidTypes.key + typeof key, 'INVALID_TYPE')
         }
@@ -224,10 +224,27 @@ class SettingsManager {
             throw new EconomyError(errors.settingsManager.invalidKey + key, 'SETTINGS_KEY_INVALID')
         }
 
-        await this.database.remove(`${guildID}.settings.${key}`)
+        await this.database.delete(`${guildID}.settings.${key}`)
 
         const result = await this.all(guildID)
         return result
+    }
+
+    /**
+     * Deletes the specified setting.
+     * 
+     * Note: If the server don't have any setting specified, 
+     * the module will take the values from the 
+     * specified configuration or default configuration.
+     * 
+     * This method is an alias for `SettingsManager.delete` method.
+     * 
+     * @param {Settings} key The setting to delete.
+     * @param {string} guildID Guild ID.
+     * @returns {Promise<SettingsTypes>} The server settings object.
+     */
+    remove(key, guildID) {
+        return this.delete(key, guildID)
     }
 
     /**
@@ -294,13 +311,13 @@ class SettingsManager {
 
 /**
  * @typedef {object} SettingsTypes Settings object.
- * @property {Number | Number[]} dailyAmount Amount of money for Daily Command. Default: 100.
+ * @property {number | number[]} dailyAmount Amount of money for Daily Command. Default: 100.
  * @property {number} dailyCooldown Cooldown for Daily Command (in ms). Default: 24 hours (60000 * 60 * 24 ms)
  * 
- * @property {Number | Number[]} workAmount Amount of money for Work Command. Default: [10, 50].
+ * @property {number | number[]} workAmount Amount of money for Work Command. Default: [10, 50].
  * @property {number} workCooldown Cooldown for Work Command (in ms). Default: 1 hour (60000 * 60 ms)
  * 
- * @property {Number | Number[]} weeklyAmount Amount of money for Weekly Command. Default: 1000.
+ * @property {number | number[]} weeklyAmount Amount of money for Weekly Command. Default: 1000.
  * @property {number} weeklyCooldown Cooldown for Weekly Command (in ms). Default: 7 days (60000 * 60 * 24 * 7 ms)
  * 
  * @property {string} dateLocale The region (example: 'ru' or 'en') to format the date and time. Default: 'en'
@@ -311,14 +328,14 @@ class SettingsManager {
  */
 
 /**
- * @typedef {object} EconomyOptions Default Economy configuration.
+ * @typedef {object} EconomyConfiguration Default Economy configuration.
  * @property {string} [storagePath='./storage.json'] Full path to a JSON file. Default: './storage.json'
  * @property {boolean} [checkStorage=true] Checks the if database file exists and if it has errors. Default: true
  * @property {number} [dailyCooldown=86400000] 
  * Cooldown for Daily Command (in ms). Default: 24 hours (60000 * 60 * 24 ms)
  * 
  * @property {number} [workCooldown=3600000] Cooldown for Work Command (in ms). Default: 1 hour (60000 * 60 ms)
- * @property {Number | Number[]} [dailyAmount=100] Amount of money for Daily Command. Default: 100.
+ * @property {number | number[]} [dailyAmount=100] Amount of money for Daily Command. Default: 100.
  * @property {number} [weeklyCooldown=604800000] 
  * Cooldown for Weekly Command (in ms). Default: 7 days (60000 * 60 * 24 * 7 ms)
  * 
@@ -330,16 +347,18 @@ class SettingsManager {
  * @property {number} [sellingItemPercent=75] 
  * Percent of the item's price it will be sold for. Default: 75.
  * 
- * @property {Number | Number[]} [weeklyAmount=100] Amount of money for Weekly Command. Default: 1000.
- * @property {Number | Number[]} [workAmount=[10, 50]] Amount of money for Work Command. Default: [10, 50].
+ * @property {number | number[]} [weeklyAmount=100] Amount of money for Weekly Command. Default: 1000.
+ * @property {number | number[]} [workAmount=[10, 50]] Amount of money for Work Command. Default: [10, 50].
  * @property {boolean} [subtractOnBuy=true] 
  * If true, when someone buys the item, their balance will subtract by item price. Default: false
  * 
  * @property {number} [updateCountdown=1000] Checks for if storage file exists in specified time (in ms). Default: 1000.
  * @property {string} [dateLocale='en'] The region (example: 'ru' or 'en') to format the date and time. Default: 'en'.
  * @property {UpdaterOptions} [updater=UpdaterOptions] Update checker configuration.
- * @property {ErrorHandlerOptions} [errorHandler=ErrorHandlerOptions] Error handler configuration.
- * @property {CheckerOptions} [optionsChecker=CheckerOptions] Configuration for an 'Economy.utils.checkOptions' method.
+ * @property {ErrorHandlerConfiguration} [errorHandler=ErrorHandlerConfiguration] Error handler configuration.
+
+ * @property {CheckerConfiguration} [optionsChecker=CheckerConfiguration] 
+ * Configuration for an 'Economy.utils.checkOptions' method.
  * @property {boolean} [debug=false] Enables or disables the debug mode.
  */
 
@@ -352,14 +371,14 @@ class SettingsManager {
  */
 
 /**
- * @typedef {object} ErrorHandlerOptions
+ * @typedef {object} ErrorHandlerConfiguration
  * @property {boolean} [handleErrors=true] Handles all errors on startup. Default: true.
  * @property {number} [attempts=5] Amount of attempts to load the module. Use 0 for infinity attempts. Default: 5.
  * @property {number} [time=3000] Time between every attempt to start the module (in ms). Default: 3000.
  */
 
 /**
- * @typedef {object} CheckerOptions Configuration for an 'Economy.utils.checkOptions' method.
+ * @typedef {object} CheckerConfiguration Configuration for an 'Economy.utils.checkOptions' method.
  * @property {boolean} [ignoreInvalidTypes=false] 
  * Allows the method to ignore the options with invalid types. Default: false.
  * 

@@ -6,11 +6,14 @@ const errors = require('../structures/errors')
 const DatabaseManager = require('./DatabaseManager')
 const CacheManager = require('./CacheManager')
 
+const CurrencyManager = require('./CurrencyManager')
+const Currency = require('../classes/Currency')
+
 
 /**
-* Balance manager methods class.
-* @extends {Emitter}
-*/
+ * Balance manager methods class.
+ * @extends {Emitter}
+ */
 class BalanceManager extends Emitter {
 
     /**
@@ -24,7 +27,7 @@ class BalanceManager extends Emitter {
 
         /**
          * Economy configuration.
-         * @type {EconomyOptions}
+         * @type {EconomyConfiguration}
          * @private
          */
         this.options = options
@@ -42,13 +45,59 @@ class BalanceManager extends Emitter {
          * @private
          */
         this.cache = cache
+
+        /**
+         * Currency Manager.
+         * @type {CurrencyManager}
+         * @private
+         */
+        this._currencies = new CurrencyManager(options, database, cache)
+    }
+
+    /**
+     * Returns a factory object with `get`, `set`, `add` and `subtract` functions to work with custom currencies.
+     * @param {string | number} currencyID Currency ID, its name or its symbol.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @returns {CurrencyFactory} Factory object.
+     */
+    currency(currencyID, memberID, guildID) {
+        const currencies = this._currencies
+
+        const database = this.database
+        const cache = this.cache
+
+        const options = this.options
+
+        return {
+            get() {
+                return currencies.getBalance(currencyID, memberID, guildID)
+            },
+
+            async getInfo() {
+                const currency = await currencies.get(currencyID, guildID)
+                return new Currency(currency.id, guildID, options, currency, database, cache)
+            },
+
+            set(amount, reason) {
+                return currencies.setBalance(currencyID, amount, memberID, guildID, reason)
+            },
+
+            add(amount, reason) {
+                return currencies.addBalance(currencyID, amount, memberID, guildID, reason)
+            },
+
+            subtract(amount, reason) {
+                return currencies.subtractBalance(currencyID, amount, memberID, guildID, reason)
+            }
+        }
     }
 
     /**
     * Fetches the user's balance.
-    * @param {string} memberID Member ID
-    * @param {string} guildID Guild ID
-    * @returns {Promise<number>} User's balance
+    * @param {string} memberID Member ID.
+    * @param {string} guildID Guild ID.
+    * @returns {Promise<number>} User's balance.
     */
     async fetch(memberID, guildID) {
         if (typeof memberID !== 'string') {
@@ -59,17 +108,17 @@ class BalanceManager extends Emitter {
             throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
         }
 
-        const result = await this.database.fetch(`${guildID}.${memberID}.money`) || 0
-        return result
+        const result = await this.database.fetch(`${guildID}.${memberID}.money`)
+        return result || 0
     }
 
     /**
     * Gets the user's balance.
     * 
     * This method is an alias of `BalanceManager.fetch()` method.
-    * @param {string} memberID Member ID
-    * @param {string} guildID Guild ID
-    * @returns {Promise<number>} User's balance
+    * @param {string} memberID Member ID.
+    * @param {string} guildID Guild ID.
+    * @returns {Promise<number>} User's balance.
     */
     get(memberID, guildID) {
         return this.fetch(memberID, guildID)
@@ -80,7 +129,7 @@ class BalanceManager extends Emitter {
      * @param {number} amount Money amount.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
-     * @param {string} reason The reason why you set the money.
+     * @param {string} [reason] The reason why you set the money.
      * @returns {Promise<number>} Money amount.
      */
     async set(amount, memberID, guildID, reason = null) {
@@ -100,7 +149,7 @@ class BalanceManager extends Emitter {
 
         await this.database.set(`${guildID}.${memberID}.money`, amount)
 
-        this.cache.users.update({
+        this.cache.updateMany(['users', 'balance'], {
             memberID,
             guildID
         })
@@ -122,7 +171,7 @@ class BalanceManager extends Emitter {
      * @param {number} amount Money amount.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
-     * @param {string} reason The reason why you add the money.
+     * @param {string} [reason] The reason why you add the money.
      * @returns {Promise<number>} Money amount.
      */
     async add(amount, memberID, guildID, reason = null) {
@@ -142,7 +191,7 @@ class BalanceManager extends Emitter {
 
         await this.database.add(`${guildID}.${memberID}.money`, amount)
 
-        this.cache.users.update({
+        this.cache.updateMany(['users', 'balance'], {
             memberID,
             guildID
         })
@@ -164,7 +213,7 @@ class BalanceManager extends Emitter {
      * @param {number} amount Money amount.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
-     * @param {string} reason The reason why you add the money.
+     * @param {string} [reason] The reason why you subtract the money.
      * @returns {Promise<number>} Money amount.
      */
     async subtract(amount, memberID, guildID, reason = null) {
@@ -184,7 +233,7 @@ class BalanceManager extends Emitter {
 
         await this.database.subtract(`${guildID}.${memberID}.money`, amount)
 
-        this.cache.users.update({
+        this.cache.updateMany(['users', 'balance'], {
             memberID,
             guildID
         })
@@ -202,7 +251,64 @@ class BalanceManager extends Emitter {
     }
 
     /**
-     * Shows a money leaderboard for your server.
+     * Deposits the specified amount of money.
+     * @param {number} amount Money amount.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @param {string} [reason] The reason of the operation.
+     * @returns {Promise<number>} Money amount.
+     */
+    async deposit(amount, memberID, guildID, reason = null) {
+        const balance = await this.fetch(memberID, guildID)
+        const bank = await this.database.get(`${guildID}.${memberID}.bank`)
+
+        if (isNaN(amount)) {
+            throw new EconomyError(errors.invalidTypes.amount + typeof amount, 'INVALID_TYPE')
+        }
+
+        if (amount < 0) {
+            throw new EconomyError(errors.invalidTypes.depositInvalidInput, 'INVALID_INPUT')
+        }
+
+        if (typeof memberID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
+        }
+
+        if (typeof guildID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
+        }
+
+        await this.database.subtract(`${guildID}.${memberID}.money`, amount)
+        await this.database.add(`${guildID}.${memberID}.bank`, amount)
+
+        this.cache.updateMany(['users', 'balance', 'bank'], {
+            memberID,
+            guildID
+        })
+
+        this.emit('balanceSubtract', {
+            type: 'subtract',
+            guildID,
+            memberID,
+            amount: Number(amount),
+            balance: balance - amount,
+            reason
+        })
+
+        this.emit('bankAdd', {
+            type: 'add',
+            guildID,
+            memberID,
+            amount: Number(amount),
+            balance: bank + amount,
+            reason
+        })
+
+        return amount
+    }
+
+    /**
+     * Gets a balance leaderboard for specified guild.
      * @param {string} guildID Guild ID.
      * @returns {Promise<BalanceLeaderboard[]>} Sorted leaderboard array.
      */
@@ -225,14 +331,16 @@ class BalanceManager extends Emitter {
             money: Number(ranks[rank])
         })
 
-        return lb.sort((a, b) => b.money - a.money)
+        return lb
+            .sort((previous, current) => current.money - previous.money)
+            .filter(entry => entry.userID !== 'shop')
     }
 
     /**
-     * Sends the money to a specified user.
+     * Transfers the money to a specified user.
      * @param {string} guildID Guild ID.
-     * @param {TransferringOptions} options Transferring options.
-     * @returns {Promise<TransferringResult>} Transferring result object.
+     * @param {TransferingOptions} options Transfering options.
+     * @returns {Promise<TransferingResult>} Transfering result object.
      */
     async transfer(guildID, options) {
         const {
@@ -260,7 +368,15 @@ class BalanceManager extends Emitter {
         this.add(amount, receiverMemberID, guildID, receivingReason || 'receiving money from user')
         await this.subtract(amount, senderMemberID, guildID, sendingReason || 'sending money to user')
 
-        await this.cache.users.updateMany({
+        await this.cache.balance.updateMany({
+            senderMemberID,
+            guildID
+        }, {
+            receiverMemberID,
+            guildID
+        })
+
+        this.cache.users.updateMany({
             senderMemberID,
             guildID
         }, {
@@ -269,8 +385,15 @@ class BalanceManager extends Emitter {
         })
 
         const [senderBalance, receiverBalance] = [
-            this.cache.users.cache[guildID][senderMemberID].money,
-            this.cache.users.cache[guildID][receiverMemberID].money
+            this.cache.balance.get({
+                senderMemberID,
+                guildID
+            }).money,
+
+            this.cache.balance.get({
+                receiverMemberID,
+                guildID
+            }).money
         ]
 
         return {
@@ -293,7 +416,7 @@ class BalanceManager extends Emitter {
 
 
 /**
- * @typedef {Object} TransferringResult
+ * @typedef {Object} TransferingResult
  * @property {boolean} success Whether the transfer was successful or not.
  * @property {string} guildID Guild ID.
  * @property {number} amount Amount of money that was sent.
@@ -306,8 +429,8 @@ class BalanceManager extends Emitter {
  */
 
 /**
- * Transferring options.
- * @typedef {object} TransferringOptions
+ * Transfering options.
+ * @typedef {object} TransferingOptions
  * @property {number} amount Amount of money to send.
  * @property {string} senderMemberID A member ID who will send the money.
  * @property {string} receiverMemberID A member ID who will receive the money.
@@ -323,6 +446,56 @@ class BalanceManager extends Emitter {
  * @property {number} index User's place in the leaderboard.
  * @property {string} userID User ID.
  * @property {number} money Amount of money.
+ */
+
+/**
+ * @typedef {Object} CurrencyObject
+ * @property {number} id Currency ID.
+ * @property {string} guildID Guild ID.
+ * @property {string} name Currency name.
+ * @property {string} [symbol] Currency symbol.
+ * @property {object} balances Currency balances object.
+ * @property {object} custom Custom currency data object.
+ */
+
+/**
+ * @typedef {object} CurrencyFactory
+ * @property {FactoryGet} get Gets the currency balance.
+ * @property {FactoryGetInfo} getInfo Gets the currency data object.
+ * @property {FactorySet} set Sets the currency balance.
+ * @property {FactoryAdd} add Adds the money on the currency balance.
+ * @property {FactorySubtract} subtract Subtracts the money from the currency balance.
+ */
+
+/**
+ * @callback FactoryGet
+ * @returns {Promise<number>} Currency balance.
+ */
+
+/**
+ * @callback FactoryGetInfo
+ * @returns {Promise<Currency>} Currency data object.
+ */
+
+/**
+ * @callback FactorySet
+ * @param {number} amount Amount of money to set.
+ * @param {string} [reason] The reason why the money was set.
+ * @returns {Promise<number>} Amount of money.
+ */
+
+/**
+ * @callback FactoryAdd
+ * @param {number} amount Amount of money to add.
+ * @param {string} [reason] The reason why the money was added.
+ * @returns {Promise<number>} Amount of money.
+ */
+
+/**
+ * @callback FactorySubtract
+ * @param {number} amount Amount of money to subtract.
+ * @param {string} [reason] The reason why the money was subtracted.
+ * @returns {Promise<number>} Amount of money.
  */
 
 

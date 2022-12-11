@@ -1,11 +1,32 @@
 const EconomyError = require('../classes/util/EconomyError')
 const errors = require('../structures/errors')
 
+const EmptyEconomyGuild = require('../classes/EmptyEconomyGuild')
+const EmptyEconomyUser = require('../classes/EmptyEconomyUser')
+
 const DatabaseManager = require('../managers/DatabaseManager')
 const CacheManager = require('../managers/CacheManager')
+const defaultUserObject = require('../structures/DefaultUserObject')
+const Bank = require('../classes/user/Bank')
+const Currency = require('../classes/Currency')
 
+/**
+ * Cached item class. Used to work with data in Economy cache 
+ * (e.g. getting balance data, shop data, etc. from the cache).
+ */
 class CachedItem {
-    constructor(baseConstructor, constructorParams, options, database, cacheManager) {
+
+    /**
+     * Cached item class. Used to work with data in Economy cache 
+     * (e.g. getting balance data, shop data, etc. from the cache).
+     * 
+     * @param {any} baseConstructor Constructor that will be called in the methods.
+     * @param {any[]} constructorParams Array of parameters for `baseConstructor` to pass in.
+     * @param {EconomyConfiguration} options Economy configuration object.
+     * @param {DatabaseManager} database Database manager instance.
+     * @param {CacheManager} cache Cache manager instance.
+     */
+    constructor(baseConstructor, constructorParams, options, database, cache) {
 
         /**
          * Cache object.
@@ -16,7 +37,7 @@ class CachedItem {
 
         /**
          * Economy options.
-         * @type {EconomyOptions}
+         * @type {EconomyConfiguration}
          */
         this.options = options
 
@@ -43,7 +64,7 @@ class CachedItem {
          * Cache Manager.
          * @type {CacheManager}
          */
-        this.cacheManager = cacheManager
+        this.cacheManager = cache
     }
 
     /**
@@ -63,21 +84,62 @@ class CachedItem {
 
         let params = this.constructorParams
 
-        if (!result) return null
-
         if (this.baseConstructor.name == 'EconomyUser') {
-            return new this.baseConstructor(
+            if (!result) {
+                const economyUser = new EmptyEconomyUser(
+                    id.memberID, id.guildID,
+                    this.options,
+                    this._database, this.cacheManager
+                )
+
+                economyUser.bank = new Bank(
+                    id.memberID, id.guildID,
+                    this.options,
+                    this._database, this.cacheManager
+                )
+
+                return economyUser
+            }
+
+            const economyUser = new this.baseConstructor(
                 id.memberID, id.guildID,
                 this.options, result,
                 this._database, this.cacheManager
             )
+
+            economyUser.bank = new Bank(
+                id.memberID, id.guildID,
+                this.options,
+                this._database, this.cacheManager
+            )
+
+            return economyUser
+        }
+
+        if (this.baseConstructor.name == 'Currency') {
+            const results = this.cache[id.guildID] || []
+
+            return results.map(result =>
+                new Currency(result.id, id.guildID, this.options, result, this._database, this.cacheManager)
+            )
         }
 
         if (this.baseConstructor.name == 'EconomyGuild') {
+            if (!result) {
+                return new EmptyEconomyGuild(
+                    id.guildID, this.options,
+                    this._database, this.cacheManager
+                )
+            }
+
             return new this.baseConstructor(
                 id.guildID, this.options, result,
                 this._database, this.cacheManager
             )
+        }
+
+        if (!result) {
+            return null
         }
 
         if (this.baseConstructor.name == 'ShopItem') {
@@ -122,9 +184,10 @@ class CachedItem {
         const constructorName = this.baseConstructor.name
 
         const databaseProperties = {
-            'ShopItem': 'shop',
-            'InventoryItem': 'inventory',
-            'HistoryItem': 'history',
+            ShopItem: 'shop',
+            InventoryItem: 'inventory',
+            HistoryItem: 'history',
+            Currency: 'currencies'
         }
 
         const databaseProperty = databaseProperties[constructorName]
@@ -163,16 +226,61 @@ class CachedItem {
                     ), 'INVALID_CACHING_IDENTIFIERS')
                 }
 
-                const rawUserObject = await this._database.fetch(`${id.guildID}.${id.memberID}`)
+                const rawUserObject = await this._database.fetch(`${id.guildID}.${id.memberID}`) || defaultUserObject
 
                 const cooldownObject = {
-                    daily: rawUserObject.dailyCooldown,
-                    work: rawUserObject.workCooldown,
-                    weekly: rawUserObject.weeklyCooldown
+                    daily: rawUserObject?.dailyCooldown,
+                    work: rawUserObject?.workCooldown,
+                    weekly: rawUserObject?.weeklyCooldown
                 }
 
                 cooldownsCache[id.memberID] = cooldownObject
                 this.set(id.guildID, cooldownsCache)
+
+                return Promise.resolve()
+
+            case 'BalanceItem':
+                const balanceCache = {}
+
+                if (!id.memberID || !id.guildID) {
+                    throw new EconomyError(errors.cache.invalidIdentifiers(
+                        constructorName,
+                        ['memberID', 'guildID'],
+                        Object.keys(id)
+                    ), 'INVALID_CACHING_IDENTIFIERS')
+                }
+
+                const rawUser = await this._database.fetch(`${id.guildID}.${id.memberID}`) || defaultUserObject
+
+                const balanceObject = {
+                    money: rawUser?.money,
+                    bank: rawUser?.bank,
+                }
+
+                balanceCache[id.memberID] = balanceObject
+                this.set(id.guildID, balanceCache)
+
+                return Promise.resolve()
+
+            case 'BankBalanceItem':
+                const bankBalanceCache = {}
+
+                if (!id.memberID || !id.guildID) {
+                    throw new EconomyError(errors.cache.invalidIdentifiers(
+                        constructorName,
+                        ['memberID', 'guildID'],
+                        Object.keys(id)
+                    ), 'INVALID_CACHING_IDENTIFIERS')
+                }
+
+                const rawBankUser = await this._database.fetch(`${id.guildID}.${id.memberID}`) || defaultUserObject
+
+                const bankBalanceObject = {
+                    balance: rawBankUser?.bank,
+                }
+
+                bankBalanceCache[id.memberID] = bankBalanceObject
+                this.set(id.guildID, bankBalanceCache)
 
                 return Promise.resolve()
 
@@ -190,6 +298,20 @@ class CachedItem {
 
                 return Promise.resolve()
 
+            case 'Currency':
+                if (!id.guildID) {
+                    throw new EconomyError(errors.cache.invalidIdentifiers(
+                        constructorName,
+                        ['guildID'],
+                        Object.keys(id)
+                    ), 'INVALID_CACHING_IDENTIFIERS')
+                }
+
+                const currenciesArray = await this._database.fetch(`${id.guildID}.${databaseProperty}`) || []
+                this.set(id.guildID, currenciesArray)
+
+                return Promise.resolve()
+
             case 'ShopItem':
                 if (!id.guildID) {
                     throw new EconomyError(errors.cache.invalidIdentifiers(
@@ -199,7 +321,7 @@ class CachedItem {
                     ), 'INVALID_CACHING_IDENTIFIERS')
                 }
 
-                const shopArray = await this._database.fetch(`${id.guildID}.${databaseProperty}`)
+                const shopArray = await this._database.fetch(`${id.guildID}.${databaseProperty}`) || []
                 this.set(id.guildID, shopArray)
 
                 return Promise.resolve()
@@ -262,7 +384,7 @@ class CachedItem {
                     ), 'INVALID_CACHING_IDENTIFIERS')
                 }
 
-                delete this.cache[id.guildID][id.memberID]
+                delete this.cache[id.guildID]?.[id.memberID]
                 break
 
             case 'CooldownItem':
@@ -274,7 +396,7 @@ class CachedItem {
                     ), 'INVALID_CACHING_IDENTIFIERS')
                 }
 
-                delete this.cache[id.guildID][id.memberID]
+                delete this.cache[id.guildID]?.[id.memberID]
                 break
 
             case 'EconomyGuild':

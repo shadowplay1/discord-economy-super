@@ -25,9 +25,17 @@ const CacheManager = require('./src/managers/CacheManager')
 const EconomyGuild = require('./src/classes/EconomyGuild')
 const EconomyUser = require('./src/classes/EconomyUser')
 
+const EmptyEconomyGuild = require('./src/classes/EmptyEconomyGuild')
+const EmptyEconomyUser = require('./src/classes/EmptyEconomyUser')
+
 const ShopItem = require('./src/classes/ShopItem')
 const InventoryItem = require('./src/classes/InventoryItem')
 const HistoryItem = require('./src/classes/HistoryItem')
+
+const CooldownItem = require('./src/classes/CooldownItem')
+
+const BalanceItem = require('./src/classes/BalanceItem')
+const BankBalanceItem = require('./src/classes/BankBalanceItem')
 
 const Leaderboards = require('./src/classes/guild/Leaderboards')
 const Settings = require('./src/classes/guild/Settings')
@@ -43,47 +51,61 @@ const Rewards = require('./src/classes/user/Rewards')
 
 
 module.exports = {
-    EconomyError: EconomyError,
-    Emitter: Emitter,
+    EconomyError,
+    Emitter,
 
-    EconomyUser: EconomyUser,
-    EconomyGuild: EconomyGuild,
+    EconomyUser,
+    EconomyGuild,
 
-    DatabaseManager: DatabaseManager,
-    UtilsManager: UtilsManager,
+    EmptyEconomyUser,
+    EmptyEconomyGuild,
 
-    BalanceManager: BalanceManager,
-    BankManager: BankManager,
+    DatabaseManager,
+    UtilsManager,
 
-    RewardManager: RewardManager,
-    CooldownManager: CooldownManager,
+    BalanceManager,
+    BankManager,
 
-    ShopManager: ShopManager,
-    InventoryManager: InventoryManager,
+    RewardManager,
+    CooldownManager,
 
-    HistoryManager: HistoryManager,
+    ShopManager,
+    InventoryManager,
 
-    UserManager: UserManager,
-    GuildManager: GuildManager,
+    HistoryManager,
 
-    SettingsManager: SettingsManager,
-    BaseManager: BaseManager,
+    UserManager,
+    GuildManager,
 
-    CacheManager: CacheManager,
+    SettingsManager,
+    BaseManager,
 
-    ShopItem: ShopItem,
-    InventoryItem: InventoryItem,
-    HistoryItem: HistoryItem,
+    CacheManager,
 
-    Leaderboards: Leaderboards,
-    Settings: Settings,
-    Shop: Shop,
+    ShopItem,
+    InventoryItem,
+    HistoryItem,
 
-    Balance: Balance,
-    Bank: Bank,
-    Cooldowns: Cooldowns,
-    History: History,
-    Inventory: Inventory,
-    Items: Items,
-    Rewards: Rewards
+    CooldownItem,
+
+    BalanceItem,
+    BankBalanceItem,
+
+    Leaderboards,
+    Settings,
+    Shop,
+
+    Balance,
+    Bank,
+    Cooldowns,
+    History,
+    Inventory,
+    Items,
+    Rewards,
+
+    RewardType: {
+        DAILY: 0,
+        WORK: 1,
+        WEEKLY: 2
+    }
 }

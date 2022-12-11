@@ -1,6 +1,11 @@
 
-const DatabaseManager = require('../../managers/DatabaseManager')
 const BalanceManager = require('../../managers/BalanceManager')
+
+const CurrencyManager = require('../../managers/CurrencyManager')
+const Currency = require('../Currency')
+
+const DatabaseManager = require('../../managers/DatabaseManager')
+const CacheManager = require('../../managers/CacheManager')
 
 
 /**
@@ -12,7 +17,7 @@ class Balance {
      * User balance class.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
-     * @param {EconomyOptions} ecoOptions Economy configuration.
+     * @param {EconomyConfiguration} ecoOptions Economy configuration.
      * @param {DatabaseManager} database Database manager.
      * @param {CacheManager} cache Cache Manager.
      */
@@ -31,11 +36,79 @@ class Balance {
         this.guildID = guildID
 
         /**
+         * Economy configuration.
+         * @type {EconomyConfiguration}
+         * @private
+         */
+        this.options = ecoOptions
+
+        /**
+         * Database Manager.
+         * @type {DatabaseManager}
+         * @private
+         */
+        this.database = database
+
+        /**
+         * Cache Manager.
+         * @type {CacheManager}
+         * @private
+         */
+        this.cache = cache
+
+        /**
          * Balance Manager.
          * @type {BalanceManager}
          * @private
          */
         this._balance = new BalanceManager(ecoOptions, database, cache)
+
+        /**
+         * Currency Manager.
+         * @type {CurrencyManager}
+         * @private
+         */
+        this._currencies = new CurrencyManager(ecoOptions, database, cache)
+    }
+
+    /**
+     * Returns a factory object with `get`, `set`, `add` and `subtract` functions to work with custom currencies.
+     * @param {string | number} currencyID Currency ID, its name or its symbol.
+     * @returns {CurrencyFactory} Factory object.
+     */
+    currency(currencyID) {
+        const currencies = this._currencies
+
+        const database = this.database
+        const cache = this.cache
+
+        const options = this.options
+
+        const memberID = this.memberID
+        const guildID = this.guildID
+
+        return {
+            get() {
+                return currencies.getBalance(currencyID, memberID, guildID)
+            },
+
+            async getInfo() {
+                const currency = await currencies.get(currencyID, guildID)
+                return new Currency(currency.id, guildID, options, currency, database, cache)
+            },
+
+            set(amount, reason) {
+                return currencies.setBalance(currencyID, amount, memberID, guildID, reason)
+            },
+
+            add(amount, reason) {
+                return currencies.addBalance(currencyID, amount, memberID, guildID, reason)
+            },
+
+            subtract(amount, reason) {
+                return currencies.subtractBalance(currencyID, amount, memberID, guildID, reason)
+            }
+        }
     }
 
     /**
@@ -73,7 +146,17 @@ class Balance {
      * @returns {Promise<number>} User's balance.
      */
     get() {
-        return this._balance.get(this.memberID, this.guildID) || 0
+        return this._balance.get(this.memberID, this.guildID)
+    }
+
+    /**
+     * Deposits the specified amount of money.
+     * @param {number} amount Money amount.
+     * @param {string} [reason] The reason of the operation.
+     * @returns {Promise<number>} Money amount.
+     */
+    deposit(amount, reason = null) {
+        return this._balance.deposit(amount, this.memberID, this.guildID, reason)
     }
 
     /**
@@ -87,9 +170,9 @@ class Balance {
     }
 
     /**
-     * Sends the money to a specified user.
-     * @param {UserTransferringOptions} options Transferring options.
-     * @returns {Promise<TransferringResult>} Transferring result object.
+     * Transfers the money to a specified user.
+     * @param {UserTransferingOptions} options Transfering options.
+     * @returns {Promise<TransferingResult>} Transfering result object.
      */
     transfer(options) {
         return this._balance.transfer(this.guildID, options)
@@ -98,7 +181,7 @@ class Balance {
 
 
 /**
- * @typedef {Object} TransferringResult
+ * @typedef {Object} TransferingResult
  * @property {boolean} success Whether the transfer was successful or not.
  * @property {string} guildID Guild ID.
  * @property {number} amount Amount of money that was sent.
@@ -110,19 +193,19 @@ class Balance {
  */
 
 /**
- * @typedef {object} EconomyOptions Default Economy configuration.
+ * @typedef {object} EconomyConfiguration Default Economy configuration.
  * @property {string} [storagePath='./storage.json'] Full path to a JSON file. Default: './storage.json'
  * @property {boolean} [checkStorage=true] Checks the if database file exists and if it has errors. Default: true
  * @property {number} [dailyCooldown=86400000] 
  * Cooldown for Daily Command (in ms). Default: 24 hours (60000 * 60 * 24 ms)
  * 
  * @property {number} [workCooldown=3600000] Cooldown for Work Command (in ms). Default: 1 hour (60000 * 60 ms)
- * @property {Number | Number[]} [dailyAmount=100] Amount of money for Daily Command. Default: 100.
+ * @property {number | number[]} [dailyAmount=100] Amount of money for Daily Command. Default: 100.
  * @property {number} [weeklyCooldown=604800000] 
  * Cooldown for Weekly Command (in ms). Default: 7 days (60000 * 60 * 24 * 7 ms)
  * 
- * @property {Number | Number[]} [weeklyAmount=100] Amount of money for Weekly Command. Default: 1000.
- * @property {Number | Number[]} [workAmount=[10, 50]] Amount of money for Work Command. Default: [10, 50].
+ * @property {number | number[]} [weeklyAmount=100] Amount of money for Weekly Command. Default: 1000.
+ * @property {number | number[]} [workAmount=[10, 50]] Amount of money for Work Command. Default: [10, 50].
  * @property {boolean} [subtractOnBuy=true] 
  * If true, when someone buys the item, their balance will subtract by item price. Default: false
  * 
@@ -137,20 +220,72 @@ class Balance {
  * @property {number} [updateCountdown=1000] Checks for if storage file exists in specified time (in ms). Default: 1000.
  * @property {string} [dateLocale='en'] The region (example: 'ru'; 'en') to format the date and time. Default: 'en'.
  * @property {UpdaterOptions} [updater=UpdaterOptions] Update checker configuration.
- * @property {ErrorHandlerOptions} [errorHandler=ErrorHandlerOptions] Error handler configuration.
- * @property {CheckerOptions} [optionsChecker=CheckerOptions] Configuration for an 'Economy.utils.checkOptions' method.
+ * @property {ErrorHandlerConfiguration} [errorHandler=ErrorHandlerConfiguration] Error handler configuration.
+
+ * @property {CheckerConfiguration} [optionsChecker=CheckerConfiguration] 
+ * Configuration for an 'Economy.utils.checkOptions' method.
  * @property {boolean} [debug=false] Enables or disables the debug mode.
  */
 
 /**
- * Transferring options.
- * @typedef {object} UserTransferringOptions
+ * Transfering options.
+ * @typedef {object} UserTransferingOptions
  * @property {number} amount Amount of money to send.
  * @property {string} senderMemberID A member ID who will send the money.
  * @property {string} [sendingReason='sending money to user'] 
  * The reason of subtracting the money from sender. (example: "sending money to {user}")
  * @property {string} [receivingReason='receiving money from user']
  * The reason of adding a money to receiver. (example: "receiving money from {user}")
+ */
+
+/**
+ * @typedef {Object} CurrencyObject
+ * @property {number} id Currency ID.
+ * @property {string} guildID Guild ID.
+ * @property {string} name Currency name.
+ * @property {string} [symbol] Currency symbol.
+ * @property {object} balances Currency balances object.
+ * @property {object} custom Custom currency data object.
+ */
+
+/**
+ * @typedef {object} CurrencyFactory
+ * @property {FactoryGet} get Gets the currency balance.
+ * @property {FactoryGetInfo} getInfo Gets the currency data object.
+ * @property {FactorySet} set Sets the currency balance.
+ * @property {FactoryAdd} add Adds the money on the currency balance.
+ * @property {FactorySubtract} subtract Subtracts the money from the currency balance.
+ */
+
+/**
+ * @callback FactoryGet
+ * @returns {Promise<number>} Currency balance.
+ */
+
+/**
+ * @callback FactoryGetInfo
+ * @returns {Promise<Currency>} Currency data object.
+ */
+
+/**
+ * @callback FactorySet
+ * @param {number} amount Amount of money to set.
+ * @param {string} [reason] The reason why the money was set.
+ * @returns {Promise<number>} Amount of money.
+ */
+
+/**
+ * @callback FactoryAdd
+ * @param {number} amount Amount of money to add.
+ * @param {string} [reason] The reason why the money was added.
+ * @returns {Promise<number>} Amount of money.
+ */
+
+/**
+ * @callback FactorySubtract
+ * @param {number} amount Amount of money to subtract.
+ * @param {string} [reason] The reason why the money was subtracted.
+ * @returns {Promise<number>} Amount of money.
  */
 
 /**

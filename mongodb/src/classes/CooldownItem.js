@@ -1,5 +1,8 @@
-const CooldownManager = require('../managers/CooldownManager')
 const DatabaseManager = require('../managers/DatabaseManager')
+const CacheManager = require('../managers/CacheManager')
+
+const CooldownManager = require('../managers/CooldownManager')
+
 
 /**
 * Cooldown item class.
@@ -10,12 +13,12 @@ class CooldownItem {
      * User cooldowns class.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
-     * @param {EconomyOptions} ecoOptions Economy configuration.
+     * @param {EconomyConfiguration} ecoOptions Economy configuration.
      * @param {CooldownsObject} cooldownsObject User cooldowns object.
      * @param {DatabaseManager} database Database manager.
      * @param {CacheManager} cache Cache manager.
      */
-    constructor(memberID, guildID, ecoOptions, cooldownsObject, database, cache) {
+    constructor(guildID, memberID, ecoOptions, cooldownsObject, database, cache) {
 
         /**
          * Member ID.
@@ -29,32 +32,54 @@ class CooldownItem {
          */
         this.guildID = guildID
 
-
-        /**
-         * Daily cooldown.
-         * @type {number}
-         */
-        this.daily = cooldownsObject.daily
-
-        /**
-         * Work cooldown.
-         * @type {number}
-         */
-        this.work = cooldownsObject.work
-
-        /**
-         * Weekly cooldown.
-         * @type {number}
-         */
-        this.weekly = cooldownsObject.weekly
-
-
         /**
          * Cooldown Manager.
          * @type {CooldownManager}
          * @private
          */
-        this._cooldowns = new CooldownManager(ecoOptions, database, cache)
+        this.cooldowns = new CooldownManager(ecoOptions, database, cache)
+
+        /**
+         * Daily cooldown.
+         * @type {number}
+         */
+        this.daily = cooldownsObject.daily || 0
+
+        /**
+         * Work cooldown.
+         * @type {number}
+         */
+        this.work = cooldownsObject.work || 0
+
+        /**
+         * Weekly cooldown.
+         * @type {number}
+         */
+        this.weekly = cooldownsObject.weekly || 0
+    }
+
+    /**
+      * Clears user's daily cooldown.
+      * @returns {Promise<boolean>} If cleared: true; else: false
+      */
+    clearDaily() {
+        return this.cooldowns.clearDaily(this.guildID, this.memberID)
+    }
+
+    /**
+     * Clears user's work cooldown.
+     * @returns {Promise<boolean>} If cleared: true; else: false
+     */
+    clearWork() {
+        return this.cooldowns.clearWork(this.guildID, this.memberID)
+    }
+
+    /**
+     * Clears user's weekly cooldown.
+     * @returns {Promise<boolean>} If cleared: true; else: false
+     */
+    clearWeekly() {
+        return this.cooldowns.clearWeekly(this.guildID, this.memberID)
     }
 }
 
