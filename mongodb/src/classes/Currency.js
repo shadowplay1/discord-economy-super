@@ -1,11 +1,16 @@
 const DatabaseManager = require('../managers/DatabaseManager')
 const CacheManager = require('../managers/CacheManager')
-const CurrencyManager = require('../managers/CurrencyManager')
+
+const defaultCurrencyObject = require('../structures/DefaultCurrencyObject')
+
+const EconomyError = require('./util/EconomyError')
+const Emitter = require('./util/Emitter')
 
 /**
  * Currency class.
+ * @extends {Emitter}
  */
-class Currency {
+class Currency extends Emitter {
 
 	/**
 	 * @param {number} currencyID Currency ID.
@@ -18,11 +23,25 @@ class Currency {
 	constructor(currencyID, guildID, ecoOptions, currencyObject, database, cache) {
 
 		/**
-		 * Currency Manager.
-		 * @type {CurrencyManager}
+		 * Economy configuration.
+		 * @type {EconomyConfiguration}
 		 * @private
 		 */
-		this._currencies = new CurrencyManager(ecoOptions, database, cache)
+		this.options = options
+
+		/**
+		 * Database manager.
+		 * @type {DatabaseManager}
+		 * @private
+		 */
+		this.database = database
+
+		/**
+		 * Cache manager.
+		 * @type {CacheManager}
+		 * @private
+		 */
+		this.cache = cache
 
 		/**
 		 * Guild ID.
@@ -70,16 +89,52 @@ class Currency {
 	 * @returns {Promise<Currency>} Currency object.
 	 */
 	async create() {
-		await this._currencies.create(this.name, this.symbol, this.guildID)
+		const currenciesArray = await this._all(this.guildID)
+		const newCurrencyObject = defaultCurrencyObject
+
+		newCurrencyObject.id = currenciesArray.length ? currenciesArray[currenciesArray.length - 1].id + 1 : 1
+		newCurrencyObject.name = this.name
+		newCurrencyObject.symbol = this.symbol
+
+		currenciesArray.push(newCurrencyObject)
+
+		await this.database.set(`${this.guildID}.currencies`, currenciesArray)
+
+		this.cache.updateMany(['currencies', 'guilds'], {
+			guildID: this.guildID
+		})
+
 		return this
 	}
 
 	/**
+	 * Gets the array of available currencies.
+	 * @param {string} guildID Guild ID.
+	 * @returns {Promise<CurrencyObject[]>} Currencies array.
+	 * @private
+	 */
+	async _all() {
+		const currenciesArray = await this.database.set(`${this.guildID}.currencies`)
+		return currenciesArray || []
+	}
+
+	/**
 	 * Deletes the currency object from guild database.
-	 * @returns {Promise<Currency>} Currency object.
+	 * @returns {Promise<Currency>} Deleted currency object.
 	 */
 	async delete() {
-		await this._currencies.delete(this.id, this.guildID)
+		const currenciesArray = await this._all(this.guildID)
+		const currencyIndex = currenciesArray.findIndex(currency => currency.id == this.id)
+
+		if (currencyIndex == -1) return false
+
+		currenciesArray.splice(currencyIndex, 1)
+		await this.database.set(`${this.guildID}.currencies`, currenciesArray)
+
+		this.cache.updateMany(['currencies', 'guilds'], {
+			guildID: this.guildID
+		})
+
 		return this
 	}
 
@@ -91,7 +146,29 @@ class Currency {
 	 * @returns {Promise<Currency>} Edited currency object.
 	 */
 	async edit(property, value) {
-		await this._currencies.edit(this.id, property, value, this.guildID)
+		const currenciesArray = await this._all(this.guildID)
+
+		const [currency, currencyIndex] = [
+			currenciesArray.find(currency => currency.id == this.id),
+			currenciesArray.findIndex(currency => currency.id == this.id)
+		]
+
+		if (!['name', 'symbol', 'custom'].includes(property)) {
+			throw new EconomyError(errors.invalidProperty('Currency', property), 'INVALID_PROPERTY')
+		}
+
+		if (!currency) {
+			throw new EconomyError(errors.currencies.notFound(this.id, this.guildID), 'CURRENCY_NOT_FOUND')
+		}
+
+		currency[property] = value
+
+		currenciesArray.splice(currencyIndex, 1, currency)
+		await this.database.set(`${this.guildID}.currencies`, currenciesArray)
+
+		this.cache.updateMany(['currencies', 'guilds'], {
+			guildID: this.guildID
+		})
 
 		this[property] = value
 		return this
@@ -103,10 +180,8 @@ class Currency {
 	 * @returns {Promise<Currency>} Currency object with its updated custom property.
 	 */
 	async setCustom(customObject) {
-		await this.edit('custom', customObject)
-
-		this.custom = customObject
-		return this
+		const newCurrencyObject = await this.edit(this.id, 'custom', customObject, this.guildID)
+		return newCurrencyObject
 	}
 
 	/**
@@ -114,8 +189,9 @@ class Currency {
 	 * @param {string} memberID Member ID.
 	 * @returns {Promise<number>} Member's balance.
 	 */
-	getBalance(memberID) {
-		return this._currencies.getBalance(this.id, memberID, this.guildID)
+	async getBalance(memberID) {
+		const currencyBalance = this.balances[memberID]
+		return currencyBalance || 0
 	}
 
 	/**
@@ -123,10 +199,38 @@ class Currency {
 	 * @param {number} amount Amount of money to set.
 	 * @param {string} memberID Member ID.
 	 * @param {string} [reason] The reason why the balance was set.
+     * @param {boolean} [emitSet=true] If true, `customCurrencySet` event will be emitted on set. Default: true.
 	 * @returns {Promise<number>} Amount of money that was set.
 	 */
-	setBalance(amount, memberID, reason) {
-		return this._currencies.setBalance(this.id, amount, memberID, this.guildID, reason)
+	async setBalance(amount, memberID, reason = '', emitSet = true) {
+		const currenciesArray = await this._all(this.guildID)
+
+		const [currency, currencyIndex] = [
+			currenciesArray.find(currency => currency.id == this.id),
+			currenciesArray.findIndex(currency => currency.id == this.id)
+		]
+
+        currency.balances[memberID] = amount
+
+        currenciesArray.splice(currencyIndex, 1, currency)
+        await this.database.set(`${this.guildID}.currencies`, currenciesArray)
+
+        this.cache.updateMany(['currencies', 'guilds'], {
+            guildID: this.guildID
+        })
+
+        if (emitSet) {
+            this.emit('customCurrencySet', {
+                type: 'customCurrencySet',
+                guildID: this.guildID,
+                memberID,
+                amount,
+                balance: amount,
+                reason
+            })
+        }
+
+        return amount
 	}
 
 	/**
@@ -136,8 +240,20 @@ class Currency {
 	 * @param {string} [reason] The reason why the balance was added.
 	 * @returns {Promise<number>} Amount of money that was added.
 	 */
-	addBalance(amount, memberID, reason) {
-		return this._currencies.addBalance(this.id, amount, memberID, this.guildID, reason)
+	async addBalance(amount, memberID, reason = '') {
+		const currencyBalance = await this.getBalance(this.id, memberID, this.guildID)
+        const result = await this.setBalance(this.id, currencyBalance + amount, memberID, this.guildID, reason, false)
+
+        this.emit('customCurrencyAdd', {
+            type: 'customCurrencyAdd',
+            guildID: this.guildID,
+            memberID,
+            amount,
+            balance: currencyBalance + result,
+            reason
+        })
+
+        return result
 	}
 
 	/**
@@ -147,8 +263,20 @@ class Currency {
 	 * @param {string} [reason] The reason why the balance was subtracted.
 	 * @returns {Promise<number>} Amount of money that was subtracted.
 	 */
-	subtractBalance(amount, memberID, reason) {
-		return this._currencies.subtractBalance(this.id, amount, memberID, this.guildID, reason)
+	async subtractBalance(amount, memberID, reason = '') {
+		const currencyBalance = await this.getBalance(this.id, memberID, this.guildID)
+        const result = await this.setBalance(this.id, currencyBalance - amount, memberID, this.guildID, reason, false)
+
+        this.emit('customCurrencySubtract', {
+            type: 'customCurrencySubtract',
+            guildID: this.guildID,
+            memberID,
+            amount,
+            balance: currencyBalance - result,
+            reason
+        })
+
+        return result
 	}
 
 	/**

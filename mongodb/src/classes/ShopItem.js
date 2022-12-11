@@ -338,7 +338,7 @@ class ShopItem extends Emitter {
             })
         }
 
-        await this.cache.updateMany(['users', 'inventory'], {
+        await this.cache.updateMany(['shop', 'users', 'inventory'], {
             memberID,
             guildID: this.guildID
         })

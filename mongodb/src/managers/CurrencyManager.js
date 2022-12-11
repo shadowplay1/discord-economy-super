@@ -4,6 +4,8 @@ const Emitter = require('../classes/util/Emitter')
 const DatabaseManager = require('./DatabaseManager')
 const CacheManager = require('./CacheManager')
 
+const Currency = require('../classes/Currency')
+
 const errors = require('../structures/errors')
 const defaultCurrencyObject = require('../structures/DefaultCurrencyObject')
 
@@ -49,7 +51,7 @@ class CurrencyManager extends Emitter {
      * Finds the info for the specified currency.
      * @param {string | number} currencyID Currency ID, its name or its symbol.
      * @param {string} guildID Guild ID.
-     * @returns {Promise<CurrencyObject>} Currency object.
+     * @returns {Promise<Currency>} Currency object.
      */
     async find(currencyID, guildID) {
         if (typeof currencyID !== 'string' && !isNaN(currencyID)) {
@@ -75,7 +77,14 @@ class CurrencyManager extends Emitter {
                 currency.symbol == currencyID
         )
 
-        return currency || null
+        return new Currency(
+            currency.id,
+            guildID,
+            this.options,
+            currency,
+            this.database,
+            this.cache
+        ) || null
     }
 
     /**
@@ -84,7 +93,7 @@ class CurrencyManager extends Emitter {
      * This method is an alias for `CurrencyManager.find()` method.
      * @param {string | number} currencyID Currency ID, its name or its symbol.
      * @param {string} guildID Guild ID.
-     * @returns {Promise<CurrencyObject>} Currency object.
+     * @returns {Promise<Currency>} Currency object.
      */
     get(currecyID, guildID) {
         return this.find(currecyID, guildID)
@@ -96,7 +105,7 @@ class CurrencyManager extends Emitter {
      * @param {'name' | 'symbol' | 'custom'} property Currency property to edit.
      * @param {any} value Any value to set.
      * @param {string} guildID Guild ID.
-     * @returns {Promise<CurrencyObject>} Edited currency object.
+     * @returns {Promise<Currency>} Edited currency object.
      */
     async edit(currencyID, property, value, guildID) {
         const currenciesArray = await this.all(guildID)
@@ -126,7 +135,14 @@ class CurrencyManager extends Emitter {
             guildID
         })
 
-        return currency
+        return new Currency(
+            currency.id,
+            guildID,
+            this.options,
+            currency,
+            this.database,
+            this.cache
+        )
     }
 
     /**
@@ -134,7 +150,7 @@ class CurrencyManager extends Emitter {
      * @param {string | number} currencyID Currency ID, its name or its symbol.
      * @param {string} guildID Guild ID.
      * @param {object} customObject Custom data object to set.
-     * @returns {Promise<CurrencyObject>} Currency object with its updated custom property.
+     * @returns {Promise<Currency>} Currency object with its updated custom property.
      */
     async setCustom(currencyID, guildID, customObject) {
         const newCurrencyObject = await this.edit(currencyID, 'custom', customObject, guildID)
@@ -166,7 +182,7 @@ class CurrencyManager extends Emitter {
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
      * @param {string} [reason] The reason why the money was set.
-     * @param {boolean} [emitSet=false] If true, `customCurrencySet` event will be emitted on set. Default: false.
+     * @param {boolean} [emitSet=true] If true, `customCurrencySet` event will be emitted on set. Default: true.
      * @returns {Promise<number>} Amount of money that was set.
      */
     async setBalance(currencyID, amount, memberID, guildID, reason = '', emitSet = true) {
@@ -262,7 +278,7 @@ class CurrencyManager extends Emitter {
      * @param {string} name Currency name to set.
      * @param {string} symbol Currency symbol to set.
      * @param {string} guildID Guild ID.
-     * @returns {Promise<CurrencyObject>} Currency object.
+     * @returns {Promise<Currency>} Currency object.
      */
     async create(name, symbol, guildID) {
         if (!name || typeof name !== 'string') {
@@ -288,25 +304,32 @@ class CurrencyManager extends Emitter {
             guildID
         })
 
-        return newCurrencyObject
+        return new Currency(
+            newCurrencyObject.id,
+            guildID,
+            this.options,
+            newCurrencyObject,
+            this.database,
+            this.cache
+        ) || null
     }
 
     /**
      * Deletes the currency object and all its balances in a specified guild.
      * @param {string | number} currencyID Currency ID, its name or its symbol.
      * @param {string} guildID Guild ID.
-     * @returns {Promise<boolean>} If deleted: true, else - false.
+     * @returns {Promise<Currency>} Deleted currency object.
      */
     async delete(currencyID, guildID) {
         const currenciesArray = await this.all(guildID)
 
-        const currencyIndex = currencies.findIndex(
+        const currencyIndex = currenciesArray.findIndex(
             currency => currency.id == currencyID ||
                 currency.name == currencyID ||
                 currency.symbol == currencyID
         )
 
-        if (currencyIndex == -1) return false
+        if (currencyIndex == -1) return null
 
         currenciesArray.splice(currencyIndex, 1)
         await this.database.set(`${guildID}.currencies`, currenciesArray)
@@ -315,7 +338,7 @@ class CurrencyManager extends Emitter {
             guildID
         })
 
-        return true
+        return this
     }
 
     /**
@@ -337,15 +360,23 @@ class CurrencyManager extends Emitter {
     /**
      * Gets the array of available currencies for specified guild.
      * @param {string} guildID Guild ID.
-     * @returns {Promise<CurrencyObject[]>} Currencies array.
+     * @returns {Promise<Currency[]>} Currencies array.
      */
     async all(guildID) {
         if (!guildID || typeof guildID !== 'string') {
             throw new EconomyError(errors.invalidType('guildID', 'string', typeof guildID), 'INVALID_TYPE')
         }
 
-        const currenciesArray = await this.database.fetch(`${guildID}.currencies`)
-        return currenciesArray || []
+        const currenciesArray = (await this.database.fetch(`${guildID}.currencies`)) || []
+
+        return currenciesArray.map(currency => new Currency(
+            currency.id,
+            guildID,
+            this.options,
+            currency,
+            this.database,
+            this.cache
+        ) || null)
     }
 }
 
