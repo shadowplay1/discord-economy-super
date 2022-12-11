@@ -2,31 +2,34 @@ import If from '../interfaces/If'
 
 import DatabaseManager from '../managers/DatabaseManager'
 
-import EconomyOptions from '../interfaces/EconomyOptions'
+import EconomyConfiguration from '../interfaces/EconomyConfiguration'
 import EconomyDatabase from '../interfaces/EconomyDatabase'
 
 import DataIdentifier from '../interfaces/DataIdentifier'
 import EconomyConstructors from '../interfaces/EconomyConstructors'
+import EmptyEconomyUser from '../classes/EmptyEconomyUser'
+import EmptyEconomyGuild from '../classes/EmptyEconomyGuild'
 
 
 declare class CachedItem<
     T extends EconomyConstructors,
+    E extends EmptyEconomyUser | EmptyEconomyGuild | null = any,
     MemberIDRequired extends boolean = true,
     IsDataArray extends boolean = false,
     RequiresParam extends boolean = false
-    > {
+> {
     public constructor(
         baseConstructor: T,
         constructorParams: any[],
-        options: EconomyOptions,
+        options: EconomyConfiguration,
         database: DatabaseManager
     )
 
     /**
      * Economy options.
-     * @type {EconomyOptions}
+     * @type {EconomyConfiguration}
      */
-    public options: EconomyOptions
+    public options: EconomyConfiguration
 
     /**
      * A constructor (EconomyUser, ShopItem, etc.) to work with.
@@ -59,7 +62,7 @@ declare class CachedItem<
         (id: DataIdentifier<MemberIDRequired>): If<
             IsDataArray,
             If<RequiresParam, Param[], T[]>,
-            If<RequiresParam, Param, T>
+            If<RequiresParam, Param, E extends null ? T : T | E>
         >
 
     /**

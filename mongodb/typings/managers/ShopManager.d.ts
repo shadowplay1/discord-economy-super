@@ -1,3 +1,6 @@
+import DatabaseManager from './DatabaseManager'
+import CacheManager from './CacheManager'
+
 import Emitter from '../classes/util/Emitter'
 import ShopItem from '../classes/ShopItem'
 
@@ -7,14 +10,15 @@ import ShopOperationInfo from '../interfaces/ShopOperationInfo'
 import { ItemProperties, ItemPropertyType } from '../interfaces/ItemProperties'
 import CustomItemData from '../interfaces/CustomItemData'
 
-import EconomyOptions from '../interfaces/EconomyOptions'
+import EconomyConfiguration from '../interfaces/EconomyConfiguration'
+
 
 /**
-* Shop manager methods object.
+* Shop manager methods class.
 * @extends {Emitter}
 */
 declare class ShopManager extends Emitter {
-    public constructor(options: EconomyOptions)
+    public constructor(options: EconomyConfiguration, database: DatabaseManager, cache: CacheManager)
 
     /**
      * Creates an item in shop.
@@ -49,22 +53,25 @@ declare class ShopManager extends Emitter {
     * 
     * - T: Item property string.
     * - K: Type for specified property in T.
+    * 
     * @param {string} itemID Item ID or name.
     * @param {string} guildID Guild ID.
     * 
-    * @param {"description" | "price" | "name" | "message" | "maxAmount" | "role" | 'custom'} itemProperty
+    * @param {T} itemProperty
     * This argument means what thing in item you want to edit (item property). 
     * Available item properties are 'description', 'price', 'name', 'message', 'amount', 'role', 'custom'.
     * 
-    * @param {T} value Any value to set.
+    * @param {K} value Any value to set.
     * @returns {Promise<boolean>} If edited successfully: true, else: false.
     */
     public edit<
         T extends keyof Omit<ItemProperties, 'id' | 'date'>,
         K extends ItemPropertyType<T>
     >(
-        itemID: string | number, guildID: string,
-        itemProperty: T, value: T extends 'custom' ? CustomItemData<K> : K
+        itemID: string | number, 
+        guildID: string,
+        itemProperty: T, 
+        value: T extends 'custom' ? CustomItemData<K> : K
     ): Promise<boolean>
 
     /**
@@ -80,11 +87,11 @@ declare class ShopManager extends Emitter {
     * @param {string} itemID Item ID or name.
     * @param {string} guildID Guild ID.
     * 
-    * @param {"description" | "price" | "name" | "message" | "maxAmount" | "role" | 'custom'} itemProperty
+    * @param {T} itemProperty
     * This argument means what thing in item you want to edit (item property). 
     * Available item properties are 'description', 'price', 'name', 'message', 'amount', 'role', 'custom'.
     * 
-    * @param {T} value Any value to set.
+    * @param {K} value Any value to set.
     * @returns {Promise<boolean>} If edited successfully: true, else: false.
     */
     public editItem<
@@ -103,7 +110,7 @@ declare class ShopManager extends Emitter {
      * @returns {Promise<boolean>} If set successfully: true, else: false.
      */
     public setCustom<
-        T extends object = never
+        T extends object = any
     >(itemID: string | number, guildID: string, custom: CustomItemData<T>): Promise<boolean>
 
     /**

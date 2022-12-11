@@ -1,21 +1,22 @@
-import Mongo from 'quick-mongo-super';
+import Mongo from 'quick-mongo-super'
+
 import {
     DatabaseEvents,
     MongoLatencyData,
     DatabaseObject
-} from 'quick-mongo-super/typings/interfaces/QuickMongo';
+} from 'quick-mongo-super/typings/interfaces/QuickMongo'
 
 import EconomyDatabase from '../interfaces/EconomyDatabase'
-import EconomyOptions from '../interfaces/EconomyOptions'
+import EconomyConfiguration from '../interfaces/EconomyConfiguration'
 
 
 /**
- * Tbase manager methods object.
+ * Tbase manager methods class.
  */
 declare class DatabaseManager {
     public _mongo: Mongo
 
-    public constructor(options: EconomyOptions)
+    public constructor(options: EconomyConfiguration, mongo: Mongo)
 
     /**
     * Gets a list of keys in database.

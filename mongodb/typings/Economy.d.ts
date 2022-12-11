@@ -1,5 +1,5 @@
 import If from './interfaces/If'
-import EconomyOptions from './interfaces/EconomyOptions'
+import EconomyConfiguration from './interfaces/EconomyConfiguration'
 
 import Emitter from './classes/util/Emitter'
 import EconomyError from './classes/util/EconomyError'
@@ -28,7 +28,8 @@ import CacheManager from './managers/CacheManager'
 * The Economy class.
 */
 declare class Economy<Ready extends boolean = boolean> extends Emitter {
-    public constructor(options?: EconomyOptions)
+    public constructor(options?: EconomyConfiguration)
+
 
     /**
      * Module ready status.
@@ -70,9 +71,9 @@ declare class Economy<Ready extends boolean = boolean> extends Emitter {
 
     /**
      * Economy configuration.
-     * @type {EconomyOptions}
+     * @type {EconomyConfiguration}
      */
-    public readonly options: EconomyOptions
+    public readonly options: EconomyConfiguration
 
     /**
      * Economy error class.

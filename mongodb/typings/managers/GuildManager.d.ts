@@ -1,27 +1,31 @@
+import DatabaseManager from './DatabaseManager'
+import CacheManager from './CacheManager'
 
-import EconomyOptions from '../interfaces/EconomyOptions'
+import EconomyConfiguration from '../interfaces/EconomyConfiguration'
 
 import BaseManager from './BaseManager'
+
 import EconomyGuild from '../classes/EconomyGuild'
+import EmptyEconomyGuild from '../classes/EmptyEconomyGuild'
 
 
 /**
  * Guild Manager.
  */
-declare class GuildManager extends BaseManager<EconomyGuild> {
+declare class GuildManager extends BaseManager<EconomyGuild, EmptyEconomyGuild> {
 
     /**
      * Guild Manager.
-     * @param {EconomyOptions} options Economy configuration.
+     * @param {EconomyConfiguration} options Economy configuration.
      */
-    public constructor(options: EconomyOptions)
+    public constructor(options: EconomyConfiguration, database: DatabaseManager, cache: CacheManager)
 
     /**
      * Gets the guild by it's ID.
      * @param {string} guildID Guild ID.
      * @returns {Promise<EconomyGuild>} User object.
     */
-    public get(guildID: string): Promise<EconomyGuild>
+    public get(guildID: string): Promise<EconomyGuild | EmptyEconomyGuild>
 
     /**
      * Creates an economy guild object in database.

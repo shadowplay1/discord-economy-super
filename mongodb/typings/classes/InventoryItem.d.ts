@@ -1,4 +1,4 @@
-import EconomyOptions from '../interfaces/EconomyOptions'
+import EconomyConfiguration from '../interfaces/EconomyConfiguration'
 import InventoryData from '../interfaces/InventoryData'
 
 import DatabaseManager from '../managers/DatabaseManager'
@@ -16,15 +16,17 @@ declare class InventoryItem<T extends object = any> {
     /**
      * Inventory item class.
      * @param {string} guildID Guild ID.
-     * @param {EconomyOptions} ecoOptions Economy configuration.
+	 * @param {string} memberID Member ID.
+     * @param {EconomyConfiguration} ecoOptions Economy configuration.
      * @param {InventoryData} itemObject User inventory object.
      * @param {DatabaseManager} database Database manager.
      * @param {CacheManager} cache Cache manager.
      */
     public constructor(
         guildID: string,
-        ecoOptions: EconomyOptions,
-        itemObject: InventoryData,
+		memberID: string,
+        ecoOptions: EconomyConfiguration,
+        itemObject: InventoryData<T>,
         database: DatabaseManager,
         cache: CacheManager
     )
@@ -34,7 +36,7 @@ declare class InventoryItem<T extends object = any> {
      * Guild ID.
      * @param {string}
      */
-    public guildID
+    public guildID: string
 
     /**
      * Shop item ID.
@@ -67,7 +69,7 @@ declare class InventoryItem<T extends object = any> {
     public description: string
 
     /**
-     * ID of Discord Role that will be given to Wuser on item use.
+     * ID of Discord Role that will be given to the user on item use.
      * @type {string}
      */
     public role: string

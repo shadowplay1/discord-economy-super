@@ -1,13 +1,13 @@
 import If from './If'
 
-import { RewardCooldownData } from './RewardCooldownData'
+import RewardCooldownData from './RewardCooldownData'
 import { Reward, RewardType } from '../interfaces/RewardTypes'
 
 
 /**
  * Reward object.
  */
-declare interface RewardObject<RewardArray extends boolean = boolean, RewardObjectType extends RewardType = 'daily'> {
+declare interface RewardObject<RewardArray extends boolean = boolean, RewardObjectType extends RewardType = RewardType.DAILY> {
 
     /**
      * Type of the reward.

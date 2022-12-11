@@ -1,38 +1,58 @@
+import DatabaseManager from './DatabaseManager'
+import CacheManager from './CacheManager'
+
 import If from '../interfaces/If'
+import EconomyConfiguration from '../interfaces/EconomyConfiguration'
 
-import EconomyOptions from '../interfaces/EconomyOptions'
 import BaseManager from './BaseManager'
-import EconomyUser from '../classes/EconomyUser'
 
-type UserFunction<MemberIDRequired extends boolean, ReturnType = EconomyUser> =
+import EconomyUser from '../classes/EconomyUser'
+import EmptyEconomyUser from '../classes/EmptyEconomyUser'
+
+
+type UserFunction<
+    MemberIDRequired extends boolean,
+    ReturnType = EconomyUser,
+    EmptyReturnType = EmptyEconomyUser
+> =
     If<
         MemberIDRequired,
-        (memberID: string, guildID: string) => Promise<ReturnType>,
-        (guildID: string) => Promise<ReturnType>
+        (memberID: string, guildID: string) => Promise<
+            EmptyReturnType extends null ? ReturnType : ReturnType | EmptyReturnType
+        >,
+        (userID: string) => Promise<
+            EmptyReturnType extends null ? ReturnType : ReturnType | EmptyReturnType
+        >
     >
+
 
 /**
  * User Manager.
  */
-declare class UserManager<MemberIDRequired extends boolean> extends BaseManager<EconomyUser> {
+declare class UserManager<MemberIDRequired extends boolean> extends BaseManager<EconomyUser, EmptyEconomyUser> {
 
     /**
      * User Manager.
-     * @param {EconomyOptions} options Economy configuration.
+     * @param {EconomyConfiguration} options Economy configuration.
      */
-    public constructor(options: EconomyOptions)
+    public constructor(
+        options: EconomyConfiguration,
+        database: DatabaseManager,
+        guildID: string,
+        cache: CacheManager
+    )
 
     /**
-    * Gets the array of all users in database.
-    * @returns {Promise<EconomyUser[]>}
+    * Gets the array of ALL users in database.
+    * @returns {EconomyUser[]}
     */
-    public all: UserFunction<MemberIDRequired, EconomyUser[]>
+    public all: UserFunction<MemberIDRequired, EconomyUser[], null>
 
     /**
      * Gets the user by it's ID and guild ID.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
-     * @returns {Promise<EconomyUser>} User object.
+     * @returns {EconomyUser} User object.
      */
     public get: UserFunction<MemberIDRequired>
 
@@ -40,16 +60,16 @@ declare class UserManager<MemberIDRequired extends boolean> extends BaseManager<
     * Creates an economy user object in database.
     * @param {string} memberID The user ID to set.
     * @param {string} guildID Guild ID.
-    * @returns {Promise<EconomyUser>} Economy user object.
+    * @returns {EconomyUser} Economy user object.
     */
-    public create: UserFunction<MemberIDRequired>
+    public create: UserFunction<MemberIDRequired, EconomyUser, null>
 
     /**
     * Sets the default user object for a specified member.
     * @param {string} userID User ID.
-    * @returns {Promise<boolean>} If reset successfully: true; else: false.
+    * @returns {boolean} If reset successfully: true; else: false.
     */
-    public reset: UserFunction<MemberIDRequired, boolean>
+    public reset: UserFunction<MemberIDRequired, boolean, null>
 }
 
 export = UserManager

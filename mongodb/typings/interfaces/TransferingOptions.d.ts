@@ -16,7 +16,7 @@ interface TransferingOptions {
     /**
      * A member ID who will receive the money.
      */
-    recipientMemberID: string
+    receiverMemberID: string
 
 
     /**

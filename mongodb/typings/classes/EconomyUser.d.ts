@@ -1,4 +1,4 @@
-import EconomyOptions from '../interfaces/EconomyOptions'
+import EconomyConfiguration from '../interfaces/EconomyConfiguration'
 
 import DatabaseManager from '../managers/DatabaseManager'
 import CacheManager from '../managers/CacheManager'
@@ -25,7 +25,7 @@ declare class EconomyUser {
      * Economy user class.
      * @param {string} id User ID.
      * @param {string} guildID Guild ID.
-     * @param {EconomyOptions} ecoOptions Economy configuration.
+     * @param {EconomyConfiguration} ecoOptions Economy configuration.
      * @param {RawEconomyUser} userObject Economy user object.
      * @param {DatabaseManager} database Database manager.
      * @param {CacheManager} cache Cache manager.
@@ -33,7 +33,7 @@ declare class EconomyUser {
     public constructor(
         id: string,
         guildID: string,
-        ecoOptions: EconomyOptions,
+        ecoOptions: EconomyConfiguration,
         userObject: RawEconomyUser,
         database: DatabaseManager,
         cache: CacheManager
@@ -57,6 +57,12 @@ declare class EconomyUser {
      * @type {number}
      */
     public money: number
+
+    /**
+     * Determine if the user exists in the database.
+     * @type {boolean}
+     */
+    public exists: boolean
 
     /**
      * Database Manager.
@@ -131,6 +137,12 @@ declare class EconomyUser {
      * @returns {Promise<boolean>} If reset successfully: true; else: false.
      */
     public reset(): Promise<boolean>
+
+	/**
+	 * Creates an economy user object in database.
+	 * @returns {Promise<boolean>} If created successfully: true, else: false.
+	 */
+	public create(): Promise<boolean>
 }
 
 export = EconomyUser

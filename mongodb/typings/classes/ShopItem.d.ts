@@ -21,7 +21,7 @@ declare class ShopItem<T extends object = any> {
      */
     public constructor(
         guildID: string,
-        itemObject: ItemData,
+        itemObject: ItemData<T>,
         database: DatabaseManager,
         cache: CacheManager
     )
@@ -63,7 +63,7 @@ declare class ShopItem<T extends object = any> {
     public description: string
 
     /**
-     * ID of Discord Role that will be given to Wuser on item use.
+     * ID of Discord Role that will be given to the user on item use.
      * @type {string}
      */
     public role: string
@@ -85,7 +85,6 @@ declare class ShopItem<T extends object = any> {
      * @type {object}
      */
     public custom: CustomItemData<T>
-
 
     /**
     * Checks for is the specified user has enough money to buy the item.

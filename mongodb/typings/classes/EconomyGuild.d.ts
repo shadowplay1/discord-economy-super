@@ -1,4 +1,5 @@
-import EconomyOptions from '../interfaces/EconomyOptions'
+import EconomyConfiguration from '../interfaces/EconomyConfiguration'
+import RawEconomyUser from '../interfaces/RawEconomyUser'
 
 import DatabaseManager from '../managers/DatabaseManager'
 import CacheManager from '../managers/CacheManager'
@@ -14,6 +15,7 @@ import Leaderboards from './guild/Leaderboards'
 import Settings from './guild/Settings'
 
 import EconomyUser from './EconomyUser'
+import Currency from './Currency'
 
 
 declare class EconomyGuild {
@@ -21,15 +23,17 @@ declare class EconomyGuild {
     /**
      * Economy guild class.
      * @param {string} id Guild ID.
-     * @param {EconomyOptions} ecoOptions Economy configuration.
+     * @param {EconomyConfiguration} ecoOptions Economy configuration.
      * @param {any} guildObject Economy guild object.
      * @param {DatabaseManager} database Database manager.
      * @param {CacheManager} cache Cache manager.
      */
     public constructor(
         id: string,
-        ecoOptions: EconomyOptions,
-        guildObject: any,
+        ecoOptions: EconomyConfiguration,
+        guildObject: {
+            [userID: string]: RawEconomyUser
+        },
         database: DatabaseManager,
         cache: CacheManager
     )
@@ -44,6 +48,11 @@ declare class EconomyGuild {
     * Guild ID.
     */
     public id: string
+
+    /**
+     * Determine if the guild exists in the database.
+     */
+    public exists: boolean
 
     /**
      * Database Manager.
@@ -69,6 +78,12 @@ declare class EconomyGuild {
     public shop: Shop
 
     /**
+     * Guild currencies array.
+     * @type {Currency[]}
+     */
+    public currencies: Currency[]
+
+    /**
      * Guild Leaderboards.
      */
     public leaderboards: Leaderboards
@@ -90,6 +105,12 @@ declare class EconomyGuild {
      * @returns {Promise<boolean>} If reset successfully: true; else: false.
      */
     public reset(): Promise<boolean>
+
+	/**
+	 * Creates an economy guild object in database.
+	 * @returns {Promise<boolean>} If created successfully: true; else: false.
+	 */
+	public create(): Promise<boolean>
 }
 
 export = EconomyGuild
