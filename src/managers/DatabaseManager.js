@@ -14,11 +14,17 @@ class DatabaseManager {
 
     /**
      * Database Manager.
-     * @param {object} options Economy configuration.
+     * @param {EconomyConfiguration} options Economy configuration.
      * @param {string} options.storagePath Full path to a JSON file. Default: './storage.json'.
      */
     constructor(options = {}) {
         const DotParser = require('../classes/util/DotParser')
+
+        /**
+         * Economy configuration.
+         * @type {EconomyConfiguration}
+         */
+        this.options = options
 
         /**
          * Economy Logger.

@@ -569,10 +569,7 @@ class ShopManager extends Emitter {
         this.database.set(`${guildID}.${memberID}.inventory`, newInventory)
 
         if (savePurchasesHistory) {
-            const shop = this.database.fetch(`${guildID}.shop`) || []
             const history = this.database.fetch(`${guildID}.${memberID}.history`) || []
-
-            const item = shop.find(item => item.id == itemID || item.name == itemID)
 
             this.database.push(`${guildID}.${memberID}.history`, {
                 id: history.length ? history[history.length - 1].id + 1 : 1,

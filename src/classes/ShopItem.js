@@ -46,6 +46,13 @@ class ShopItem extends Emitter {
         this.database = database
 
         /**
+         * Economy configuration.
+         * @type {EconomyConfiguration}
+         * @private
+         */
+        this.options = this.database.options
+
+        /**
          * Item name.
          * @type {string}
          */
@@ -194,6 +201,112 @@ class ShopItem extends Emitter {
 
             default:
                 return null
+        }
+    }
+
+    /**
+     * Buys the item from the shop.
+     * @param {string} memberID Member ID.
+     * @param {number} [quantity=1] Quantity of items to buy. Default: 1.
+     * @param {string} [reason='received the item from the shop'] 
+     * The reason why the money was subtracted. Default: 'received the item from the shop'.
+     * 
+     * @returns {ShopOperationInfo} Operation information object.
+     */
+    buy(memberID, quantity = 1, reason = 'received the item from the shop') {
+        const balance = this.database.fetch(`${this.guildID}.${memberID}.money`) || 0
+
+        const shop = this.fetch(this.guildID)
+        const item = shop.find(item => item.id == this.id || item.name == this.id)
+
+        const inventory = this.database.fetch(`${this.guildID}.${memberID}.inventory`) || []
+        const inventoryItems = inventory.filter(invItem => invItem.name == item.name)
+
+        if (typeof memberID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
+        }
+
+        if (!item) return {
+            status: false,
+            message: 'item not found',
+            item: null,
+            quantity: 0,
+            totalPrice: 0,
+        }
+
+
+        const totalPrice = item.price * quantity
+        const arrayOfItems = Array(quantity).fill(item.itemObject ? item.itemObject : item)
+
+        const newInventory = [...inventory, ...arrayOfItems]
+
+        if (
+            item.maxAmount &&
+            inventoryItems.length >= item.maxAmount &&
+            (inventoryItems.length + quantity) < item.maxAmount
+        ) return {
+            status: false,
+            message: `maximum items reached (${item.maxAmount})`,
+            item,
+            quantity,
+            totalPrice
+        }
+
+        const dateLocale = this.database.fetch(`${this.guildID}.settings.dateLocale`)
+            || this.options.dateLocale
+
+        const subtractOnBuy = this.database.fetch(`${this.guildID}.settings.subtractOnBuy`)
+            || this.options.subtractOnBuy
+
+        const savePurchasesHistory = this.database.fetch(`${this.guildID}.settings.savePurchasesHistory`)
+            || this.options.savePurchasesHistory
+
+
+        if (subtractOnBuy) {
+            this.database.subtract(`${this.guildID}.${memberID}.money`, totalPrice)
+
+            this.emit('balanceSubtract', {
+                type: 'subtract',
+                guildID: this.guildID,
+                memberID,
+                amount: Number(totalPrice),
+                balance: balance - totalPrice,
+                reason
+            })
+        }
+
+        this.database.set(`${this.guildID}.${memberID}.inventory`, newInventory)
+
+        if (savePurchasesHistory) {
+            const history = this.database.fetch(`${this.guildID}.${memberID}.history`) || []
+
+            this.database.push(`${this.guildID}.${memberID}.history`, {
+                id: history.length ? history[history.length - 1].id + 1 : 1,
+                memberID,
+                guildID: this.guildID,
+                name: item.name,
+                price: item.price,
+                quantity,
+                totalPrice,
+                role: item.role || null,
+                maxAmount: item.maxAmount,
+                date: new Date().toLocaleString(dateLocale),
+                custom: item.custom || {}
+            })
+        }
+
+        this.emit('shopItemBuy', {
+            guildID: this.guildID,
+            boughtBy: memberID,
+            item
+        })
+
+        return {
+            status: true,
+            message: 'OK',
+            item,
+            quantity,
+            totalPrice
         }
     }
 
