@@ -1,3 +1,5 @@
+import CustomItemData from '../interfaces/CustomItemData'
+
 export interface ItemProperties<T extends object = any> {
     id: number
     name: string
@@ -7,7 +9,7 @@ export interface ItemProperties<T extends object = any> {
     maxAmount: number
     role: string
     date: string
-    custom: T
+    custom: CustomItemData<T>
 }
 
 export type ItemPropertyType<T extends keyof ItemProperties> = T extends 'custom' ? object : ItemProperties[T]

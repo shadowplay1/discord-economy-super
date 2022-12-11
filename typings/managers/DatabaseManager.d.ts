@@ -1,11 +1,11 @@
-import EconomyDatabase from '../../mongodb/typings/interfaces/EconomyDatabase'
-import EconomyOptions from '../interfaces/EconomyOptions'
+import EconomyDatabase from '../../typings/interfaces/EconomyDatabase'
+import EconomyConfiguration from '../interfaces/EconomyConfiguration'
 
 /**
- * Tbase manager methods object.
+ * Tbase manager methods class.
  */
 declare class DatabaseManager {
-    public constructor(options: EconomyOptions)
+    public constructor(options: EconomyConfiguration)
 
     /**
     * Gets a list of keys in database.

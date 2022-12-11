@@ -1,11 +1,12 @@
-import EconomyOptions from '../interfaces/EconomyOptions'
+import DatabaseManager from './DatabaseManager'
+
+import EconomyConfiguration from '../interfaces/EconomyConfiguration'
 
 import SettingsTypes from '../interfaces/SettingsTypes'
 import SettingValueType from '../interfaces/SettingValueType'
 
-
 declare class SettingsManager {
-    public constructor(options: EconomyOptions)
+    public constructor(options: EconomyConfiguration, database: DatabaseManager)
 
     /**
      * Gets the specified setting from the database.
@@ -35,13 +36,28 @@ declare class SettingsManager {
     public set<T extends keyof SettingsTypes>(key: T, value: SettingValueType<T>, guildID: string): SettingsTypes
 
     /**
-     * Removes the specified setting.
+     * Deletes the specified setting.
+     * 
+     * Note: If the server don't have any setting specified, 
+     * the module will take the values from the 
+     * specified configuration or default configuration.
+     *
+     * @param {keyof SettingsTypes} key The setting to delete.
+     * @param {string} guildID Guild ID.
+     * @returns {SettingsTypes} The server settings object.
+     */
+    public delete(key: keyof SettingsTypes, guildID: string): SettingsTypes
+
+    /**
+     * Deletes the specified setting.
      * 
      * Note: If the server don't have any setting specified, 
      * the module will take the values from the 
      * specified configuration or default configuration.
      * 
-     * @param {keyof SettingsTypes} key The setting to remove.
+     * This method is an alias for `SettingsManager.delete()` method.
+     * 
+     * @param {keyof SettingsTypes} key The setting to delete.
      * @param {string} guildID Guild ID.
      * @returns {SettingsTypes} The server settings object.
      */

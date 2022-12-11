@@ -18,7 +18,11 @@ declare class ShopItem<T extends object = any> {
      * @param {ItemData} itemObject Shop item object.
      * @param {DatabaseManager} database Database Manager.
      */
-    public constructor(guildID: string, itemObject: ItemData, database: DatabaseManager)
+    public constructor(
+        guildID: string,
+        itemObject: ItemData<T>,
+        database: DatabaseManager
+    )
 
     /**
      * Guild ID.
@@ -57,7 +61,7 @@ declare class ShopItem<T extends object = any> {
     public description: string
 
     /**
-     * ID of Discord Role that will be given to Wuser on item use.
+     * ID of Discord Role that will be given to the user on item use.
      * @type {string}
      */
     public role: string

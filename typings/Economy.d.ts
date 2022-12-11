@@ -1,5 +1,5 @@
 import If from './interfaces/If'
-import EconomyOptions from './interfaces/EconomyOptions'
+import EconomyConfiguration from './interfaces/EconomyConfiguration'
 
 import Emitter from './classes/util/Emitter'
 import EconomyError from './classes/util/EconomyError'
@@ -27,7 +27,7 @@ import SettingsManager from './managers/SettingsManager'
 * The Economy class.
 */
 declare class Economy<Ready extends boolean = boolean> extends Emitter {
-    public constructor(options?: EconomyOptions)
+    public constructor(options?: EconomyConfiguration)
 
     /**
      * Module ready status.
@@ -69,9 +69,9 @@ declare class Economy<Ready extends boolean = boolean> extends Emitter {
 
     /**
      * Economy configuration.
-     * @type {EconomyOptions}
+     * @type {EconomyConfiguration}
      */
-    public readonly options: EconomyOptions
+    public readonly options: EconomyConfiguration
 
     /**
      * Database checking interval.
@@ -143,7 +143,7 @@ declare class Economy<Ready extends boolean = boolean> extends Emitter {
     * Economy user manager.
     * @type {?UserManager}
     */
-    public readonly users: If<Ready, UserManager>
+    public readonly users: If<Ready, UserManager<true>>
 
     /**
     * Economy guild manager.

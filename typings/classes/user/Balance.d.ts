@@ -1,8 +1,8 @@
 import Emitter from '../util/Emitter'
-import EconomyOptions from '../../interfaces/EconomyOptions'
+import EconomyConfiguration from '../../interfaces/EconomyConfiguration'
 
-import TransferringOptions from '../../interfaces/TransferringOptions'
-import TransferringResult from '../../interfaces/TransferringResult'
+import TransferingOptions from '../../interfaces/TransferingOptions'
+import TransferingResult from '../../interfaces/TransferingResult'
 
 
 declare class Balance extends Emitter {
@@ -11,9 +11,9 @@ declare class Balance extends Emitter {
      * User balance class.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
-     * @param {EconomyOptions} ecoOptions Economy configuration.
+     * @param {EconomyConfiguration} ecoOptions Economy configuration.
      */
-    public constructor(memberID: string, guildID: string, ecoOptions: EconomyOptions)
+    public constructor(memberID: string, guildID: string, ecoOptions: EconomyConfiguration)
 
     /**
      * Sets the money amount on user's balance.
@@ -54,11 +54,19 @@ declare class Balance extends Emitter {
     public fetch(): number
 
     /**
-     * Sends the money to a specified user.
-     * @param {TransferringOptions} options Transferring options.
-     * @returns {TransferringResult} Transferring result object.
+     * Deposits the specified amount of money.
+     * @param {number} amount Money amount.
+     * @param {string} [reason] The reason of the operation.
+     * @returns {number} Money amount.
      */
-     public transfer(options: Omit<TransferringOptions, 'receiverMemberID'>): TransferringResult
+    public deposit(amount: number, reason?: string): number
+
+    /**
+     * Transfers the money to a specified user.
+     * @param {TransferingOptions} options Transfering options.
+     * @returns {TransferingResult} Transfering result object.
+     */
+    public transfer(options: Omit<TransferingOptions, 'receiverMemberID'>): TransferingResult
 }
 
 export = Balance

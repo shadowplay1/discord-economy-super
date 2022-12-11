@@ -1,5 +1,7 @@
-import EconomyOptions from '../interfaces/EconomyOptions'
-import ItemData from '../interfaces/ItemData'
+import DatabaseManager from '../managers/DatabaseManager'
+
+import EconomyConfiguration from '../interfaces/EconomyConfiguration'
+import HistoryData from '../interfaces/HistoryData'
 
 import CustomItemData from '../interfaces/CustomItemData'
 
@@ -12,10 +14,18 @@ declare class HistoryItem<T extends object = any> {
     /**
      * History item class.
      * @param {string} guildID Guild ID.
-     * @param {EconomyOptions} ecoOptions Economy configuration.
+	 * @param {string} memberID Member ID.
+     * @param {EconomyConfiguration} ecoOptions Economy configuration.
      * @param {HistoryData} itemObject User purchases history item object.
+	 * @param {DatabaseManager} database Database Manager.
      */
-    public constructor(guildID: string, ecoOptions: EconomyOptions, itemObject: ItemData)
+    public constructor(
+        guildID: string,
+		memberID: string,
+        ecoOptions: EconomyConfiguration,
+        itemObject: HistoryData<T>,
+		database: DatabaseManager
+    )
 
 
     /**
@@ -71,7 +81,7 @@ declare class HistoryItem<T extends object = any> {
     public date: string
 
     /**
-     * ID of Discord Role that will be given to Wuser on item use.
+     * ID of Discord Role that will be given to the user on item use.
      * @type {string}
      */
     public role: string

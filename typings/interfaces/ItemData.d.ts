@@ -8,47 +8,47 @@ declare interface ItemData<T extends object = any> {
     /**
      * Item ID.
      */
-    public id: number
+    id: number
 
     /**
      * Item name.
      */
-    public name: string
+    name: string
 
     /**
      * Item price.
      */
-    public price: number
+    price: number
 
     /**
      * Item message that will be returned on item use.
      */
-    public message: string
+    message: string
 
     /**
      * Item description.
      */
-    public description: string
+    description: string
 
     /**
      * Max amount of the item that user can hold in their inventory.
      */
-    public maxAmount: number
+    maxAmount: number
 
     /**
      * Role ID from your Discord server.
      */
-    public role: string
+    role: string
 
     /**
      * Formatted date when the item was added to the shop.
      */
-    public date: string
+    date: string
 
     /**
      * Custom item data object.
      */
-    public custom: CustomItemData<T>
+    custom: CustomItemData<T>
 }
 
 export = ItemData

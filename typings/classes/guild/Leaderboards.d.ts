@@ -1,4 +1,4 @@
-import EconomyOptions from '../../interfaces/EconomyOptions'
+import EconomyConfiguration from '../../interfaces/EconomyConfiguration'
 import LeaderboardData from '../../interfaces/LeaderboardData'
 
 
@@ -7,18 +7,18 @@ declare class Leaderboards {
     /**
      * Guild leaderboards class.
      * @param {string} guildID Guild ID.
-     * @param {EconomyOptions} options Economy configuration.
+     * @param {EconomyConfiguration} options Economy configuration.
      */
-    public constructor(guildID: string, options: EconomyOptions)
+    public constructor(guildID: string, options: EconomyConfiguration)
 
     /**
-     * Gets a money leaderboard for this guild.
+     * Gets a money leaderboard for the guild.
      * @returns {LeaderboardData[]} Balance leaderboard array.
      */
     public money(): LeaderboardData[]
 
     /**
-     * Gets a bank balance leaderboard for this guild.
+     * Gets a bank balance leaderboard for the guild.
      * @returns {LeaderboardData[]} Bank balance leaderboard array.
      */
     public bank(): LeaderboardData[]

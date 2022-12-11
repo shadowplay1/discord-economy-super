@@ -8,42 +8,42 @@ declare interface InventoryData<T extends object = any> {
     /**
      * Item ID.
      */
-    public id: number
+    id: number
 
     /**
      * Item name.
      */
-    public name: string
+    name: string
 
     /**
      * Item price.
      */
-    public price: number
+    price: number
 
     /**
      * The message that will be returned on item use.
      */
-    public message?: string
+    message?: string
 
     /**
      * Max amount of the item that user can hold in their inventory.
      */
-    public maxAmount?: number
+    maxAmount?: number
 
     /**
      * Discord Role ID from your server that will be given to user. Requires to specify your bot client in 'Economy.shop.useItem' method.
      */
-    public role?: string
+    role?: string
 
     /**
      * Date and time when the user bought the item.
      */
-    public date: string
+    date: string
 
     /**
      * Custom item data object.
      */
-    public custom?: CustomItemData<T>
+    custom?: CustomItemData<T>
 }
 
 export = InventoryData

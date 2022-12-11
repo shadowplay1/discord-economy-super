@@ -1,10 +1,10 @@
-import EconomyOptions from '../interfaces/EconomyOptions'
+import EconomyConfiguration from '../interfaces/EconomyConfiguration'
 
 /**
-* Cooldown manager methods object.
+* Cooldown manager methods class.
 */
 declare class CooldownManager {
-   public constructor(options: EconomyOptions)
+   public constructor(options: EconomyConfiguration)
 
    /**
    * Clears user's daily cooldown

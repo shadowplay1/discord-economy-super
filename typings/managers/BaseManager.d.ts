@@ -1,7 +1,7 @@
 import DatabaseManager from './DatabaseManager'
 import UtilsManager from './UtilsManager'
 
-import EconomyOptions from '../interfaces/EconomyOptions'
+import EconomyConfiguration from '../interfaces/EconomyConfiguration'
 
 /**
  * The default manager with its default methods.
@@ -16,6 +16,7 @@ import EconomyOptions from '../interfaces/EconomyOptions'
  * Type parameters:
  * 
  * - T: The main item class.
+ * - E: The class to replace the result if it is empty.
  * 
  * @example
  * const BaseManager = require('./BaseManager')
@@ -33,17 +34,29 @@ import EconomyOptions from '../interfaces/EconomyOptions'
  *  
  *  all() {
  *      const shop = this.database.fetch(`${this.guildID}.shop`) || []
-        return shop.map(item => new ShopItem(this.guildID, item, this.database))
- *  }
+ *      return shop.map(item => new ShopItem(this.guildID, item, this.database))
+ *   }
  * }
  */
-declare class BaseManager<T> {
+declare class BaseManager<T, E = any> {
 
     /**
      * Base Manager.
-     * @param {EconomyOptions} options Economy configuration.
+     * @param {EconomyConfiguration} options Economy configuration.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @param {T} constructor A constructor (EconomyUser, ShopItem, etc.) to work with.
+     * 
+     * @param {E} [emptyBaseConstructor] 
+     * An empty constructor (EmptyEconomyUser, EmptyEconomyGuild, etc.) to replace the `undefined` value with.
      */
-    public constructor(options: EconomyOptions, memberID: string, guildID: string, database: DatabaseManager)
+    public constructor(
+        options: EconomyConfiguration,
+        memberID: string,
+        guildID: string,
+        constructor: T,
+        emptyBaseConstructor?: E
+    )
 
     /**
      * Member ID.
@@ -59,10 +72,10 @@ declare class BaseManager<T> {
 
     /**
      * Economy configuration.
-     * @type {EconomyOptions}
+     * @type {EconomyConfiguration}
      * @private
      */
-    private options: EconomyOptions
+    private options: EconomyConfiguration
 
     /**
      * Database Manager.
@@ -84,17 +97,24 @@ declare class BaseManager<T> {
      */
     public length: number
 
-   /**
-     * Gets the first user in specified guild.
-     * @returns {P} First object in the array.
-     */
-    public first<P = T>(): P
+    /**
+      * Gets the first user in specified guild.
+      * @returns {P} First object in the array.
+      */
+    public first<P = T>(): E extends any ? P : P | E
 
     /**
      * Gets the last user in specified guild.
      * @returns {P} Last object in the array.
      */
-    public last<P = T>(): P
+    public last<P = T>(): E extends any ? P : P | E
+
+    /**
+     * Gets the element at the specified index in the elements array.
+     * @param {number} index Index of the user.
+     * @returns {P} Object at the specified index.
+     */
+    public at<P = T>(index: number): E extends any ? P : P | E
 
     /**
      * Returns an array of elements in specified guild.
@@ -119,7 +139,7 @@ declare class BaseManager<T> {
         index: number,
         array: P[]) => boolean,
         thisArg?: P
-    ): P
+    ): E extends any ? P : P | E
 
 
     /**

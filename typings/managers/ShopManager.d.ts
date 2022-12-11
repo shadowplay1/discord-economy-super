@@ -7,17 +7,17 @@ import ShopOperationInfo from '../interfaces/ShopOperationInfo'
 import { ItemProperties, ItemPropertyType } from '../interfaces/ItemProperties'
 import CustomItemData from '../interfaces/CustomItemData'
 
-import EconomyOptions from '../interfaces/EconomyOptions'
+import EconomyConfiguration from '../interfaces/EconomyConfiguration'
 import InventoryData from '../interfaces/InventoryData'
 import HistoryData from '../interfaces/HistoryData'
 
 
 /**
-* Shop manager methods object.
+* Shop manager methods class.
 * @extends {Emitter}
 */
 declare class ShopManager extends Emitter {
-    public constructor(options: EconomyOptions)
+    public constructor(options: EconomyConfiguration)
 
     /**
      * Creates an item in shop.
@@ -52,14 +52,15 @@ declare class ShopManager extends Emitter {
     * 
     * - T: Item property string.
     * - K: Type for specified property in T.
+    * 
     * @param {string} itemID Item ID or name.
     * @param {string} guildID Guild ID.
     * 
-    * @param {"description" | "price" | "name" | "message" | "maxAmount" | "role" | 'custom'} itemProperty
+    * @param {T} itemProperty
     * This argument means what thing in item you want to edit (item property). 
     * Available item properties are 'description', 'price', 'name', 'message', 'amount', 'role', 'custom'.
     * 
-    * @param {T} value Any value to set.
+    * @param {K} value Any value to set.
     * @returns {boolean} If edited successfully: true, else: false.
     */
     public edit<
@@ -83,11 +84,11 @@ declare class ShopManager extends Emitter {
     * @param {string} itemID Item ID or name.
     * @param {string} guildID Guild ID.
     * 
-    * @param {"description" | "price" | "name" | "message" | "maxAmount" | "role" | 'custom'} itemProperty
+    * @param {T} itemProperty
     * This argument means what thing in item you want to edit (item property). 
     * Available item properties are 'description', 'price', 'name', 'message', 'amount', 'role', 'custom'.
     * 
-    * @param {T} value Any value to set.
+    * @param {K} value Any value to set.
     * @returns {boolean} If edited successfully: true, else: false.
     */
     public editItem<
@@ -106,7 +107,7 @@ declare class ShopManager extends Emitter {
      * @returns {boolean} If set successfully: true, else: false.
      */
     public setCustom<
-        T extends object = never
+        T extends object = any
     >(itemID: string | number, guildID: string, custom: CustomItemData<T>): boolean
 
     /**

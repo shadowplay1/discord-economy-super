@@ -1,12 +1,12 @@
 import InventoryItem from '../InventoryItem'
 
-import EconomyOptions from '../../interfaces/EconomyOptions'
+import EconomyConfiguration from '../../interfaces/EconomyConfiguration'
 import BaseManager from '../../managers/BaseManager'
 import DatabaseManager from '../../managers/DatabaseManager'
 
 
 declare class Inventory extends BaseManager<InventoryItem<any>> {
-    public constructor(memberID: string, guildID: string, options: EconomyOptions, database: DatabaseManager)
+    public constructor(memberID: string, guildID: string, options: EconomyConfiguration, database: DatabaseManager)
 
     /**
      * Gets the item from user's inventory.
