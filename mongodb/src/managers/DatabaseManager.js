@@ -10,10 +10,16 @@ class DatabaseManager {
 
     /**
      * Database Manager.
-     * @param {object} options Economy configuration.
+     * @param {EconomyConfiguration} options Economy configuration.
      * @param {QuickMongo} mongo QuickMongo instance.
      */
     constructor(options = {}, mongo) {
+
+        /**
+         * Economy configuration.
+         * @type {EconomyConfiguration}
+         */
+        this.options = options
 
         /**
          * Economy Logger.

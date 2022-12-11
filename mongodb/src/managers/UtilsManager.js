@@ -267,7 +267,7 @@ class UtilsManager {
                     output[i] = ecoOptions[i]
                 }
 
-                for (const y of Object.keys(DefaultConfiguration[i]).filter(key => isNaN(key))) {
+                for (const y of Object.keys(DefaultConfiguration[i] || {}).filter(key => isNaN(key))) {
 
                     if (ecoOptions[i]?.[y] == undefined || output[i]?.[y] == undefined) {
                         try {
@@ -317,7 +317,7 @@ class UtilsManager {
                 }
 
 
-                for (const y of Object.keys(DefaultConfiguration[i]).filter(key => isNaN(key))) {
+                for (const y of Object.keys(DefaultConfiguration[i] || {}).filter(key => isNaN(key))) {
 
                     if (typeof output[i]?.[y] !== typeof DefaultConfiguration[i][y]) {
                         if (!options.ignoreInvalidTypes) {
