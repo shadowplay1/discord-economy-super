@@ -31,9 +31,9 @@
 
 
 const config = require('./config')
-const { Client, ActivityType, Message, User, OAuth2Scopes } = require('discord.js')
+const { Client, ActivityType, OAuth2Scopes } = require('discord.js')
 
-const Economy = require('../../')
+const Economy = require('discord-economy-super')
 
 
 const client = new Client({
@@ -43,9 +43,7 @@ const client = new Client({
 let eco = new Economy({
     dailyAmount: 100,
     workAmount: [50, 200],
-    weeklyAmount: 5000,
-
-    debug: true
+    weeklyAmount: 5000
 })
 
 
@@ -95,6 +93,7 @@ client.on('messageCreate', async message => {
 
         user = guild.users.create(message.author.id)
     }
+
 
     if (command == prefix + 'help') {
         message.channel.send(
@@ -392,16 +391,16 @@ client.on('messageCreate', async message => {
             )
         }
 
-        const transferringResult = receiver.balance.transfer({
+        const transferingResult = receiver.balance.transfer({
             amount,
             senderMemberID: message.author.id,
 
-            sendingReason: `transferred ${amount} coins to ${getUser(argumentUser.id).tag}.`,
+            sendingReason: `transfered ${amount} coins to ${getUser(argumentUser.id).tag}.`,
             receivingReason: `received ${amount} coins from ${message.author.tag}.`
         })
 
         message.channel.send(
-            `${message.author}, you transferred **${transferringResult.amount}** ` +
+            `${message.author}, you transfered **${transferingResult.amount}** ` +
             `coins to ${getUser(argumentUser.id)}.`
         )
     }
@@ -580,7 +579,9 @@ client.on('messageCreate', async message => {
 
     if (command == prefix + 'shop_edit') {
         const itemProperties = ['description', 'price', 'name', 'message', 'maxAmount', 'role']
-        const [itemID, itemProperty, newValue] = args
+
+        const [itemID, itemProperty] = args
+        const newValue = args.slice(2).join(' ')
 
         const item = shop.find(item => item.id == parseInt(itemID) || item.name == itemID)
 
