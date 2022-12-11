@@ -1,6 +1,7 @@
 import ItemData from '../interfaces/ItemData'
 
 import CustomItemData from '../interfaces/CustomItemData'
+import ShopOperationInfo from '../interfaces/ShopOperationInfo'
 import { ItemProperties, ItemPropertyType } from '../interfaces/ItemProperties'
 
 import DatabaseManager from '../managers/DatabaseManager'
@@ -115,6 +116,24 @@ declare class ShopItem<T extends object = any> {
         T extends keyof Omit<ItemProperties, 'id' | 'date'>,
         K extends ItemPropertyType<T>
     >(itemProperty: T, value: T extends 'custom' ? CustomItemData<K> : K): Promise<boolean>
+
+    /**
+     * Buys the item from the shop.
+     * @param {string} memberID Member ID.
+     * @param {number} [quantity=1] Quantity of items to buy. Default: 1.
+     * 
+     * @param {string} [reason='received the item from the shop'] 
+     * The reason why the money was subtracted. Default: 'received the item from the shop'.
+     * 
+     * @returns {Promise<ShopOperationInfo>} Operation information object.
+     */
+    public buy<
+        T extends object = any
+    >(
+        memberID: string,
+        quantity?: number,
+        reason?: string
+    ): Promise<ShopOperationInfo<T>>
 
     /**
      * Sets a custom object for the item.
