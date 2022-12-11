@@ -66,7 +66,7 @@ class Logger {
      * @param {string} [color='yellow'] Message color to use.
      */
     debug(message, color = 'yellow') {
-        if (!this.options.debug) return // this.error('Debug mode is disabled.')
+        if (!this.options.debug) return
         console.log(`${this.colors[color]}[Economy] ${message}${this.colors.reset}`)
     }
 }

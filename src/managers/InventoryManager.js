@@ -13,6 +13,7 @@ const ShopItem = require('../classes/ShopItem')
 
 /**
  * Inventory manager methods class.
+ * @extends {Emitter}
  */
 class InventoryManager extends Emitter {
 
@@ -30,12 +31,12 @@ class InventoryManager extends Emitter {
         /**
          * Economy configuration.
          * @private
-         * @type {?EconomyOptions}
+         * @type {?EconomyConfiguration}
          */
         this.options = options
 
         /**
-         * Database manager methods object.
+         * Database manager methods class.
          * @type {DatabaseManager}
          * @private
          */
@@ -46,10 +47,10 @@ class InventoryManager extends Emitter {
          * @type {FetchManager}
          * @private
          */
-        this.fetcher = new FetchManager(options)
+        this.fetcher = new FetchManager(options, database)
 
         /**
-         * Balance manager methods object.
+         * Balance manager methods class.
          * @type {BalanceManager}
          * @private
          */
@@ -75,7 +76,7 @@ class InventoryManager extends Emitter {
 
         if (!inventory) return false
 
-        return this.database.remove(`${guildID}.${memberID}.inventory`)
+        return this.database.delete(`${guildID}.${memberID}.inventory`)
     }
 
     /**
@@ -500,14 +501,14 @@ class InventoryManager extends Emitter {
  */
 
 /**
- * @typedef {object} EconomyOptions Default Economy configuration.
+ * @typedef {object} EconomyConfiguration Default Economy configuration.
  * @property {string} [storagePath='./storage.json'] Full path to a JSON file. Default: './storage.json'
  * @property {boolean} [checkStorage=true] Checks the if database file exists and if it has errors. Default: true
  * @property {number} [dailyCooldown=86400000] 
  * Cooldown for Daily Command (in ms). Default: 24 hours (60000 * 60 * 24 ms)
  * 
  * @property {number} [workCooldown=3600000] Cooldown for Work Command (in ms). Default: 1 hour (60000 * 60 ms)
- * @property {Number | Number[]} [dailyAmount=100] Amount of money for Daily Command. Default: 100.
+ * @property {number | number[]} [dailyAmount=100] Amount of money for Daily Command. Default: 100.
  * @property {number} [weeklyCooldown=604800000] 
  * Cooldown for Weekly Command (in ms). Default: 7 days (60000 * 60 * 24 * 7 ms)
  *
@@ -519,16 +520,18 @@ class InventoryManager extends Emitter {
  * 
  * @property {boolean} [savePurchasesHistory=true] If true, the module will save all the purchases history.
  * 
- * @property {Number | Number[]} [weeklyAmount=100] Amount of money for Weekly Command. Default: 1000.
- * @property {Number | Number[]} [workAmount=[10, 50]] Amount of money for Work Command. Default: [10, 50].
+ * @property {number | number[]} [weeklyAmount=100] Amount of money for Weekly Command. Default: 1000.
+ * @property {number | number[]} [workAmount=[10, 50]] Amount of money for Work Command. Default: [10, 50].
  * @property {boolean} [subtractOnBuy=true] 
  * If true, when someone buys the item, their balance will subtract by item price. Default: false
  * 
  * @property {number} [updateCountdown=1000] Checks for if storage file exists in specified time (in ms). Default: 1000.
  * @property {string} [dateLocale='en'] The region (example: 'ru' or 'en') to format the date and time. Default: 'en'.
  * @property {UpdaterOptions} [updater=UpdaterOptions] Update checker configuration.
- * @property {ErrorHandlerOptions} [errorHandler=ErrorHandlerOptions] Error handler configuration.
- * @property {CheckerOptions} [optionsChecker=CheckerOptions] Configuration for an 'Economy.utils.checkOptions' method.
+ * @property {ErrorHandlerConfiguration} [errorHandler=ErrorHandlerConfiguration] Error handler configuration.
+
+ * @property {CheckerConfiguration} [optionsChecker=CheckerConfiguration] 
+ * Configuration for an 'Economy.utils.checkOptions' method.
  * @property {boolean} [debug=false] Enables or disables the debug mode.
  */
 

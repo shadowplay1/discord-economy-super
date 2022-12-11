@@ -22,7 +22,7 @@ class HistoryManager {
 
         /**
          * Economy configuration.
-         * @type {EconomyOptions}
+         * @type {EconomyConfiguration}
          * @private
          */
         this.options = options
@@ -99,7 +99,7 @@ class HistoryManager {
         }
 
         if (!history) return false
-        return this.database.remove(`${guildID}.${memberID}.history`)
+        return this.database.delete(`${guildID}.${memberID}.history`)
     }
 
     /**
@@ -110,9 +110,9 @@ class HistoryManager {
      * @param {number} [quantity=1] Quantity of the item.
      * @returns {boolean} If added: true, else: false.
      */
-    async add(itemID, memberID, guildID, quantity = 1) {
-        const shop = (await this.database.fetch(`${guildID}.shop`)) || []
-        const history = (await this.database.fetch(`${guildID}.${memberID}.history`)) || []
+    add(itemID, memberID, guildID, quantity = 1) {
+        const shop = this.database.fetch(`${guildID}.shop`) || []
+        const history = this.database.fetch(`${guildID}.${memberID}.history`) || []
 
         const item = shop.find(item => item.id == itemID || item.name == itemID)
         const totalPrice = item.price * quantity
@@ -132,7 +132,7 @@ class HistoryManager {
 
         if (!item) return false
 
-        const result = await this.database.push(`${guildID}.${memberID}.history`, {
+        const result = this.database.push(`${guildID}.${memberID}.history`, {
             id: history.length ? history[history.length - 1].id + 1 : 1,
             memberID,
             guildID,
@@ -235,7 +235,7 @@ class HistoryManager {
  * @property {number} price Item price.
  * @property {string} message The message that will be returned on item use.
  * @property {string} description Item description.
- * @property {string} role ID of Discord Role that will be given to Wuser on item use.
+ * @property {string} role ID of Discord Role that will be given to the user on item use.
  * @property {number} maxAmount Max amount of the item that user can hold in their inventory.
  * @property {string} date Date when the item was added in the shop.
  * @property {object} custom Custom item properties object.
@@ -255,14 +255,14 @@ class HistoryManager {
  */
 
 /**
- * @typedef {object} EconomyOptions Default Economy configuration.
+ * @typedef {object} EconomyConfiguration Default Economy configuration.
  * @property {string} [storagePath='./storage.json'] Full path to a JSON file. Default: './storage.json'
  * @property {boolean} [checkStorage=true] Checks the if database file exists and if it has errors. Default: true
  * @property {number} [dailyCooldown=86400000]
  * Cooldown for Daily Command (in ms). Default: 24 hours (60000 * 60 * 24 ms)
  *
  * @property {number} [workCooldown=3600000] Cooldown for Work Command (in ms). Default: 1 hour (60000 * 60 ms)
- * @property {Number | Number[]} [dailyAmount=100] Amount of money for Daily Command. Default: 100.
+ * @property {number | number[]} [dailyAmount=100] Amount of money for Daily Command. Default: 100.
  * @property {number} [weeklyCooldown=604800000]
  * Cooldown for Weekly Command (in ms). Default: 7 days (60000 * 60 * 24 * 7 ms)
  *
@@ -274,16 +274,18 @@ class HistoryManager {
  * @property {number} [sellingItemPercent=75]
  * Percent of the item's price it will be sold for. Default: 75.
  *
- * @property {Number | Number[]} [weeklyAmount=100] Amount of money for Weekly Command. Default: 1000.
- * @property {Number | Number[]} [workAmount=[10, 50]] Amount of money for Work Command. Default: [10, 50].
+ * @property {number | number[]} [weeklyAmount=100] Amount of money for Weekly Command. Default: 1000.
+ * @property {number | number[]} [workAmount=[10, 50]] Amount of money for Work Command. Default: [10, 50].
  * @property {boolean} [subtractOnBuy=true]
  * If true, when someone buys the item, their balance will subtract by item price. Default: false
  *
  * @property {number} [updateCountdown=1000] Checks for if storage file exists in specified time (in ms). Default: 1000.
  * @property {string} [dateLocale='en'] The region (example: 'ru' or 'en') to format the date and time. Default: 'en'.
  * @property {UpdaterOptions} [updater=UpdaterOptions] Update checker configuration.
- * @property {ErrorHandlerOptions} [errorHandler=ErrorHandlerOptions] Error handler configuration.
- * @property {CheckerOptions} [optionsChecker=CheckerOptions] Configuration for an 'Economy.utils.checkOptions' method.
+ * @property {ErrorHandlerConfiguration} [errorHandler=ErrorHandlerConfiguration] Error handler configuration.
+
+ * @property {CheckerConfiguration} [optionsChecker=CheckerConfiguration] 
+ * Configuration for an 'Economy.utils.checkOptions' method.
  * @property {boolean} [debug=false] Enables or disables the debug mode.
  */
 

@@ -21,14 +21,14 @@ class CooldownManager {
       * Cooldown for Weekly Command (in ms). Default: 7 days (60000 * 60 * 24 * 7 ms)
       * 
       * @param {number} options.weeklyAmount Amount of money for Weekly Command. Default: 1000.
-      * @param {Number | Array} options.workAmount Amount of money for Work Command. Default: [10, 50].
+      * @param {number | number[]} options.workAmount Amount of money for Work Command. Default: [10, 50].
      */
     constructor(options) {
 
 
         /**
          * Economy configuration.
-         * @type {EconomyOptions}
+         * @type {EconomyConfiguration}
          * @private
          */
         this.options = options
@@ -113,7 +113,7 @@ class CooldownManager {
             throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
         }
 
-        return this.database.remove(`${guildID}.${memberID}.dailyCooldown`)
+        return this.database.delete(`${guildID}.${memberID}.dailyCooldown`)
     }
 
     /**
@@ -131,7 +131,7 @@ class CooldownManager {
             throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
         }
 
-        return this.database.remove(`${guildID}.${memberID}.workCooldown`)
+        return this.database.delete(`${guildID}.${memberID}.workCooldown`)
     }
 
     /**
@@ -149,7 +149,7 @@ class CooldownManager {
             throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
         }
 
-        return this.database.remove(`${guildID}.${memberID}.weeklyCooldown`)
+        return this.database.delete(`${guildID}.${memberID}.weeklyCooldown`)
     }
 }
 

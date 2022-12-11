@@ -1,6 +1,7 @@
 const Emitter = require('../classes/util/Emitter')
 const DatabaseManager = require('./DatabaseManager')
 
+
 /**
  * The default manager with its default methods.
  * 
@@ -28,25 +29,28 @@ const DatabaseManager = require('./DatabaseManager')
  *  
  *  all() {
  *      const shop = this.database.fetch(`${this.guildID}.shop`) || []
-        return shop.map(item => new ShopItem(this.guildID, item, this.database))
- *  }
+ *      return shop.map(item => new ShopItem(this.guildID, item, this.database))
+ *   }
  * }
  */
 class BaseManager extends Emitter {
 
     /**
      * Base Manager.
-     * @param {EconomyOptions} options Economy configuration.
+     * @param {EconomyConfiguration} options Economy configuration.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
      * @param {any} constructor A constructor (EconomyUser, ShopItem, etc.) to work with.
+     * 
+     * @param {any} [emptyBaseConstructor] 
+     * An empty constructor (EmptyEconomyUser, EmptyEconomyGuild, etc.) to replace the `undefined` value with.
      */
-    constructor(options, memberID, guildID, constructor) {
+    constructor(options, memberID, guildID, constructor, emptyBaseConstructor) {
         super()
 
         /**
          * Economy configuration.
-         * @type {EconomyOptions}
+         * @type {EconomyConfiguration}
          * @private
          */
         this.options = options
@@ -73,8 +77,16 @@ class BaseManager extends Emitter {
         /**
          * A constructor (EconomyUser, ShopItem, etc.) to work with.
          * @type {any}
+         * @private
          */
         this.baseConstructor = constructor
+
+        /**
+         * An empty constructor (EmptyEconomyUser, EmptyEconomyGuild, etc.) to replace the `undefined` value with.
+         * @type {any}
+         * @private
+         */
+        this.emptyBaseConstructor = emptyBaseConstructor
 
         /**
          * Amount of elements in database.
@@ -91,20 +103,42 @@ class BaseManager extends Emitter {
         const array = this.all()
         const firstElement = array[0]
 
+        if (!firstElement) {
+            if (this.emptyBaseConstructor.name == 'EmptyEconomyUser') {
+                return new this.emptyBaseConstructor(
+                    this.memberID, this.guildID,
+                    this.options,
+                    this.database
+                )
+            }
+
+            return new this.emptyBaseConstructor(
+                this.guildID, this.options,
+                this.database
+            )
+        }
+
         if (!this.memberID) {
-            return new this.baseConstructor(this.guildID, this.options, firstElement, this.database)
+            return new this.baseConstructor(
+                this.guildID, this.options,
+                firstElement,
+                this.database
+            )
         }
 
         else if (this.memberID && this.guildID) {
-            return new this.baseConstructor(this.memberID, this.guildID, this.options, firstElement, this.database)
+            return new this.baseConstructor(
+                this.memberID, this.guildID,
+                this.options, firstElement,
+                this.database
+            )
         }
 
         else {
             return new this.baseConstructor(
                 firstElement.memberID || firstElement.id,
                 firstElement.guildID,
-                this.options,
-                firstElement,
+                this.options, firstElement,
                 this.database
             )
         }
@@ -118,20 +152,38 @@ class BaseManager extends Emitter {
         const array = this.all()
         const lastElement = array[array.length - 1]
 
+        if (!lastElement) {
+            if (this.emptyBaseConstructor.name == 'EmptyEconomyUser') {
+                return new this.emptyBaseConstructor(
+                    this.memberID, this.guildID,
+                    this.options,
+                    this.database
+                )
+            }
+
+            return new this.emptyBaseConstructor(this.guildID, this.options, this.database)
+        }
+
         if (!this.memberID) {
-            return new this.baseConstructor(this.guildID, this.options, lastElement, this.database)
+            return new this.baseConstructor(
+                this.guildID, this.options,
+                lastElement, this.database
+            )
         }
 
         else if (this.memberID && this.guildID) {
-            return new this.baseConstructor(this.memberID, this.guildID, this.options, lastElement, this.database)
+            return new this.baseConstructor(
+                this.memberID, this.guildID,
+                this.options, lastElement,
+                this.database
+            )
         }
 
         else {
             return new this.baseConstructor(
                 lastElement.memberID || lastElement.id,
                 lastElement.guildID,
-                this.options,
-                lastElement,
+                this.options, lastElement,
                 this.database
             )
         }
@@ -162,8 +214,7 @@ class BaseManager extends Emitter {
                 return new this.baseConstructor(
                     element.memberID || element.id,
                     element.guildID,
-                    this.options,
-                    element,
+                    this.options, element,
                     this.database
                 )
             })
@@ -183,7 +234,72 @@ class BaseManager extends Emitter {
      * @returns {any} Database object.
      */
     find(predicate, thisArg) {
-        return this.all().find(predicate, thisArg)
+        const allArray = this.all()
+        const result = allArray.find(predicate, thisArg)
+
+        if (!result) {
+            if (this.emptyBaseConstructor.name == 'EmptyEconomyUser') {
+                return new this.emptyBaseConstructor(
+                    this.memberID, this.guildID,
+                    this.options,
+                    this.database
+                )
+            }
+
+            return new this.emptyBaseConstructor(
+                this.guildID, this.options,
+                this.database
+            )
+        }
+    }
+
+    /**
+     * Gets the element at the specified index in the elements array.
+     * @param {number} index Index of the user.
+     * @returns {any} Object at the specified index.
+     */
+    at(index) {
+        const array = this.all()
+
+        if (!array[index]) {
+            if (this.emptyBaseConstructor.name == 'EmptyEconomyUser') {
+                return new this.emptyBaseConstructor(
+                    this.memberID, this.guildID,
+                    this.options,
+                    this.database
+                )
+            }
+
+            return new this.emptyBaseConstructor(
+                this.guildID, this.options,
+                this.database
+            )
+        }
+
+        if (!this.memberID) {
+            return new this.baseConstructor(
+                this.guildID, this.options,
+                array[index],
+                this.database
+            )
+        }
+
+        else if (this.memberID && this.guildID) {
+            return new this.baseConstructor(
+                this.memberID, this.guildID,
+                this.options, array[index],
+                this.database
+            )
+        }
+
+        else {
+            return new this.baseConstructor(
+                array[index].memberID || array[index].id,
+                array[index].guildID,
+                this.options, array[index],
+                this.database
+            )
+        }
     }
 
     /**
@@ -370,14 +486,14 @@ class BaseManager extends Emitter {
 
 
 /**
- * @typedef {object} EconomyOptions Default Economy configuration.
+ * @typedef {object} EconomyConfiguration Default Economy configuration.
  * @property {string} [storagePath='./storage.json'] Full path to a JSON file. Default: './storage.json'
  * @property {boolean} [checkStorage=true] Checks the if database file exists and if it has errors. Default: true
  * @property {number} [dailyCooldown=86400000] 
  * Cooldown for Daily Command (in ms). Default: 24 hours (60000 * 60 * 24 ms)
  * 
  * @property {number} [workCooldown=3600000] Cooldown for Work Command (in ms). Default: 1 hour (60000 * 60 ms)
- * @property {Number | Number[]} [dailyAmount=100] Amount of money for Daily Command. Default: 100.
+ * @property {number | number[]} [dailyAmount=100] Amount of money for Daily Command. Default: 100.
  * @property {number} [weeklyCooldown=604800000] 
  * Cooldown for Weekly Command (in ms). Default: 7 days (60000 * 60 * 24 * 7 ms)
  * 
@@ -389,16 +505,18 @@ class BaseManager extends Emitter {
  * @property {number} [sellingItemPercent=75] 
  * Percent of the item's price it will be sold for. Default: 75.
  * 
- * @property {Number | Number[]} [weeklyAmount=100] Amount of money for Weekly Command. Default: 1000.
- * @property {Number | Number[]} [workAmount=[10, 50]] Amount of money for Work Command. Default: [10, 50].
+ * @property {number | number[]} [weeklyAmount=100] Amount of money for Weekly Command. Default: 1000.
+ * @property {number | number[]} [workAmount=[10, 50]] Amount of money for Work Command. Default: [10, 50].
  * @property {boolean} [subtractOnBuy=true] 
  * If true, when someone buys the item, their balance will subtract by item price. Default: false
  * 
  * @property {number} [updateCountdown=1000] Checks for if storage file exists in specified time (in ms). Default: 1000.
  * @property {string} [dateLocale='en'] The region (example: 'ru' or 'en') to format the date and time. Default: 'en'.
  * @property {UpdaterOptions} [updater=UpdaterOptions] Update checker configuration.
- * @property {ErrorHandlerOptions} [errorHandler=ErrorHandlerOptions] Error handler configuration.
- * @property {CheckerOptions} [optionsChecker=CheckerOptions] Configuration for an 'Economy.utils.checkOptions' method.
+ * @property {ErrorHandlerConfiguration} [errorHandler=ErrorHandlerConfiguration] Error handler configuration.
+
+ * @property {CheckerConfiguration} [optionsChecker=CheckerConfiguration] 
+ * Configuration for an 'Economy.utils.checkOptions' method.
  * @property {boolean} [debug=false] Enables or disables the debug mode.
  */
 

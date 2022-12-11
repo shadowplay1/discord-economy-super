@@ -16,14 +16,14 @@ class FetchManager {
 
     /**
      * Fetch Manager.
-     * @param {object} options Economy configuration.
-     * @param {string} options.storagePath Full path to a JSON file. Default: './storage.json'.
+     * @param {EconomyConfiguration} options Economy configuration.
+     * @param {DatabaseManager} database Database Manager.
      */
-    constructor(options = {}) {
+    constructor(options = {}, database) {
 
         /**
          * Economy configuration.
-         * @type {EconomyOptions}
+         * @type {EconomyConfiguration}
          * @private
          */
         this.options = options
@@ -34,6 +34,13 @@ class FetchManager {
          * @private
          */
         this.storagePath = options.storagePath || './storage.json'
+
+        /**
+         * Database Manager.
+         * @type {DatabaseManager}
+         * @private
+         */
+        this.database = database
     }
 
     /**
@@ -71,12 +78,8 @@ class FetchManager {
         const guildData = data[guildID]
         const memberData = guildData?.[memberID]
 
-        /**
-         * @type {number}
-         */
-        const money = memberData?.money || 0
-
-        return money
+        const money = memberData?.money
+        return money || 0
     }
 
     /**
@@ -99,12 +102,8 @@ class FetchManager {
         const guildData = data[guildID]
         const memberData = guildData?.[memberID]
 
-        /**
-         * @type {number}
-         */
-        const bankMoney = memberData?.bank || 0
-
-        return bankMoney
+        const bankMoney = memberData?.bank
+        return bankMoney || 0
     }
 
     /**
@@ -127,12 +126,8 @@ class FetchManager {
         const guildData = data[guildID]
         const memberData = guildData?.[memberID]
 
-        /**
-         * @type {InventoryData[]}
-         */
         const inventory = memberData?.inventory || []
-
-        return inventory.map(item => new InventoryItem(guildID, memberID, this.options, item))
+        return inventory.map(item => new InventoryItem(guildID, memberID, this.options, item, this.database))
     }
 
     /**
@@ -155,12 +150,8 @@ class FetchManager {
         const guildData = data[guildID]
         const memberData = guildData?.[memberID]
 
-        /**
-         * @type {HistoryData[]}
-         */
         const history = memberData?.history || []
-
-        return history.map(item => new HistoryItem(guildID, memberID, this.options, item))
+        return history.map(item => new HistoryItem(guildID, memberID, this.options, item, this.database))
     }
 
     /**
@@ -183,9 +174,9 @@ class FetchManager {
         const guildData = data[guildID]
         const memberData = guildData?.[memberID]
 
-        const dailyCooldown = memberData?.dailyCooldown
-        const workCooldown = memberData?.workCooldown
-        const weeklyCooldown = memberData?.weeklyCooldown
+        const dailyCooldown = memberData?.dailyCooldown || 0
+        const workCooldown = memberData?.workCooldown || 0
+        const weeklyCooldown = memberData?.weeklyCooldown || 0
 
         return {
             dailyCooldown,
@@ -252,7 +243,7 @@ class FetchManager {
  * @property {number} price Item price.
  * @property {string} message The message that will be returned on item use.
  * @property {string} description Item description.
- * @property {string} role ID of Discord Role that will be given to Wuser on item use.
+ * @property {string} role ID of Discord Role that will be given to the user on item use.
  * @property {number} maxAmount Max amount of the item that user can hold in their inventory.
  * @property {string} date Date when the item was added in the shop.
  * @property {object} custom Custom item properties object.

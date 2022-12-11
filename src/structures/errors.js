@@ -33,9 +33,56 @@ const availableItemProps = [
     'custom'
 ]
 
+const availableCurrencyProps = [
+    'name',
+    'symbol',
+    'custom'
+]
+
+
 module.exports = {
     notReady: 'The module is not ready to work.',
     savingHistoryDisabled: 'Saving purchases history is disabled.',
+
+    /**
+     * Returns a message for an INVALID_TYPE error.
+     * @param {string} key
+     * @param {string} type
+     * @param {string} received
+     * @returns {string} {key} must be a {type}. Received type: {received}.
+     */
+    invalidType(key, type, received) {
+        return `${key} must be a ${type}. Received type: ${received}.`
+    },
+
+    /**
+     * Returns a message for an READONLY_PROPERTY error.
+     * @param {string[]} properties
+     * @param {string} key
+     * @returns {string} {prop(s)} property (properties) are (is) read-only and cannot be edited.
+     */
+    readonlyProperty(properties, key) {
+        const text =
+            `${properties.map(prop => `"${prop}"`).join(', ')} ` +
+            `${properties.length == 1 ? `property in ${key} is` : `properties in ${key} are`}` +
+            'read-only and cannot be edited.'
+
+        return text
+    },
+
+    /**
+     * Returns a message for an INVALID_PROPERTY error.
+     * @param {string} key 
+     * @param {string} property 
+     * @returns {string} "{property}" is an invalid property for ${key}. Available properties are: {availableProps}.
+     */
+    invalidProperty(key, property) {
+        const text =
+            `"${property}" is an invalid property for ${key}. ` +
+            `Available properties are: ${availableCurrencyProps.join(', ')}.`
+
+        return text
+    },
 
     invalidTypes: {
         memberID: 'memberID must be a string. Received type: ',
@@ -45,6 +92,9 @@ module.exports = {
         amount: 'amount must be a number. Received type: ',
         value: 'value must be specified. Received: ',
         id: 'id must be a string or a number. Received type: ',
+
+        depositInvalidInput: 'Cannot deposit a negative amount of money.',
+        withdrawInvalidInput: 'Cannot withdraw a negative amount of money.',
 
         addItemOptions: {
             name: 'options.name must be a string. Received type: ',
@@ -61,13 +111,26 @@ module.exports = {
             itemProperty: '\'itemProperty\' parameter must be one of these values: ' +
                 availableItemProps.map(prop => `'${prop}'`).join(', ') +
                 '. Received: ',
-            noValue: 'no value specified. Received: '
+            noValue: 'No value specified. Received: '
         },
+    },
+
+    currencies: {
+
+        /**
+         * Returns a message for an CURRENCY_NOT_FOUND error.
+         * @param {string | number} currencyID Currency ID.
+         * @param {string} guildID Guild ID.
+         * @returns {string} Currency with ID/name/symbol "{currencyID}" not found on guild with ID {guildID}.
+         */
+        notFound(currencyID, guildID) {
+            return `Currency with ID/name/symbol "${currencyID}" not found on guild with ID ${guildID}.`
+        }
     },
 
     workAmount: {
         tooManyElements: 'options.workAmount array cannot have more than 2 elements;' +
-            'it must have min and max values as first and second element of the array (example: [10, 20]).',
+            'it must have "min" and "max" values as first and second element of the array (example: [10, 20]).',
     },
 
     databaseManager: {
@@ -106,7 +169,7 @@ module.exports = {
     oldNodeVersion: 'This module is supporting only Node.js v14 or newer. Installed version is ',
 
     reservedName(name = 'testStorage123') {
-        return `'${name}' is a reserved storage file name.You cannot use it.`
+        return `'${name}' is a reserved storage file name. You cannot use it.`
     },
 
     invalidStorage: 'Storage file is not valid.',
@@ -120,7 +183,7 @@ module.exports = {
      * @param {string} oldMethod 
      * @param {string} newManager 
      * @param {string} newMethod
-     * @param {String[]} argumentsList
+     * @param {string[]} argumentsList
      * @returns {string} Deprecation warning message.
      */
     deprecationWarning(oldManager, oldMethod, newManager, newMethod, argumentsList = [], newArgumentsList = []) {

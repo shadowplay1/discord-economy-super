@@ -32,13 +32,13 @@ class ShopManager extends Emitter {
 
         /**
          * Economy configuration.
-         * @type {?EconomyOptions}
+         * @type {?EconomyConfiguration}
          * @private
          */
         this.options = options
 
         /**
-         * Database manager methods object.
+         * Database manager methods class.
          * @type {DatabaseManager}
          * @private
          */
@@ -151,6 +151,7 @@ class ShopManager extends Emitter {
      * This argument means what thing in item you want to edit (item property). 
      * Available item properties are 'description', 'price', 'name', 'message', 'amount', 'role', 'custom'.
      * 
+     * @param {any} value Any value to set.
      * @returns {boolean} If edited successfully: true, else: false.
      */
     editItem(itemID, guildID, itemProperty, value) {
@@ -215,6 +216,9 @@ class ShopManager extends Emitter {
             case itemProperties[5]:
                 return edit(itemProperties[5], value)
 
+            case itemProperties[6]:
+                return edit(itemProperties[6], value)
+
             default:
                 return null
         }
@@ -229,8 +233,8 @@ class ShopManager extends Emitter {
      * @param {'description' | 'price' | 'name' | 'message' | 'maxAmount' | 'role' | 'custom'} itemProperty 
      * This argument means what thing in item you want to edit (item property). 
      * Available item properties are 'description', 'price', 'name', 'message', 'amount', 'role', 'custom'.
-     * @param {any} value Any value to set.
      * 
+     * @param {any} value Any value to set.
      * @returns {boolean} If edited successfully: true, else: false.
      */
     edit(itemID, guildID, itemProperty, value) {
@@ -241,7 +245,7 @@ class ShopManager extends Emitter {
      * Sets a custom object for the item.
      * @param {string | number} itemID Item ID or name.
      * @param {string} guildID Guild ID.
-     * @param {object} custom Custom item data object.
+     * @param {object} customObject Custom item data object.
      * @returns {boolean} If set successfully: true, else: false.
      */
     setCustom(itemID, guildID, customObject) {
@@ -306,7 +310,7 @@ class ShopManager extends Emitter {
             return false
         }
 
-        this.database.remove(`${guildID}.shop`)
+        this.database.delete(`${guildID}.shop`)
         this.emit('shopClear', true)
 
         return true
@@ -352,7 +356,7 @@ class ShopManager extends Emitter {
 
         if (!inventory) return false
 
-        return this.database.remove(`${guildID}.${memberID}.inventory`)
+        return this.database.delete(`${guildID}.${memberID}.inventory`)
     }
 
     /**
@@ -365,7 +369,7 @@ class ShopManager extends Emitter {
             throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
         }
 
-        const shop = this.database.fetch(`${guildID}.shop`)
+        const shop = this.database.fetch(`${guildID}.shop`) || []
         return shop.map(item => new ShopItem(guildID, item, this.database))
     }
 
@@ -672,7 +676,7 @@ class ShopManager extends Emitter {
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
      * @param {Client} client The Discord Client. [Optional]
-     * @returns {String | boolean} Item message or null if item not found.
+     * @returns {string | boolean} Item message or null if item not found.
      * @deprecated
      */
     useItem(itemID, memberID, guildID, client) {
@@ -860,7 +864,7 @@ class ShopManager extends Emitter {
 
         if (!history) return false
 
-        return this.database.remove(`${guildID}.${memberID}.history`)
+        return this.database.delete(`${guildID}.${memberID}.history`)
     }
 }
 
@@ -911,14 +915,14 @@ class ShopManager extends Emitter {
  */
 
 /**
- * @typedef {object} EconomyOptions Default Economy configuration.
+ * @typedef {object} EconomyConfiguration Default Economy configuration.
  * @property {string} [storagePath='./storage.json'] Full path to a JSON file. Default: './storage.json'
  * @property {boolean} [checkStorage=true] Checks the if database file exists and if it has errors. Default: true
  * @property {number} [dailyCooldown=86400000]
  * Cooldown for Daily Command (in ms). Default: 24 hours (60000 * 60 * 24 ms)
  *
  * @property {number} [workCooldown=3600000] Cooldown for Work Command (in ms). Default: 1 hour (60000 * 60 ms)
- * @property {Number | Number[]} [dailyAmount=100] Amount of money for Daily Command. Default: 100.
+ * @property {number | number[]} [dailyAmount=100] Amount of money for Daily Command. Default: 100.
  * @property {number} [weeklyCooldown=604800000]
  * Cooldown for Weekly Command (in ms). Default: 7 days (60000 * 60 * 24 * 7 ms)
  *
@@ -930,16 +934,18 @@ class ShopManager extends Emitter {
  * @property {number} [sellingItemPercent=75]
  * Percent of the item's price it will be sold for. Default: 75.
  *
- * @property {Number | Number[]} [weeklyAmount=100] Amount of money for Weekly Command. Default: 1000.
- * @property {Number | Number[]} [workAmount=[10, 50]] Amount of money for Work Command. Default: [10, 50].
+ * @property {number | number[]} [weeklyAmount=100] Amount of money for Weekly Command. Default: 1000.
+ * @property {number | number[]} [workAmount=[10, 50]] Amount of money for Work Command. Default: [10, 50].
  * @property {boolean} [subtractOnBuy=true]
  * If true, when someone buys the item, their balance will subtract by item price. Default: false
  *
  * @property {number} [updateCountdown=1000] Checks for if storage file exists in specified time (in ms). Default: 1000.
  * @property {string} [dateLocale='en'] The region (example: 'ru' or 'en') to format the date and time. Default: 'en'.
  * @property {UpdaterOptions} [updater=UpdaterOptions] Update checker configuration.
- * @property {ErrorHandlerOptions} [errorHandler=ErrorHandlerOptions] Error handler configuration.
- * @property {CheckerOptions} [optionsChecker=CheckerOptions] Configuration for an 'Economy.utils.checkOptions' method.
+ * @property {ErrorHandlerConfiguration} [errorHandler=ErrorHandlerConfiguration] Error handler configuration.
+
+ * @property {CheckerConfiguration} [optionsChecker=CheckerConfiguration] 
+ * Configuration for an 'Economy.utils.checkOptions' method.
  * @property {boolean} [debug=false] Enables or disables the debug mode.
  */
 

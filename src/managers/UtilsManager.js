@@ -1,9 +1,9 @@
-const { readFileSync, writeFileSync, existsSync } = require('fs')
-
-const fetch = require('node-fetch')
+const { existsSync } = require('fs')
 const { dirname } = require('path')
 
-const FetchManager = require('./FetchManager')
+const fetch = require('node-fetch')
+
+
 const DatabaseManager = require('./DatabaseManager')
 
 const DefaultConfiguration = require('../structures/DefaultConfiguration')
@@ -47,15 +47,14 @@ class UtilsManager {
 
     /**
      * Utils Manager.
-     * 
      * @param {object} options Economy configuration.
-     * @param {string} options.storagePath Full path to a JSON file. Default: './storage.json'.
+     * @param {DatabaseManager} database Database manager.
      */
-    constructor(options = {}, database, fetcher) {
+    constructor(options = {}, database) {
 
         /**
          * Economy configuration.
-         * @type {?EconomyOptions}
+         * @type {?EconomyConfiguration}
          * @private
          */
         this.options = options
@@ -68,21 +67,7 @@ class UtilsManager {
         this._logger = new Logger(options)
 
         /**
-        * Full path to a JSON file.
-        * @private
-        * @type {string}
-        */
-        this.storagePath = options.storagePath || './storage.json'
-
-        /**
-         * Fetch manager methods object.
-         * @type {FetchManager}
-         * @private
-         */
-        this.fetcher = fetcher
-
-        /**
-         * Database manager methods object.
+         * Database manager methods class.
          * @type {DatabaseManager}
          * @private
          */
@@ -114,56 +99,44 @@ class UtilsManager {
 
     /**
     * Fetches the entire database.
-    * @returns {object} Database contents
+    * @returns {Promise<DatabaseProperties>} Database contents
     */
     all() {
         return this.database.all()
     }
 
     /**
-     * Writes the data to file.
-     * @param {string} path File path to write.
-     * @param {any} data Any data to write
-     * @returns {boolean} If successfully written: true; else: false.
+     * Clears the database.
+     * @returns {Promise<boolean>} If cleared successfully: true.
      */
-    write(path, data) {
-        if (!path) return false
-        if (!data) return false
+    async clearDatabase() {
+        const keys = await this.database.keysList('')
 
-        const fileData = readFileSync(path).toString()
-        if (fileData == data) return false
+        for (const key of keys) {
+            this.database.delete(key)
+        }
 
-        writeFileSync(this.options.storagePath, JSON.stringify(data, null, '\t'))
-        return true
-    }
-
-    /**
-     * Clears the storage file.
-     * @returns {boolean} If cleared successfully: true; else: false
-     */
-    clearDatabase() {
-        const data = this.all()
-        const stringData = String(data)
-
-        if (stringData == '{}') return false
-
-        this.write(this.options.storagePath, '{}')
+        this.cache.clearAll()
         return true
     }
 
     /**
     * Fully removes the guild from database.
     * @param {string} guildID Guild ID
-    * @returns {boolean} If cleared successfully: true; else: false
+    * @returns {Promise<boolean>} If cleared successfully: true; else: false
     */
-    removeGuild(guildID) {
-        const data = this.fetcher.fetchAll()
-        const guild = data[guildID]
+    async removeGuild(guildID) {
+        const guild = await this.database.fetch(guildID)
 
         if (!guildID) return false
         if (!guild) return false
 
-        this.database.remove(guildID)
+        this.database.delete(guildID)
+
+        this.cache.guilds.remove({
+            guildID
+        })
+
         return true
     }
 
@@ -171,29 +144,33 @@ class UtilsManager {
      * Removes the user from database.
      * @param {string} memberID Member ID
      * @param {string} guildID Guild ID
-     * @returns {boolean} If cleared successfully: true; else: false
+     * @returns {Promise<boolean>} If cleared successfully: true; else: false
      */
-    removeUser(memberID, guildID) {
-        const data = this.fetcher.fetchAll()
-
-        const guild = data[guildID]
-        const user = guild?.[memberID]
+    async removeUser(memberID, guildID) {
+        const user = await this.database.fetch(`${guildID}.${memberID}`)
 
         if (!guildID) return false
-        if (!guild) return false
+        if (!memberID) return false
+
         if (!user) return false
 
-        this.database.remove(`${guildID}.${memberID}`)
-        return true
+        await this.database.delete(`${guildID}.${memberID}`)
+
+        this.cache.updateAll({
+            guildID,
+            memberID
+        })
+
+        return result
     }
 
     /**
      * Sets the default user object for the specified member.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
-     * @returns {EconomyUser} If reset successfully: new user object
+     * @returns {Promise<EconomyUser>} If reset successfully: new user object.
      */
-    resetUser(memberID, guildID) {
+    async resetUser(memberID, guildID) {
         if (!guildID) return null
         if (!memberID) return null
 
@@ -202,17 +179,23 @@ class UtilsManager {
         defaultObj.id = memberID
         defaultObj.guildID = guildID
 
-        this.database.set(`${guildID}.${memberID}`, defaultObj)
 
-        const newUser = new EconomyUser(memberID, guildID, this.options, defaultObj, this.database)
+        await this.database.set(`${guildID}.${memberID}`, defaultObj)
+
+        this.cache.users.update({
+            guildID,
+            memberID
+        })
+
+        const newUser = new EconomyUser(memberID, guildID, this.options, defaultObj, this.database, this.cache)
         return newUser
     }
 
     /**
      * Checks the Economy configuration, fixes the problems and returns it.
-     * @param {CheckerOptions} options Option checker options.
-     * @param {EconomyOptions} ecoOptions Economy configuration to check.
-     * @returns {EconomyOptions} Fixed Economy configuration.
+     * @param {CheckerConfiguration} options Option checker options.
+     * @param {EconomyConfiguration} ecoOptions Economy configuration to check.
+     * @returns {EconomyConfiguration} Fixed Economy configuration.
      */
     checkOptions(options = {}, ecoOptions) {
         this._logger.debug('Debug mode is enabled.', 'lightcyan')
@@ -227,16 +210,16 @@ class UtilsManager {
         let fileExtension = isTSFileAllowed ? 'ts' : 'js'
         let optionsFileExists = existsSync(`./economy.config.${fileExtension}`)
 
+		const slash = dirName.includes('\\') ? '\\' : '/'
+
         if (!optionsFileExists && fileExtension == 'ts' && isTSFileAllowed) {
             fileExtension = 'js'
             optionsFileExists = existsSync(`./economy.config.${fileExtension}`)
         }
 
         if (optionsFileExists) {
-            const slash = dirName.includes('\\') ? '\\' : '/'
-
             this._logger.debug(
-                `Using configuration file at ${dirName}${slash}economy.config.${fileExtension}...`, 'cyan'
+                `Using configuration file in ${dirName}${slash}economy.config.${fileExtension}...`, 'cyan'
             )
 
             try {
@@ -346,7 +329,7 @@ class UtilsManager {
                 const objectKeys = Object.keys(ecoOptions[i]).filter(key => isNaN(key))
 
                 for (const y of objectKeys) {
-                    const allKeys = Object.keys(DefaultConfiguration[i])
+                    const allKeys = Object.keys(DefaultConfiguration[i] || {})
                     const index = allKeys.indexOf(y)
 
                     if (!allKeys[index]) {
@@ -365,16 +348,30 @@ class UtilsManager {
 
         if (options.sendLog) {
             if (options.showProblems && problems.length) {
-                console.log(`Checked the options: ${problems.length ?
+                console.log(`Checked the configuration: ${problems.length ?
                     `${problems.length} problems found:\n\n${problems.join('\n')}` :
                     '0 problems found.'}`)
+
+				console.log(
+					'Configuration from ' +
+						`${optionsFileExists ?
+								`${dirName}${slash}economy.config.${fileExtension}` :
+								'the constructor'}`
+				)
             }
 
             if (options.sendSuccessLog && !options.showProblems) {
                 console.log(
-                    `Checked the options: ${problems.length} ` +
+                    `Checked the configuration: ${problems.length} ` +
                     `${problems.length == 1 ? 'problem' : 'problems'} found.`
                 )
+
+				console.log(
+					'Configuration from ' +
+					`${optionsFileExists ?
+							`${dirName}${slash}economy.config.${fileExtension}` :
+							'the constructor'}`
+				)
             }
         }
 
@@ -392,19 +389,17 @@ class UtilsManager {
 */
 
 /**
- * @typedef {object} EconomyOptions Default Economy configuration.
- * @property {string} [storagePath='./storage.json'] Full path to a JSON file. Default: './storage.json'
- * @property {boolean} [checkStorage=true] Checks the if database file exists and if it has errors. Default: true
+ * @typedef {object} EconomyConfiguration Default Economy configuration.
  * @property {number} [dailyCooldown=86400000] 
  * Cooldown for Daily Command (in ms). Default: 24 hours (60000 * 60 * 24 ms)
  * 
  * @property {number} [workCooldown=3600000] Cooldown for Work Command (in ms). Default: 1 hour (60000 * 60 ms)
- * @property {Number | Number[]} [dailyAmount=100] Amount of money for Daily Command. Default: 100.
+ * @property {number | number[]} [dailyAmount=100] Amount of money for Daily Command. Default: 100.
  * @property {number} [weeklyCooldown=604800000] 
  * Cooldown for Weekly Command (in ms). Default: 7 days (60000 * 60 * 24 * 7 ms)
  * 
- * @property {Number | Number[]} [weeklyAmount=100] Amount of money for Weekly Command. Default: 1000.
- * @property {Number | Number[]} [workAmount=[10, 50]] Amount of money for Work Command. Default: [10, 50].
+ * @property {number | number[]} [weeklyAmount=100] Amount of money for Weekly Command. Default: 1000.
+ * @property {number | number[]} [workAmount=[10, 50]] Amount of money for Work Command. Default: [10, 50].
  * @property {boolean} [subtractOnBuy=true] 
  * If true, when someone buys the item, their balance will subtract by item price. Default: false
  * 
@@ -416,11 +411,12 @@ class UtilsManager {
  * 
  * @property {boolean} [savePurchasesHistory=true] If true, the module will save all the purchases history.
  * 
- * @property {number} [updateCountdown=1000] Checks for if storage file exists in specified time (in ms). Default: 1000.
  * @property {string} [dateLocale='en'] The region (example: 'ru'; 'en') to format the date and time. Default: 'en'.
  * @property {UpdaterOptions} [updater=UpdaterOptions] Update checker configuration.
- * @property {ErrorHandlerOptions} [errorHandler=ErrorHandlerOptions] Error handler configuration.
- * @property {CheckerOptions} [optionsChecker=CheckerOptions] Configuration for an 'Economy.utils.checkOptions' method.
+ * @property {ErrorHandlerConfiguration} [errorHandler=ErrorHandlerConfiguration] Error handler configuration.
+
+ * @property {CheckerConfiguration} [optionsChecker=CheckerConfiguration] 
+ * Configuration for an 'Economy.utils.checkOptions' method.
  * @property {boolean} [debug=false] Enables or disables the debug mode.
  */
 
@@ -432,14 +428,14 @@ class UtilsManager {
  */
 
 /**
- * @typedef {object} ErrorHandlerOptions
+ * @typedef {object} ErrorHandlerConfiguration
  * @property {boolean} [handleErrors=true] Handles all errors on startup. Default: true.
  * @property {number} [attempts=5] Amount of attempts to load the module. Use 0 for infinity attempts. Default: 5.
  * @property {number} [time=3000] Time between every attempt to start the module (in ms). Default: 3000.
  */
 
 /**
- * @typedef {object} CheckerOptions Configuration for an 'Economy.utils.checkOptions' method.
+ * @typedef {object} CheckerConfiguration Configuration for an 'Economy.utils.checkOptions' method.
  * @property {boolean} [ignoreInvalidTypes=false] 
  * Allows the method to ignore the options with invalid types. Default: false.
  * 

@@ -1,13 +1,18 @@
 const ms = require('../structures/ms')
 
 const EconomyError = require('../classes/util/EconomyError')
+const errors = require('../structures/errors')
 
 const BalanceManager = require('./BalanceManager')
 const CooldownManager = require('./CooldownManager')
 
 const DatabaseManager = require('./DatabaseManager')
 
-const errors = require('../structures/errors')
+const RewardType = {
+    DAILY: 0,
+    WORK: 1,
+    WEEKLY: 2
+}
 
 const parse = ms => ({
     days: Math.floor(ms / 86400000),
@@ -33,33 +38,33 @@ class RewardManager {
       * @param {number} options.weeklyCooldown
       * Cooldown for Weekly Command (in ms). Default: 7 days (60000 * 60 * 24 * 7 ms)
       * @param {number} options.weeklyAmount Amount of money for Weekly Command. Default: 1000.
-      * @param {Number | Array} options.workAmount Amount of money for Work Command. Default: [10, 50].
+      * @param {number | number[]} options.workAmount Amount of money for Work Command. Default: [10, 50].
      */
     constructor(options) {
 
         /**
          * Economy configuration.
-         * @type {EconomyOptions}
+         * @type {EconomyConfiguration}
          * @private
          */
         this.options = options
 
         /**
-        * Database manager methods object.
+        * Database manager methods class.
         * @type {DatabaseManager}
         * @private
         */
         this.database = new DatabaseManager(options)
 
         /**
-         * Cooldown manager methods object.
+         * Cooldown manager methods class.
          * @type {CooldownManager}
          * @private
          */
         this.cooldowns = new CooldownManager(options)
 
         /**
-         * Balance manager methods object.
+         * Balance manager methods class.
          * @type {BalanceManager}
          * @private
          */
@@ -67,10 +72,54 @@ class RewardManager {
     }
 
     /**
+     * Adds a reward on user's balance.
+     * @param {RewardType} reward Reward to give.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @param {string} [reason] The reason why the money was added.
+     * @returns {RewardData} Daily reward object.
+    */
+    receive(reward, memberID, guildID, reason) {
+        const rewardTypes = ['daily', 'work', 'weekly']
+
+        if (typeof memberID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
+        }
+
+        if (typeof guildID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
+        }
+
+        if (isNaN(reward) || !rewardTypes[reward]) {
+            throw new EconomyError(
+                errors.invalidType('reward', 'key of RewardType enum', typeof reward),
+                'INVALID_TYPE'
+            )
+        }
+
+        switch (reward) {
+            case RewardType.DAILY:
+                return this.getDaily(memberID, guildID, reason)
+
+            case RewardType.WORK:
+                return this.getWork(memberID, guildID, reason)
+
+            case RewardType.WEEKLY:
+                return this.getWeekly(memberID, guildID, reason)
+
+            default:
+                throw new EconomyError(
+                    errors.invalidType('reward', 'key of RewardType enum', typeof reward),
+                    'INVALID_TYPE'
+                )
+        }
+    }
+
+    /**
      * Adds a daily reward on user's balance.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
-     * @param {string} reason The reason why the money was added. Default: 'claimed the daily reward'.
+     * @param {string} [reason] The reason why the money was added. Default: 'claimed the daily reward'.
      * @returns {RewardData} Daily reward object.
     */
     getDaily(memberID, guildID, reason = 'claimed the daily reward') {
@@ -133,7 +182,7 @@ class RewardManager {
      * Adds a work reward on user's balance.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
-     * @param {string} reason The reason why the money was added. Default: 'claimed the work reward'.
+     * @param {string} [reason] The reason why the money was added. Default: 'claimed the work reward'.
      * @returns {RewardData} Work reward object.
      */
     getWork(memberID, guildID, reason = 'claimed the work reward') {
@@ -154,7 +203,7 @@ class RewardManager {
         let reward
 
         if (Array.isArray(defaultWorkReward)) {
-            const [min, max] = defaultDailyReward
+            const [min, max] = defaultWorkReward
 
             if (defaultWorkReward.length == 1) reward = min
             else reward = Math.floor(Math.random() * (Number(min) - Number(max)) + Number(max))
@@ -195,7 +244,7 @@ class RewardManager {
      * Adds a weekly reward on user's balance.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
-     * @param {string} reason The reason why the money was added. Default: 'claimed the weekly reward'.
+     * @param {string} [reason] The reason why the money was added. Default: 'claimed the weekly reward'.
      * @returns {RewardData} Weekly reward object.
      */
     getWeekly(memberID, guildID, reason = 'claimed the weekly reward') {
@@ -216,7 +265,7 @@ class RewardManager {
         let reward
 
         if (Array.isArray(defaultWeeklyReward)) {
-            const [min, max] = defaultDailyReward
+            const [min, max] = defaultWeeklyReward
 
             if (defaultWeeklyReward.length == 1) reward = min
             else reward = Math.floor(Math.random() * (Number(min) - Number(max)) + Number(max))
