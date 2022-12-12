@@ -275,7 +275,7 @@ class ShopItem extends Emitter {
             })
         }
 
-        this.database.set(`${this.guildID}.${memberID}.inventory`, newInventory)
+        this.database.push(`${this.guildID}.${memberID}.inventory`, newInventory)
 
         if (savePurchasesHistory) {
             const history = this.database.fetch(`${this.guildID}.${memberID}.history`) || []
