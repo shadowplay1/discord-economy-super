@@ -1,6 +1,7 @@
 import ItemData from '../interfaces/ItemData'
 
 import CustomItemData from '../interfaces/CustomItemData'
+import ShopOperationInfo from '../interfaces/ShopOperationInfo'
 import { ItemProperties, ItemPropertyType } from '../interfaces/ItemProperties'
 
 import DatabaseManager from '../managers/DatabaseManager'
@@ -63,7 +64,7 @@ declare class ShopItem<T extends object = any> {
     public description: string
 
     /**
-     * ID of Discord Role that will be given to Wuser on item use.
+     * ID of Discord Role that will be given to the user on item use.
      * @type {string}
      */
     public role: string
@@ -85,7 +86,6 @@ declare class ShopItem<T extends object = any> {
      * @type {object}
      */
     public custom: CustomItemData<T>
-
 
     /**
     * Checks for is the specified user has enough money to buy the item.
@@ -118,6 +118,78 @@ declare class ShopItem<T extends object = any> {
     >(itemProperty: T, value: T extends 'custom' ? CustomItemData<K> : K): Promise<boolean>
 
     /**
+     * Buys the item from the shop.
+     * @param {string} memberID Member ID.
+     * @param {number} [quantity=1] Quantity of items to buy. Default: 1.
+     * 
+     * @param {string | number} [currency=null] 
+     * The currency to subtract the money from. 
+     * Can be omitted by specifying 'null' or ignoring this parameter.
+     * Requires the `subtractOnBuy` option to be enabled. Default: null.
+     * 
+     * @param {string} [reason='received the item from the shop'] 
+     * The reason why the money was subtracted. Default: 'received the item from the shop'.
+     * 
+     * @returns {Promise<ShopOperationInfo>} Operation information object.
+     */
+    public buy<
+        T extends object = any
+    >(
+        memberID: string,
+        quantity?: number,
+        currency?: string | number,
+        reason?: string
+    ): Promise<ShopOperationInfo<T>>
+
+    /**
+     * Buys the item from the shop.
+     * @param {string} memberID Member ID.
+     * @param {number} [quantity=1] Quantity of items to buy. Default: 1.
+     * 
+     * @param {string} [currency=null] 
+     * The currency to subtract the money from. 
+     * Can be omitted by specifying 'null' or ignoring this parameter.
+     * Requires the `subtractOnBuy` option to be enabled. Default: null.
+     * 
+     * @param {string} [reason='received the item from the shop'] 
+     * The reason why the money was subtracted. Default: 'received the item from the shop'.
+     * 
+     * @returns {Promise<ShopOperationInfo>} Operation information object.
+     */
+    public buy<
+        T extends object = any
+    >(
+        memberID: string,
+        quantity?: number,
+        currency?: string,
+        reason?: string
+    ): Promise<ShopOperationInfo<T>>
+
+    /**
+     * Buys the item from the shop.
+     * @param {string} memberID Member ID.
+     * @param {number} [quantity=1] Quantity of items to buy. Default: 1.
+     * 
+     * @param {number} [currency=null] 
+     * The currency to subtract the money from. 
+     * Can be omitted by specifying 'null' or ignoring this parameter.
+     * Requires the `subtractOnBuy` option to be enabled. Default: null.
+     * 
+     * @param {string} [reason='received the item from the shop'] 
+     * The reason why the money was subtracted. Default: 'received the item from the shop'.
+     * 
+     * @returns {Promise<ShopOperationInfo>} Operation information object.
+     */
+    public buy<
+        T extends object = any
+    >(
+        memberID: string,
+        quantity?: number,
+        currency?: number,
+        reason?: string
+    ): Promise<ShopOperationInfo<T>>
+
+    /**
      * Sets a custom object for the item.
      * @param {object} custom Custom item data object.
      * @returns {Promise<boolean>} If set successfully: true, else: false.
@@ -137,6 +209,18 @@ declare class ShopItem<T extends object = any> {
      * @returns {Promise<boolean>} If removed: true, else: false.
      */
     public remove(): Promise<boolean>
+
+    /**
+     * Saves the shop item object in database.
+     * @returns {Promise<ShopItem>} Shop item instance.
+     */
+    public save(): Promise<ShopItem>
+
+    /**
+     * Converts the shop item to string.
+     * @returns {string} String representation of shop item.
+     */
+    public toString(): string
 }
 
 export = ShopItem

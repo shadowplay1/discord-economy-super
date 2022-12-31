@@ -8,6 +8,7 @@ import EconomyConfiguration from '../interfaces/EconomyConfiguration'
 
 import ShopOperationInfo from '../interfaces/ShopOperationInfo'
 import SellingOperationInfo from '../interfaces/SellingOperationInfo'
+import StackedInventoryItemObject from '../interfaces/StackedInventoryItemObject'
 
 
 /**
@@ -31,7 +32,7 @@ declare class InventoryManager extends Emitter {
      * Uses the item from user's inventory.
      * 
      * This method is an alias for the `InventoryManager.useItem()` method.
-     * @param {number | string} itemID Item ID or name.
+     * @param {string | number} itemID Item ID or name.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
      * @param {Client} [client] The Discord Client. [Optional]
@@ -83,6 +84,17 @@ declare class InventoryManager extends Emitter {
         guildID: string,
         quantity?: number
     ): Promise<ShopOperationInfo<T>>
+
+    /**
+     * Returns the stacked item in user inventory: it shows the quantity and total price of the item.
+     * @param {string | number} itemID Item ID or name.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.s
+     * @returns {Promise<StackedInventoryItemObject<T>>} Stacked item object.
+     */
+    public stack<
+        T extends object = any
+    >(itemID: string | number, memberID: string, guildID: string): Promise<StackedInventoryItemObject<T>>
 
     /**
      * Shows all items in user's inventory.

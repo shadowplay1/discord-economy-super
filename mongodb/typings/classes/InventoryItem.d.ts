@@ -6,6 +6,7 @@ import CacheManager from '../managers/CacheManager'
 
 import CustomItemData from '../interfaces/CustomItemData'
 import SellingOperationInfo from '../interfaces/SellingOperationInfo'
+import StackedInventoryItemObject from '../interfaces/StackedInventoryItemObject'
 
 
 /**
@@ -16,7 +17,7 @@ declare class InventoryItem<T extends object = any> {
     /**
      * Inventory item class.
      * @param {string} guildID Guild ID.
-	 * @param {string} memberID Member ID.
+     * @param {string} memberID Member ID.
      * @param {EconomyConfiguration} ecoOptions Economy configuration.
      * @param {InventoryData} itemObject User inventory object.
      * @param {DatabaseManager} database Database manager.
@@ -24,7 +25,7 @@ declare class InventoryItem<T extends object = any> {
      */
     public constructor(
         guildID: string,
-		memberID: string,
+        memberID: string,
         ecoOptions: EconomyConfiguration,
         itemObject: InventoryData<T>,
         database: DatabaseManager,
@@ -69,7 +70,7 @@ declare class InventoryItem<T extends object = any> {
     public description: string
 
     /**
-     * ID of Discord Role that will be given to Wuser on item use.
+     * ID of Discord Role that will be given to the user on item use.
      * @type {string}
      */
     public role: string
@@ -116,6 +117,12 @@ declare class InventoryItem<T extends object = any> {
     public use(client?: any): Promise<string>
 
     /**
+     * Returns the stacked item in user inventory: it shows the quantity and total price of the item.
+     * @returns {Promise<StackedInventoryItemObject<T>>} Stacked item object.
+     */
+    public stack(): Promise<StackedInventoryItemObject<T>>
+
+    /**
      * Removes the item from user's inventory
      * and adds its price to the user's balance.
      * This is the same as selling something.
@@ -124,6 +131,18 @@ declare class InventoryItem<T extends object = any> {
      * @returns {Promise<SellingOperationInfo>} Selling operation info.
      */
     public sell<T extends object = any>(quantity?: number): Promise<SellingOperationInfo<T>>
+
+    /**
+     * Saves the inventory item object in database.
+     * @returns {Promise<InventoryItem>} Inventory item instance.
+     */
+    public save(): Promise<InventoryItem>
+
+    /**
+     * Converts the inventory item to string.
+     * @returns {string} String representation of inventory item.
+     */
+    public toString(): string
 }
 
 export = InventoryItem

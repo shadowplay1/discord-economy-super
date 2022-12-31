@@ -9,6 +9,8 @@ import LeaderboardData from '../interfaces/LeaderboardData'
 import TransferingOptions from '../interfaces/TransferingOptions'
 import TransferingResult from '../interfaces/TransferingResult'
 
+import CurrencyFactory from '../interfaces/CurrencyFactory'
+
 
 /**
 * Balance manager methods class.
@@ -16,6 +18,33 @@ import TransferingResult from '../interfaces/TransferingResult'
 */
 declare class BalanceManager extends Emitter {
     public constructor(options: EconomyConfiguration, database: DatabaseManager, cache: CacheManager)
+
+    /**
+     * Returns a factory with `get`, `set`, `add` and `subtract` methods to work with custom currencies.
+     * @param {string} currencyID Currency ID, its name or its symbol.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @returns {CurrencyFactory} Factory object.
+     */
+    public currency(currencyID: string, memberID: string, guildID: string): CurrencyFactory
+
+    /**
+     * Returns a factory with `get`, `set`, `add` and `subtract` methods to work with custom currencies.
+     * @param {number} currencyID Currency ID, its name or its symbol.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @returns {CurrencyFactory} Factory object.
+     */
+    public currency(currencyID: number, memberID: string, guildID: string): CurrencyFactory
+
+    /**
+     * Returns a factory with `get`, `set`, `add` and `subtract` methods to work with custom currencies.
+     * @param {string | number} currencyID Currency ID, its name or its symbol.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @returns {CurrencyFactory} Factory object.
+     */
+    public currency(currencyID: string | number, memberID: string, guildID: string): CurrencyFactory
 
     /**
     * Fetches the user's balance.
@@ -44,7 +73,7 @@ declare class BalanceManager extends Emitter {
     * @returns {Promise<number>} Money amount.
     */
     public set(amount: number, memberID: string, guildID: string, reason?: string): Promise<number>
-    
+
     /**
     * Adds the money amount on user's balance.
     * @param {number} amount Amount of money that you want to add.

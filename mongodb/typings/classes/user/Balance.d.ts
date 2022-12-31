@@ -3,6 +3,8 @@ import Emitter from '../util/Emitter'
 import EconomyConfiguration from '../../interfaces/EconomyConfiguration'
 import DatabaseManager from '../../managers/DatabaseManager'
 
+import CurrencyFactory from '../../interfaces/CurrencyFactory'
+
 import TransferingOptions from '../../interfaces/TransferingOptions'
 import TransferingResult from '../../interfaces/TransferingResult'
 
@@ -16,6 +18,27 @@ declare class Balance extends Emitter {
      * @param {EconomyConfiguration} ecoOptions Economy configuration.
      */
     public constructor(memberID: string, guildID: string, ecoOptions: EconomyConfiguration, database: DatabaseManager)
+
+    /**
+     * Returns a factory with `get`, `set`, `add` and `subtract` methods to work with custom currencies.
+     * @param {string} currencyID Currency ID, its name or its symbol.
+     * @returns {CurrencyFactory} Factory object.
+     */
+    public currency(currencyID: string): CurrencyFactory
+
+    /**
+     * Returns a factory with `get`, `set`, `add` and `subtract` methods to work with custom currencies.
+     * @param {number} currencyID Currency ID, its name or its symbol.
+     * @returns {CurrencyFactory} Factory object.
+     */
+    public currency(currencyID: number): CurrencyFactory
+
+    /**
+     * Returns a factory with `get`, `set`, `add` and `subtract` methods to work with custom currencies.
+     * @param {string | number} currencyID Currency ID, its name or its symbol.
+     * @returns {CurrencyFactory} Factory object.
+     */
+    public currency(currencyID: string | number): CurrencyFactory
 
     /**
      * Sets the money amount on user's balance.

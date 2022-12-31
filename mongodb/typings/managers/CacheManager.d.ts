@@ -11,13 +11,14 @@ import {
     CachedCooldowns,
     CachedBalance,
     CachedBank,
+	CachedCurrency,
     CachedShop,
     CachedHistory,
     CachedInventory
 } from '../cached/CachedItems'
 
 
-type CachedItemNames = 'guilds' | 'users' | 'cooldowns' | 'balance' | 'bank' | 'shop' | 'inventory' | 'history'
+type CachedItemNames = 'guilds' | 'users' | 'cooldowns' | 'balance' | 'bank' | 'currencies' | 'shop' | 'inventory' | 'history'
 type ArrayElements<T extends readonly string[]> = T[number]
 
 type NonRequirable<CacheItemNamesArray extends readonly CachedItemNames[]> =
@@ -28,7 +29,7 @@ type MemberIDRequired<CacheItemNamesArray extends readonly CachedItemNames[]> =
         true,
         Extract<
             ArrayElements<CacheItemNamesArray>,
-            'users' | 'cooldowns' | 'balance' | 'bank' | 'inventory' | 'history'
+            'users' | 'cooldowns' | 'balance' | 'bank' | 'currencies' | 'inventory' | 'history'
         > extends never
         ? false
         : true
@@ -36,7 +37,7 @@ type MemberIDRequired<CacheItemNamesArray extends readonly CachedItemNames[]> =
 
 
 declare class CacheManager {
-    constructor(options: EconomyConfiguration, database: DatabaseManager)
+    public constructor(options: EconomyConfiguration, database: DatabaseManager)
 
     /**
      * Cached guilds.
@@ -67,6 +68,12 @@ declare class CacheManager {
      * @type {CachedBank}
      */
     public bank: CachedBank
+
+	/**
+	 * Cached currencies.
+	 * @type {CachedCurrency}
+	 */
+	public currencies: CachedCurrency
 
     /**
      * Cached shop.

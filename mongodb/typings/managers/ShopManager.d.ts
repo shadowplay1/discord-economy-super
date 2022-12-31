@@ -7,6 +7,7 @@ import ShopItem from '../classes/ShopItem'
 import AddItemOptions from '../interfaces/AddItemOptions'
 import ShopOperationInfo from '../interfaces/ShopOperationInfo'
 
+
 import { ItemProperties, ItemPropertyType } from '../interfaces/ItemProperties'
 import CustomItemData from '../interfaces/CustomItemData'
 
@@ -53,22 +54,25 @@ declare class ShopManager extends Emitter {
     * 
     * - T: Item property string.
     * - K: Type for specified property in T.
+    * 
     * @param {string} itemID Item ID or name.
     * @param {string} guildID Guild ID.
     * 
-    * @param {"description" | "price" | "name" | "message" | "maxAmount" | "role" | 'custom'} itemProperty
+    * @param {T} itemProperty
     * This argument means what thing in item you want to edit (item property). 
     * Available item properties are 'description', 'price', 'name', 'message', 'amount', 'role', 'custom'.
     * 
-    * @param {T} value Any value to set.
+    * @param {K} value Any value to set.
     * @returns {Promise<boolean>} If edited successfully: true, else: false.
     */
     public edit<
         T extends keyof Omit<ItemProperties, 'id' | 'date'>,
         K extends ItemPropertyType<T>
     >(
-        itemID: string | number, guildID: string,
-        itemProperty: T, value: T extends 'custom' ? CustomItemData<K> : K
+        itemID: string | number,
+        guildID: string,
+        itemProperty: T,
+        value: T extends 'custom' ? CustomItemData<K> : K
     ): Promise<boolean>
 
     /**
@@ -84,11 +88,11 @@ declare class ShopManager extends Emitter {
     * @param {string} itemID Item ID or name.
     * @param {string} guildID Guild ID.
     * 
-    * @param {"description" | "price" | "name" | "message" | "maxAmount" | "role" | 'custom'} itemProperty
+    * @param {T} itemProperty
     * This argument means what thing in item you want to edit (item property). 
     * Available item properties are 'description', 'price', 'name', 'message', 'amount', 'role', 'custom'.
     * 
-    * @param {T} value Any value to set.
+    * @param {K} value Any value to set.
     * @returns {Promise<boolean>} If edited successfully: true, else: false.
     */
     public editItem<
@@ -107,7 +111,7 @@ declare class ShopManager extends Emitter {
      * @returns {Promise<boolean>} If set successfully: true, else: false.
      */
     public setCustom<
-        T extends object = never
+        T extends object = any
     >(itemID: string | number, guildID: string, custom: CustomItemData<T>): Promise<boolean>
 
     /**
@@ -134,10 +138,15 @@ declare class ShopManager extends Emitter {
 
     /**
      * Buys the item from the shop.
-     * @param {number | string} itemID Item ID or name.
+     * @param {string | number} itemID Item ID or name.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
      * @param {number} [quantity=1] Quantity of items to buy. Default: 1.
+     * 
+     * @param {string | number} [currency=null] 
+     * The currency to subtract the money from. 
+     * Can be omitted by specifying 'null' or ignoring this parameter.
+     * Requires the `subtractOnBuy` option to be enabled. Default: null.
      * 
      * @param {string} [reason='received the item from the shop'] 
      * The reason why the money was subtracted. Default: 'received the item from the shop'.
@@ -151,6 +160,119 @@ declare class ShopManager extends Emitter {
         memberID: string,
         guildID: string,
         quantity?: number,
+        currency?: string | number,
+        reason?: string
+    ): Promise<ShopOperationInfo<T>>
+
+    /**
+     * Buys the item from the shop.
+     * @param {string} itemID Item ID or name.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @param {number} [quantity=1] Quantity of items to buy. Default: 1.
+     * 
+     * @param {string} [currency=null] 
+     * The currency to subtract the money from. 
+     * Can be omitted by specifying 'null' or ignoring this parameter.
+     * Requires the `subtractOnBuy` option to be enabled. Default: null.
+     * 
+     * @param {string} [reason='received the item from the shop'] 
+     * The reason why the money was subtracted. Default: 'received the item from the shop'.
+     * 
+     * @returns {Promise<ShopOperationInfo>} Operation information object.
+     */
+    public buy<
+        T extends object = any
+    >(
+        itemID: string,
+        memberID: string,
+        guildID: string,
+        quantity?: number,
+        currency?: string,
+        reason?: string
+    ): Promise<ShopOperationInfo<T>>
+
+    /**
+     * Buys the item from the shop.
+     * @param {number} itemID Item ID or name.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @param {number} [quantity=1] Quantity of items to buy. Default: 1.
+     * 
+     * @param {number} [currency=null] 
+     * The currency to subtract the money from. 
+     * Can be omitted by specifying 'null' or ignoring this parameter.
+     * Requires the `subtractOnBuy` option to be enabled. Default: null.
+     * 
+     * @param {string} [reason='received the item from the shop'] 
+     * The reason why the money was subtracted. Default: 'received the item from the shop'.
+     * 
+     * @returns {Promise<ShopOperationInfo>} Operation information object.
+     */
+    public buy<
+        T extends object = any
+    >(
+        itemID: number,
+        memberID: string,
+        guildID: string,
+        quantity?: number,
+        currency?: number,
+        reason?: string
+    ): Promise<ShopOperationInfo<T>>
+
+    /**
+     * Buys the item from the shop.
+     * @param {string} itemID Item ID or name.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @param {number} [quantity=1] Quantity of items to buy. Default: 1.
+     * 
+     * @param {number} [currency=null] 
+     * The currency to subtract the money from. 
+     * Can be omitted by specifying 'null' or ignoring this parameter.
+     * Requires the `subtractOnBuy` option to be enabled. Default: null.
+     * 
+     * @param {string} [reason='received the item from the shop'] 
+     * The reason why the money was subtracted. Default: 'received the item from the shop'.
+     * 
+     * @returns {Promise<ShopOperationInfo>} Operation information object.
+     */
+    public buy<
+        T extends object = any
+    >(
+        itemID: string,
+        memberID: string,
+        guildID: string,
+        quantity?: number,
+        currency?: number,
+        reason?: string
+    ): Promise<ShopOperationInfo<T>>
+
+    /**
+     * Buys the item from the shop.
+     * @param {number} itemID Item ID or name.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @param {number} [quantity=1] Quantity of items to buy. Default: 1.
+     * 
+     * @param {string} [currency=null] 
+     * The currency to subtract the money from. 
+     * Can be omitted by specifying 'null' or ignoring this parameter.
+     * Requires the `subtractOnBuy` option to be enabled. Default: null.
+     * 
+     * @param {string} [reason='received the item from the shop'] 
+     * The reason why the money was subtracted. Default: 'received the item from the shop'.
+     * 
+     * @returns {Promise<ShopOperationInfo>} Operation information object.
+     */
+    public buy<
+        T extends object = any
+    >(
+        itemID: number,
+        memberID: string,
+        guildID: string,
+        quantity?: number,
+        currency?: string,
         reason?: string
     ): Promise<ShopOperationInfo<T>>
 
@@ -158,7 +280,7 @@ declare class ShopManager extends Emitter {
      * Buys the item from the shop.
      * 
      * This method is an alias for the `ShopManager.buy()` method.
-     * @param {number | string} itemID Item ID or name.
+     * @param {string | number} itemID Item ID or name.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
      * @param {number} [quantity=1] Quantity of items to buy. Default: 1.
@@ -175,6 +297,126 @@ declare class ShopManager extends Emitter {
         memberID: string,
         guildID: string,
         quantity?: number,
+        reason?: string
+    ): Promise<ShopOperationInfo<T>>
+
+    /**
+     * Buys the item from the shop.
+     * 
+     * This method is an alias for the `ShopManager.buy()` method.
+     * @param {string} itemID Item ID or name.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @param {number} [quantity=1] Quantity of items to buy. Default: 1.
+     * 
+     * @param {string} [currency=null] 
+     * The currency to subtract the money from. 
+     * Can be omitted by specifying 'null' or ignoring this parameter.
+     * Requires the `subtractOnBuy` option to be enabled. Default: null.
+     * 
+     * @param {string} [reason='received the item from the shop'] 
+     * The reason why the money was subtracted. Default: 'received the item from the shop'.
+     * 
+     * @returns {Promise<ShopOperationInfo>} Operation information object.
+     */
+    public buyItem<
+        T extends object = any
+    >(
+        itemID: string,
+        memberID: string,
+        guildID: string,
+        quantity?: number,
+        currency?: string,
+        reason?: string
+    ): Promise<ShopOperationInfo<T>>
+
+    /**
+     * Buys the item from the shop.
+     * 
+     * This method is an alias for the `ShopManager.buy()` method.
+     * @param {number} itemID Item ID or name.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @param {number} [quantity=1] Quantity of items to buy. Default: 1.
+     * 
+     * @param {number} [currency=null] 
+     * The currency to subtract the money from. 
+     * Can be omitted by specifying 'null' or ignoring this parameter.
+     * Requires the `subtractOnBuy` option to be enabled. Default: null.
+     * 
+     * @param {string} [reason='received the item from the shop'] 
+     * The reason why the money was subtracted. Default: 'received the item from the shop'.
+     * 
+     * @returns {Promise<ShopOperationInfo>} Operation information object.
+     */
+    public buyItem<
+        T extends object = any
+    >(
+        itemID: number,
+        memberID: string,
+        guildID: string,
+        quantity?: number,
+        currency?: number,
+        reason?: string
+    ): Promise<ShopOperationInfo<T>>
+
+    /**
+     * Buys the item from the shop.
+     * 
+     * This method is an alias for the `ShopManager.buy()` method.
+     * @param {string} itemID Item ID or name.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @param {number} [quantity=1] Quantity of items to buy. Default: 1.
+     * 
+     * @param {number} [currency=null] 
+     * The currency to subtract the money from. 
+     * Can be omitted by specifying 'null' or ignoring this parameter.
+     * Requires the `subtractOnBuy` option to be enabled. Default: null.
+     * 
+     * @param {string} [reason='received the item from the shop'] 
+     * The reason why the money was subtracted. Default: 'received the item from the shop'.
+     * 
+     * @returns {Promise<ShopOperationInfo>} Operation information object.
+     */
+    public buyItem<
+        T extends object = any
+    >(
+        itemID: string,
+        memberID: string,
+        guildID: string,
+        quantity?: number,
+        currency?: number,
+        reason?: string
+    ): Promise<ShopOperationInfo<T>>
+
+    /**
+     * Buys the item from the shop.
+     * 
+     * This method is an alias for the `ShopManager.buy()` method.
+     * @param {number} itemID Item ID or name.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @param {number} [quantity=1] Quantity of items to buy. Default: 1.
+     * 
+     * @param {string} [currency=null] 
+     * The currency to subtract the money from. 
+     * Can be omitted by specifying 'null' or ignoring this parameter.
+     * Requires the `subtractOnBuy` option to be enabled. Default: null.
+     * 
+     * @param {string} [reason='received the item from the shop'] 
+     * The reason why the money was subtracted. Default: 'received the item from the shop'.
+     * 
+     * @returns {Promise<ShopOperationInfo>} Operation information object.
+     */
+    public buyItem<
+        T extends object = any
+    >(
+        itemID: number,
+        memberID: string,
+        guildID: string,
+        quantity?: number,
+        currency?: string,
         reason?: string
     ): Promise<ShopOperationInfo<T>>
 

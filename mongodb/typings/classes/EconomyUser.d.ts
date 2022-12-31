@@ -143,6 +143,12 @@ declare class EconomyUser {
 	 * @returns {Promise<boolean>} If created successfully: true, else: false.
 	 */
 	public create(): Promise<boolean>
+
+    /**
+     * Converts the economy user to string.
+     * @returns {string} String representation of economy user.
+     */
+    public toString(): string
 }
 
 export = EconomyUser

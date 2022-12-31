@@ -36,7 +36,7 @@ declare interface ItemData<T extends object = any> {
     maxAmount: number
 
     /**
-     * Role ID from your Discord server.
+     * Role **ID** from your Discord server.
      */
     role: string
 

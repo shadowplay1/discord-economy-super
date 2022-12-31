@@ -83,7 +83,7 @@ declare class HistoryItem<T extends object = any> {
     public date: string
 
     /**
-     * ID of Discord Role that will be given to Wuser on item use.
+     * ID of Discord Role that will be given to the user on item use.
      * @type {string}
      */
     public role: string
@@ -106,6 +106,18 @@ declare class HistoryItem<T extends object = any> {
      * @returns {Promise<boolean>} If removed: true, else: false.
      */
     public remove(): Promise<boolean>
+
+    /**
+     * Saves the history item object in database.
+     * @returns {Promise<HistoryItem>} History item instance.
+     */
+    public save(): Promise<HistoryItem>
+
+    /**
+     * Converts the history item to string.
+     * @returns {string} String representation of history item.
+     */
+    public toString(): string
 }
 
 export = HistoryItem

@@ -89,7 +89,7 @@ declare class CachedItem<
 
     /**
     * Removes a key from a cache in a cached item.
-    * @param {string} key Key to delete value from cache.
+    * @param {DataIdentifier<MemberIDRequired>} id Key to delete value from cache.
     * @returns {void}
     */
     public remove(id: DataIdentifier<MemberIDRequired>): void

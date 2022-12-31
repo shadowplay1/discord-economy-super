@@ -15,6 +15,7 @@ import Leaderboards from './guild/Leaderboards'
 import Settings from './guild/Settings'
 
 import EconomyUser from './EconomyUser'
+import Currency from './Currency'
 
 
 declare class EconomyGuild {
@@ -77,6 +78,12 @@ declare class EconomyGuild {
     public shop: Shop
 
     /**
+     * Guild currencies array.
+     * @type {Currency[]}
+     */
+    public currencies: Currency[]
+
+    /**
      * Guild Leaderboards.
      */
     public leaderboards: Leaderboards
@@ -99,11 +106,17 @@ declare class EconomyGuild {
      */
     public reset(): Promise<boolean>
 
-	/**
-	 * Creates an economy guild object in database.
-	 * @returns {Promise<boolean>} If created successfully: true; else: false.
-	 */
-	public create(): Promise<boolean>
+    /**
+     * Creates an economy guild object in database.
+     * @returns {Promise<boolean>} If created successfully: true; else: false.
+     */
+    public create(): Promise<boolean>
+
+    /**
+     * Converts the economy guild to string.
+     * @returns {string} String representation of economy guild.
+     */
+    public toString(): string
 }
 
 export = EconomyGuild

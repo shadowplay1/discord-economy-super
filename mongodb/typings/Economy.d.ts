@@ -13,6 +13,8 @@ import DatabaseManager from './managers/DatabaseManager'
 import ShopManager from './managers/ShopManager'
 import InventoryManager from './managers/InventoryManager'
 
+import CurrencyManager from './managers/CurrencyManager'
+
 import RewardManager from './managers/RewardManager'
 import CooldownManager from './managers/CooldownManager'
 import HistoryManager from './managers/HistoryManager'
@@ -106,13 +108,19 @@ declare class Economy<Ready extends boolean = boolean> extends Emitter {
     public readonly history: If<Ready, HistoryManager>
 
     /**
-    * Balance.
+    * Balance manager.
     * @type {?BalanceManager}
     */
     public readonly balance: If<Ready, BalanceManager>
 
     /**
-    * Bank balance.
+    * Currency manager.
+    * @type {?CurrencyManager}
+    */
+    public readonly currencies: If<Ready, CurrencyManager>
+
+    /**
+    * Bank balance manager.
     * @type {?BankManager}
     */
     public readonly bank: If<Ready, BankManager>
@@ -130,7 +138,7 @@ declare class Economy<Ready extends boolean = boolean> extends Emitter {
     public readonly shop: If<Ready, ShopManager>
 
     /**
-    * Balance.
+    * Reward manager.
     * @type {?RewardManager}
     */
     public readonly rewards: If<Ready, RewardManager>
@@ -154,7 +162,7 @@ declare class Economy<Ready extends boolean = boolean> extends Emitter {
     public readonly guilds: If<Ready, GuildManager>
 
     /**
-    * Economy guild settings.
+    * Settings manager.
     * @type {?SettingsManager}
     */
     public readonly settings: If<Ready, SettingsManager>
@@ -170,6 +178,13 @@ declare class Economy<Ready extends boolean = boolean> extends Emitter {
      * @returns {Promise<boolean>} If started successfully: true.
     */
     public init(): Promise<boolean>
+
+    /**
+     * Connects the module to MongoDB database.
+     * @returns {Promise<void>}
+     * @private
+     */
+    private _connect(): Promise<void>
 
     /**
      * Initializates the module.
