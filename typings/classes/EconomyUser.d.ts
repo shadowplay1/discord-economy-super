@@ -144,6 +144,12 @@ declare class EconomyUser {
 	 * @returns {boolean} If created successfully: true, else: false.
 	 */
 	public create(): boolean
+
+    /**
+     * Converts the economy user to string.
+     * @returns {string} String representation of economy user.
+     */
+    public toString(): string
 }
 
 export = EconomyUser

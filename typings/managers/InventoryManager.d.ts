@@ -1,11 +1,14 @@
 import DatabaseManager from './DatabaseManager'
+import CacheManager from './CacheManager'
 
 import Emitter from '../classes/util/Emitter'
+import InventoryItem from '../classes/InventoryItem'
 
 import EconomyConfiguration from '../interfaces/EconomyConfiguration'
 
-import InventoryItem from '../classes/InventoryItem'
 import ShopOperationInfo from '../interfaces/ShopOperationInfo'
+import SellingOperationInfo from '../interfaces/SellingOperationInfo'
+import StackedInventoryItemObject from '../interfaces/StackedInventoryItemObject'
 
 
 /**
@@ -13,7 +16,7 @@ import ShopOperationInfo from '../interfaces/ShopOperationInfo'
 * @extends {Emitter}
 */
 declare class InventoryManager extends Emitter {
-    public constructor(options: EconomyConfiguration, database: DatabaseManager)
+    public constructor(options: EconomyConfiguration, database: DatabaseManager, cache: CacheManager)
 
     /**
      * Uses the item from the user's inventory.
@@ -21,38 +24,38 @@ declare class InventoryManager extends Emitter {
      * @param {string} memberID Member ID
      * @param {string} guildID Guild ID
      * @param {any} client The Discord Client [Optional]
-     * @returns {string} Item message 
+     * @returns {Promise<string>} Item message 
      */
-    public useItem(itemID: string | number, memberID: string, guildID: string, client?: any): string
+    public useItem(itemID: string | number, memberID: string, guildID: string, client?: any): Promise<string>
 
     /**
      * Uses the item from user's inventory.
      * 
      * This method is an alias for the `InventoryManager.useItem()` method.
-     * @param {number | string} itemID Item ID or name.
+     * @param {string | number} itemID Item ID or name.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
      * @param {Client} [client] The Discord Client. [Optional]
-     * @returns {string} Item message or null if item not found.
+     * @returns {Promise<string>} Item message or null if item not found.
      */
-    public use(itemID: string | number, memberID: string, guildID: string, client?: any): string
+    public use(itemID: string | number, memberID: string, guildID: string, client?: any): Promise<string>
 
     /**
      * Clears the user's inventory.
      * @param {string} memberID Member ID
      * @param {string} guildID Guild ID
-     * @returns {string} If cleared: true, else: false
+     * @returns {Promise<boolean>} If cleared: true, else: false
      */
-    public clear(memberID: string, guildID: string): string
+    public clear(memberID: string, guildID: string): Promise<boolean>
 
     /**
      * Gets the item in the inventory.
      * @param {string} itemID Item ID or name.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
-     * @returns {InventoryItem} If item not found: null; else: item info object.
+     * @returns {Promise<InventoryItem>} If item not found: null; else: item info object.
      */
-    public getItem<T extends object = any>(itemID: string | number, memberID: string, guildID: string): InventoryItem<T>
+    public getItem<T extends object = any>(itemID: string | number, memberID: string, guildID: string): Promise<InventoryItem<T>>
 
     /**
      * Gets the item in the inventory.
@@ -61,9 +64,9 @@ declare class InventoryManager extends Emitter {
      * @param {string} itemID Item ID or name.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
-     * @returns {InventoryItem} If item not found: null; else: item info object.
+     * @returns {Promise<InventoryItem>} If item not found: null; else: item info object.
      */
-    public findItem<T extends object = any>(itemID: string | number, memberID: string, guildID: string): InventoryItem<T>
+    public findItem<T extends object = any>(itemID: string | number, memberID: string, guildID: string): Promise<InventoryItem<T>>
 
     /**
      * Adds the item from the shop to user's inventory.
@@ -71,7 +74,7 @@ declare class InventoryManager extends Emitter {
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
      * @param {number} [quantity=1] Quantity of items to add. Default: 1.
-     * @returns {ShopOperationInfo} Operation info object.
+     * @returns {Promise<ShopOperationInfo>} Operation info object.
      */
     public addItem<
         T extends object = any
@@ -80,7 +83,18 @@ declare class InventoryManager extends Emitter {
         memberID: string,
         guildID: string,
         quantity?: number
-    ): ShopOperationInfo<T>
+    ): Promise<ShopOperationInfo<T>>
+
+    /**
+     * Returns the stacked item in user inventory: it shows the quantity and total price of the item.
+     * @param {string | number} itemID Item ID or name.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.s
+     * @returns {Promise<StackedInventoryItemObject<T>>} Stacked item object.
+     */
+    public stack<
+        T extends object = any
+    >(itemID: string | number, memberID: string, guildID: string): Promise<StackedInventoryItemObject<T>>
 
     /**
      * Shows all items in user's inventory.
@@ -88,7 +102,7 @@ declare class InventoryManager extends Emitter {
      * @param {string} guildID Guild ID
      * @returns The user's inventory array.
      */
-    public fetch<T extends object = any>(memberID: string, guildID: string): InventoryItem<T>[]
+    public fetch<T extends object = any>(memberID: string, guildID: string): Promise<InventoryItem<T>[]>
 
     /**
      * Shows all items in user's inventory.
@@ -98,7 +112,7 @@ declare class InventoryManager extends Emitter {
      * @param {string} guildID Guild ID
      * @returns The user's inventory array.
      */
-    public get<T extends object = any>(memberID: string, guildID: string): InventoryItem<T>[]
+    public get<T extends object = any>(memberID: string, guildID: string): Promise<InventoryItem<T>[]>
 
     /**
      * Removes the item from user's inventory
@@ -108,9 +122,17 @@ declare class InventoryManager extends Emitter {
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
      * @param {number} [quantity=1] Quantity of items to sell.
-     * @returns {number} The price the item(s) was/were sold for.
+     * @returns {Promise<SellingOperationInfo>} Selling operation info.
      */
-    public sellItem(itemID: string | number, memberID: string, guildID: string, quantity?: number, reason?: string): number
+    public sellItem<
+        T extends object = any
+    >(
+        itemID: string | number,
+        memberID: string,
+        guildID: string,
+        quantity?: number,
+        reason?: string
+    ): Promise<SellingOperationInfo<T>>
 
     /**
      * Removes the item from user's inventory
@@ -123,9 +145,17 @@ declare class InventoryManager extends Emitter {
      * @param {string} guildID Guild ID.
      * @param {number} [quantity=1] Quantity of items to sell.
      * @param {string} [reason='sold the item from the inventory'] The reason why the item was sold.
-     * @returns {number} The price the item(s) was/were sold for.
+     * @returns {Promise<SellingOperationInfo>} Selling operation info.
      */
-    public sell(itemID: string | number, memberID: string, guildID: string, quantity?: number, reason?: string): number
+    public sell<
+        T extends object = any
+    >(
+        itemID: string | number,
+        memberID: string,
+        guildID: string,
+        quantity?: number,
+        reason?: string
+    ): Promise<SellingOperationInfo<T>>
 
     /**
      * Removes the item from user's inventory.
@@ -133,9 +163,9 @@ declare class InventoryManager extends Emitter {
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
      * @param {number} [quantity=1] Quantity of items to sell.
-     * @returns {string} If removed successfully: true, else: false.
+     * @returns {Promise<boolean>} If removed successfully: true, else: false.
      */
-    public removeItem(itemID: string | number, memberID: string, guildID: string, quantity?: number): string
+    public removeItem(itemID: string | number, memberID: string, guildID: string, quantity?: number): Promise<boolean>
 }
 
 export = InventoryManager

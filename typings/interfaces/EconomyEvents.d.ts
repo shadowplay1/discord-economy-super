@@ -6,11 +6,12 @@ import EditedItemData from './EditedItemData'
 import ItemUseData from './ItemUseData'
 import ItemBuyData from './ItemBuyData'
 
+import Currency from '../classes/Currency'
 import Economy from '../Economy'
 
 
 /**
- * All events list.
+ * Economy events.
  */
 declare interface EconomyEvents {
 
@@ -43,6 +44,27 @@ declare interface EconomyEvents {
      * Emits when someone's subtracted the money from the bank balance.
      */
     bankSubtract: BalanceData<'balanceSubtract'>
+
+    /**
+     * Emits when someone's custom currency was set
+     */
+    customCurrencySet: BalanceData<'customCurrencySet'> & {
+        currency: Currency
+    }
+
+    /**
+     * Emits when someone's custom currency was added.
+     */
+    customCurrencyAdd: BalanceData<'customCurrencyAdd'> & {
+        currency: Currency
+    }
+
+    /**
+     * Emits when someone's custom currency was subtracted.
+     */
+    customCurrencySubtract: BalanceData<'customCurrencySubtract'> & {
+        currency: Currency
+    }
 
     /**
      * Emits when someone's added an item in the shop.

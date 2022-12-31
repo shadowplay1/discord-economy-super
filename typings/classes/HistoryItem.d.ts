@@ -14,17 +14,17 @@ declare class HistoryItem<T extends object = any> {
     /**
      * History item class.
      * @param {string} guildID Guild ID.
-	 * @param {string} memberID Member ID.
+     * @param {string} memberID Member ID.
      * @param {EconomyConfiguration} ecoOptions Economy configuration.
      * @param {HistoryData} itemObject User purchases history item object.
-	 * @param {DatabaseManager} database Database Manager.
+     * @param {DatabaseManager} database Database Manager.
      */
     public constructor(
         guildID: string,
-		memberID: string,
+        memberID: string,
         ecoOptions: EconomyConfiguration,
         itemObject: HistoryData<T>,
-		database: DatabaseManager
+        database: DatabaseManager
     )
 
 
@@ -81,7 +81,7 @@ declare class HistoryItem<T extends object = any> {
     public date: string
 
     /**
-     * ID of Discord Role that will be given to Wuser on item use.
+     * ID of Discord Role that will be given to the user on item use.
      * @type {string}
      */
     public role: string
@@ -104,6 +104,18 @@ declare class HistoryItem<T extends object = any> {
      * @returns {boolean} If removed: true, else: false.
      */
     public remove(): boolean
+
+    /**
+     * Saves the history item object in database.
+     * @returns {HistoryItem} History item instance.
+     */
+    public save(): HistoryItem
+
+    /**
+     * Converts the history item to string.
+     * @returns {string} String representation of history item.
+     */
+    public toString(): string
 }
 
 export = HistoryItem

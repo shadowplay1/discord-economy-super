@@ -1,15 +1,17 @@
+import DatabaseManager from './DatabaseManager'
+import CacheManager from './CacheManager'
+
 import Emitter from '../classes/util/Emitter'
 import ShopItem from '../classes/ShopItem'
 
 import AddItemOptions from '../interfaces/AddItemOptions'
 import ShopOperationInfo from '../interfaces/ShopOperationInfo'
 
+
 import { ItemProperties, ItemPropertyType } from '../interfaces/ItemProperties'
 import CustomItemData from '../interfaces/CustomItemData'
 
 import EconomyConfiguration from '../interfaces/EconomyConfiguration'
-import InventoryData from '../interfaces/InventoryData'
-import HistoryData from '../interfaces/HistoryData'
 
 
 /**
@@ -17,7 +19,7 @@ import HistoryData from '../interfaces/HistoryData'
 * @extends {Emitter}
 */
 declare class ShopManager extends Emitter {
-    public constructor(options: EconomyConfiguration)
+    public constructor(options: EconomyConfiguration, database: DatabaseManager, cache: CacheManager)
 
     /**
      * Creates an item in shop.
@@ -27,7 +29,7 @@ declare class ShopManager extends Emitter {
      * - T: Set an object for 'custom' item property.
      * @param {AddItemOptions} options Configuration with item info.
      * @param {string} guildID Guild ID.
-     * @returns Item info.
+     * @returns {ShopItem<T>} Item info.
      */
     public addItem<T extends object = any>(guildID: string, options: AddItemOptions<T>): ShopItem<T>
 
@@ -52,22 +54,25 @@ declare class ShopManager extends Emitter {
     * 
     * - T: Item property string.
     * - K: Type for specified property in T.
+    * 
     * @param {string} itemID Item ID or name.
     * @param {string} guildID Guild ID.
     * 
-    * @param {"description" | "price" | "name" | "message" | "maxAmount" | "role" | 'custom'} itemProperty
+    * @param {T} itemProperty
     * This argument means what thing in item you want to edit (item property). 
     * Available item properties are 'description', 'price', 'name', 'message', 'amount', 'role', 'custom'.
     * 
-    * @param {T} value Any value to set.
+    * @param {K} value Any value to set.
     * @returns {boolean} If edited successfully: true, else: false.
     */
     public edit<
         T extends keyof Omit<ItemProperties, 'id' | 'date'>,
         K extends ItemPropertyType<T>
     >(
-        itemID: string | number, guildID: string,
-        itemProperty: T, value: T extends 'custom' ? CustomItemData<K> : K
+        itemID: string | number,
+        guildID: string,
+        itemProperty: T,
+        value: T extends 'custom' ? CustomItemData<K> : K
     ): boolean
 
     /**
@@ -83,11 +88,11 @@ declare class ShopManager extends Emitter {
     * @param {string} itemID Item ID or name.
     * @param {string} guildID Guild ID.
     * 
-    * @param {"description" | "price" | "name" | "message" | "maxAmount" | "role" | 'custom'} itemProperty
+    * @param {T} itemProperty
     * This argument means what thing in item you want to edit (item property). 
     * Available item properties are 'description', 'price', 'name', 'message', 'amount', 'role', 'custom'.
     * 
-    * @param {T} value Any value to set.
+    * @param {K} value Any value to set.
     * @returns {boolean} If edited successfully: true, else: false.
     */
     public editItem<
@@ -106,7 +111,7 @@ declare class ShopManager extends Emitter {
      * @returns {boolean} If set successfully: true, else: false.
      */
     public setCustom<
-        T extends object = never
+        T extends object = any
     >(itemID: string | number, guildID: string, custom: CustomItemData<T>): boolean
 
     /**
@@ -127,35 +132,21 @@ declare class ShopManager extends Emitter {
      * This method is an alias for the `ShopManager.getItem()` method.
      * @param {string} itemID Item ID or name.
      * @param {string} guildID Guild ID
-     * @returns If item not found: null; else: item data array
+     * @returns {ShopItem<T>} If item not found: null; else: item data array
      */
     public findItem<T extends object = any>(itemID: string | number, guildID: string): ShopItem<T>
 
     /**
-     * Uses the item from the user's inventory.
-     * 
-     * [!!!] This method is deprecated.
-     * If you want to get all the bugfixes and
-     * use the newest inventory features, please
-     * switch to the usage of the new InventoryManager.
-     * 
-     * [!!!] No help will be provided for inventory
-     * related methods in ShopManager.
-     * @param {string} itemID Item ID or name
-     * @param {string} memberID Member ID
-     * @param {string} guildID Guild ID
-     * @param {any} client The Discord Client [Optional]
-     * @returns {string} Item message 
-     * @deprecated
-     */
-    public useItem(itemID: string | number, memberID: string, guildID: string, client?: any): string
-
-    /**
      * Buys the item from the shop.
-     * @param {number | string} itemID Item ID or name.
+     * @param {string | number} itemID Item ID or name.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
      * @param {number} [quantity=1] Quantity of items to buy. Default: 1.
+     * 
+     * @param {string | number} [currency=null] 
+     * The currency to subtract the money from. 
+     * Can be omitted by specifying 'null' or ignoring this parameter.
+     * Requires the `subtractOnBuy` option to be enabled. Default: null.
      * 
      * @param {string} [reason='received the item from the shop'] 
      * The reason why the money was subtracted. Default: 'received the item from the shop'.
@@ -169,6 +160,119 @@ declare class ShopManager extends Emitter {
         memberID: string,
         guildID: string,
         quantity?: number,
+        currency?: string | number,
+        reason?: string
+    ): ShopOperationInfo<T>
+
+    /**
+     * Buys the item from the shop.
+     * @param {string} itemID Item ID or name.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @param {number} [quantity=1] Quantity of items to buy. Default: 1.
+     * 
+     * @param {string} [currency=null] 
+     * The currency to subtract the money from. 
+     * Can be omitted by specifying 'null' or ignoring this parameter.
+     * Requires the `subtractOnBuy` option to be enabled. Default: null.
+     * 
+     * @param {string} [reason='received the item from the shop'] 
+     * The reason why the money was subtracted. Default: 'received the item from the shop'.
+     * 
+     * @returns {ShopOperationInfo} Operation information object.
+     */
+    public buy<
+        T extends object = any
+    >(
+        itemID: string,
+        memberID: string,
+        guildID: string,
+        quantity?: number,
+        currency?: string,
+        reason?: string
+    ): ShopOperationInfo<T>
+
+    /**
+     * Buys the item from the shop.
+     * @param {number} itemID Item ID or name.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @param {number} [quantity=1] Quantity of items to buy. Default: 1.
+     * 
+     * @param {number} [currency=null] 
+     * The currency to subtract the money from. 
+     * Can be omitted by specifying 'null' or ignoring this parameter.
+     * Requires the `subtractOnBuy` option to be enabled. Default: null.
+     * 
+     * @param {string} [reason='received the item from the shop'] 
+     * The reason why the money was subtracted. Default: 'received the item from the shop'.
+     * 
+     * @returns {ShopOperationInfo} Operation information object.
+     */
+    public buy<
+        T extends object = any
+    >(
+        itemID: number,
+        memberID: string,
+        guildID: string,
+        quantity?: number,
+        currency?: number,
+        reason?: string
+    ): ShopOperationInfo<T>
+
+    /**
+     * Buys the item from the shop.
+     * @param {string} itemID Item ID or name.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @param {number} [quantity=1] Quantity of items to buy. Default: 1.
+     * 
+     * @param {number} [currency=null] 
+     * The currency to subtract the money from. 
+     * Can be omitted by specifying 'null' or ignoring this parameter.
+     * Requires the `subtractOnBuy` option to be enabled. Default: null.
+     * 
+     * @param {string} [reason='received the item from the shop'] 
+     * The reason why the money was subtracted. Default: 'received the item from the shop'.
+     * 
+     * @returns {ShopOperationInfo} Operation information object.
+     */
+    public buy<
+        T extends object = any
+    >(
+        itemID: string,
+        memberID: string,
+        guildID: string,
+        quantity?: number,
+        currency?: number,
+        reason?: string
+    ): ShopOperationInfo<T>
+
+    /**
+     * Buys the item from the shop.
+     * @param {number} itemID Item ID or name.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @param {number} [quantity=1] Quantity of items to buy. Default: 1.
+     * 
+     * @param {string} [currency=null] 
+     * The currency to subtract the money from. 
+     * Can be omitted by specifying 'null' or ignoring this parameter.
+     * Requires the `subtractOnBuy` option to be enabled. Default: null.
+     * 
+     * @param {string} [reason='received the item from the shop'] 
+     * The reason why the money was subtracted. Default: 'received the item from the shop'.
+     * 
+     * @returns {ShopOperationInfo} Operation information object.
+     */
+    public buy<
+        T extends object = any
+    >(
+        itemID: number,
+        memberID: string,
+        guildID: string,
+        quantity?: number,
+        currency?: string,
         reason?: string
     ): ShopOperationInfo<T>
 
@@ -176,7 +280,7 @@ declare class ShopManager extends Emitter {
      * Buys the item from the shop.
      * 
      * This method is an alias for the `ShopManager.buy()` method.
-     * @param {number | string} itemID Item ID or name.
+     * @param {string | number} itemID Item ID or name.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
      * @param {number} [quantity=1] Quantity of items to buy. Default: 1.
@@ -197,45 +301,131 @@ declare class ShopManager extends Emitter {
     ): ShopOperationInfo<T>
 
     /**
+     * Buys the item from the shop.
+     * 
+     * This method is an alias for the `ShopManager.buy()` method.
+     * @param {string} itemID Item ID or name.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @param {number} [quantity=1] Quantity of items to buy. Default: 1.
+     * 
+     * @param {string} [currency=null] 
+     * The currency to subtract the money from. 
+     * Can be omitted by specifying 'null' or ignoring this parameter.
+     * Requires the `subtractOnBuy` option to be enabled. Default: null.
+     * 
+     * @param {string} [reason='received the item from the shop'] 
+     * The reason why the money was subtracted. Default: 'received the item from the shop'.
+     * 
+     * @returns {ShopOperationInfo} Operation information object.
+     */
+    public buyItem<
+        T extends object = any
+    >(
+        itemID: string,
+        memberID: string,
+        guildID: string,
+        quantity?: number,
+        currency?: string,
+        reason?: string
+    ): ShopOperationInfo<T>
+
+    /**
+     * Buys the item from the shop.
+     * 
+     * This method is an alias for the `ShopManager.buy()` method.
+     * @param {number} itemID Item ID or name.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @param {number} [quantity=1] Quantity of items to buy. Default: 1.
+     * 
+     * @param {number} [currency=null] 
+     * The currency to subtract the money from. 
+     * Can be omitted by specifying 'null' or ignoring this parameter.
+     * Requires the `subtractOnBuy` option to be enabled. Default: null.
+     * 
+     * @param {string} [reason='received the item from the shop'] 
+     * The reason why the money was subtracted. Default: 'received the item from the shop'.
+     * 
+     * @returns {ShopOperationInfo} Operation information object.
+     */
+    public buyItem<
+        T extends object = any
+    >(
+        itemID: number,
+        memberID: string,
+        guildID: string,
+        quantity?: number,
+        currency?: number,
+        reason?: string
+    ): ShopOperationInfo<T>
+
+    /**
+     * Buys the item from the shop.
+     * 
+     * This method is an alias for the `ShopManager.buy()` method.
+     * @param {string} itemID Item ID or name.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @param {number} [quantity=1] Quantity of items to buy. Default: 1.
+     * 
+     * @param {number} [currency=null] 
+     * The currency to subtract the money from. 
+     * Can be omitted by specifying 'null' or ignoring this parameter.
+     * Requires the `subtractOnBuy` option to be enabled. Default: null.
+     * 
+     * @param {string} [reason='received the item from the shop'] 
+     * The reason why the money was subtracted. Default: 'received the item from the shop'.
+     * 
+     * @returns {ShopOperationInfo} Operation information object.
+     */
+    public buyItem<
+        T extends object = any
+    >(
+        itemID: string,
+        memberID: string,
+        guildID: string,
+        quantity?: number,
+        currency?: number,
+        reason?: string
+    ): ShopOperationInfo<T>
+
+    /**
+     * Buys the item from the shop.
+     * 
+     * This method is an alias for the `ShopManager.buy()` method.
+     * @param {number} itemID Item ID or name.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @param {number} [quantity=1] Quantity of items to buy. Default: 1.
+     * 
+     * @param {string} [currency=null] 
+     * The currency to subtract the money from. 
+     * Can be omitted by specifying 'null' or ignoring this parameter.
+     * Requires the `subtractOnBuy` option to be enabled. Default: null.
+     * 
+     * @param {string} [reason='received the item from the shop'] 
+     * The reason why the money was subtracted. Default: 'received the item from the shop'.
+     * 
+     * @returns {ShopOperationInfo} Operation information object.
+     */
+    public buyItem<
+        T extends object = any
+    >(
+        itemID: number,
+        memberID: string,
+        guildID: string,
+        quantity?: number,
+        currency?: string,
+        reason?: string
+    ): ShopOperationInfo<T>
+
+    /**
      * Clears the shop.
      * @param {string} guildID Guild ID
      * @returns {boolean} If cleared: true, else: false
      */
     public clear(guildID: string): boolean
-
-    /**
-     * Clears the user's inventory.
-     * 
-     * [!!!] This method is deprecated.
-     * If you want to get all the bugfixes and
-     * use the newest inventory features, please
-     * switch to the usage of the new InventoryManager.
-     * 
-     * [!!!] No help will be provided for inventory
-     * related methods in ShopManager.
-     * @param {string} memberID Member ID
-     * @param {string} guildID Guild ID
-     * @returns {boolean} If cleared: true, else: false.
-     * @deprecated
-     */
-    public clearInventory(memberID: string, guildID: string): boolean
-
-    /**
-    * Clears the user's purchases history.
-    * 
-    * [!!!] This method is deprecated.
-    * If you want to get all the bugfixes and
-    * use the newest history features, please
-    * switch to the usage of the new HistoryManager.
-    * 
-    * [!!!] No help will be provided for history
-    * related methods in ShopManager.
-    * @param {string} memberID Member ID.
-    * @param {string} guildID Guild ID.
-    * @returns {boolean} If cleared: true, else: false.
-    * @deprecated
-    */
-    public clearHistory(memberID: string, guildID: string): boolean
 
     /**
      * Shows all items in the shop.
@@ -244,7 +434,7 @@ declare class ShopManager extends Emitter {
      * 
      * - T: Set an object for 'custom' item property.
      * @param {string} guildID Guild ID
-     * @returns The shop array.
+     * @returns {ShopItem<T>[]} The shop array.
      */
     public fetch<T extends object = any>(guildID: string): ShopItem<T>[]
 
@@ -268,63 +458,11 @@ declare class ShopManager extends Emitter {
 
     /**
      * Gets the item in the shop.
-     * @param {number | string} itemID Item ID or name.
-     * @param {string} guildID Guild ID.
-     * @returns {ShopItem} If item not found: null; else: item info object.
+     * @param {string} itemID Item ID or name.
+     * @param {string} guildID Guild ID
+     * @returns {ShopItem<T>} If item not found: null; else: item info object
      */
     public getItem<T extends object = any>(itemID: string | number, guildID: string): ShopItem<T>
-
-    /**
-     * Gets the item in the inventory.
-     * 
-     * [!!!] This method is deprecated.
-     * If you want to get all the bugfixes and
-     * use the newest inventory features, please
-     * switch to the usage of the new InventoryManager.
-     * 
-     * [!!!] No help will be provided for inventory
-     * related methods in ShopManager.
-     * @param {string} itemID Item ID or name.
-     * @param {string} memberID Member ID.
-     * @param {string} guildID Guild ID.
-     * @returns {InventoryData} If item not found: null; else: item info object.
-     * @deprecated
-     */
-    public searchInventoryItem<T extends object = any>(itemID: string | number, memberID: string, guildID: string): InventoryData<T>
-
-    /**
-     * Shows all items in user's inventory
-     * 
-     * [!!!] This method is deprecated.
-     * If you want to get all the bugfixes and
-     * use the newest inventory features, please
-     * switch to the usage of the new InventoryManager.
-     * 
-     * [!!!] No help will be provided for inventory
-     * related methods in ShopManager.
-     * @param {string} memberID Member ID
-     * @param {string} guildID Guild ID
-     * @returns The user's inventory array.
-     * @deprecated
-     */
-    public inventory<T extends object = any>(memberID: string, guildID: string): InventoryData<T>[]
-
-    /**
-     * Shows the user's purchase history.
-     * 
-     * [!!!] This method is deprecated.
-     * If you want to get all the bugfixes and
-     * use the newest history features, please
-     * switch to the usage of the new HistoryManager.
-     * 
-     * [!!!] No help will be provided for history
-     * related methods in ShopManager.
-     * @param {string} memberID Member ID
-     * @param {string} guildID Guild ID
-     * @returns {HistoryData[]} User's purchase history.
-     * @deprecated
-     */
-    public history<T extends object = any>(memberID: string, guildID: string): HistoryData<T>[]
 }
 
 export = ShopManager

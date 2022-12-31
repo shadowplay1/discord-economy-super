@@ -15,9 +15,36 @@ declare class BalanceManager extends Emitter {
     public constructor(options: EconomyConfiguration)
 
     /**
+     * Returns a factory with `get`, `set`, `add` and `subtract` methods to work with custom currencies.
+     * @param {string} currencyID Currency ID, its name or its symbol.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @returns {CurrencyFactory} Factory object.
+     */
+    public currency(currencyID: string, memberID: string, guildID: string): CurrencyFactory
+
+    /**
+     * Returns a factory with `get`, `set`, `add` and `subtract` methods to work with custom currencies.
+     * @param {number} currencyID Currency ID, its name or its symbol.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @returns {CurrencyFactory} Factory object.
+     */
+    public currency(currencyID: number, memberID: string, guildID: string): CurrencyFactory
+
+    /**
+     * Returns a factory with `get`, `set`, `add` and `subtract` methods to work with custom currencies.
+     * @param {string | number} currencyID Currency ID, its name or its symbol.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @returns {CurrencyFactory} Factory object.
+     */
+    public currency(currencyID: string | number, memberID: string, guildID: string): CurrencyFactory
+
+    /**
     * Fetches the user's balance.
-    * @param {string} memberID Member ID
-    * @param {string} guildID Guild ID
+    * @param {string} memberID Member ID.
+    * @param {string} guildID Guild ID.
     * @returns User's balance
     */
     public fetch(memberID: string, guildID: string): number
@@ -26,8 +53,8 @@ declare class BalanceManager extends Emitter {
     * Gets the user's balance.
     * 
     * This method is an alias for the `BalanceManager.fetch()` method.
-    * @param {string} memberID Member ID
-    * @param {string} guildID Guild ID
+    * @param {string} memberID Member ID.
+    * @param {string} guildID Guild ID.
     * @returns User's balance
     */
     public get(memberID: string, guildID: string): number
@@ -35,8 +62,8 @@ declare class BalanceManager extends Emitter {
     /**
     * Sets the money amount on user's balance.
     * @param {number} amount Amount of money that you want to set
-    * @param {string} memberID Member ID
-    * @param {string} guildID Guild ID
+    * @param {string} memberID Member ID.
+    * @param {string} guildID Guild ID.
     * @param {string} [reason] The reason why you set the money
     * @returns Money amount
     */
@@ -45,8 +72,8 @@ declare class BalanceManager extends Emitter {
     /**
     * Adds the money amount on user's balance.
     * @param {number} amount Amount of money that you want to add
-    * @param {string} memberID Member ID
-    * @param {string} guildID Guild ID
+    * @param {string} memberID Member ID.
+    * @param {string} guildID Guild ID.
     * @param {string} [reason] The reason why you add the money
     * @returns Money amount
     */
@@ -55,8 +82,8 @@ declare class BalanceManager extends Emitter {
     /**
     * Subtracts the money amount from user's balance.
     * @param {number} amount Amount of money that you want to subtract
-    * @param {string} memberID Member ID
-    * @param {string} guildID Guild ID
+    * @param {string} memberID Member ID.
+    * @param {string} guildID Guild ID.
     * @param {string} [reason] The reason why you subtract the money
     * @returns Money amount
     */
@@ -74,7 +101,7 @@ declare class BalanceManager extends Emitter {
 
     /**
     * Gets a balance leaderboard for specified server
-    * @param {string} guildID Guild ID
+    * @param {string} guildID Guild ID.
     * @returns Sorted leaderboard array
     */
     public leaderboard(guildID: string): LeaderboardData[]

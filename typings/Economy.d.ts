@@ -21,6 +21,7 @@ import UserManager from './managers/UserManager'
 import GuildManager from './managers/GuildManager'
 
 import SettingsManager from './managers/SettingsManager'
+import CurrencyManager from './managers/CurrencyManager'
 
 
 /**
@@ -98,19 +99,25 @@ declare class Economy<Ready extends boolean = boolean> extends Emitter {
     public readonly inventory: If<Ready, InventoryManager>
 
     /**
+    * Currency manager.
+    * @type {?CurrencyManager}
+    */
+    public readonly currencies: If<Ready, CurrencyManager>
+
+    /**
     * History manager.
     * @type {?HistoryManager}
     */
     public readonly history: If<Ready, HistoryManager>
 
     /**
-    * Balance.
+    * Balance manager.
     * @type {?BalanceManager}
     */
     public readonly balance: If<Ready, BalanceManager>
 
     /**
-    * Bank balance.
+    * Bank balance manager.
     * @type {?BankManager}
     */
     public readonly bank: If<Ready, BankManager>
@@ -128,13 +135,13 @@ declare class Economy<Ready extends boolean = boolean> extends Emitter {
     public readonly shop: If<Ready, ShopManager>
 
     /**
-    * Balance.
+    * Rewards manager.
     * @type {?RewardManager}
     */
     public readonly rewards: If<Ready, RewardManager>
 
     /**
-    * Cooldown.
+    * Cooldown manager.
     * @type {?CooldownManager}
     */
     public readonly cooldowns: If<Ready, CooldownManager>
@@ -152,7 +159,7 @@ declare class Economy<Ready extends boolean = boolean> extends Emitter {
     public readonly guilds: If<Ready, GuildManager>
 
     /**
-    * Settings.
+    * Settings manager.
     * @type {?SettingsManager}
     */
     public readonly settings: If<Ready, SettingsManager>

@@ -98,6 +98,12 @@ declare class EconomyGuild {
 	 * @returns {boolean} If created successfully: true; else: false.
 	 */
 	public create(): boolean
+    
+    /**
+     * Converts the economy guild to string.
+     * @returns {string} String representation of economy guild.
+     */
+    public toString(): string
 }
 
 export = EconomyGuild

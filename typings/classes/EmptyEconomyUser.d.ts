@@ -16,7 +16,7 @@ declare class EmptyEconomyUser extends EconomyUser {
      * @param {EconomyConfiguration} options Economy configuration.
      * @param {DatabaseManager} database Database Manager.
      */
-    constructor(
+    public constructor(
         userID: string,
         guildID: string,
         options: EconomyConfiguration,

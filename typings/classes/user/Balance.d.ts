@@ -1,5 +1,8 @@
 import Emitter from '../util/Emitter'
+
 import EconomyConfiguration from '../../interfaces/EconomyConfiguration'
+
+import CurrencyFactory from '../../interfaces/CurrencyFactory'
 
 import TransferingOptions from '../../interfaces/TransferingOptions'
 import TransferingResult from '../../interfaces/TransferingResult'
@@ -14,6 +17,27 @@ declare class Balance extends Emitter {
      * @param {EconomyConfiguration} ecoOptions Economy configuration.
      */
     public constructor(memberID: string, guildID: string, ecoOptions: EconomyConfiguration)
+
+    /**
+     * Returns a factory with `get`, `set`, `add` and `subtract` methods to work with custom currencies.
+     * @param {string} currencyID Currency ID, its name or its symbol.
+     * @returns {CurrencyFactory} Factory object.
+     */
+    public currency(currencyID: string): CurrencyFactory
+
+    /**
+     * Returns a factory with `get`, `set`, `add` and `subtract` methods to work with custom currencies.
+     * @param {number} currencyID Currency ID, its name or its symbol.
+     * @returns {CurrencyFactory} Factory object.
+     */
+    public currency(currencyID: number): CurrencyFactory
+
+    /**
+     * Returns a factory with `get`, `set`, `add` and `subtract` methods to work with custom currencies.
+     * @param {string | number} currencyID Currency ID, its name or its symbol.
+     * @returns {CurrencyFactory} Factory object.
+     */
+    public currency(currencyID: string | number): CurrencyFactory
 
     /**
      * Sets the money amount on user's balance.
@@ -48,18 +72,18 @@ declare class Balance extends Emitter {
     public get(): number
 
     /**
-     * Fetches the user's balance.
-     * @returns {number} User's balance.
-     */
-    public fetch(): number
-
-    /**
      * Deposits the specified amount of money.
      * @param {number} amount Money amount.
      * @param {string} [reason] The reason of the operation.
      * @returns {number} Money amount.
      */
     public deposit(amount: number, reason?: string): number
+
+    /**
+     * Fetches the user's balance.
+     * @returns {number} User's balance.
+     */
+    public fetch(): number
 
     /**
      * Transfers the money to a specified user.
