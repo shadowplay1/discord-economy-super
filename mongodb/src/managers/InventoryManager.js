@@ -84,6 +84,33 @@ class InventoryManager extends Emitter {
     }
 
     /**
+     * Returns the stacked item in user inventory: it shows the quantity and total price of the item.
+     * @param {string | number} itemID Item ID or name.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @returns {Promise<StackedInventoryItemObject>} Stacked item object.
+     */
+    async stack(itemID, memberID, guildID) {
+        const inventoryArray = (await this.database.fetch(`${guildID}.${memberID}.inventory`)) || []
+        const shopArray = (await this.database.fetch(`${guildID}.shop`)) || []
+
+        const cleanInventory = [...new Set(inventoryArray.map(item => item.name))]
+            .map(itemName => shopArray.find(shopItem => shopItem.name == itemName))
+            .map(item => {
+                const quantity = inventoryArray.filter(invItem => invItem.id == item.id).length
+
+                return {
+                    quantity,
+                    totalPrice: item.price * quantity,
+                    item: new InventoryItem(guildID, memberID, this.options, item, this.database, this.cache)
+                }
+            })
+
+        const stackedItem = cleanInventory.find(itemObject => itemObject.item.id == itemID)
+        return stackedItem || null
+    }
+
+    /**
      * Gets the item in the inventory.
      * @param {string | number} itemID Item ID or name.
      * @param {string} memberID Member ID.
@@ -118,7 +145,7 @@ class InventoryManager extends Emitter {
      * Gets the item in the inventory.
      * 
      * This method is an alias for the `InventoryManager.getItem()` method.
-     * @param {number | string} itemID Item ID or name.
+     * @param {string | number} itemID Item ID or name.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
      * @returns {Promise<InventoryItem>} If item not found: null; else: item info object.
@@ -163,7 +190,7 @@ class InventoryManager extends Emitter {
 
     /**
      * Uses the item from user's inventory.
-     * @param {number | string} itemID Item ID or name.
+     * @param {string | number} itemID Item ID or name.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
      * @param {Client} [client] Discord Client [Specify if the role will be given in a Discord server].
@@ -271,7 +298,7 @@ class InventoryManager extends Emitter {
      * Uses the item from user's inventory.
      * 
      * This method is an alias for the `InventoryManager.useItem()` method.
-     * @param {number | string} itemID Item ID or name.
+     * @param {string | number} itemID Item ID or name.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
      * @param {Client} [client] The Discord Client. [Specify if the role will be given in a Discord server].
@@ -295,10 +322,18 @@ class InventoryManager extends Emitter {
         * @type {InventoryItem[]}
         */
         const inventory = (await this.fetch(memberID, guildID)) || []
-        const inventoryObjects = inventory.map(item => item.itemObject)
+        const inventoryObjects = inventory.map(item => item.rawObject)
 
         const item = inventory.find(invItem => invItem.id == itemID || invItem.name == itemID)
         const itemQuantity = inventoryObjects.filter(item => item.id == itemID).length
+
+        if (!arguments[3]) {
+            this.database.logger.optionalParamNotSpecified(
+                'InventoryManager.removeItem',
+                'quantity',
+                quantity
+            )
+        }
 
         if (typeof itemID !== 'number' && typeof itemID !== 'string') {
             throw new EconomyError(errors.invalidTypes.editItemArgs.itemID + typeof itemID, 'INVALID_TYPE')
@@ -316,7 +351,7 @@ class InventoryManager extends Emitter {
 
         const newInventory = [
             ...inventoryObjects.filter(invItem => invItem.id !== item.id),
-            ...Array(itemQuantity - quantity).fill(item.itemObject)
+            ...Array(itemQuantity - quantity).fill(item.rawObject)
         ]
 
         const result = await this.database.set(`${guildID}.${memberID}.inventory`, newInventory)
@@ -345,6 +380,14 @@ class InventoryManager extends Emitter {
         const shop = (await this.database.get(`${guildID}.shop`)) || []
         const item = shop.find(shopItem => shopItem.id == itemID || shopItem.name == itemID)
 
+        if (!arguments[3]) {
+            this.database.logger.optionalParamNotSpecified(
+                'InventoryManager.addItem',
+                'quantity',
+                quantity
+            )
+        }
+
         /**
         * @type {InventoryItem[]}
         */
@@ -371,12 +414,11 @@ class InventoryManager extends Emitter {
             totalPrice: 0
         }
 
-
         const totalPrice = item.price * quantity
-        const arrayOfItems = Array(quantity).fill(item.itemObject ? item.itemObject : item)
+        const arrayOfItems = Array(quantity).fill(item.rawObject ? item.rawObject : item)
 
         const newInventory = [...inventory, ...arrayOfItems]
-            .map(item => item.itemObject ? item.itemObject : item)
+            .map(item => item.rawObject ? item.rawObject : item)
 
         if (
             item.maxAmount &&
@@ -428,6 +470,22 @@ class InventoryManager extends Emitter {
 
         const sellingPrice = Math.floor((item?.price / 100) * percent)
         const totalSellingPrice = sellingPrice * quantity
+
+        if (!arguments[3]) {
+            this.database.logger.optionalParamNotSpecified(
+                'InventoryManager.sellItem',
+                'quantity',
+                quantity
+            )
+        }
+
+        if (!arguments[4]) {
+            this.database.logger.optionalParamNotSpecified(
+                'InventoryManager.sellItem',
+                'reason',
+                reason
+            )
+        }
 
         if (typeof itemID !== 'number' && typeof itemID !== 'string') {
             throw new EconomyError(errors.invalidTypes.editItemArgs.itemID + typeof itemID, 'INVALID_TYPE')
@@ -500,7 +558,7 @@ class InventoryManager extends Emitter {
  * @property {string} [message='You have used this item!'] Item message that will be returned on use.
  * @property {string} [description='Very mysterious item.'] Item description.
  * @property {number} [maxAmount=null] Max amount of the item that user can hold in their inventory.
- * @property {string} [role=null] Role ID from your Discord server.
+ * @property {string} [role=null] Role **ID** from your Discord server.
  */
 
 /**
@@ -511,10 +569,18 @@ class InventoryManager extends Emitter {
  * @property {number} price Item price.
  * @property {string} message The message that will be returned on item use.
  * @property {string} description Item description.
- * @property {string} role ID of Discord Role that will be given to Wuser on item use.
+ * @property {string} role ID of Discord Role that will be given to the user on item use.
  * @property {number} maxAmount Max amount of the item that user can hold in their inventory.
  * @property {string} date Date when the item was added in the shop.
  * @property {object} custom Custom item properties object.
+ */
+
+/**
+ * Stacked item object.
+ * @typedef {object} StackedInventoryItemObject
+ * @property {number} quantity Quantity of the item in inventory.
+ * @property {number} totalPrice Total price of the items in inventory.
+ * @property {InventoryItem} item The stacked item.
  */
 
 /**

@@ -13,7 +13,7 @@ class BalanceItem {
      * @param {BalanceObject} balanceObject User balance object.
      * @param {DatabaseManager} database Database manager.
      */
-    constructor(guildID, memberID,  ecoOptions, balanceObject, database) {
+    constructor(guildID, memberID, ecoOptions, balanceObject, database, cache) {
 
         /**
          * Member ID.

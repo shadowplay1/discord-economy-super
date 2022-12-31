@@ -4,6 +4,7 @@ const DatabaseManager = require('../managers/DatabaseManager')
 const SettingsManager = require('../managers/SettingsManager')
 
 const errors = require('../structures/errors')
+const ShopItem = require('./ShopItem')
 const EconomyError = require('./util/EconomyError')
 
 const Emitter = require('./util/Emitter')
@@ -34,10 +35,10 @@ class InventoryItem extends Emitter {
         this.options = ecoOptions
 
         /**
-         * Item object.
+         * Raw item object.
          * @type {InventoryData}
          */
-        this.itemObject = itemObject
+        this.rawObject = itemObject
 
         /**
          * Guild ID.
@@ -77,7 +78,7 @@ class InventoryItem extends Emitter {
         this.message = itemObject.message
 
         /**
-         * ID of Discord Role that will be given to Wuser on item use.
+         * ID of Discord Role that will be given to the user on item use.
          * @type {string}
          */
         this.role = itemObject.role
@@ -139,6 +140,30 @@ class InventoryItem extends Emitter {
     }
 
     /**
+     * Returns the stacked item in user inventory: it shows the quantity and total price of the item.
+     * @returns {Promise<StackedInventoryItemObject>} Stacked item object.
+     */
+    async stack() {
+        const inventoryArray = (await this.database.fetch(`${this.guildID}.${this.memberID}.inventory`)) || []
+        const shopArray = (await this.database.fetch(`${this.guildID}.shop`)) || []
+
+        const cleanInventory = [...new Set(inventoryArray.map(item => item.name))]
+            .map(itemName => shopArray.find(shopItem => shopItem.name == itemName))
+            .map(item => {
+                const quantity = inventoryArray.filter(invItem => invItem.id == item.id).length
+
+                return {
+                    quantity,
+                    totalPrice: item.price * quantity,
+                    item: this
+                }
+            })
+
+        const stackedItem = cleanInventory.find(itemObject => itemObject.item.id == this.id)
+        return stackedItem || null
+    }
+
+    /**
      * Removes an item from the shop.
      * @param {number} [quantity=1] Quantity of items to delete.
      * @returns {Promise<boolean>} If removed: true, else: false.
@@ -146,12 +171,20 @@ class InventoryItem extends Emitter {
     async remove(quantity = 1) {
         const inventory = (await this.database.fetch(`${this.guildID}.${this.memberID}.inventory`) || [])
 
+        if (!arguments[0]) {
+            this.database.logger.optionalParamNotSpecified(
+                'InventoryItem.remove',
+                'quantity',
+                quantity
+            )
+        }
+
         const item = this
         const itemQuantity = inventory.filter(item => item.id == item.id).length
 
         const newInventory = [
             ...inventory.filter(invItem => invItem.id != item.id),
-            ...Array(itemQuantity - quantity).fill(item.itemObject)
+            ...Array(itemQuantity - quantity).fill(item.rawObject)
         ]
 
         const result = await this.database.set(`${this.guildID}.${this.memberID}.inventory`, newInventory)
@@ -166,7 +199,7 @@ class InventoryItem extends Emitter {
 
     /**
      * Uses the item from user's inventory.
-     * @param {number | string} itemID Item ID or name.
+     * @param {string | number} itemID Item ID or name.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
      * @param {Client} [client] Discord Client [Specify if the role will be given in a Discord server].
@@ -175,7 +208,7 @@ class InventoryItem extends Emitter {
     async use(client) {
         const inventory = (await this.database.fetch(`${this.guildID}.${this.memberID}.inventory`)) || []
 
-        const itemObject = this.itemObject
+        const itemObject = this.rawObject
         const itemIndex = inventory.findIndex(invItem => invItem.id == itemObject?.id)
 
         const item = inventory[itemIndex]
@@ -263,6 +296,14 @@ class InventoryItem extends Emitter {
     async sell(quantity = 1) {
         const inventory = (await this.database.fetch(`${this.guildID}.${this.memberID}.inventory`)) || []
 
+        if (!arguments[0]) {
+            this.database.logger.optionalParamNotSpecified(
+                'InventoryItem.sell',
+                'quantity',
+                quantity
+            )
+        }
+
         const item = this
         const itemQuantity = inventory.filter(invItem => invItem.id == item.id).length
 
@@ -298,6 +339,37 @@ class InventoryItem extends Emitter {
             totalPrice: totalSellingPrice
         }
     }
+
+    /**
+     * Saves the inventory item object in database.
+     * @returns {Promise<InventoryItem>} Inventory item instance.
+     */
+    async save() {
+        const inventoryArray = (await this.database.fetch(`${this.guildID}.${this.memberID}.inventory`)) || []
+        const itemIndex = inventoryArray.findIndex(item => item.id == this.id)
+
+        for (const prop in this.rawObject) {
+            this.rawObject[prop] = this[prop]
+        }
+
+        inventoryArray.splice(itemIndex, 1, this.rawObject)
+        await this.database.set(`${this.guildID}.${this.memberID}.inventory`, inventoryArray)
+
+        this.cache.updateMany(['users', 'inventory'], {
+            memberID: this.memberID,
+            guildID: this.guildID
+        })
+
+        return this
+    }
+
+    /**
+     * Converts the inventory item to string.
+     * @returns {string} String representation of inventory item.
+     */
+    toString() {
+        return `Inventory Item ${this.name} (ID in Inventory: ${this.id}) - ${this.price} coins`
+    }
 }
 
 
@@ -312,6 +384,14 @@ class InventoryItem extends Emitter {
  * @property {number} maxAmount Max amount of the item that user can hold in their inventory.
  * @property {string} date Date when the item was bought by a user.
  * @property {object} custom Custom item properties object.
+ */
+
+/**
+ * Stacked item object.
+ * @typedef {object} StackedInventoryItemObject
+ * @property {number} quantity Quantity of the item in inventory.
+ * @property {number} totalPrice Total price of the items in inventory.
+ * @property {InventoryItem} item The stacked item.
  */
 
 /**

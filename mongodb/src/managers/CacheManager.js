@@ -5,7 +5,8 @@ const {
     CachedUsers,
     CachedCooldowns,
     CachedBalance,
-	CachedBank,
+    CachedCurrency,
+    CachedBank,
     CachedShop,
     CachedHistory,
     CachedInventory
@@ -44,11 +45,17 @@ class CacheManager {
          */
         this.balance = new CachedBalance(null, null, options, database, this)
 
-		/**
-		 * Cached bank balance.
-		 * @type {CachedBank}
-		 */
-		this.bank = new CachedBank(null, null, options, database, this)
+        /**
+         * Cached bank balance.
+         * @type {CachedBank}
+         */
+        this.bank = new CachedBank(null, null, options, database, this)
+
+        /**
+         * Cached currencies
+         * @type {CachedCurrency}
+         */
+        this.currencies = new CachedCurrency(null, null, options, database, this)
 
         /**
          * Cached cooldowns.
@@ -97,13 +104,14 @@ class CacheManager {
 
         await this.cooldowns.update(id)
 
-		await this.balance.update(id)
-		await this.bank.update(id)
+        await this.balance.update(id)
+        await this.bank.update(id)
+        await this.currencies.update(id)
 
         await this.shop.update(id)
         await this.inventory.update(id)
 
-		await this.history.update(id)
+        await this.history.update(id)
     }
 
     /**
@@ -117,12 +125,13 @@ class CacheManager {
         this.cooldowns.clear()
 
         this.balance.clear()
-		this.bank.clear()
+        this.bank.clear()
+        this.currencies.clear()
 
         this.shop.clear()
         this.inventory.clear()
 
-		this.history.clear()
+        this.history.clear()
     }
 
     /**
@@ -146,17 +155,17 @@ class CacheManager {
         return result
     }
 
-	/**
-	 * Updates the specified cached items.
-	 *
-	 * This method is an alias for `CacheManager.updateSpecified()` method.
-	 * @param {CacheItemName[]} cacheItemNames Names of the cache items to update.s
-	 * @param {DataIdentifier} id Identifiers object (memberID, guildID) to get value from cache.
-	 * @returns {Promise<void[]>}
-	 */
-	updateMany(cacheItemNames, id) {
-		return this.updateSpecified(cacheItemNames, id)
-	}
+    /**
+     * Updates the specified cached items.
+     *
+     * This method is an alias for `CacheManager.updateSpecified()` method.
+     * @param {CacheItemName[]} cacheItemNames Names of the cache items to update.s
+     * @param {DataIdentifier} id Identifiers object (memberID, guildID) to get value from cache.
+     * @returns {Promise<void[]>}
+     */
+    updateMany(cacheItemNames, id) {
+        return this.updateSpecified(cacheItemNames, id)
+    }
 
     /**
      * Clears the specified cached items.
@@ -194,6 +203,9 @@ module.exports = CacheManager
  * @property {string} memberID Member ID.
  */
 
+
+/* eslint-disable */
+
 /**
- * @typedef {'guilds' | 'users' | 'cooldowns' | 'balance' | 'bank' | 'shop' | 'inventory' | 'history'} CacheItemName
+ * @typedef {'guilds' | 'users' | 'cooldowns' | 'balance' | 'bank' | 'currencies' | 'shop' | 'inventory' | 'history'} CacheItemName
  */

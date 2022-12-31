@@ -5,6 +5,7 @@ const EconomyUser = require('./EconomyUser')
 
 /**
  * Empty economy user class.
+ * @extends {EconomyUser}
  */
 class EmptyEconomyUser extends EconomyUser {
 

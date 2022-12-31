@@ -1,6 +1,8 @@
 const CacheManager = require('../managers/CacheManager')
 const DatabaseManager = require('../managers/DatabaseManager')
 
+const CurrencyManager = require('../managers/CurrencyManager')
+
 const errors = require('../structures/errors')
 const EconomyError = require('./util/EconomyError')
 
@@ -30,10 +32,10 @@ class ShopItem extends Emitter {
         this.guildID = guildID
 
         /**
-         * Item object.
+         * Raw item object.
          * @type {ItemData}
          */
-        this.itemObject = itemObject
+        this.rawObject = itemObject
 
         /**
          * Shop item ID.
@@ -46,6 +48,13 @@ class ShopItem extends Emitter {
          * @type {DatabaseManager}
          */
         this.database = database
+
+        /**
+         * Economy configuration.
+         * @type {EconomyConfiguration}
+         * @private
+         */
+        this.options = this.database.options
 
         /**
          * Item name.
@@ -72,7 +81,7 @@ class ShopItem extends Emitter {
         this.description = itemObject.description
 
         /**
-         * ID of Discord Role that will be given to Wuser on item use.
+         * ID of Discord Role that will be given to the user on item use.
          * @type {string}
          */
         this.role = itemObject.role
@@ -102,6 +111,12 @@ class ShopItem extends Emitter {
          */
         this.cache = cache
 
+        /**
+         * Currency Manager.
+         * @type {CurrencyManager}
+         */
+        this.currencies = new CurrencyManager(this.options, this.database, this.cache)
+
         for (const [key, value] of Object.entries(itemObject || {})) {
             this[key] = value
         }
@@ -116,6 +131,15 @@ class ShopItem extends Emitter {
      */
     async isEnoughMoneyFor(userID, quantity = 1) {
         const user = await this.database.fetch(`${this.guildID}.${userID}`)
+
+        if (!arguments[1]) {
+            this.database.logger.optionalParamNotSpecified(
+                'ShopItem.isEnoughMoneyFor',
+                'quantity',
+                quantity
+            )
+        }
+
         return user?.money >= this.price * quantity
     }
 
@@ -215,6 +239,175 @@ class ShopItem extends Emitter {
     }
 
     /**
+     * Buys the item from the shop.
+     * @param {string} memberID Member ID.
+     * @param {number} [quantity=1] Quantity of items to buy. Default: 1.
+     * 
+     * @param {string | number} [currency=null] 
+     * The currency to subtract the money from. 
+     * Can be omitted by specifying 'null' or ignoring this parameter.
+     * Requires the `subtractOnBuy` option to be enabled. Default: null.
+     * 
+     * @param {string} [reason='received the item from the shop'] 
+     * The reason why the money was subtracted. Default: 'received the item from the shop'.
+     * 
+     * @returns {Promise<ShopOperationInfo>} Operation information object.
+     */
+    async buy(memberID, quantity = 1, currency = null, reason = 'received the item from the shop') {
+        const balance = this.cache.balance.get({
+            memberID,
+            guildID: this.guildID
+        }) || []
+
+        const shop = this.cache.shop.get({
+            guildID: this.guildID
+        }) || []
+
+        const item = shop.find(item => item.id == this.id || item.name == this.id)
+
+        const inventory = this.cache.inventory.get({
+            memberID,
+            guildID: this.guildID
+        }) || []
+
+        const inventoryItems = inventory.filter(invItem => invItem.name == item.name)
+
+        if (!arguments[1]) {
+            this.database.logger.optionalParamNotSpecified(
+                'ShopItem.buy',
+                'quantity',
+                quantity
+            )
+        }
+
+        if (!arguments[2]) {
+            this.database.logger.optionalParamNotSpecified(
+                'ShopItem.buy',
+                'currency',
+                currency
+            )
+        }
+
+        if (!arguments[3]) {
+            this.database.logger.optionalParamNotSpecified(
+                'ShopItem.buy',
+                'reason',
+                reason
+            )
+        }
+
+        if (typeof memberID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
+        }
+
+        if (!item) return {
+            status: false,
+            message: 'item not found',
+            item: null,
+            quantity: 0,
+            totalPrice: 0
+        }
+
+        const totalPrice = item.price * quantity
+        const arrayOfItems = Array(quantity).fill(item.rawObject ? item.rawObject : item)
+
+        const newInventory = [...inventory, ...arrayOfItems]
+            .map(item => item.rawObject ? item.rawObject : item)
+
+        if (
+            item.maxAmount &&
+            inventoryItems.length >= item.maxAmount &&
+            (inventoryItems.length + quantity) < item.maxAmount
+        ) return {
+            status: false,
+            message: `maximum items reached (${item.maxAmount})`,
+            item,
+            quantity,
+            totalPrice
+        }
+
+        const settings = await this.database.fetch(`${this.guildID}.settings`) || {}
+
+        const dateLocale = settings.dateLocale
+            || this.options.dateLocale
+
+        const subtractOnBuy = settings.subtractOnBuy
+            || this.options.subtractOnBuy
+
+        const savePurchasesHistory = settings.savePurchasesHistory
+            || this.options.savePurchasesHistory
+
+        if (subtractOnBuy) {
+            if (currency) {
+                await this.currencies.subtractBalance(currency, totalPrice, memberID, this.guildID, reason)
+            } else {
+                await this.database.subtract(`${this.guildID}.${memberID}.money`, totalPrice)
+
+                this.cache.balance.update({
+                    guildID: this.guildID,
+                    memberID
+                })
+
+                this.emit('balanceSubtract', {
+                    type: 'subtract',
+                    guildID: this.guildID,
+                    memberID,
+                    amount: Number(totalPrice),
+                    balance: balance - totalPrice,
+                    reason
+                })
+            }
+        }
+
+        await this.database.set(`${this.guildID}.${memberID}.inventory`, newInventory)
+
+        if (savePurchasesHistory) {
+            const history = this.cache.history.get({
+                memberID,
+                guildID: this.guildID
+            }) || []
+
+            await this.database.push(`${this.guildID}.${memberID}.history`, {
+                id: history.length ? history[history.length - 1].id + 1 : 1,
+                memberID,
+                guildID: this.guildID,
+                name: item.name,
+                price: item.price,
+                quantity,
+                totalPrice,
+                role: item.role || null,
+                maxAmount: item.maxAmount,
+                date: new Date().toLocaleString(dateLocale),
+                custom: item.custom || {}
+            })
+
+            this.cache.history.update({
+                guildID: this.guildID,
+                memberID
+            })
+        }
+
+        await this.cache.updateMany(['shop', 'users', 'inventory'], {
+            memberID,
+            guildID: this.guildID
+        })
+
+        this.emit('shopItemBuy', {
+            guildID: this.guildID,
+            boughtBy: memberID,
+            item
+        })
+
+        return {
+            status: true,
+            message: 'OK',
+            item,
+            quantity,
+            totalPrice
+        }
+    }
+
+    /**
      * Sets a custom object for the item.
      * @param {object} custom Custom item data object.
      * @returns {Promise<boolean>} If set successfully: true, else: false.
@@ -263,6 +456,36 @@ class ShopItem extends Emitter {
 
         return true
     }
+
+    /**
+     * Saves the shop item object in database.
+     * @returns {Promise<ShopItem>} Shop item instance.
+     */
+    async save() {
+        const shopArray = (await this.database.fetch(`${this.guildID}.shop`)) || []
+        const itemIndex = shopArray.findIndex(item => item.id == this.id)
+
+        for (const prop in this.rawObject) {
+            this.rawObject[prop] = this[prop]
+        }
+
+        shopArray.splice(itemIndex, 1, this.rawObject)
+        await this.database.set(`${this.guildID}.shop`, shopArray)
+
+        this.cache.updateMany(['guilds', 'shop'], {
+            guildID: this.guildID
+        })
+
+        return this
+    }
+
+    /**
+     * Converts the shop item to string.
+     * @returns {string} String representation of shop item.
+     */
+    toString() {
+        return `Shop Item ${this.name} (ID in Shop: ${this.id}) - ${this.price} coins`
+    }
 }
 
 
@@ -274,7 +497,7 @@ class ShopItem extends Emitter {
  * @property {number} price Item price.
  * @property {string} message The message that will be returned on item use.
  * @property {string} description Item description.
- * @property {string} role ID of Discord Role that will be given to Wuser on item use.
+ * @property {string} role ID of Discord Role that will be given to the user on item use.
  * @property {number} maxAmount Max amount of the item that user can hold in their inventory.
  * @property {string} date Date when the item was added in the shop.
  * @property {object} custom Custom item properties object.

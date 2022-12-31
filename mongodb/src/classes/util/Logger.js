@@ -46,6 +46,7 @@ class Logger {
      * Sends an info message to the console.
      * @param {string} message A message to send.
      * @param {string} [color='red'] Message color to use.
+     * @returns {void}
      */
     info(message, color = 'cyan') {
         console.log(`${this.colors[color]}[Economy] ${message}${this.colors.reset}`)
@@ -55,6 +56,7 @@ class Logger {
      * Sends an error message to the console.
      * @param {string} message A message to send.
      * @param {string} [color='red'] Message color to use.
+     * @returns {void}
      */
     error(message, color = 'red') {
         console.error(`${this.colors[color]}[Economy - Error] ${message}${this.colors.reset}`)
@@ -64,10 +66,35 @@ class Logger {
      * Sends a debug message to the console.
      * @param {string} message A message to send.
      * @param {string} [color='yellow'] Message color to use.
+     * @returns {void}
      */
     debug(message, color = 'yellow') {
-        if (!this.options.debug) return // this.error('Debug mode is disabled.')
+        if (!this.options.debug) return
         console.log(`${this.colors[color]}[Economy] ${message}${this.colors.reset}`)
+    }
+
+    /**
+     * Sends a warning message to the console.
+     * @param {string} message A message to send.
+     * @param {string} [color='lightyellow'] Message color to use.
+     * @returns {void}
+     */
+    warn(message, color = 'lightyellow') {
+        console.log(`${this.colors[color]}[Economy - Warning] ${message}${this.colors.reset}`)
+    }
+
+    /**
+     * Sends a debug log for the optional parameter in method not specified.
+     * @param {string} method The method (e.g. "ShopItem.use") to set.
+     * @param {string} parameterName Parameter name to set.
+     * @param {any} defaultValue Default value to set.
+     * @returns {void}
+     */
+    optionalParamNotSpecified(method, parameterName, defaultValue) {
+        this.debug(
+            `${method} - "${parameterName}" optional parameter is not specified - defaulting to "${defaultValue}".`,
+            'lightcyan'
+        )
     }
 }
 

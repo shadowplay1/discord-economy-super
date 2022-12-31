@@ -8,6 +8,7 @@ const DatabaseManager = require('../managers/DatabaseManager')
 const CacheManager = require('../managers/CacheManager')
 const defaultUserObject = require('../structures/DefaultUserObject')
 const Bank = require('../classes/user/Bank')
+const Currency = require('../classes/Currency')
 
 /**
  * Cached item class. Used to work with data in Economy cache 
@@ -23,9 +24,9 @@ class CachedItem {
      * @param {any[]} constructorParams Array of parameters for `baseConstructor` to pass in.
      * @param {EconomyConfiguration} options Economy configuration object.
      * @param {DatabaseManager} database Database manager instance.
-     * @param {CacheManager} cacheManager Cache manager instance.
+     * @param {CacheManager} cache Cache manager instance.
      */
-    constructor(baseConstructor, constructorParams, options, database, cacheManager) {
+    constructor(baseConstructor, constructorParams, options, database, cache) {
 
         /**
          * Cache object.
@@ -63,7 +64,7 @@ class CachedItem {
          * Cache Manager.
          * @type {CacheManager}
          */
-        this.cacheManager = cacheManager
+        this.cacheManager = cache
     }
 
     /**
@@ -113,6 +114,14 @@ class CachedItem {
             )
 
             return economyUser
+        }
+
+        if (this.baseConstructor.name == 'Currency') {
+            const results = this.cache[id.guildID] || []
+
+            return results.map(result =>
+                new Currency(result.id, id.guildID, this.options, result, this._database, this.cacheManager)
+            )
         }
 
         if (this.baseConstructor.name == 'EconomyGuild') {
@@ -175,9 +184,10 @@ class CachedItem {
         const constructorName = this.baseConstructor.name
 
         const databaseProperties = {
-            'ShopItem': 'shop',
-            'InventoryItem': 'inventory',
-            'HistoryItem': 'history',
+            ShopItem: 'shop',
+            InventoryItem: 'inventory',
+            HistoryItem: 'history',
+            Currency: 'currencies'
         }
 
         const databaseProperty = databaseProperties[constructorName]
@@ -288,6 +298,20 @@ class CachedItem {
 
                 return Promise.resolve()
 
+            case 'Currency':
+                if (!id.guildID) {
+                    throw new EconomyError(errors.cache.invalidIdentifiers(
+                        constructorName,
+                        ['guildID'],
+                        Object.keys(id)
+                    ), 'INVALID_CACHING_IDENTIFIERS')
+                }
+
+                const currenciesArray = await this._database.fetch(`${id.guildID}.${databaseProperty}`) || []
+                this.set(id.guildID, currenciesArray)
+
+                return Promise.resolve()
+
             case 'ShopItem':
                 if (!id.guildID) {
                     throw new EconomyError(errors.cache.invalidIdentifiers(
@@ -297,7 +321,7 @@ class CachedItem {
                     ), 'INVALID_CACHING_IDENTIFIERS')
                 }
 
-                const shopArray = await this._database.fetch(`${id.guildID}.${databaseProperty}`)
+                const shopArray = await this._database.fetch(`${id.guildID}.${databaseProperty}`) || []
                 this.set(id.guildID, shopArray)
 
                 return Promise.resolve()

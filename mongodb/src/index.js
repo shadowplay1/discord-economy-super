@@ -8,6 +8,8 @@ const UtilsManager = require('./managers/UtilsManager')
 const BalanceManager = require('./managers/BalanceManager')
 const BankManager = require('./managers/BankManager')
 
+const CurrencyManager = require('./managers/CurrencyManager')
+
 const RewardManager = require('./managers/RewardManager')
 const CooldownManager = require('./managers/CooldownManager')
 
@@ -18,7 +20,6 @@ const HistoryManager = require('./managers/HistoryManager')
 const UserManager = require('./managers/UserManager')
 const SettingsManager = require('./managers/SettingsManager')
 
-
 const Emitter = require('./classes/util/Emitter')
 const EconomyError = require('./classes/util/EconomyError')
 
@@ -27,6 +28,8 @@ const GuildManager = require('./managers/GuildManager')
 
 const Logger = require('./classes/util/Logger')
 const ShopItem = require('./classes/ShopItem')
+
+const Currency = require('./classes/Currency')
 
 
 /**
@@ -55,243 +58,240 @@ class Economy extends Emitter {
          */
         this.colors = this._logger.colors
 
+        /**
+         * The QuickMongo instance.
+         * @type {QuickMongo}
+         * @private
+         */
+        this._mongo = null
 
-        const connectionStartDate = Date.now()
+        /**
+         * Module ready status.
+         * @type {?boolean}
+         */
+        this.ready = false
 
-        const QuickMongo = require('quick-mongo-super')
-        const mongo = new QuickMongo(options.connection)
+        /**
+         * Economy errored status.
+         * @type {?boolean}
+         */
+        this.errored = false
 
-        if (!options.connection) {
-            throw new EconomyError(errors.noConnectionData, 'NO_CONNECTION_DATA')
+        /**
+        * Module version.
+        * @type {string}
+        */
+        this.version = require('../package.json').version
+
+        if (options.debug) {
+            this._logger.debug('Economy version: ' + this.version, 'lightcyan')
         }
 
-        this._logger.debug('Connecting to MongoDB...', 'lightgreen')
+        /**
+         * Link to the module's documentation website.
+         * @type {string}
+         */
+        this.docs = 'https://des-docs.js.org'
 
-        mongo.connect().then(() => {
-            const connectionTime = Date.now() - connectionStartDate
-            this._logger.debug(`MongoDB connection is established in ${connectionTime} ms.`, 'lightgreen')
+        /**
+        * Utils manager methods class.
+        * @type {UtilsManager}
+        */
+        this.utils = new UtilsManager(options)
 
-            /**
-             * The QuickMongo instance.
-             * @type {QuickMongo}
-             * @private
-             */
-            this._mongo = mongo
+        /**
+         * Raw Economy configuration object.
+         * @type {EconomyConfiguration}
+         */
+        this.rawOptions = options
 
-            /**
-             * Module ready status.
-             * @type {?boolean}
-             */
-            this.ready = false
+        /**
+         * Economy configuration.
+         * @type {?EconomyConfiguration}
+         */
+        this.options = this.utils.checkOptions(options.optionsChecker, options)
 
-            /**
-             * Economy errored status.
-             * @type {?boolean}
-             */
-            this.errored = false
+        /**
+         * Econoomy managers list. Made for optimization purposes.
+         * @type {Manager[]}
+         */
+        this.managers = []
 
-            /**
-            * Module version.
-            * @type {string}
-            */
-            this.version = require('../package.json').version
+        /**
+         * Database checking interval.
+         * @type {?NodeJS.Timeout}
+        */
+        this.interval = null
 
-            if (options.debug) {
-                this._logger.debug('Economy version: ' + this.version, 'lightcyan')
-            }
+        /**
+         * Economy error class.
+         * @type {EconomyError}
+         */
+        this.EconomyError = EconomyError
 
-            /**
-             * Link to the module's documentation website.
-             * @type {string}
-             */
-            this.docs = 'https://des-docs.js.org'
+        /**
+         * Emitter class.
+         * @type {Emitter}
+         */
+        this.Emitter = Emitter
 
-            /**
-            * Utils manager methods class.
-            * @type {UtilsManager}
-            */
-            this.utils = new UtilsManager(options)
+        /**
+        * Balance manager.
+        * @type {BalanceManager}
+        */
+        this.balance = null
 
-            /**
-             * Economy configuration.
-             * @type {?EconomyConfiguration}
-             */
-            this.options = this.utils.checkOptions(options.optionsChecker, options)
+        /**
+        * Bank balance manager.
+        * @type {BankManager}
+        */
+        this.bank = null
 
-            /**
-             * Econoomy managers list. Made for optimization purposes.
-             * @type {Manager[]}
-             */
-            this.managers = []
+        /**
+         * Currency manager manager.
+         * @type {CurrencyManager}
+         */
+        this.currencies = null
 
-            /**
-             * Database checking interval.
-             * @type {?NodeJS.Timeout}
-            */
-            this.interval = null
+        /**
+        * Database manager manager.
+        * @type {DatabaseManager}
+        */
+        this.database = null
 
-            /**
-             * Economy error class.
-             * @type {EconomyError}
-             */
-            this.EconomyError = EconomyError
+        /**
+        * Shop manager manager.
+        * @type {ShopManager}
+        */
+        this.shop = null
 
-            /**
-             * Emitter class.
-             * @type {Emitter}
-             */
-            this.Emitter = Emitter
+        /**
+        * Inventory manager manager.
+        * @type {InventoryManager}
+        */
+        this.inventory = null
 
-            /**
-            * Balance methods class.
-            * @type {BalanceManager}
-            */
-            this.balance = null
+        /**
+        * History manager manager.
+        * @type {HistoryManager}
+        */
+        this.history = null
 
-            /**
-            * Bank balance methods class.
-            * @type {BankManager}
-            */
-            this.bank = null
+        /**
+        * Cooldowns manager.
+        * @type {CooldownManager}
+        */
+        this.cooldowns = null
 
-            /**
-            * Database manager methods class.
-            * @type {DatabaseManager}
-            */
-            this.database = null
+        /**
+        * Rewards manager.
+        * @type {RewardManager}
+        */
+        this.rewards = null
 
-            /**
-            * Shop manager methods class.
-            * @type {ShopManager}
-            */
-            this.shop = null
+        /**
+        * Cache Manager.
+        * @type {CacheManager}
+        */
+        this.cache = null
 
-            /**
-            * Inventory manager methods class.
-            * @type {InventoryManager}
-            */
-            this.inventory = null
+        /**
+        * Users manager.
+        * @type {UserManager}
+        */
+        this.users = null
 
-            /**
-            * History manager methods class.
-            * @type {HistoryManager}
-            */
-            this.history = null
+        /**
+        * Guild manager.
+        * @type {GuildManager}
+        */
+        this.guilds = null
 
-            /**
-            * Cooldowns methods class.
-            * @type {CooldownManager}
-            */
-            this.cooldowns = null
+        /**
+        * Settings manager.
+        * @type {SettingsManager}
+        */
+        this.settings = null
 
-            /**
-            * Rewards methods class.
-            * @type {RewardManager}
-            */
-            this.rewards = null
+        /**
+         * Economy instance.
+         * @type {Economy}
+         */
+        this.economy = this
 
-            /**
-            * Cache Manager.
-            * @type {CacheManager}
-            */
-            this.cache = null
+        this._logger.debug('Economy starting process launched.')
 
-            /**
-            * Economy users.
-            * @type {UserManager}
-            */
-            this.users = null
+        this.init().then(async status => {
+            if (status) {
+                const usersCache = {}
+                const cooldownsCache = {}
 
-            /**
-            * Economy guilds.
-            * @type {GuildManager}
-            */
-            this.guilds = null
+                const balanceCache = {}
+                const bankBalanceCache = {}
 
-            /**
-            * Settings manager methods class.
-            * @type {SettingsManager}
-            */
-            this.settings = null
+                const inventoryCache = {}
+                const historyCache = {}
 
-            /**
-             * Economy instance.
-             * @type {Economy}
-             */
-            this.economy = this
+                this._logger.debug('Caching the database...', 'cyan')
 
-            this._logger.debug('Economy starting process launched.')
+                const database = await this.database.all()
+                const guildEntries = Object.entries(database).filter(entry => !isNaN(entry[0]))
 
-            this.init().then(async status => {
-                if (status) {
-                    const usersCache = {}
-                    const cooldownsCache = {}
+                for (const [guildID, guildObject] of guildEntries) {
+                    const userEntries = Object.entries(guildObject).filter(entry => !isNaN(entry[0]))
 
-                    const balanceCache = {}
-					const bankBalanceCache = {}
+                    for (const [userID, userObject] of userEntries) {
+                        usersCache[userID] = userObject
 
-                    const inventoryCache = {}
-                    const historyCache = {}
-
-                    this._logger.debug('Caching the database...', 'cyan')
-
-                    const database = await this.database.all()
-                    const guildEntries = Object.entries(database).filter(entry => !isNaN(entry[0]))
-
-                    for (const [guildID, guildObject] of guildEntries) {
-                        const userEntries = Object.entries(guildObject).filter(entry => !isNaN(entry[0]))
-
-                        for (const [userID, userObject] of userEntries) {
-
-                            usersCache[userID] = userObject
-
-                            cooldownsCache[userID] = {
-                                daily: userObject.dailyCooldown,
-                                work: userObject.workCooldown,
-                                weekly: userObject.weeklyCooldown
-                            }
-
-                            balanceCache[userID] = {
-                                money: userObject.money,
-                                bank: userObject.bank,
-                            }
-
-							bankBalanceCache[userID] = {
-								balance: userObject.bank
-							}
-
-                            inventoryCache[userID] = userObject.inventory
-                            historyCache[userID] = userObject.history
-
-                            this.cache.users.set(guildID, usersCache)
-                            this.cache.cooldowns.set(guildID, cooldownsCache)
-
-                            this.cache.balance.set(guildID, balanceCache)
-							this.cache.bank.set(guildID, bankBalanceCache)
-
-                            this.cache.inventory.set(guildID, inventoryCache)
-                            this.cache.history.set(guildID, historyCache)
+                        cooldownsCache[userID] = {
+                            daily: userObject.dailyCooldown,
+                            work: userObject.workCooldown,
+                            weekly: userObject.weeklyCooldown
                         }
 
-                        this.cache.guilds.set(guildID, guildObject)
-                        this.cache.shop.set(guildID, guildObject.shop)
+                        balanceCache[userID] = {
+                            money: userObject.money,
+                            bank: userObject.bank,
+                        }
+
+                        bankBalanceCache[userID] = {
+                            balance: userObject.bank
+                        }
+
+
+                        inventoryCache[userID] = userObject.inventory
+                        historyCache[userID] = userObject.history
+
+                        this.cache.users.set(guildID, usersCache)
+                        this.cache.cooldowns.set(guildID, cooldownsCache)
+
+                        this.cache.balance.set(guildID, balanceCache)
+                        this.cache.bank.set(guildID, bankBalanceCache)
+
+                        this.cache.inventory.set(guildID, inventoryCache)
+                        this.cache.history.set(guildID, historyCache)
+
+                        await this.cache.inventory.update({
+                            memberID: userID,
+                            guildID
+                        })
                     }
 
-                    this.ready = true
+                    this.cache.currencies.set(guildID, guildObject.currencies || {})
 
-                    this._logger.debug('Economy is ready!', 'green')
-                    this.emit('ready', this)
+                    this.cache.guilds.set(guildID, guildObject)
+                    this.cache.shop.set(guildID, guildObject.shop)
+
+                    await this.cache.updateSpecified(['shop', 'guilds', 'currencies'], {
+                        guildID
+                    })
                 }
-            })
 
-        }).catch(err => {
-            console.log(
-                `${this.colors.cyan}[Economy] ${this.colors.red}Failed to connect to the ` +
-                `database${this.colors.red}. ` +
-                this.colors.reset
-            )
+                this.ready = true
 
-            throw err
+                this._logger.debug('Economy is ready!', 'green')
+                this.emit('ready', this)
+            }
         })
     }
 
@@ -335,58 +335,116 @@ class Economy extends Emitter {
         const sleep = promisify(setTimeout)
 
         const check = () => new Promise(resolve => {
-            this._init().then(status => {
+            try {
+                this._init().then(async status => {
+                    try {
+                        if (status) {
+                            this.errored = false
+                            this.ready = true
 
-                if (status) {
-                    this.errored = false
-                    this.ready = true
-                    return console.log(`${this.colors.green}Started successfully!`)
-                }
+                            this._logger.debug('Resolved the startup error.')
+                            return console.log(`${this.colors.green}Started successfully!${this.colors.reset}`)
+                        }
 
-                resolve(status)
-            }).catch(err => resolve(err))
+                        resolve(status)
+                    } catch (err) {
+                        resolve(err)
+                    }
+                }).catch(async err => {
+                    resolve(err)
+                })
+            } catch (err) {
+                console.log(6)
+                resolve(err)
+            }
         })
 
         this._logger.debug('Checking the Node.js version...')
 
-        return this.options.errorHandler.handleErrors ? this._init().catch(async err => {
-            if (!(err instanceof EconomyError)) this.errored = true
+        const handleErrors = () => {
+            return this.options.errorHandler.handleErrors ? this._init().catch(async err => {
+                if (err.name == 'DatabaseError' && !err.name.toLowerCase().includes('mongo')) this.errored = true
 
-            console.log(`${this.colors.red}Failed to start the module:${this.colors.cyan}`)
-            console.log(err)
+                for (const i in require.cache) {
+                    delete require.cache[i]
+                }
 
-            if (err.message.includes('This module is only supporting Node.js v14 or newer.')) {
-                process.exit(1)
-            } else console.log(`${this.colors.magenta}Retrying in ${retryingTime} seconds...${this.colors.reset}`)
+                console.log(`${this.colors.red}Failed to start the module:${this.colors.cyan}`)
+                console.log(err)
 
-            while (attempt < attempts && attempt !== -1) {
-                await sleep(time)
+                if (err.message.includes('This module is only supporting Node.js v14 or newer.')) {
+                    process.exit(1)
+                } else console.log(`${this.colors.magenta}Retrying in ${retryingTime} seconds...${this.colors.reset}`)
 
-                if (attempt < attempts) check().then(async res => {
-                    if (res.message) {
+                while (attempt < attempts && attempt !== -1) {
+                    await sleep(time)
 
-                        attempt++
+                    if (attempt < attempts) {
+                        const sendError = async res => {
+                            if (res.message) {
+                                for (const i in require.cache) {
+                                    delete require.cache[i]
+                                }
 
-                        console.log(`${this.colors.red}Failed to start the module:${this.colors.cyan}`)
-                        console.log(err)
-                        console.log(`\x1b[34mAttempt ${attempt}${attempts == Infinity ? '.' : `/${attempts}`}`)
+                                attempt++
 
-                        if (attempt == attempts) {
-                            console.log(
-                                `${this.colors.green}Failed to start the module within` +
-                                `${attempts} attempts...${this.colors.reset}`
-                            )
+                                console.log(`${this.colors.red}Failed to start the module:${this.colors.cyan}`)
+                                console.log(err)
+                                console.log(`\x1b[34mAttempt ${attempt}${attempts == Infinity ? '.' : `/${attempts}`}`)
 
-                            process.exit(1)
+                                if (attempt == attempts) {
+                                    console.log(
+                                        `${this.colors.green}Failed to start the module within ` +
+                                        `${attempts} attempts...${this.colors.reset}`
+                                    )
+
+                                    process.exit(1)
+                                }
+
+                                console.log(`${this.colors.magenta}Retrying in ${retryingTime} seconds...`)
+                                await sleep(time)
+
+                            } else attempt = -1
                         }
 
-                        console.log(`${this.colors.magenta}Retrying in ${retryingTime} seconds...`)
-                        await sleep(time)
+                        if (err.name == 'DatabaseError' && !err.name.toLowerCase().includes('mongo')) {
+                            await this._connect().catch(async err => {
+                                await sendError(err)
+                                return check().then(sendError)
+                            })
+                        }
 
-                    } else attempt = -1
-                })
-            }
-        }) : this._init()
+                        check().then(sendError)
+                    }
+                }
+            }) : this._init()
+        }
+
+        return handleErrors()
+    }
+
+    /**
+     * Connects the module to MongoDB database.
+     * @returns {Promise<void>}
+     * @private
+     */
+    async _connect() {
+        const connectionStartDate = Date.now()
+        const QuickMongo = require('quick-mongo-super')
+
+        const mongo = new QuickMongo(this.rawOptions?.connection)
+
+        if (!this.rawOptions?.connection) {
+            throw new EconomyError(errors.noConnectionData, 'NO_CONNECTION_DATA')
+        }
+
+        this._logger.debug('Connecting to MongoDB...', 'lightgreen')
+
+        await mongo.connect()
+        this._mongo = mongo
+
+        const connectionTime = Date.now() - connectionStartDate
+        this._logger.debug(`MongoDB connection was established in ${connectionTime} ms.`, 'lightgreen')
     }
 
     /**
@@ -397,12 +455,14 @@ class Economy extends Emitter {
     _init() {
         return new Promise(async (resolve, reject) => {
             try {
-                if (this.errored) return
-                if (this.ready) return
+                if (this.errored) return reject(new EconomyError(errors.errored, 'UNKNOWN_ERROR'))
+                if (this.ready) return reject(new EconomyError(errors.notReady, 'MODULE_NOT_READY'))
 
                 if (Number(process.version.split('.')[0].slice(1)) < 14) {
                     return reject(new EconomyError(errors.oldNodeVersion + process.version, 'OLD_NODE_VERSION'))
                 }
+
+                await this._connect()
 
                 this._logger.debug('Checking for updates...')
 
@@ -411,7 +471,6 @@ class Economy extends Emitter {
                     const version = await this.utils.checkUpdates()
 
                     if (!version.updated) {
-
                         console.log('\n\n')
                         console.log(this.colors.green + '╔═══════════════════════════════════════════════════════════════╗')
                         console.log(this.colors.green + '║ @ discord-economy-super                                - [] X ║')
@@ -428,7 +487,6 @@ class Economy extends Emitter {
 
                     } else {
                         if (this.options.updater.upToDateMessage) {
-
                             console.log('\n\n')
                             console.log(this.colors.green + '╔═══════════════════════════════════════════════════════════════╗')
                             console.log(this.colors.green + '║ @ discord-economy-super                                - [] X ║')
@@ -441,17 +499,14 @@ class Economy extends Emitter {
                             console.log(this.colors.red + `║  https://des-docs.js.org/#/docs/main/${version.packageVersion}/general/changelog  ║`)
                             console.log(this.colors.green + '╚═══════════════════════════════════════════════════════════════╝\x1b[37m')
                             console.log('\n\n')
-
                         }
                     }
                 } else this._logger.debug('Skipped updates checking...')
-
 
                 this._logger.debug('Starting the managers...', 'lightyellow')
                 this.start()
 
                 return resolve(true)
-
             } catch (err) {
                 this._logger.debug('Failed to start.', 'red')
 
@@ -467,6 +522,8 @@ class Economy extends Emitter {
      * @private
      */
     start() {
+        const packageVersion = require('../../package.json').version
+
         const managers = [
             {
                 name: 'utils',
@@ -479,6 +536,10 @@ class Economy extends Emitter {
             {
                 name: 'bank',
                 manager: BankManager
+            },
+            {
+                name: 'currencies',
+                manager: CurrencyManager
             },
             {
                 name: 'shop',
@@ -518,6 +579,9 @@ class Economy extends Emitter {
             'bankSet',
             'bankAdd',
             'bankSubtract',
+            'customCurrencySet',
+            'customCurrencyAdd',
+            'customCurrencySubtract',
             'shopItemAdd',
             'shopItemRemove',
             'shopClear',
@@ -552,6 +616,46 @@ class Economy extends Emitter {
 
         this.managers = managers
         this.economy = this
+
+        if (packageVersion.includes('dev')) {
+            console.log()
+
+            this._logger.warn(
+                'You are using a DEVELOPMENT version of Economy, which provides an early access ' +
+                'to all the new unfinished features and bug fixes.', 'lightmagenta'
+            )
+
+            this._logger.warn(
+                'Unlike the stable builds, dev builds DO NOT guarantee that the provided changes are bug-free ' +
+                'and won\'t result any degraded performance or crashes. ', 'lightmagenta')
+
+            this._logger.warn(
+                'Anything may break at any new commit, so it\'s really important to check ' +
+                'the module for new development updates.', 'lightmagenta'
+            )
+
+            this._logger.warn(
+                'They may include the bug fixes from the ' +
+                'old ones and include some new features.', 'lightmagenta'
+            )
+
+            this._logger.warn(
+                'Use development versions at your own risk.', 'lightmagenta'
+            )
+
+            console.log()
+
+            this._logger.warn(
+                'Need help? Join the Support Server - https://discord.gg/4pWKq8vUnb.', 'lightmagenta'
+            )
+
+            this._logger.warn(
+                'Please provide the full version of Economy you have installed ' +
+                '(check in your package.json) when asking for support.', 'lightmagenta'
+            )
+
+            console.log()
+        }
 
         return true
     }
@@ -664,6 +768,45 @@ class Economy extends Emitter {
 */
 
 /**
+* Emits when someone's custom currency was set.
+* @event Economy#customCurrencySet
+* @param {object} data Data object.
+* @param {string} data.type The type of operation.
+* @param {Currency} data.currency Currency that was changed.
+* @param {string} data.guildID Guild ID.
+* @param {string} data.memberID Member ID.
+* @param {number} data.amount Amount of money in completed operation.
+* @param {number} data.balance User's balance after the operation was completed successfully.
+* @param {string} data.reason The reason why the operation was completed.
+*/
+
+/**
+* Emits when someone's custom currency was added.
+* @event Economy#customCurrencyAdd
+* @param {object} data Data object.
+* @param {string} data.type The type of operation.
+* @param {Currency} data.currency Currency that was changed.
+* @param {string} data.guildID Guild ID.
+* @param {string} data.memberID Member ID.
+* @param {number} data.amount Amount of money in completed operation.
+* @param {number} data.balance User's balance after the operation was completed successfully.
+* @param {string} data.reason The reason why the operation was completed.
+*/
+
+/**
+* Emits when someone's custom currency was subtracted.
+* @event Economy#customCurrencySubtract
+* @param {object} data Data object.
+* @param {string} data.type The type of operation.
+* @param {Currency} data.currency Currency that was changed.
+* @param {string} data.guildID Guild ID.
+* @param {string} data.memberID Member ID.
+* @param {number} data.amount Amount of money in completed operation.
+* @param {number} data.balance User's balance after the operation was completed successfully.
+* @param {string} data.reason The reason why the operation was completed.
+*/
+
+/**
 * Emits when someone's added an item in the shop.
 * @event Economy#shopItemAdd
 * @param {object} data Data object.
@@ -673,7 +816,7 @@ class Economy extends Emitter {
 * @param {string} data.message Item message that will be returned on item use.
 * @param {string} data.description Item description.
 * @param {number} data.maxAmount Max amount of the item that user can hold in their inventory.
-* @param {string} data.role Role ID from your Discord server.
+* @param {string} data.role Role **ID** from your Discord server.
 * @param {string} data.date Formatted date when the item was added to the shop.
 */
 
@@ -687,7 +830,7 @@ class Economy extends Emitter {
 * @param {string} data.message Item message that will be returned on item use.
 * @param {string} data.description Item description.
 * @param {number} data.maxAmount Max amount of the item that user can hold in their inventory.
-* @param {string} data.role Role ID from your Discord server.
+* @param {string} data.role Role **ID** from your Discord server.
 * @param {string} data.date Formatted date when the item was added to the shop.
 */
 
@@ -707,7 +850,7 @@ class Economy extends Emitter {
 * @param {string} data.message Item message that will be returned on item use.
 * @param {string} data.description Item description.
 * @param {number} data.maxAmount Max amount of the item that user can hold in their inventory.
-* @param {string} data.role Role ID from your Discord server.
+* @param {string} data.role Role **ID** from your Discord server.
 * @param {string} data.date Formatted date when the item was added to the shop.
 */
 

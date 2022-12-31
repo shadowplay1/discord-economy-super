@@ -1,6 +1,11 @@
 
-const DatabaseManager = require('../../managers/DatabaseManager')
 const BalanceManager = require('../../managers/BalanceManager')
+
+const CurrencyManager = require('../../managers/CurrencyManager')
+const Currency = require('../Currency')
+
+const DatabaseManager = require('../../managers/DatabaseManager')
+const CacheManager = require('../../managers/CacheManager')
 
 
 /**
@@ -31,11 +36,79 @@ class Balance {
         this.guildID = guildID
 
         /**
+         * Economy configuration.
+         * @type {EconomyConfiguration}
+         * @private
+         */
+        this.options = ecoOptions
+
+        /**
+         * Database Manager.
+         * @type {DatabaseManager}
+         * @private
+         */
+        this.database = database
+
+        /**
+         * Cache Manager.
+         * @type {CacheManager}
+         * @private
+         */
+        this.cache = cache
+
+        /**
          * Balance Manager.
          * @type {BalanceManager}
          * @private
          */
         this._balance = new BalanceManager(ecoOptions, database, cache)
+
+        /**
+         * Currency Manager.
+         * @type {CurrencyManager}
+         * @private
+         */
+        this._currencies = new CurrencyManager(ecoOptions, database, cache)
+    }
+
+    /**
+     * Returns a factory with `get`, `set`, `add` and `subtract` methods to work with custom currencies.
+     * @param {string | number} currencyID Currency ID, its name or its symbol.
+     * @returns {CurrencyFactory} Factory object.
+     */
+    currency(currencyID) {
+        const currencies = this._currencies
+
+        const database = this.database
+        const cache = this.cache
+
+        const options = this.options
+
+        const memberID = this.memberID
+        const guildID = this.guildID
+
+        return {
+            get() {
+                return currencies.getBalance(currencyID, memberID, guildID)
+            },
+
+            async getCurrency() {
+                const currency = await currencies.get(currencyID, guildID)
+                return new Currency(currency.id, guildID, options, currency, database, cache)
+            },
+
+            set(amount, reason) {
+                return currencies.setBalance(currencyID, amount, memberID, guildID, reason)
+            },
+
+            add(amount, reason) {
+                return currencies.addBalance(currencyID, amount, memberID, guildID, reason)
+            },
+
+            subtract(amount, reason) {
+                return currencies.subtractBalance(currencyID, amount, memberID, guildID, reason)
+            }
+        }
     }
 
     /**
@@ -101,8 +174,14 @@ class Balance {
      * @param {UserTransferingOptions} options Transfering options.
      * @returns {Promise<TransferingResult>} Transfering result object.
      */
-    transfer(options) {
-        return this._balance.transfer(this.guildID, options)
+    async transfer(options) {
+        const transferingOptions = {
+            ...options,
+            receiverMemberID: this.memberID
+        }
+
+        const result = await this._balance.transfer(this.guildID, transferingOptions)
+        return result
     }
 }
 
@@ -163,6 +242,56 @@ class Balance {
  * The reason of subtracting the money from sender. (example: "sending money to {user}")
  * @property {string} [receivingReason='receiving money from user']
  * The reason of adding a money to receiver. (example: "receiving money from {user}")
+ */
+
+/**
+ * @typedef {Object} CurrencyObject
+ * @property {number} id Currency ID.
+ * @property {string} guildID Guild ID.
+ * @property {string} name Currency name.
+ * @property {string} [symbol] Currency symbol.
+ * @property {object} balances Currency balances object.
+ * @property {object} custom Custom currency data object.
+ */
+
+/**
+ * @typedef {object} CurrencyFactory
+ * @property {FactoryGet} get Gets the currency balance.
+ * @property {FactoryGetCurrency} getCurrency Gets the currency object.
+ * @property {FactorySet} set Sets the currency balance.
+ * @property {FactoryAdd} add Adds the money on the currency balance.
+ * @property {FactorySubtract} subtract Subtracts the money from the currency balance.
+ */
+
+/**
+ * @callback FactoryGet
+ * @returns {Promise<number>} Currency balance.
+ */
+
+/**
+ * @callback FactoryGetCurrency
+ * @returns {Promise<Currency>} Currency data object.
+ */
+
+/**
+ * @callback FactorySet
+ * @param {number} amount Amount of money to set.
+ * @param {string} [reason] The reason why the money was set.
+ * @returns {Promise<number>} Updated currency balance.
+ */
+
+/**
+ * @callback FactoryAdd
+ * @param {number} amount Amount of money to add.
+ * @param {string} [reason] The reason why the money was added.
+ * @returns {Promise<number>} Updated currency balance.
+ */
+
+/**
+ * @callback FactorySubtract
+ * @param {number} amount Amount of money to subtract.
+ * @param {string} [reason] The reason why the money was subtracted.
+ * @returns {Promise<number>} Updated currency balance.
  */
 
 /**

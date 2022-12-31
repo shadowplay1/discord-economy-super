@@ -172,6 +172,14 @@ class EconomyUser {
 
         return true
     }
+
+    /**
+     * Converts the economy user to string.
+     * @returns {string} String representation of economy user.
+     */
+    toString() {
+        return `Economy User - ID: ${this.id} (Guild ID: ${this.guildID})`
+    }
 }
 
 /**
@@ -219,7 +227,7 @@ class EconomyUser {
  * @property {number} price Item price.
  * @property {string} message The message that will be returned on item use.
  * @property {string} description Item description.
- * @property {string} role ID of Discord Role that will be given to Wuser on item use.
+ * @property {string} role ID of Discord Role that will be given to the user on item use.
  * @property {number} maxAmount Max amount of the item that user can hold in their inventory.
  * @property {string} date Date when the item was added in the shop.
  * @property {object} custom Custom item properties object.

@@ -50,13 +50,27 @@ class Items {
      * @param {string | number} itemID Item ID or name.
      * @param {number} [quantity=1] Quantity of items to buy. Default: 1.
      * 
+     * @param {string | number} [currency=null] 
+     * The currency to subtract the money from. 
+     * Can be omitted by specifying 'null' or ignoring this parameter.
+     * Requires the `subtractOnBuy` option to be enabled. Default: null.
+     * 
      * @param {string} [reason='received the item from the shop'] 
      * The reason why the money was subtracted. Default: 'received the item from the shop'.
      * 
      * @returns {Promise<ShopOperationInfo>} Operation information object.
      */
-    buy(itemID, quantity, reason) {
-        return this._shop.buyItem(itemID, this.memberID, this.guildID, quantity, reason)
+    buy(itemID, quantity, currency, reason) {
+        return this._shop.buyItem(itemID, this.memberID, this.guildID, quantity, currency, reason)
+    }
+
+    /**
+     * Returns the stacked item in user inventory: it shows the quantity and total price of the item.
+     * @param {string | number} itemID Item ID or name.
+     * @returns {Promise<StackedInventoryItemObject>} Stacked item object.
+     */
+    stack(itemID) {
+        return this._inventory.stack(itemID, this.memberID, this.guildID)
     }
 
     /**
@@ -94,7 +108,7 @@ class Items {
 
     /**
      * Uses the item from user's inventory.
-     * @param {number | string} itemID Item ID or name.
+     * @param {string | number} itemID Item ID or name.
      * @param {Client} [client] Discord Client [Specify if the role will be given in a Discord server].
      * @returns {Promise<string>} Item message.
      */
@@ -120,6 +134,14 @@ class Items {
     }
 
     /**
+     * Clears the inventory.
+     * @returns {Promise<boolean>} If cleared successfully: true, else: false.
+     */
+    clear() {
+        return this._inventory.clear(this.memberID, this.guildID)
+    }
+
+    /**
      * Removes the item from user's inventory.
      *
      * This method is an alias for 'Items.remove' method
@@ -137,6 +159,14 @@ class Items {
  * @property {string} message Operation message.
  * @property {ShopItem | InventoryItem} item Item object.
  * @property {number} quantity Item quantity.
+ */
+
+/**
+ * Stacked item object.
+ * @typedef {object} StackedInventoryItemObject
+ * @property {number} quantity Quantity of the item in inventory.
+ * @property {number} totalPrice Total price of the items in inventory.
+ * @property {InventoryItem} item The stacked item.
  */
 
 /**

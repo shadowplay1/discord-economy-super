@@ -1,4 +1,7 @@
+const DatabaseManager = require('../managers/DatabaseManager')
 const CacheManager = require('../managers/CacheManager')
+
+const CooldownManager = require('../managers/CooldownManager')
 
 
 /**
@@ -13,8 +16,9 @@ class CooldownItem {
      * @param {EconomyConfiguration} ecoOptions Economy configuration.
      * @param {CooldownsObject} cooldownsObject User cooldowns object.
      * @param {DatabaseManager} database Database manager.
+     * @param {CacheManager} cache Cache manager.
      */
-    constructor(guildID, memberID, ecoOptions, cooldownsObject, database) {
+    constructor(guildID, memberID, ecoOptions, cooldownsObject, database, cache) {
 
         /**
          * Member ID.
@@ -28,6 +32,12 @@ class CooldownItem {
          */
         this.guildID = guildID
 
+        /**
+         * Cooldown Manager.
+         * @type {CooldownManager}
+         * @private
+         */
+        this.cooldowns = new CooldownManager(ecoOptions, database, cache)
 
         /**
          * Daily cooldown.
@@ -46,6 +56,30 @@ class CooldownItem {
          * @type {number}
          */
         this.weekly = cooldownsObject.weekly || 0
+    }
+
+    /**
+      * Clears user's daily cooldown.
+      * @returns {Promise<boolean>} If cleared: true; else: false
+      */
+    clearDaily() {
+        return this.cooldowns.clearDaily(this.guildID, this.memberID)
+    }
+
+    /**
+     * Clears user's work cooldown.
+     * @returns {Promise<boolean>} If cleared: true; else: false
+     */
+    clearWork() {
+        return this.cooldowns.clearWork(this.guildID, this.memberID)
+    }
+
+    /**
+     * Clears user's weekly cooldown.
+     * @returns {Promise<boolean>} If cleared: true; else: false
+     */
+    clearWeekly() {
+        return this.cooldowns.clearWeekly(this.guildID, this.memberID)
     }
 }
 

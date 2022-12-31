@@ -267,7 +267,7 @@ class UtilsManager {
                     output[i] = ecoOptions[i]
                 }
 
-                for (const y of Object.keys(DefaultConfiguration[i]).filter(key => isNaN(key))) {
+                for (const y of Object.keys(DefaultConfiguration[i] || {}).filter(key => isNaN(key))) {
 
                     if (ecoOptions[i]?.[y] == undefined || output[i]?.[y] == undefined) {
                         try {
@@ -317,7 +317,7 @@ class UtilsManager {
                 }
 
 
-                for (const y of Object.keys(DefaultConfiguration[i]).filter(key => isNaN(key))) {
+                for (const y of Object.keys(DefaultConfiguration[i] || {}).filter(key => isNaN(key))) {
 
                     if (typeof output[i]?.[y] !== typeof DefaultConfiguration[i][y]) {
                         if (!options.ignoreInvalidTypes) {
@@ -338,7 +338,7 @@ class UtilsManager {
                 const objectKeys = Object.keys(ecoOptions[i]).filter(key => isNaN(key))
 
                 for (const y of objectKeys) {
-                    const allKeys = Object.keys(DefaultConfiguration[i])
+                    const allKeys = Object.keys(DefaultConfiguration[i] || {})
                     const index = allKeys.indexOf(y)
 
                     if (!allKeys[index]) {
@@ -365,7 +365,7 @@ class UtilsManager {
 					'Configuration from ' +
 						`${optionsFileExists ?
 								`${dirName}${slash}economy.config.${fileExtension}` :
-								'the constructor'}`
+								'the constructor.'}`
 				)
             }
 
@@ -379,7 +379,7 @@ class UtilsManager {
 					'Configuration from ' +
 					`${optionsFileExists ?
 							`${dirName}${slash}economy.config.${fileExtension}` :
-							'the constructor'}`
+							'the constructor.'}`
 				)
             }
         }

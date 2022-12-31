@@ -125,11 +125,6 @@ class UserManager extends BaseManager {
                     userID, guildID, this.options, userObject, this.database, this.cache
                 )
 
-                delete economyUser.connection
-                delete economyUser.database
-                delete economyUser.utils
-                delete economyUser.shop
-
                 users.push(economyUser)
             }
         }

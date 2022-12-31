@@ -3,6 +3,7 @@ const EconomyGuild = require('./EconomyGuild')
 
 /**
  * Empty economy guild class.
+ * @extends {EconomyGuild}
  */
 class EmptyEconomyGuild extends EconomyGuild {
 
