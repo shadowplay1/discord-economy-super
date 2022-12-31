@@ -14,6 +14,8 @@ const RewardManager = require('./src/managers/RewardManager')
 const CooldownManager = require('./src/managers/CooldownManager')
 const HistoryManager = require('./src/managers/HistoryManager')
 
+const CurrencyManager = require('./src/managers/CurrencyManager')
+
 const UserManager = require('./src/managers/UserManager')
 const GuildManager = require('./src/managers/GuildManager')
 
@@ -25,6 +27,8 @@ const EconomyUser = require('./src/classes/EconomyUser')
 
 const EmptyEconomyGuild = require('./src/classes/EmptyEconomyGuild')
 const EmptyEconomyUser = require('./src/classes/EmptyEconomyUser')
+
+const Currency = require('./src/classes/Currency')
 
 const ShopItem = require('./src/classes/ShopItem')
 const InventoryItem = require('./src/classes/InventoryItem')
@@ -66,6 +70,7 @@ module.exports = {
     InventoryManager,
 
     HistoryManager,
+    CurrencyManager,
 
     UserManager,
     GuildManager,
@@ -76,6 +81,8 @@ module.exports = {
     ShopItem,
     InventoryItem,
     HistoryItem,
+
+    Currency,
 
     Leaderboards,
     Settings,

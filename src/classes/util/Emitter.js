@@ -60,6 +60,7 @@ module.exports = Emitter
 /**
  * @typedef {'balanceSet' | 'balanceAdd' | 'balanceSubtract' |
  * 'bankSet' | 'bankAdd' | 'bankSubtract' |
+ * 'customCurrencySet' | 'customCurrencyAdd' | 'customCurrencySubtract' |
  * 'shopItemAdd' | 'shopItemEdit' | 'shopItemBuy' |
  * 'shopItemUse' | 'shopClear' |
  * 'ready' | 'destroy'} EconomyEvents

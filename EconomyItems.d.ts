@@ -49,6 +49,8 @@ export import RewardManager = require('./typings/managers/RewardManager')
 export import CooldownManager = require('./typings/managers/CooldownManager')
 export import HistoryManager = require('./typings/managers/HistoryManager')
 
+export import CurrencyManager = require('./typings/managers/CurrencyManager')
+
 export import UserManager = require('./typings/managers/UserManager')
 export import GuildManager = require('./typings/managers/GuildManager')
 
@@ -68,6 +70,8 @@ export import HistoryItem = require('./typings/classes/HistoryItem')
 export import Leaderboards = require('./typings/classes/guild/Leaderboards')
 export import Settings = require('./typings/classes/guild/Settings')
 export import Shop = require('./typings/classes/guild/Shop')
+
+export import Currency = require('./typings/classes/Currency')
 
 export import Balance = require('./typings/classes/user/Balance')
 export import Bank = require('./typings/classes/user/Bank')

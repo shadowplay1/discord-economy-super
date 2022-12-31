@@ -163,7 +163,7 @@ class Shop extends BaseManager {
 
     /**
      * Edits the item in the shop.
-     * @param {number | string} itemID Item ID or name.
+     * @param {string | number} itemID Item ID or name.
      * @param {'description' | 'price' | 'name' | 'message' | 'maxAmount' | 'role'} itemProperty 
      * This argument means what thing in item you want to edit (item property). 
      * Available item properties are 'description', 'price', 'name', 'message', 'amount', 'role', 'custom'.
@@ -240,7 +240,7 @@ class Shop extends BaseManager {
      * Edits the item in the shop.
      * 
      * This method is an alias for the `Shop.editItem()` method.
-     * @param {number | string} itemID Item ID or name.
+     * @param {string | number} itemID Item ID or name.
      * @param {'description' | 'price' | 'name' | 'message' | 'maxAmount' | 'role'} itemProperty 
      * This argument means what thing in item you want to edit (item property). 
      * Available item properties are 'description', 'price', 'name', 'message', 'amount', 'role', 'custom'.
@@ -296,7 +296,7 @@ module.exports = Shop
  * @property {number} price Item price.
  * @property {string} message The message that will be returned on item use.
  * @property {string} description Item description.
- * @property {string} role ID of Discord Role that will be given to Wuser on item use.
+ * @property {string} role ID of Discord Role that will be given to the user on item use.
  * @property {number} maxAmount Max amount of the item that user can hold in their inventory.
  * @property {string} date Date when the item was added in the shop.
  * @property {object} custom Custom item properties object.
@@ -309,7 +309,7 @@ module.exports = Shop
  * @property {string} [message='You have used this item!'] Item message that will be returned on use.
  * @property {string} [description='Very mysterious item.'] Item description.
  * @property {string | number} [maxAmount=null] Max amount of the item that user can hold in their inventory.
- * @property {string} [role=null] Role ID from your Discord server.
+ * @property {string} [role=null] Role **ID** from your Discord server.
  * @property {object} [custom] Custom item properties object.
  * @returns {ItemData} Item info.
  */

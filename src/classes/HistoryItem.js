@@ -36,6 +36,12 @@ class HistoryItem {
         this.options = ecoOptions
 
         /**
+         * Raw item object.
+         * @type {HistoryData}
+         */
+        this.rawObject = itemObject
+
+        /**
          * Item ID in history.
          * @type {number}
          */
@@ -66,7 +72,7 @@ class HistoryItem {
         this.date = itemObject.date
 
         /**
-         * ID of Discord Role that will be given to Wuser on item use.
+         * ID of Discord Role that will be given to the user on item use.
          * @type {string}
          */
         this.role = itemObject.role
@@ -133,6 +139,32 @@ class HistoryItem {
         history.splice(historyItemIndex, 1)
 
         return this.database.set(`${guildID}.${memberID}.history`, history)
+    }
+
+    /**
+     * Saves the history item object in database.
+     * @returns {HistoryItem} History item instance.
+     */
+    save() {
+        const historyArray = this.database.fetch(`${this.guildID}.${this.memberID}.history`) || []
+        const itemIndex = historyArray.findIndex(item => item.id == this.id)
+
+        for (const prop in this.rawObject) {
+            this.rawObject[prop] = this[prop]
+        }
+
+        historyArray.splice(itemIndex, 1, this.rawObject)
+        this.database.set(`${this.guildID}.${this.memberID}.history`, historyArray)
+
+        return this
+    }
+
+    /**
+     * Converts the history item to string.
+     * @returns {string} String representation of history item.
+     */
+    toString() {
+        return `History Item ${this.name} (ID in History: ${this.id}) - ${this.price} coins`
     }
 }
 

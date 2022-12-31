@@ -5,6 +5,9 @@ const EconomyError = require('../classes/util/EconomyError')
 const FetchManager = require('./FetchManager')
 const DatabaseManager = require('./DatabaseManager')
 
+const CurrencyManager = require('./CurrencyManager')
+const Currency = require('../classes/Currency')
+
 const errors = require('../structures/errors')
 
 
@@ -44,12 +47,57 @@ class BalanceManager extends Emitter {
          * @private
          */
         this.database = new DatabaseManager(options)
+
+        /**
+         * Currency Manager.
+         * @type {CurrencyManager}
+         * @private
+         */
+        this._currencies = new CurrencyManager(options, database)
+    }
+
+    /**
+     * Returns a factory with `get`, `set`, `add` and `subtract` methods to work with custom currencies.
+     * @param {string | number} currencyID Currency ID, its name or its symbol.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @returns {CurrencyFactory} Factory object.
+     */
+    currency(currencyID, memberID, guildID) {
+        const currencies = this._currencies
+
+        const database = this.database
+
+        const options = this.options
+
+        return {
+            get() {
+                return currencies.getBalance(currencyID, memberID, guildID)
+            },
+
+            getCurrency() {
+                const currency = currencies.get(currencyID, guildID)
+                return new Currency(currency.id, guildID, options, currency, database)
+            },
+
+            set(amount, reason) {
+                return currencies.setBalance(currencyID, amount, memberID, guildID, reason)
+            },
+
+            add(amount, reason) {
+                return currencies.addBalance(currencyID, amount, memberID, guildID, reason)
+            },
+
+            subtract(amount, reason) {
+                return currencies.subtractBalance(currencyID, amount, memberID, guildID, reason)
+            }
+        }
     }
 
     /**
     * Fetches the user's balance.
-    * @param {string} memberID Member ID
-    * @param {string} guildID Guild ID
+    * @param {string} memberID Member ID.
+    * @param {string} guildID Guild ID.
     * @returns {number} User's balance
     */
     fetch(memberID, guildID) {
@@ -68,8 +116,8 @@ class BalanceManager extends Emitter {
     * Gets the user's balance.
     * 
     * This method is an alias of `BalanceManager.fetch()` method.
-    * @param {string} memberID Member ID
-    * @param {string} guildID Guild ID
+    * @param {string} memberID Member ID.
+    * @param {string} guildID Guild ID.
     * @returns {number} User's balance
     */
     get(memberID, guildID) {
@@ -331,6 +379,46 @@ class BalanceManager extends Emitter {
  * @property {string} receivingReason Receiving reason.
  * @property {number} senderBalance New sender balance.
  * @property {number} receiverBalance New receiver balance.
+ */
+
+/**
+ * @typedef {object} CurrencyFactory
+ * @property {FactoryGet} get Gets the currency balance.
+ * @property {FactoryGetCurrency} getCurrency Gets the currency object.
+ * @property {FactorySet} set Sets the currency balance.
+ * @property {FactoryAdd} add Adds the money on the currency balance.
+ * @property {FactorySubtract} subtract Subtracts the money from the currency balance.
+ */
+
+/**
+ * @callback FactoryGet
+ * @returns {number} Currency balance.
+ */
+
+/**
+ * @callback FactoryGetCurrency
+ * @returns {Currency} Currency data object.
+ */
+
+/**
+ * @callback FactorySet
+ * @param {number} amount Amount of money to set.
+ * @param {string} [reason] The reason why the money was set.
+ * @returns {number} Updated currency balance.
+ */
+
+/**
+ * @callback FactoryAdd
+ * @param {number} amount Amount of money to add.
+ * @param {string} [reason] The reason why the money was added.
+ * @returns {number} Updated currency balance.
+ */
+
+/**
+ * @callback FactorySubtract
+ * @param {number} amount Amount of money to subtract.
+ * @param {string} [reason] The reason why the money was subtracted.
+ * @returns {number} Updated currency balance.
  */
 
 /**

@@ -20,7 +20,6 @@ class EconomyGuild {
      * @param {any} guildObject Economy guild object.
      */
     constructor(id, ecoOptions, guildObject) {
-        delete guildObject.settings
 
         /**
          * Guild User Manager.
@@ -66,25 +65,26 @@ class EconomyGuild {
          */
         this.settings = new Settings(id, ecoOptions)
 
-
+        delete guildObject.settings
         delete guildObject.shop
+        delete guildObject.currencies
 
         for (const [key, value] of Object.entries(guildObject || {})) {
             this[key] = value
         }
     }
 
-	/**
-	 * Creates an economy guild object in database.
-	 * @returns {boolean} If created successfully: true; else: false.
-	 */
-	create() {
-		if (!this.exists) {
-			return this.reset()
-		}
+    /**
+     * Creates an economy guild object in database.
+     * @returns {boolean} If created successfully: true; else: false.
+     */
+    create() {
+        if (!this.exists) {
+            return this.reset()
+        }
 
-		return this.exists
-	}
+        return this.exists
+    }
 
     /**
      * Deletes the guild from database.
@@ -105,6 +105,14 @@ class EconomyGuild {
             settings: []
         })
     }
+
+    /**
+     * Converts the economy guild to string.
+     * @returns {string} String representation of economy guild.
+     */
+    toString() {
+        return `Economy Guild - ID: ${this.id}`
+    }
 }
 
 /**
@@ -114,7 +122,7 @@ class EconomyGuild {
  * @property {string} [message='You have used this item!'] Item message that will be returned on use.
  * @property {string} [description='Very mysterious item.'] Item description.
  * @property {string | number} [maxAmount=null] Max amount of the item that user can hold in their inventory.
- * @property {string} [role=null] Role ID from your Discord server.
+ * @property {string} [role=null] Role **ID** from your Discord server.
  */
 
 /**
@@ -125,7 +133,7 @@ class EconomyGuild {
  * @property {number} price Item price.
  * @property {string} message The message that will be returned on item use.
  * @property {string} description Item description.
- * @property {string} role ID of Discord Role that will be given to Wuser on item use.
+ * @property {string} role ID of Discord Role that will be given to the user on item use.
  * @property {number} maxAmount Max amount of the item that user can hold in their inventory.
  * @property {string} date Date when the item was added in the shop.
  * @property {object} custom Custom item properties object.

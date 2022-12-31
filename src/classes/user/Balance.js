@@ -2,6 +2,9 @@
 const DatabaseManager = require('../../managers/DatabaseManager')
 const BalanceManager = require('../../managers/BalanceManager')
 
+const CurrencyManager = require('../../managers/CurrencyManager')
+const Currency = require('../Currency')
+
 
 /**
  * User balance class.
@@ -35,7 +38,53 @@ class Balance {
          * @private
          */
         this._balance = new BalanceManager(ecoOptions, database)
+
+        /**
+         * Currency Manager.
+         * @type {CurrencyManager}
+         * @private
+         */
+        this._currencies = new CurrencyManager(ecoOptions, database)
     }
+
+    /**
+     * Returns a factory with `get`, `set`, `add` and `subtract` methods to work with custom currencies.
+     * @param {string | number} currencyID Currency ID, its name or its symbol.
+     * @returns {CurrencyFactory} Factory object.
+     */
+    currency(currencyID) {
+        const currencies = this._currencies
+        const database = this.database
+
+        const options = this.options
+
+        const memberID = this.memberID
+        const guildID = this.guildID
+
+        return {
+            get() {
+                return currencies.getBalance(currencyID, memberID, guildID)
+            },
+
+            getCurrency() {
+                const currency = currencies.get(currencyID, guildID)
+                return new Currency(currency.id, guildID, options, currency, database)
+            },
+
+            set(amount, reason) {
+                return currencies.setBalance(currencyID, amount, memberID, guildID, reason)
+            },
+
+            add(amount, reason) {
+                return currencies.addBalance(currencyID, amount, memberID, guildID, reason)
+            },
+
+            subtract(amount, reason) {
+                return currencies.subtractBalance(currencyID, amount, memberID, guildID, reason)
+            }
+        }
+    }
+
 
     /**
      * Sets the money amount on user's balance.
@@ -101,7 +150,13 @@ class Balance {
      * @returns {TransferingResult} Transfering result object.
      */
     transfer(options) {
-        return this._balance.transfer(this.guildID, options)
+        const transferingOptions = {
+            ...options,
+            receiverMemberID: this.memberID
+        }
+
+        const result = this._balance.transfer(this.guildID, transferingOptions)
+        return result
     }
 }
 
@@ -116,6 +171,46 @@ class Balance {
  * @property {string} receivingReason Receiving reason.
  * @property {number} senderBalance New sender balance.
  * @property {number} receiverBalance New receiver balance.
+ */
+
+/**
+ * @typedef {object} CurrencyFactory
+ * @property {FactoryGet} get Gets the currency balance.
+ * @property {FactoryGetCurrency} getCurrency Gets the currency object.
+ * @property {FactorySet} set Sets the currency balance.
+ * @property {FactoryAdd} add Adds the money on the currency balance.
+ * @property {FactorySubtract} subtract Subtracts the money from the currency balance.
+ */
+
+/**
+ * @callback FactoryGet
+ * @returns {number} Currency balance.
+ */
+
+/**
+ * @callback FactoryGetCurrency
+ * @returns {Currency} Currency data object.
+ */
+
+/**
+ * @callback FactorySet
+ * @param {number} amount Amount of money to set.
+ * @param {string} [reason] The reason why the money was set.
+ * @returns {number} Updated currency balance.
+ */
+
+/**
+ * @callback FactoryAdd
+ * @param {number} amount Amount of money to add.
+ * @param {string} [reason] The reason why the money was added.
+ * @returns {number} Updated currency balance.
+ */
+
+/**
+ * @callback FactorySubtract
+ * @param {number} amount Amount of money to subtract.
+ * @param {string} [reason] The reason why the money was subtracted.
+ * @returns {number} Updated currency balance.
  */
 
 /**

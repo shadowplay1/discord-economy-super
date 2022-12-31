@@ -117,6 +117,13 @@ class HistoryManager {
         const item = shop.find(item => item.id == itemID || item.name == itemID)
         const totalPrice = item.price * quantity
 
+        if (!arguments[3]) {
+            this.database.logger.optionalParamNotSpecified(
+                'HistoryItem.buy',
+                'quantity',
+                quantity
+            )
+        }
 
         if (typeof itemID !== 'number' && typeof itemID !== 'string') {
             throw new EconomyError(errors.invalidTypes.editItemArgs.itemID + typeof itemID, 'INVALID_TYPE')
@@ -235,7 +242,7 @@ class HistoryManager {
  * @property {number} price Item price.
  * @property {string} message The message that will be returned on item use.
  * @property {string} description Item description.
- * @property {string} role ID of Discord Role that will be given to Wuser on item use.
+ * @property {string} role ID of Discord Role that will be given to the user on item use.
  * @property {number} maxAmount Max amount of the item that user can hold in their inventory.
  * @property {string} date Date when the item was added in the shop.
  * @property {object} custom Custom item properties object.

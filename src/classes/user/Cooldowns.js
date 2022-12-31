@@ -16,21 +16,16 @@ class Cooldowns {
      * Cooldowns class.
      * @param {RawEconomyUser} userObject User object from database.
      * @param {EconomyConfiguration} options Economy configuration.
+     * @param {DatabaseManager} database Database Manager.
      */
-    constructor(userObject, options) {
+    constructor(userObject, options, database) {
+        const settings = database.get(`${userObject.guildID}.settings`)
 
         /**
          * Economy configuration.
          * @type {EconomyConfiguration}
          */
         this.options = options
-
-        /**
-         * Database Manager.
-         * @type {DatabaseManager}
-         * @private
-         */
-        this._database = new DatabaseManager(options)
 
         /**
          * Cooldowns object.
@@ -44,26 +39,20 @@ class Cooldowns {
         }
 
         /**
-         * Raw user object.
-         * @type {RawEconomyUser}
-         * @private
-         */
-        this._rawUser = userObject
-
-        /**
          * Cooldowns configuration object.
          * @type {RewardCooldowns}
          */
         this._rewardCooldowns = {
-            daily: this._database.get(`${this._rawUser.guildID}.settings.dailyCooldown`)
-                || this.options.dailyCooldown,
-
-            work: this._database.get(`${this._rawUser.guildID}.settings.workCooldown`)
-                || this.options.workCooldown,
-
-            weekly: this._database.get(`${this._rawUser.guildID}.settings.weeklyCooldown`)
-                || this.options.weeklyCooldown
+            daily: settings?.dailyCooldown || options.dailyCooldown,
+            work: settings?.workCooldown || options.workCooldown,
+            weekly: settings?.weeklyCooldown || options.weeklyCooldown
         }
+
+        /**
+         * Database Manager.
+         * @type {DatabaseManager}
+         */
+        this.database = database
     }
 
     /**
@@ -73,7 +62,6 @@ class Cooldowns {
      */
     getCooldown(type) {
         const allCooldowns = this.getAll()
-
         return allCooldowns[type]
     }
 
@@ -83,7 +71,6 @@ class Cooldowns {
      */
     getDaily() {
         const allCooldowns = this.getAll()
-
         return allCooldowns.daily
     }
 
@@ -93,7 +80,6 @@ class Cooldowns {
      */
     getWork() {
         const allCooldowns = this.getAll()
-
         return allCooldowns.work
     }
 
@@ -103,7 +89,6 @@ class Cooldowns {
      */
     getWeekly() {
         const allCooldowns = this.getAll()
-
         return allCooldowns.weekly
     }
 
@@ -127,6 +112,33 @@ class Cooldowns {
             result[rewardType] = cooldownObject
         }
 
+        return result
+    }
+
+    /**
+      * Clears user's daily cooldown.
+      * @returns {boolean} If cleared: true; else: false
+      */
+    clearDaily() {
+        const result = this.database.delete(`${guildID}.${memberID}.dailyCooldown`)
+        return result
+    }
+
+    /**
+     * Clears user's work cooldown.
+     * @returns {boolean} If cleared: true; else: false
+     */
+    clearWork() {
+        const result = this.database.delete(`${guildID}.${memberID}.workCooldown`)
+        return result
+    }
+
+    /**
+     * Clears user's weekly cooldown.
+     * @returns {boolean} If cleared: true; else: false
+     */
+    clearWeekly() {
+        const result = this.database.delete(`${guildID}.${memberID}.weeklyCooldown`)
         return result
     }
 }

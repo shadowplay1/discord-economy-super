@@ -11,6 +11,9 @@ const errorCodes = [
     'ROLE_NOT_FOUND',
     'PURCHASES_HISTORY_DISABLED',
     'SETTINGS_KEY_INVALID',
+    'READONLY_PROPERTY',
+    'INVALID_PROPERTY',
+    'CURRENCY_NOT_FOUND',
     'INVALID_ERROR_CODE',
     'MODULE_NOT_READY',
     'STORAGE_FILE_ERROR'
@@ -24,7 +27,7 @@ class EconomyError extends Error {
 
     /**
      * Creates an 'EconomyError' instance.
-     * @param {string | Error} message Error message.
+     * @param {string | Error} errorMessage Error message.
      * @param {'INVALID_TYPE' |
      * 'UNKNOWN_ERROR' | 
      * 'PARAMETER_NOT_SPECIFIED' |
@@ -35,21 +38,24 @@ class EconomyError extends Error {
      * 'ROLE_NOT_FOUND' |
      * 'PURCHASES_HISTORY_DISABLED' |
      * 'SETTINGS_KEY_INVALID' |
+     * 'READONLY_PROPERTY' |
+     * 'INVALID_PROPERTY' |
+     * 'CURRENCY_NOT_FOUND' |
      * 'INVALID_ERROR_CODE' |
      * 'MODULE_NOT_READY' |
      * 'STORAGE_FILE_ERROR'} code Error code.
      */
-    constructor(message = '', code = '') {
-        if (message instanceof Error == 'Error') {
-            super(message.message)
+    constructor(errorMessage = '', code = '') {
+        if (errorMessage instanceof Error == 'Error') {
+            super(errorMessage.errorMessage)
             Error.captureStackTrace(this, this.constructor)
         }
 
-        if (typeof message == 'string') {
-            super(message || 'Unknown Error')
+        if (typeof errorMessage == 'string') {
+            super(errorMessage || 'Unknown Error')
         }
 
-        if (!message) {
+        if (!errorMessage) {
             code = 'UNKNOWN_ERROR'
         }
 
@@ -63,13 +69,18 @@ class EconomyError extends Error {
          * 'UNKNOWN_ERROR' | 
          * 'PARAMETER_NOT_SPECIFIED' |
          * 'OLD_NODE_VERSION' |
+         * 'ITEM_PROPERTY_INVALID' |
+         * 'INVALID_INPUT' |
          * 'NO_DISCORD_CLIENT' | 
          * 'ROLE_NOT_FOUND' |
          * 'PURCHASES_HISTORY_DISABLED' |
          * 'SETTINGS_KEY_INVALID' |
+         * 'READONLY_PROPERTY' |
+         * 'INVALID_PROPERTY' |
+         * 'CURRENCY_NOT_FOUND' |
          * 'INVALID_ERROR_CODE' |
          * 'MODULE_NOT_READY' |
-         * 'STORAGE_FILE_ERROR'} 
+         * 'STORAGE_FILE_ERROR'}
          */
         this.code = code
 

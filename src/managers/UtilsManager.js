@@ -99,7 +99,7 @@ class UtilsManager {
 
     /**
     * Fetches the entire database.
-    * @returns {Promise<DatabaseProperties>} Database contents
+    * @returns {any} Database contents
     */
     all() {
         return this.database.all()
@@ -107,36 +107,30 @@ class UtilsManager {
 
     /**
      * Clears the database.
-     * @returns {Promise<boolean>} If cleared successfully: true.
+     * @returns {boolean} If cleared successfully: true.
      */
-    async clearDatabase() {
-        const keys = await this.database.keysList('')
+    clearDatabase() {
+        const keys = this.database.keysList('')
 
         for (const key of keys) {
             this.database.delete(key)
         }
 
-        this.cache.clearAll()
         return true
     }
 
     /**
     * Fully removes the guild from database.
     * @param {string} guildID Guild ID
-    * @returns {Promise<boolean>} If cleared successfully: true; else: false
+    * @returns {boolean} If cleared successfully: true; else: false
     */
-    async removeGuild(guildID) {
-        const guild = await this.database.fetch(guildID)
+    removeGuild(guildID) {
+        const guild = this.database.fetch(guildID)
 
         if (!guildID) return false
         if (!guild) return false
 
         this.database.delete(guildID)
-
-        this.cache.guilds.remove({
-            guildID
-        })
-
         return true
     }
 
@@ -144,23 +138,17 @@ class UtilsManager {
      * Removes the user from database.
      * @param {string} memberID Member ID
      * @param {string} guildID Guild ID
-     * @returns {Promise<boolean>} If cleared successfully: true; else: false
+     * @returns {boolean} If cleared successfully: true; else: false
      */
-    async removeUser(memberID, guildID) {
-        const user = await this.database.fetch(`${guildID}.${memberID}`)
+    removeUser(memberID, guildID) {
+        const user = this.database.fetch(`${guildID}.${memberID}`)
 
         if (!guildID) return false
         if (!memberID) return false
 
         if (!user) return false
 
-        await this.database.delete(`${guildID}.${memberID}`)
-
-        this.cache.updateAll({
-            guildID,
-            memberID
-        })
-
+        this.database.delete(`${guildID}.${memberID}`)
         return result
     }
 
@@ -168,9 +156,9 @@ class UtilsManager {
      * Sets the default user object for the specified member.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
-     * @returns {Promise<EconomyUser>} If reset successfully: new user object.
+     * @returns {EconomyUser} If reset successfully: new user object.
      */
-    async resetUser(memberID, guildID) {
+    resetUser(memberID, guildID) {
         if (!guildID) return null
         if (!memberID) return null
 
@@ -180,14 +168,9 @@ class UtilsManager {
         defaultObj.guildID = guildID
 
 
-        await this.database.set(`${guildID}.${memberID}`, defaultObj)
+        this.database.set(`${guildID}.${memberID}`, defaultObj)
 
-        this.cache.users.update({
-            guildID,
-            memberID
-        })
-
-        const newUser = new EconomyUser(memberID, guildID, this.options, defaultObj, this.database, this.cache)
+        const newUser = new EconomyUser(memberID, guildID, this.options, defaultObj, this.database)
         return newUser
     }
 
@@ -258,7 +241,7 @@ class UtilsManager {
                     output[i] = ecoOptions[i]
                 }
 
-                for (const y of Object.keys(DefaultConfiguration[i]).filter(key => isNaN(key))) {
+                for (const y of Object.keys(DefaultConfiguration[i] || {}).filter(key => isNaN(key))) {
 
                     if (ecoOptions[i]?.[y] == undefined || output[i]?.[y] == undefined) {
                         try {
@@ -308,7 +291,7 @@ class UtilsManager {
                 }
 
 
-                for (const y of Object.keys(DefaultConfiguration[i]).filter(key => isNaN(key))) {
+                for (const y of Object.keys(DefaultConfiguration[i] || {}).filter(key => isNaN(key))) {
 
                     if (typeof output[i]?.[y] !== typeof DefaultConfiguration[i][y]) {
                         if (!options.ignoreInvalidTypes) {
@@ -329,7 +312,7 @@ class UtilsManager {
                 const objectKeys = Object.keys(ecoOptions[i]).filter(key => isNaN(key))
 
                 for (const y of objectKeys) {
-                    const allKeys = Object.keys(DefaultConfiguration[i])
+                    const allKeys = Object.keys(DefaultConfiguration[i] || {})
                     const index = allKeys.indexOf(y)
 
                     if (!allKeys[index]) {

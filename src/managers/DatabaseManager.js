@@ -14,18 +14,23 @@ class DatabaseManager {
 
     /**
      * Database Manager.
-     * @param {object} options Economy configuration.
+     * @param {EconomyConfiguration} options Economy configuration.
      * @param {string} options.storagePath Full path to a JSON file. Default: './storage.json'.
      */
     constructor(options = {}) {
         const DotParser = require('../classes/util/DotParser')
 
         /**
+         * Economy configuration.
+         * @type {EconomyConfiguration}
+         */
+        this.options = options
+
+        /**
          * Economy Logger.
          * @type {Logger}
-         * @private
          */
-        this._logger = new Logger(options)
+        this.logger = new Logger(options)
 
         /**
          * Fetch manager methods class.
@@ -36,15 +41,15 @@ class DatabaseManager {
 
         /**
          * Full path to a JSON file.
-         * @private
          * @type {string}
+         * @private
          */
         this.storagePath = options.storagePath || './storage.json'
 
         /**
          * Dot parser methods class.
-         * @private
          * @type {DotParser}
+         * @private
          */
         this.parser = new DotParser(options)
 
@@ -75,16 +80,20 @@ class DatabaseManager {
      * @returns {boolean} If set successfully: true; else: false
      */
     set(key, value, debug) {
-        if (!key) return false
-        if (value == undefined) return false
+        try {
+            if (!key) return false
+            if (value == undefined) return false
 
-        if (typeof key !== 'string') {
-            throw new EconomyError(errors.databaseManager.invalidTypes.key + typeof data, 'INVALID_TYPE')
+            if (typeof key !== 'string') {
+                throw new EconomyError(errors.databaseManager.invalidTypes.key + typeof data, 'INVALID_TYPE')
+            }
+
+            if (debug) this.logger.debug(`Performed "set" operation on key "${key}".`)
+            return this.parser.set(key, value)
+        } catch (err) {
+            this.logger.error(`Failed to perform "set" operation on the on key "${key}".`)
+            console.error(err)
         }
-
-        if (debug) this._logger.debug(`Performed "set" operation on key "${key}".`)
-
-        return this.parser.set(key, value)
     }
 
     /**
@@ -94,26 +103,31 @@ class DatabaseManager {
      * @returns {boolean} If added successfully: true; else: false
      */
     add(key, value) {
-        const data = this.parser.parse(key)
+        try {
+            const data = this.parser.parse(key)
 
-        if (!key) return false
-        if (typeof key !== 'string') {
-            throw new EconomyError(errors.databaseManager.invalidTypes.key + typeof data, 'INVALID_TYPE')
+            if (!key) return false
+            if (typeof key !== 'string') {
+                throw new EconomyError(errors.databaseManager.invalidTypes.key + typeof data, 'INVALID_TYPE')
+            }
+
+            if (isNaN(value)) {
+                throw new EconomyError(errors.databaseManager.invalidTypes.value.number + typeof value, 'INVALID_TYPE')
+            }
+
+            if (isNaN(data)) {
+                throw new EconomyError(errors.databaseManager.invalidTypes.target.number + typeof data, 'INVALID_TYPE')
+            }
+
+            const numData = Number(data)
+            const numValue = Number(value)
+
+            this.logger.debug(`Performed "add" operation on key "${key}".`)
+            return this.set(key, numData + numValue, false)
+        } catch (err) {
+            this.logger.error(`Failed to perform "add" operation on the on key "${key}".`)
+            console.error(err)
         }
-
-        if (isNaN(value)) {
-            throw new EconomyError(errors.databaseManager.invalidTypes.value.number + typeof value, 'INVALID_TYPE')
-        }
-
-        if (isNaN(data)) {
-            throw new EconomyError(errors.databaseManager.invalidTypes.target.number + typeof data, 'INVALID_TYPE')
-        }
-
-        const numData = Number(data)
-        const numValue = Number(value)
-
-        this._logger.debug(`Performed "add" operation on key "${key}".`)
-        return this.set(key, numData + numValue, false)
     }
 
     /**
@@ -123,26 +137,31 @@ class DatabaseManager {
      * @returns {boolean} If set successfully: true; else: false
      */
     subtract(key, value) {
-        const data = this.parser.parse(key)
+        try {
+            const data = this.parser.parse(key)
 
-        if (!key) return false
-        if (typeof key !== 'string') {
-            throw new EconomyError(errors.databaseManager.invalidTypes.key + typeof data, 'INVALID_TYPE')
+            if (!key) return false
+            if (typeof key !== 'string') {
+                throw new EconomyError(errors.databaseManager.invalidTypes.key + typeof data, 'INVALID_TYPE')
+            }
+
+            if (isNaN(value)) {
+                throw new EconomyError(errors.databaseManager.invalidTypes.value.number + typeof value, 'INVALID_TYPE')
+            }
+
+            if (isNaN(data)) {
+                throw new EconomyError(errors.databaseManager.invalidTypes.target.number + typeof data, 'INVALID_TYPE')
+            }
+
+            const numData = Number(data)
+            const numValue = Number(value)
+
+            this.logger.debug(`Performed "subtract" operation on key "${key}".`)
+            return this.set(key, numData - numValue, false)
+        } catch (err) {
+            this.logger.error(`Failed to perform "subtract" operation on the on key "${key}".`)
+            console.error(err)
         }
-
-        if (isNaN(value)) {
-            throw new EconomyError(errors.databaseManager.invalidTypes.value.number + typeof value, 'INVALID_TYPE')
-        }
-
-        if (isNaN(data)) {
-            throw new EconomyError(errors.databaseManager.invalidTypes.target.number + typeof data, 'INVALID_TYPE')
-        }
-
-        const numData = Number(data)
-        const numValue = Number(value)
-
-        this._logger.debug(`Performed "subtract" operation on key "${key}".`)
-        return this.set(key, numData - numValue, false)
     }
 
     /**
@@ -187,14 +206,19 @@ class DatabaseManager {
      * @returns {boolean} If cleared: true; else: false.
      */
     remove(key) {
-        if (!key) return false
+        try {
+            if (!key) return false
 
-        if (typeof key !== 'string') {
-            throw new EconomyError(errors.databaseManager.invalidTypes.key + typeof data, 'INVALID_TYPE')
+            if (typeof key !== 'string') {
+                throw new EconomyError(errors.databaseManager.invalidTypes.key + typeof data, 'INVALID_TYPE')
+            }
+
+            this.logger.debug(`Performed "delete" operation on key "${key}".`)
+            return this.parser.remove(key)
+        } catch (err) {
+            this.logger.error(`Failed to perform "delete" operation on the on key "${key}".`)
+            console.error(err)
         }
-
-        this._logger.debug(`Performed "delete" operation on key "${key}".`)
-        return this.parser.remove(key)
     }
 
     /**
@@ -215,22 +239,27 @@ class DatabaseManager {
      * @returns {boolean} If cleared: true; else: false.
      */
     push(key, value) {
-        if (!key) return false
-        if (value == undefined) return false
+        try {
+            if (!key) return false
+            if (value == undefined) return false
 
-        if (typeof key !== 'string') {
-            throw new EconomyError(errors.databaseManager.invalidTypes.key + typeof data, 'INVALID_TYPE')
+            if (typeof key !== 'string') {
+                throw new EconomyError(errors.databaseManager.invalidTypes.key + typeof data, 'INVALID_TYPE')
+            }
+
+            const data = this.fetch(key) || []
+            if (!Array.isArray(data) && !data.length) {
+                throw new EconomyError(errors.databaseManager.invalidTypes.target.array + typeof data, 'INVALID_TYPE')
+            }
+
+            this.logger.debug(`Performed "push" operation on key "${key}".`)
+
+            data.push(value)
+            return this.set(key, data, false)
+        } catch (err) {
+            this.logger.error(`Failed to perform "push" operation on the on key "${key}".`)
+            console.error(err)
         }
-
-        const data = this.fetch(key) || []
-        if (!Array.isArray(data) && !data.length) {
-            throw new EconomyError(errors.databaseManager.invalidTypes.target.array + typeof data, 'INVALID_TYPE')
-        }
-
-        this._logger.debug(`Performed "push" operation on key "${key}".`)
-
-        data.push(value)
-        return this.set(key, data, false)
     }
 
     /**
@@ -240,21 +269,26 @@ class DatabaseManager {
      * @returns {boolean} If cleared: true; else: false.
      */
     pop(key, index) {
-        if (!key) return false
-        if (index == undefined) return false
-        if (typeof key !== 'string') {
-            throw new EconomyError(errors.databaseManager.invalidTypes.key + typeof data, 'INVALID_TYPE')
+        try {
+            if (!key) return false
+            if (index == undefined) return false
+            if (typeof key !== 'string') {
+                throw new EconomyError(errors.databaseManager.invalidTypes.key + typeof data, 'INVALID_TYPE')
+            }
+
+            const data = this.fetch(key)
+            if (!Array.isArray(data)) {
+                throw new EconomyError(errors.databaseManager.invalidTypes.target.array + typeof data, 'INVALID_TYPE')
+            }
+
+            this.logger.debug(`Performed "pop" operation on key "${key}".`)
+
+            data.splice(index, 1)
+            return this.set(key, data, false)
+        } catch (err) {
+            this.logger.error(`Failed to perform "pop" operation on the on key "${key}".`)
+            console.error(err)
         }
-
-        const data = this.fetch(key)
-        if (!Array.isArray(data)) {
-            throw new EconomyError(errors.databaseManager.invalidTypes.target.array + typeof data, 'INVALID_TYPE')
-        }
-
-        this._logger.debug(`Performed "pop" operation on key "${key}".`)
-
-        data.splice(index, 1)
-        return this.set(key, data, false)
     }
 
     /**
@@ -262,15 +296,19 @@ class DatabaseManager {
      * @returns {boolean} If cleared: true; else: false.
      */
     clear() {
-        const data = this.all()
-        const stringData = String(data)
+        try {
+            const data = this.all()
+            const stringData = JSON.stringify(data)
 
-        if (stringData == '{}') return false
+            if (stringData == '{}') return false
+            this.write(this.options.storagePath, '{}')
 
-        this.write(this.options.storagePath, '{}')
-
-        this._logger.debug('Performed "clear" operation on a whole database.')
-        return true
+            this.logger.debug('Performed "clear" operation on the database.')
+            return true
+        } catch (err) {
+            this.logger.error('Failed to perform "clear" operation on the database.')
+            console.error(err)
+        }
     }
 
     /**
@@ -303,31 +341,37 @@ class DatabaseManager {
     * @returns {boolean} If cleared: true; else: false.
     */
     pull(key, index, newValue) {
-        if (!key) return false
-        if (index == undefined) return false
-        if (typeof key !== 'string') {
-            throw new EconomyError(errors.databaseManager.invalidTypes.key + typeof data, 'INVALID_TYPE')
+        try {
+            if (!key) return false
+            if (index == undefined) return false
+
+            if (typeof key !== 'string') {
+                throw new EconomyError(errors.databaseManager.invalidTypes.key + typeof data, 'INVALID_TYPE')
+            }
+
+            const data = this.fetch(key)
+            if (!Array.isArray(data)) {
+                throw new EconomyError(errors.databaseManager.invalidTypes.target.array + typeof data, 'INVALID_TYPE')
+            }
+
+            if (typeof key !== 'string') {
+                throw new EconomyError(errors.databaseManager.invalidTypes.key + typeof data, 'INVALID_TYPE')
+            }
+
+            if (newValue == undefined) {
+                throw new EconomyError(
+                    errors.databaseManager.invalidTypes.value.newValue + typeof newValue, 'INVALID_TYPE'
+                )
+            }
+
+            this.logger.debug(`Performed "pull" operation on key "${key}".`)
+
+            data.splice(index, 1, newValue)
+            return this.set(key, data, false)
+        } catch (err) {
+            this.logger.error(`Failed to perform "pull" operation on key "${key}".`)
+            console.error(err)
         }
-
-        const data = this.fetch(key)
-        if (!Array.isArray(data)) {
-            throw new EconomyError(errors.databaseManager.invalidTypes.target.array + typeof data, 'INVALID_TYPE')
-        }
-
-        if (typeof key !== 'string') {
-            throw new EconomyError(errors.databaseManager.invalidTypes.key + typeof data, 'INVALID_TYPE')
-        }
-
-        if (newValue == undefined) {
-            throw new EconomyError(
-                errors.databaseManager.invalidTypes.value.newValue + typeof newValue, 'INVALID_TYPE'
-            )
-        }
-
-        this._logger.debug(`Performed "pull" operation on key "${key}".`)
-
-        data.splice(index, 1, newValue)
-        return this.set(key, data, false)
     }
 
     /**

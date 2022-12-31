@@ -47,8 +47,8 @@ class BankManager extends Emitter {
 
     /**
     * Fetches the user's bank balance.
-    * @param {string} memberID Member ID
-    * @param {string} guildID Guild ID
+    * @param {string} memberID Member ID.
+    * @param {string} guildID Guild ID.
     * @returns {number} User's bank balance
     */
     fetch(memberID, guildID) {
@@ -67,8 +67,8 @@ class BankManager extends Emitter {
     * Gets the user's bank balance.
     * 
     * This method is an alias of `BankManager.fetch()` method.
-    * @param {string} memberID Member ID
-    * @param {string} guildID Guild ID
+    * @param {string} memberID Member ID.
+    * @param {string} guildID Guild ID.
     * @returns {number} User's bank balance
     */
     get(memberID, guildID) {
@@ -272,7 +272,7 @@ class BankManager extends Emitter {
 /**
  * Bank leaderboard object.
  * @typedef {object} BankLeaderboard
- * @property {number} index User's place in the top.
+ * @property {number} index User's position in the leaderboard.
  * @property {string} userID User ID.
  * @property {number} money Amount of money.
  */

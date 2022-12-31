@@ -9,6 +9,8 @@ const UtilsManager = require('./managers/UtilsManager')
 const BalanceManager = require('./managers/BalanceManager')
 const BankManager = require('./managers/BankManager')
 
+const CurrencyManager = require('./managers/CurrencyManager')
+
 const RewardManager = require('./managers/RewardManager')
 const CooldownManager = require('./managers/CooldownManager')
 
@@ -28,6 +30,8 @@ const GuildManager = require('./managers/GuildManager')
 
 const Logger = require('./classes/util/Logger')
 const ShopItem = require('./classes/ShopItem')
+
+const Currency = require('./classes/Currency')
 
 
 /**
@@ -121,16 +125,22 @@ class Economy extends Emitter {
         this.Emitter = Emitter
 
         /**
-        * Balance.
+        * Balance manager.
         * @type {BalanceManager}
         */
         this.balance = null
 
         /**
-        * Bank balance.
+        * Bank balance manager.
         * @type {BankManager}
         */
         this.bank = null
+
+        /**
+         * Currency Manager.
+         * @type {CurrencyManager}
+         */
+        this.currencies = null
 
         /**
         * Fetch manager.
@@ -169,19 +179,19 @@ class Economy extends Emitter {
         this.cooldowns = null
 
         /**
-        * Rewards.
+        * Rewards manager.
         * @type {RewardManager}
         */
         this.rewards = null
 
         /**
-        * Economy users.
+        * Economy users manager.
         * @type {UserManager}
         */
         this.users = new UserManager(this.options)
 
         /**
-        * Economy guilds.
+        * Economy guilds manager.
         * @type {GuildManager}
         */
         this.guilds = new GuildManager(this.options)
@@ -250,22 +260,33 @@ class Economy extends Emitter {
         const sleep = promisify(setTimeout)
 
         const check = () => new Promise(resolve => {
-            this._init().then(status => {
+            try {
+                this._init().then(status => {
+                    try {
+                        if (status) {
+                            this.errored = false
+                            this.ready = true
 
-                if (status) {
-                    this.errored = false
-                    this.ready = true
-                    return console.log(`${this.colors.green}Started successfully!`)
-                }
+                            this._logger.debug('Resolved the startup error.')
+                            return console.log(`${this.colors.green}Started successfully!${this.colors.reset}`)
+                        }
 
-                resolve(status)
-            }).catch(err => resolve(err))
+                        resolve(status)
+                    } catch (err) {
+                        resolve(err)
+                    }
+                }).catch(err => {
+                    resolve(err)
+                })
+            } catch (err) {
+                resolve(err)
+            }
         })
 
         this._logger.debug('Checking the Node.js version...')
 
         return this.options.errorHandler.handleErrors ? this._init().catch(async err => {
-            if (!(err instanceof EconomyError)) this.errored = true
+            this.errored = true
 
             console.log(`${this.colors.red}Failed to start the module:${this.colors.cyan}`)
             console.log(err)
@@ -279,7 +300,6 @@ class Economy extends Emitter {
 
                 if (attempt < attempts) check().then(async res => {
                     if (res.message) {
-
                         attempt++
 
                         console.log(`${this.colors.red}Failed to start the module:${this.colors.cyan}`)
@@ -288,7 +308,7 @@ class Economy extends Emitter {
 
                         if (attempt == attempts) {
                             console.log(
-                                `${this.colors.green}Failed to start the module within` +
+                                `${this.colors.green}Failed to start the module within ` +
                                 `${attempts} attempts...${this.colors.reset}`
                             )
 
@@ -325,8 +345,8 @@ class Economy extends Emitter {
 
         return new Promise(async (resolve, reject) => {
             try {
-                if (this.errored) return
-                if (this.ready) return
+                if (this.errored) return reject(new EconomyError(errors.errored, 'UNKNOWN_ERROR'))
+                if (this.ready) return reject(new EconomyError(errors.notReady, 'MODULE_NOT_READY'))
 
                 if (Number(process.version.split('.')[0].slice(1)) < 14) {
                     return reject(new EconomyError(errors.oldNodeVersion + process.version, 'OLD_NODE_VERSION'))
@@ -397,7 +417,7 @@ class Economy extends Emitter {
 
                     } catch (err) {
                         if (err.message.includes('Unexpected') && err.message.includes('JSON')) {
-                            return reject(new EconomyError(errors.wrongStorageData, 'STORAGE_FILE_ERROR'))
+                            return reject(new EconomyError(errors.storageMalformed, 'STORAGE_FILE_ERROR'))
                         }
 
                         else return reject(err)
@@ -450,8 +470,9 @@ class Economy extends Emitter {
 
                         } catch (err) {
                             if (err.message.includes('Unexpected token') ||
-                                err.message.includes('Unexpected end')) {
-                                reject(new EconomyError(errors.wrongStorageData, 'STORAGE_FILE_ERROR'))
+                                err.message.includes('Unexpected end') ||
+                                err.message.includes('no such file')) {
+                                reject(new EconomyError(errors.storageMalformed, 'STORAGE_FILE_ERROR'))
                             }
 
                             else {
@@ -484,6 +505,8 @@ class Economy extends Emitter {
      * @private
      */
     start() {
+        const packageVersion = require('../package.json').version
+
         const managers = [
             {
                 name: 'utils',
@@ -496,6 +519,10 @@ class Economy extends Emitter {
             {
                 name: 'bank',
                 manager: BankManager
+            },
+            {
+                name: 'currencies',
+                manager: CurrencyManager
             },
             {
                 name: 'fetcher',
@@ -547,6 +574,9 @@ class Economy extends Emitter {
             'bankSet',
             'bankAdd',
             'bankSubtract',
+            'customCurrencySet',
+            'customCurrencyAdd',
+            'customCurrencySubtract',
             'shopItemAd',
             'shopClear',
             'shopItemEdit',
@@ -570,6 +600,46 @@ class Economy extends Emitter {
 
         this.managers = managers
         this.economy = this
+
+        if (packageVersion.includes('dev')) {
+            console.log()
+
+            this._logger.warn(
+                'You are using a DEVELOPMENT version of Economy, which provides an early access ' +
+                'to all the new unfinished features and bug fixes.', 'lightmagenta'
+            )
+
+            this._logger.warn(
+                'Unlike the stable builds, dev builds DO NOT guarantee that the provided changes are bug-free ' +
+                'and won\'t result any degraded performance or crashes. ', 'lightmagenta')
+
+            this._logger.warn(
+                'Anything may break at any new commit, so it\'s really important to check ' +
+                'the module for new development updates.', 'lightmagenta'
+            )
+
+            this._logger.warn(
+                'They may include the bug fixes from the ' +
+                'old ones and include some new features.', 'lightmagenta'
+            )
+
+            this._logger.warn(
+                'Use development versions at your own risk.', 'lightmagenta'
+            )
+
+            console.log()
+
+            this._logger.warn(
+                'Need help? Join the Support Server - https://discord.gg/4pWKq8vUnb.', 'lightmagenta'
+            )
+
+            this._logger.warn(
+                'Please provide the full version of Economy you have installed ' +
+                '(check in your package.json) when asking for support.', 'lightmagenta'
+            )
+
+            console.log()
+        }
 
         return true
     }
@@ -648,6 +718,45 @@ class Economy extends Emitter {
 */
 
 /**
+* Emits when someone's custom currency was set.
+* @event Economy#customCurrencySet
+* @param {object} data Data object.
+* @param {string} data.type The type of operation.
+* @param {Currency} data.currency Currency that was changed.
+* @param {string} data.guildID Guild ID.
+* @param {string} data.memberID Member ID.
+* @param {number} data.amount Amount of money in completed operation.
+* @param {number} data.balance User's balance after the operation was completed successfully.
+* @param {string} data.reason The reason why the operation was completed.
+*/
+
+/**
+* Emits when someone's custom currency was added.
+* @event Economy#customCurrencyAdd
+* @param {object} data Data object.
+* @param {string} data.type The type of operation.
+* @param {Currency} data.currency Currency that was changed.
+* @param {string} data.guildID Guild ID.
+* @param {string} data.memberID Member ID.
+* @param {number} data.amount Amount of money in completed operation.
+* @param {number} data.balance User's balance after the operation was completed successfully.
+* @param {string} data.reason The reason why the operation was completed.
+*/
+
+/**
+* Emits when someone's custom currency was subtracted.
+* @event Economy#customCurrencySubtract
+* @param {object} data Data object.
+* @param {string} data.type The type of operation.
+* @param {Currency} data.currency Currency that was changed.
+* @param {string} data.guildID Guild ID.
+* @param {string} data.memberID Member ID.
+* @param {number} data.amount Amount of money in completed operation.
+* @param {number} data.balance User's balance after the operation was completed successfully.
+* @param {string} data.reason The reason why the operation was completed.
+*/
+
+/**
 * Emits when someone's added an item in the shop.
 * @event Economy#shopItemAdd
 * @param {object} data Data object.
@@ -657,7 +766,7 @@ class Economy extends Emitter {
 * @param {string} data.message Item message that will be returned on item use.
 * @param {string} data.description Item description.
 * @param {number} data.maxAmount Max amount of the item that user can hold in their inventory.
-* @param {string} data.role Role ID from your Discord server.
+* @param {string} data.role Role **ID** from your Discord server.
 * @param {string} data.date Formatted date when the item was added to the shop.
 */
 
@@ -671,7 +780,7 @@ class Economy extends Emitter {
 * @param {string} data.message Item message that will be returned on item use.
 * @param {string} data.description Item description.
 * @param {number} data.maxAmount Max amount of the item that user can hold in their inventory.
-* @param {string} data.role Role ID from your Discord server.
+* @param {string} data.role Role **ID** from your Discord server.
 * @param {string} data.date Formatted date when the item was added to the shop.
 */
 
@@ -691,7 +800,7 @@ class Economy extends Emitter {
 * @param {string} data.message Item message that will be returned on item use.
 * @param {string} data.description Item description.
 * @param {number} data.maxAmount Max amount of the item that user can hold in their inventory.
-* @param {string} data.role Role ID from your Discord server.
+* @param {string} data.role Role **ID** from your Discord server.
 * @param {string} data.date Formatted date when the item was added to the shop.
 */
 

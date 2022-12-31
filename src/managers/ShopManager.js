@@ -2,6 +2,7 @@ const Emitter = require('../classes/util/Emitter')
 const EconomyError = require('../classes/util/EconomyError')
 
 const DatabaseManager = require('./DatabaseManager')
+const CurrencyManager = require('./CurrencyManager')
 
 const errors = require('../structures/errors')
 const ShopItem = require('../classes/ShopItem')
@@ -43,6 +44,12 @@ class ShopManager extends Emitter {
          * @private
          */
         this.database = new DatabaseManager(options)
+
+        /**
+         * Currency Manager.
+         * @type {CurrencyManager}
+         */
+        this.currencies = new CurrencyManager(this.options, this.database)
     }
 
     /**
@@ -145,12 +152,13 @@ class ShopManager extends Emitter {
 
     /**
      * Edits the item in the shop.
-     * @param {number | string} itemID Item ID or name.
+     * @param {string | number} itemID Item ID or name.
      * @param {string} guildID Guild ID
      * @param {'description' | 'price' | 'name' | 'message' | 'maxAmount' | 'role' | 'custom'} itemProperty 
      * This argument means what thing in item you want to edit (item property). 
      * Available item properties are 'description', 'price', 'name', 'message', 'amount', 'role', 'custom'.
      * 
+     * @param {any} value Any value to set.
      * @returns {boolean} If edited successfully: true, else: false.
      */
     editItem(itemID, guildID, itemProperty, value) {
@@ -227,13 +235,13 @@ class ShopManager extends Emitter {
      * Edits the item in the shop.
      * 
      * This method is an alias for the `ShopManager.editItem()` method.
-     * @param {number | string} itemID Item ID or name.
+     * @param {string | number} itemID Item ID or name.
      * @param {string} guildID Guild ID
      * @param {'description' | 'price' | 'name' | 'message' | 'maxAmount' | 'role' | 'custom'} itemProperty 
      * This argument means what thing in item you want to edit (item property). 
      * Available item properties are 'description', 'price', 'name', 'message', 'amount', 'role', 'custom'.
-     * @param {any} value Any value to set.
      * 
+     * @param {any} value Any value to set.
      * @returns {boolean} If edited successfully: true, else: false.
      */
     edit(itemID, guildID, itemProperty, value) {
@@ -244,7 +252,7 @@ class ShopManager extends Emitter {
      * Sets a custom object for the item.
      * @param {string | number} itemID Item ID or name.
      * @param {string} guildID Guild ID.
-     * @param {object} custom Custom item data object.
+     * @param {object} customObject Custom item data object.
      * @returns {boolean} If set successfully: true, else: false.
      */
     setCustom(itemID, guildID, customObject) {
@@ -253,7 +261,7 @@ class ShopManager extends Emitter {
 
     /**
      * Removes an item from the shop.
-     * @param {number | string} itemID Item ID or name .
+     * @param {string | number} itemID Item ID or name .
      * @param {string} guildID Guild ID.
      * @returns {boolean} If removed: true, else: false.
      */
@@ -396,7 +404,7 @@ class ShopManager extends Emitter {
 
     /**
      * Gets the item in the shop.
-     * @param {number | string} itemID Item ID or name.
+     * @param {string | number} itemID Item ID or name.
      * @param {string} guildID Guild ID.
      * @returns {ShopItem} If item not found: null; else: item info object.
      */
@@ -424,7 +432,7 @@ class ShopManager extends Emitter {
      * Gets the item in the shop.
      * 
      * This method is an alias for the `ShopManager.getItem()` method.
-     * @param {number | string} itemID Item ID or name.
+     * @param {string | number} itemID Item ID or name.
      * @param {string} guildID Guild ID.
      * @returns {ShopItem} If item not found: null; else: item info object.
      */
@@ -442,7 +450,7 @@ class ShopManager extends Emitter {
      * 
      * [!!!] No help will be provided for inventory
      * related methods in ShopManager.
-     * @param {number | string} itemID Item ID or name.
+     * @param {string | number} itemID Item ID or name.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
      * @returns {InventoryData} If item not found: null; else: item info object.
@@ -484,17 +492,22 @@ class ShopManager extends Emitter {
 
     /**
      * Buys the item from the shop.
-     * @param {number | string} itemID Item ID or name.
+     * @param {string | number} itemID Item ID or name.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
      * @param {number} [quantity=1] Quantity of items to buy. Default: 1.
+     * 
+     * @param {string | number} [currency=null] 
+     * The currency to subtract the money from. 
+     * Can be omitted by specifying 'null' or ignoring this parameter.
+     * Requires the `subtractOnBuy` option to be enabled. Default: null.
      * 
      * @param {string} [reason='received the item from the shop'] 
      * The reason why the money was subtracted. Default: 'received the item from the shop'.
      * 
      * @returns {ShopOperationInfo} Operation information object.
      */
-    buy(itemID, memberID, guildID, quantity = 1, reason = 'received the item from the shop') {
+    buy(itemID, memberID, guildID, quantity = 1, currency = null, reason = 'received the item from the shop') {
         const balance = this.database.fetch(`${guildID}.${memberID}.money`) || 0
 
         const shop = this.fetch(guildID)
@@ -503,16 +516,40 @@ class ShopManager extends Emitter {
         const inventory = this.database.fetch(`${guildID}.${memberID}.inventory`) || []
         const inventoryItems = inventory.filter(invItem => invItem.name == item.name)
 
+        const settings = this.database.fetch(`${guildID}.settings`) || {}
 
-        const dateLocale = this.database.fetch(`${guildID}.settings.dateLocale`)
+        const dateLocale = settings.dateLocale
             || this.options.dateLocale
 
-        const subtractOnBuy = this.database.fetch(`${guildID}.settings.subtractOnBuy`)
+        const subtractOnBuy = settings.subtractOnBuy
             || this.options.subtractOnBuy
 
-        const savePurchasesHistory = this.database.fetch(`${guildID}.settings.savePurchasesHistory`)
+        const savePurchasesHistory = settings.savePurchasesHistory
             || this.options.savePurchasesHistory
 
+        if (!arguments[3]) {
+            this.database.logger.optionalParamNotSpecified(
+                'ShopManager.buy',
+                'quantity',
+                quantity
+            )
+        }
+
+        if (!arguments[4]) {
+            this.database.logger.optionalParamNotSpecified(
+                'ShopManager.buy',
+                'currency',
+                currency
+            )
+        }
+
+        if (!arguments[5]) {
+            this.database.logger.optionalParamNotSpecified(
+                'ShopManager.buy',
+                'reason',
+                reason
+            )
+        }
 
         if (typeof itemID !== 'number' && typeof itemID !== 'string') {
             throw new EconomyError(errors.invalidTypes.editItemArgs.itemID + typeof itemID, 'INVALID_TYPE')
@@ -531,14 +568,14 @@ class ShopManager extends Emitter {
             message: 'item not found',
             item: null,
             quantity: 0,
-            totalPrice: 0,
+            totalPrice: 0
         }
 
-
         const totalPrice = item.price * quantity
-        const arrayOfItems = Array(quantity).fill(item.itemObject ? item.itemObject : item)
+        const arrayOfItems = Array(quantity).fill(item.rawObject ? item.rawObject : item)
 
         const newInventory = [...inventory, ...arrayOfItems]
+            .map(item => item.rawObject ? item.rawObject : item)
 
         if (
             item.maxAmount &&
@@ -553,25 +590,26 @@ class ShopManager extends Emitter {
         }
 
         if (subtractOnBuy) {
-            this.database.subtract(`${guildID}.${memberID}.money`, totalPrice)
+            if (currency) {
+                this.currencies.subtractBalance(currency, totalPrice, memberID, guildID, reason)
+            } else {
+                this.database.subtract(`${guildID}.${memberID}.money`, totalPrice)
 
-            this.emit('balanceSubtract', {
-                type: 'subtract',
-                guildID,
-                memberID,
-                amount: Number(totalPrice),
-                balance: balance - totalPrice,
-                reason
-            })
+                this.emit('balanceSubtract', {
+                    type: 'subtract',
+                    guildID,
+                    memberID,
+                    amount: Number(totalPrice),
+                    balance: balance - totalPrice,
+                    reason
+                })
+            }
         }
 
         this.database.set(`${guildID}.${memberID}.inventory`, newInventory)
 
         if (savePurchasesHistory) {
-            const shop = this.database.fetch(`${guildID}.shop`) || []
             const history = this.database.fetch(`${guildID}.${memberID}.history`) || []
-
-            const item = shop.find(item => item.id == itemID || item.name == itemID)
 
             this.database.push(`${guildID}.${memberID}.history`, {
                 id: history.length ? history[history.length - 1].id + 1 : 1,
@@ -607,18 +645,23 @@ class ShopManager extends Emitter {
      * Buys the item from the shop.
      * 
      * This method is an alias for the `ShopManager.buy()` method.
-     * @param {number | string} itemID Item ID or name.
+     * @param {string | number} itemID Item ID or name.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
      * @param {number} [quantity=1] Quantity of items to buy. Default: 1.
+     * 
+     * @param {string | number} [currency=null] 
+     * The currency to subtract the money from. 
+     * Can be omitted by specifying 'null' or ignoring this parameter.
+     * Requires the `subtractOnBuy` option to be enabled. Default: null.
      * 
      * @param {string} [reason='received the item from the shop'] 
      * The reason why the money was subtracted. Default: 'received the item from the shop'.
      * 
      * @returns {ShopOperationInfo} Operation information object.
      */
-    buyItem(itemID, memberID, guildID, quantity, reason) {
-        return this.buy(itemID, memberID, guildID, quantity, reason)
+    buyItem(itemID, memberID, guildID, quantity, currency, reason) {
+        return this.buy(itemID, memberID, guildID, quantity, currency, reason)
     }
 
     /**
@@ -671,7 +714,7 @@ class ShopManager extends Emitter {
      * 
      * [!!!] No help will be provided for inventory
      * related methods in ShopManager.
-     * @param {number | string} itemID Item ID or name.
+     * @param {string | number} itemID Item ID or name.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
      * @param {Client} client The Discord Client. [Optional]
@@ -874,7 +917,7 @@ class ShopManager extends Emitter {
  * @property {string} [message='You have used this item!'] Item message that will be returned on use.
  * @property {string} [description='Very mysterious item.'] Item description.
  * @property {string | number} [maxAmount=null] Max amount of the item that user can hold in their inventory.
- * @property {string} [role=null] Role ID from your Discord server.
+ * @property {string} [role=null] Role **ID** from your Discord server.
  * @property {object} [custom] Custom item properties object.
  */
 

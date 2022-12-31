@@ -106,11 +106,6 @@ class UserManager extends BaseManager {
                 delete userObject.bank
 
                 const economyUser = new EconomyUser(userID, guildID, this.options, userObject, this.database)
-
-                delete economyUser.database
-                delete economyUser.utils
-                delete economyUser.shop
-
                 users.push(economyUser)
             }
         }

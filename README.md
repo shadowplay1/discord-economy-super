@@ -9,12 +9,13 @@
 ## ❓ | Why?
 <ul>
 <li><b>Clean TypeScript Defenitions 📘</b></li>
-<li><b><a href="https://des-docs.js.org/#/docs/main/1.7.0/general/migrating-to-mongo">MongoDB Support 🍃</a></b></li>
+<li><b><a href="https://des-docs.js.org/#/docs/main/1.7.1/general/migrating-to-mongo">MongoDB Support 🍃</a></b></li>
 <li><b>Flexible and Customizable ⚙️</b></li>
 <li><b>Easy to use 👍</b></li>
 <li><b>Beginner Friendly 😄</b></li>
 <li><b>Shop/Inventory System 🛒</b></li>
 <li><b>Balance/Bank balance Systems 🏦</b></li>
+<li><b>Custom Currencies System 💵</b></li>
 <li><b>Multi-Server Setup 🔧</b></li>
 </ul>
 
@@ -48,7 +49,7 @@ $ pnpm add discord-economy-super
 <ul>
 <li><b><a href = "https://des-docs.js.org">Documentation</a></b></li>
 <li><b><a href = "https://www.npmjs.com/package/discord-economy-super">NPM</a></b></li>
-<li><b><a href = "https://des-docs.js.org/#/docs/main/1.7.0/general/faq">Frequently Asked Questions</a></b></li>
+<li><b><a href = "https://des-docs.js.org/#/docs/main/1.7.1/general/faq">Frequently Asked Questions</a></b></li>
 <li><b><a href = "https://github.com/shadowplay1/discord-economy-super">GitHub</a></b></li>
 <li><b><a href = "https://github.com/shadowplay1/discord-economy-super/tree/main/examples">Examples</a></b></li>
 <li><b><a href = "https://discord.gg/4pWKq8vUnb">Discord Server</a></b></li>
