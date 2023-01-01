@@ -1,7 +1,22 @@
 module.exports = {
+  root: true,
   parserOptions: {
     ecmaVersion: 2020,
     sourceType: 'module',
+  },
+  extends: [
+    'eslint:recommended'
+  ],
+  env: {
+    es6: true,
+    node: true,
+    browser: true,
+    amd: true
+  },
+  globals: {
+    $: true,
+    require: true,
+    process: true
   },
   rules: {
     'semi': ['warn', 'never'],
