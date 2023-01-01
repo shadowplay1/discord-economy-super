@@ -2,15 +2,23 @@ import RewardCooldownData from '../../interfaces/RewardCooldownData'
 import { RewardType } from '../../interfaces/RewardTypes'
 
 import RawEconomyUser from '../../interfaces/RawEconomyUser'
+import EconomyConfiguration from '../../interfaces/EconomyConfiguration'
+import DatabaseManager from '../../managers/DatabaseManager'
 
 
 declare class Cooldowns {
 
     /**
      * Cooldowns class.
-     * @param userObject User object from database.
+     * @param {RawEconomyUser} userObject User object from database.
+     * @param {EconomyConfiguration} options Economy configuration.
+     * @param {DatabaseManager} database Database Manager.
      */
-    public constructor(userObject: RawEconomyUser)
+    public constructor(
+        userObject: RawEconomyUser,
+        options: EconomyConfiguration,
+        database: DatabaseManager
+    )
 
     /**
      * Returns the cooldown of the specified type.

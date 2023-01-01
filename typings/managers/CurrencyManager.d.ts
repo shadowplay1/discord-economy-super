@@ -4,6 +4,7 @@ import { CurrencyObject, CurrencyPropertyType } from '../interfaces/CurrencyObje
 import CustomItemData from '../interfaces/CustomItemData'
 
 import EconomyConfiguration from '../interfaces/EconomyConfiguration'
+import DatabaseManager from './DatabaseManager'
 
 /**
 * Currency manager methods class.
@@ -14,8 +15,9 @@ declare class CurrencyManager extends Emitter {
     /**
       * Currency Manager.
       * @param {EconomyConfiguration} options Economy configuration.
+      * @param {DatabaseManager} database Database manager.
      */
-    public constructor(options: EconomyConfiguration)
+    public constructor(options: EconomyConfiguration, database: DatabaseManager)
 
     /**
      * Finds the info for the specified currency.

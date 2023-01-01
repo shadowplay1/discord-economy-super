@@ -6,6 +6,7 @@ import CurrencyFactory from '../../interfaces/CurrencyFactory'
 
 import TransferingOptions from '../../interfaces/TransferingOptions'
 import TransferingResult from '../../interfaces/TransferingResult'
+import DatabaseManager from '../../managers/DatabaseManager'
 
 
 declare class Balance extends Emitter {
@@ -15,8 +16,14 @@ declare class Balance extends Emitter {
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
      * @param {EconomyConfiguration} ecoOptions Economy configuration.
+     * @param {DatabaseManager} database Database manager.
      */
-    public constructor(memberID: string, guildID: string, ecoOptions: EconomyConfiguration)
+    public constructor(
+        memberID: string,
+        guildID: string,
+        ecoOptions: EconomyConfiguration,
+        database: DatabaseManager
+    )
 
     /**
      * Returns a factory with `get`, `set`, `add` and `subtract` methods to work with custom currencies.

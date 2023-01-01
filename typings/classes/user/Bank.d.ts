@@ -1,9 +1,23 @@
 
 import Emitter from '../util/Emitter'
 import EconomyConfiguration from '../../interfaces/EconomyConfiguration'
+import DatabaseManager from '../../managers/DatabaseManager'
 
 declare class Bank extends Emitter {
-    public constructor(memberID: string, guildID: string, options: EconomyConfiguration)
+
+    /**
+     * User bank balance class.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @param {EconomyConfiguration} ecoOptions Economy configuration.
+     * @param {DatabaseManager} database Database manager.
+     */
+    public constructor(
+        memberID: string,
+        guildID: string,
+        options: EconomyConfiguration,
+        database: DatabaseManager
+    )
 
     /**
      * Sets the money amount on user's bank balance.

@@ -15,8 +15,14 @@ declare class Items {
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
      * @param {EconomyConfiguration} ecoOptions Economy configuratuion.
+     * @param {DatabaseManager} database Database manager.
      */
-    public constructor(memberID: string, guildID: string, ecoOptions: EconomyConfiguration, database: DatabaseManager)
+    public constructor(
+        memberID: string,
+        guildID: string,
+        ecoOptions: EconomyConfiguration,
+        database: DatabaseManager
+    )
 
     /**
      * Buys the item from the shop.
