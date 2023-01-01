@@ -56,7 +56,7 @@ class Shop extends BaseManager {
 
     /**
      * Gets all items in the shop.
-     * 
+     *
      * This method is an alias for the `Shop.findItem()` method.
      * @param {string | number} itemID Item ID.
      * @returns {ShopItem} Shop item.
@@ -152,7 +152,7 @@ class Shop extends BaseManager {
 
     /**
      * Creates an item in shop.
-     * 
+     *
      * This method is an alias for the `Shop.addItem()` method.
      * @param {AddItemOptions} options Configuration with item info.
      * @returns {ItemData} Item info.
@@ -164,10 +164,10 @@ class Shop extends BaseManager {
     /**
      * Edits the item in the shop.
      * @param {string | number} itemID Item ID or name.
-     * @param {'description' | 'price' | 'name' | 'message' | 'maxAmount' | 'role'} itemProperty 
-     * This argument means what thing in item you want to edit (item property). 
+     * @param {'description' | 'price' | 'name' | 'message' | 'maxAmount' | 'role'} itemProperty
+     * This argument means what thing in item you want to edit (item property).
      * Available item properties are 'description', 'price', 'name', 'message', 'amount', 'role', 'custom'.
-     * 
+     *
      * @param {any} value Any value to set.
      * @returns {boolean} If edited successfully: true, else: false.
      */
@@ -238,13 +238,13 @@ class Shop extends BaseManager {
 
     /**
      * Edits the item in the shop.
-     * 
+     *
      * This method is an alias for the `Shop.editItem()` method.
      * @param {string | number} itemID Item ID or name.
-     * @param {'description' | 'price' | 'name' | 'message' | 'maxAmount' | 'role'} itemProperty 
-     * This argument means what thing in item you want to edit (item property). 
+     * @param {'description' | 'price' | 'name' | 'message' | 'maxAmount' | 'role'} itemProperty
+     * This argument means what thing in item you want to edit (item property).
      * Available item properties are 'description', 'price', 'name', 'message', 'amount', 'role', 'custom'.
-     * 
+     *
      * @param {any} value Any value to set.
      * @returns {boolean} If edited successfully: true, else: false.
      */
@@ -318,33 +318,33 @@ module.exports = Shop
  * @typedef {object} EconomyConfiguration Default Economy configuration.
  * @property {string} [storagePath='./storage.json'] Full path to a JSON file. Default: './storage.json'
  * @property {boolean} [checkStorage=true] Checks the if database file exists and if it has errors. Default: true
- * @property {number} [dailyCooldown=86400000] 
+ * @property {number} [dailyCooldown=86400000]
  * Cooldown for Daily Command (in ms). Default: 24 hours (60000 * 60 * 24 ms)
- * 
+ *
  * @property {number} [workCooldown=3600000] Cooldown for Work Command (in ms). Default: 1 hour (60000 * 60 ms)
  * @property {number | number[]} [dailyAmount=100] Amount of money for Daily Command. Default: 100.
- * @property {number} [weeklyCooldown=604800000] 
+ * @property {number} [weeklyCooldown=604800000]
  * Cooldown for Weekly Command (in ms). Default: 7 days (60000 * 60 * 24 * 7 ms)
- * 
+ *
  * @property {number | number[]} [weeklyAmount=100] Amount of money for Weekly Command. Default: 1000.
  * @property {number | number[]} [workAmount=[10, 50]] Amount of money for Work Command. Default: [10, 50].
- * @property {boolean} [subtractOnBuy=true] 
+ * @property {boolean} [subtractOnBuy=true]
  * If true, when someone buys the item, their balance will subtract by item price. Default: false
- * 
- * @property {number} [sellingItemPercent=75] 
+ *
+ * @property {number} [sellingItemPercent=75]
  * Percent of the item's price it will be sold for. Default: 75.
- * 
- * @property {boolean} [deprecationWarnings=true] 
+ *
+ * @property {boolean} [deprecationWarnings=true]
  * If true, the deprecation warnings will be sent in the console. Default: true.
- * 
+ *
  * @property {boolean} [savePurchasesHistory=true] If true, the module will save all the purchases history.
- * 
+ *
  * @property {number} [updateCountdown=1000] Checks for if storage file exists in specified time (in ms). Default: 1000.
  * @property {string} [dateLocale='en'] The region (example: 'ru'; 'en') to format the date and time. Default: 'en'.
  * @property {UpdaterOptions} [updater=UpdaterOptions] Update checker configuration.
  * @property {ErrorHandlerConfiguration} [errorHandler=ErrorHandlerConfiguration] Error handler configuration.
 
- * @property {CheckerConfiguration} [optionsChecker=CheckerConfiguration] 
+ * @property {CheckerConfiguration} [optionsChecker=CheckerConfiguration]
  * Configuration for an 'Economy.utils.checkOptions' method.
  * @property {boolean} [debug=false] Enables or disables the debug mode.
  */

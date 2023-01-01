@@ -1,4 +1,3 @@
-const DatabaseManager = require('../managers/DatabaseManager')
 const CurrencyManager = require('../managers/CurrencyManager')
 
 const errors = require('../structures/errors')
@@ -145,11 +144,11 @@ class ShopItem extends Emitter {
 
     /**
      * Edits the item in the shop.
-     * 
+     *
      * @param {"description" | "price" | "name" | "message" | "maxAmount" | "role" | 'custom'} itemProperty
-     * This argument means what thing in item you want to edit (item property). 
+     * This argument means what thing in item you want to edit (item property).
      * Available item properties are 'description', 'price', 'name', 'message', 'amount', 'role', 'custom'.
-     * 
+     *
      * @param {any} value Any value to set.
      * @returns {boolean} If edited successfully: true, else: false.
      */
@@ -223,15 +222,15 @@ class ShopItem extends Emitter {
      * Buys the item from the shop.
      * @param {string} memberID Member ID.
      * @param {number} [quantity=1] Quantity of items to buy. Default: 1.
-     * 
-     * @param {string | number} [currency=null] 
-     * The currency to subtract the money from. 
+     *
+     * @param {string | number} [currency=null]
+     * The currency to subtract the money from.
      * Can be omitted by specifying 'null' or ignoring this parameter.
      * Requires the `subtractOnBuy` option to be enabled. Default: null.
-     * 
+     *
      * @param {string} [reason='received the item from the shop']
      * The reason why the money was subtracted. Default: 'received the item from the shop'.
-     * 
+     *
      * @returns {ShopOperationInfo} Operation information object.
      */
     buy(memberID, quantity = 1, currency = null, reason = 'received the item from the shop') {
@@ -313,6 +312,7 @@ class ShopItem extends Emitter {
         if (subtractOnBuy) {
             if (currency) {
                 this.currencies.subtractBalance(currency, totalPrice, memberID, this.guildID, reason)
+                this.database.logger.debug('ShopItem.buy - Subtracting the balance from specified currency.')
             } else {
                 this.database.subtract(`${this.guildID}.${memberID}.money`, totalPrice)
 
@@ -325,6 +325,8 @@ class ShopItem extends Emitter {
                     reason
                 })
             }
+        } else {
+            this.database.logger.debug('ShopItem.buy - Subtracting on buying is disabled.')
         }
 
         this.database.set(`${this.guildID}.${memberID}.inventory`, newInventory)
@@ -345,6 +347,8 @@ class ShopItem extends Emitter {
                 date: new Date().toLocaleString(dateLocale),
                 custom: item.custom || {}
             })
+        } else {
+            this.database.logger.debug('ShopItem.buy - Saving purchases history is disabled.')
         }
 
         this.emit('shopItemBuy', {
@@ -373,7 +377,7 @@ class ShopItem extends Emitter {
 
     /**
      * Removes an item from the shop.
-     * 
+     *
      * This method is an alias for 'ShopItem.remove()' method.
      * @returns {boolean} If removed: true, else: false.
      */
@@ -453,33 +457,33 @@ class ShopItem extends Emitter {
  * @typedef {object} EconomyConfiguration Default Economy configuration.
  * @property {string} [storagePath='./storage.json'] Full path to a JSON file. Default: './storage.json'
  * @property {boolean} [checkStorage=true] Checks the if database file exists and if it has errors. Default: true
- * @property {number} [dailyCooldown=86400000] 
+ * @property {number} [dailyCooldown=86400000]
  * Cooldown for Daily Command (in ms). Default: 24 hours (60000 * 60 * 24 ms)
- * 
+ *
  * @property {number} [workCooldown=3600000] Cooldown for Work Command (in ms). Default: 1 hour (60000 * 60 ms)
  * @property {number | number[]} [dailyAmount=100] Amount of money for Daily Command. Default: 100.
- * @property {number} [weeklyCooldown=604800000] 
+ * @property {number} [weeklyCooldown=604800000]
  * Cooldown for Weekly Command (in ms). Default: 7 days (60000 * 60 * 24 * 7 ms)
- * 
+ *
  * @property {number | number[]} [weeklyAmount=100] Amount of money for Weekly Command. Default: 1000.
  * @property {number | number[]} [workAmount=[10, 50]] Amount of money for Work Command. Default: [10, 50].
- * @property {boolean} [subtractOnBuy=true] 
+ * @property {boolean} [subtractOnBuy=true]
  * If true, when someone buys the item, their balance will subtract by item price. Default: false
- * 
- * @property {number} [sellingItemPercent=75] 
+ *
+ * @property {number} [sellingItemPercent=75]
  * Percent of the item's price it will be sold for. Default: 75.
- * 
- * @property {boolean} [deprecationWarnings=true] 
+ *
+ * @property {boolean} [deprecationWarnings=true]
  * If true, the deprecation warnings will be sent in the console. Default: true.
- * 
+ *
  * @property {boolean} [savePurchasesHistory=true] If true, the module will save all the purchases history.
- * 
+ *
  * @property {number} [updateCountdown=1000] Checks for if storage file exists in specified time (in ms). Default: 1000.
  * @property {string} [dateLocale='en'] The region (example: 'ru'; 'en') to format the date and time. Default: 'en'.
  * @property {UpdaterOptions} [updater=UpdaterOptions] Update checker configuration.
  * @property {ErrorHandlerConfiguration} [errorHandler=ErrorHandlerConfiguration] Error handler configuration.
 
- * @property {CheckerConfiguration} [optionsChecker=CheckerConfiguration] 
+ * @property {CheckerConfiguration} [optionsChecker=CheckerConfiguration]
  * Configuration for an 'Economy.utils.checkOptions' method.
  * @property {boolean} [debug=false] Enables or disables the debug mode.
  */

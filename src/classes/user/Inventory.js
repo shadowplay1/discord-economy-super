@@ -1,9 +1,7 @@
 const EconomyError = require('../util/EconomyError')
 const errors = require('../../structures/errors')
 
-const DatabaseManager = require('../../managers/DatabaseManager')
 const BaseManager = require('../../managers/BaseManager')
-
 const InventoryItem = require('../InventoryItem')
 
 
@@ -18,8 +16,9 @@ class Inventory extends BaseManager {
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
      * @param {EconomyConfiguration} options Economy configuration.
+     * @param {DatabaseManager} database Database manager.
      */
-    constructor(memberID, guildID, options) {
+    constructor(memberID, guildID, options, database) {
         super(options, memberID, guildID, InventoryItem)
 
         /**
@@ -46,7 +45,7 @@ class Inventory extends BaseManager {
          * @type {DatabaseManager}
          * @private
          */
-        this.database = new DatabaseManager(options)
+        this.database = database
     }
 
     /**
@@ -60,7 +59,7 @@ class Inventory extends BaseManager {
 
     /**
      * Gets all the items in user's inventory.
-     * 
+     *
      * This method is an alias for 'EconomyUser.inventory.fetch' nethod.
      * @returns {InventoryItem[]} User's inventory array.
      */
@@ -75,9 +74,9 @@ class Inventory extends BaseManager {
      * @returns {string} Item message or null if item not found.
      */
     use(itemID, client) {
-        const inventory = this.fetch(memberID, guildID)
+        const inventory = this.fetch(this.memberID, this.guildID)
 
-        const itemObject = this.searchItem(itemID, memberID, guildID)
+        const itemObject = this.searchItem(itemID, this.memberID, this.guildID)
         const itemIndex = inventory.findIndex(invItem => invItem.id == itemObject?.id)
 
         const item = inventory[itemIndex]
@@ -93,11 +92,11 @@ class Inventory extends BaseManager {
                 throw new EconomyError(errors.noClient, 'NO_DISCORD_CLIENT')
             }
 
-            const guild = client.guilds.cache.get(guildID)
+            const guild = client.guilds.cache.get(this.guildID)
             const roleID = item.role.replace('<@&', '').replace('>', '')
 
             guild.roles.fetch(roleID).then(role => {
-                const member = guild.members.cache.get(memberID)
+                const member = guild.members.cache.get(this.memberID)
 
                 member.roles.add(role).catch(err => {
                     if (!role) {
@@ -106,7 +105,7 @@ class Inventory extends BaseManager {
 
                     console.error(
                         `\x1b[31mFailed to give a role "${guild.roles.cache.get(roleID)?.name}"` +
-                        `on guild "${guild.name}" to member ${guild.member(memberID).user.tag}:\x1b[36m`
+                        `on guild "${guild.name}" to member ${guild.member(this.memberID).user.tag}:\x1b[36m`
                     )
 
                     console.error(err)
@@ -115,7 +114,7 @@ class Inventory extends BaseManager {
             })
         }
 
-        this.removeItem(itemID, memberID, guildID)
+        this.removeItem(itemID, this.memberID, this.guildID)
 
         let msg
         const string = item?.message || 'You have used this item!'
@@ -171,7 +170,7 @@ class Inventory extends BaseManager {
         /**
         * @type {InventoryData[]}
         */
-        const inventory = this.fetcher.fetchInventory(memberID, guildID)
+        const inventory = this.fetcher.fetchInventory(this.memberID, this.guildID)
         const inventoryItems = inventory.filter(invItem => invItem.name == item.name)
 
         if (typeof itemID !== 'number' && typeof itemID !== 'string') {
@@ -192,7 +191,7 @@ class Inventory extends BaseManager {
             date: new Date().toLocaleString(this.options.dateLocale || 'en')
         }
 
-        return this.database.push(`${guildID}.${memberID}.inventory`, itemData)
+        return this.database.push(`${this.guildID}.${this.memberID}.inventory`, itemData)
     }
 
     /**
@@ -201,9 +200,9 @@ class Inventory extends BaseManager {
      * @returns {boolean} If removed successfully: true, else: false.
      */
     removeItem(itemID) {
-        const inventory = this.fetch(memberID, guildID)
+        const inventory = this.fetch(this.memberID, this.guildID)
 
-        const item = this.searchItem(itemID, memberID, guildID)
+        const item = this.searchItem(itemID, this.memberID, this.guildID)
         const itemIndex = inventory.findIndex(invItem => invItem.id == item?.id)
 
         if (typeof itemID !== 'number' && typeof itemID !== 'string') {
@@ -211,7 +210,7 @@ class Inventory extends BaseManager {
         }
 
         if (!item) return false
-        return this.database.pop(`${guildID}.${memberID}.inventory`, itemIndex)
+        return this.database.pop(`${this.guildID}.${this.memberID}.inventory`, itemIndex)
     }
 
     /**
@@ -219,7 +218,7 @@ class Inventory extends BaseManager {
      * @returns {boolean} If cleared: true, else: false.
      */
     clear() {
-        const inventory = this.fetch(this.memberID, this.guildID)
+        const inventory = this.fetch(this.memberID, this.this.guildID)
         if (!inventory) return false
 
         return this.database.delete(`${this.guildID}.${this.memberID}.inventory`)
@@ -243,7 +242,7 @@ class Inventory extends BaseManager {
 
     /**
      * Gets the item from user's inventory.
-     * 
+     *
      * This method is an alias for 'EconomyUser.inventory.get()' method.
      * @param {string | number} itemID Item ID.
      * @returns {InventoryItem} User's inventory item.
@@ -257,33 +256,33 @@ class Inventory extends BaseManager {
  * @typedef {object} EconomyConfiguration Default Economy configuration.
  * @property {string} [storagePath='./storage.json'] Full path to a JSON file. Default: './storage.json'
  * @property {boolean} [checkStorage=true] Checks the if database file exists and if it has errors. Default: true
- * @property {number} [dailyCooldown=86400000] 
+ * @property {number} [dailyCooldown=86400000]
  * Cooldown for Daily Command (in ms). Default: 24 hours (60000 * 60 * 24 ms)
- * 
+ *
  * @property {number} [workCooldown=3600000] Cooldown for Work Command (in ms). Default: 1 hour (60000 * 60 ms)
  * @property {number | number[]} [dailyAmount=100] Amount of money for Daily Command. Default: 100.
- * @property {number} [weeklyCooldown=604800000] 
+ * @property {number} [weeklyCooldown=604800000]
  * Cooldown for Weekly Command (in ms). Default: 7 days (60000 * 60 * 24 * 7 ms)
- * 
+ *
  * @property {number | number[]} [weeklyAmount=100] Amount of money for Weekly Command. Default: 1000.
  * @property {number | number[]} [workAmount=[10, 50]] Amount of money for Work Command. Default: [10, 50].
- * @property {boolean} [subtractOnBuy=true] 
+ * @property {boolean} [subtractOnBuy=true]
  * If true, when someone buys the item, their balance will subtract by item price. Default: false
- * 
- * @property {number} [sellingItemPercent=75] 
+ *
+ * @property {number} [sellingItemPercent=75]
  * Percent of the item's price it will be sold for. Default: 75.
- * 
- * @property {boolean} [deprecationWarnings=true] 
+ *
+ * @property {boolean} [deprecationWarnings=true]
  * If true, the deprecation warnings will be sent in the console. Default: true.
- * 
+ *
  * @property {boolean} [savePurchasesHistory=true] If true, the module will save all the purchases history.
- * 
+ *
  * @property {number} [updateCountdown=1000] Checks for if storage file exists in specified time (in ms). Default: 1000.
  * @property {string} [dateLocale='en'] The region (example: 'ru'; 'en') to format the date and time. Default: 'en'.
  * @property {UpdaterOptions} [updater=UpdaterOptions] Update checker configuration.
  * @property {ErrorHandlerConfiguration} [errorHandler=ErrorHandlerConfiguration] Error handler configuration.
 
- * @property {CheckerConfiguration} [optionsChecker=CheckerConfiguration] 
+ * @property {CheckerConfiguration} [optionsChecker=CheckerConfiguration]
  * Configuration for an 'Economy.utils.checkOptions' method.
  * @property {boolean} [debug=false] Enables or disables the debug mode.
  */

@@ -3,16 +3,12 @@ const { dirname } = require('path')
 
 const fetch = require('node-fetch')
 
-
-const DatabaseManager = require('./DatabaseManager')
-
 const DefaultConfiguration = require('../structures/DefaultConfiguration')
 const errors = require('../structures/errors')
 const defaultUserObject = require('../structures/DefaultUserObject')
 
 const Logger = require('../classes/util/Logger')
 const EconomyUser = require('../classes/EconomyUser')
-
 
 function unset(object, key) {
     const isObject = item => {
@@ -148,7 +144,7 @@ class UtilsManager {
 
         if (!user) return false
 
-        this.database.delete(`${guildID}.${memberID}`)
+        const result = this.database.delete(`${guildID}.${memberID}`)
         return result
     }
 
@@ -218,7 +214,7 @@ class UtilsManager {
 
 
         const problems = []
-        const output = {}
+        let output = {}
 
         const keys = Object.keys(DefaultConfiguration)
         const optionKeys = Object.keys(ecoOptions || {})
@@ -246,12 +242,16 @@ class UtilsManager {
                     if (ecoOptions[i]?.[y] == undefined || output[i]?.[y] == undefined) {
                         try {
                             output[i][y] = DefaultConfiguration[i][y]
-                        } catch (_) { }
+                        } catch (_) {
+                            return
+                        }
 
                         if (!options.ignoreUnspecifiedOptions) problems.push(`options.${i}.${y} is not specified.`)
                     }
 
-                    else { }
+                    else {
+                        return
+                    }
                 }
 
                 if (typeof output[i] !== typeof DefaultConfiguration[i]) {
@@ -278,7 +278,9 @@ class UtilsManager {
                     }
                 }
 
-                else { }
+                else {
+                    return
+                }
 
                 if (i == 'workAmount' && Array.isArray(output[i]) && output[i].length > 2) {
                     output[i] = output[i].slice(0, 2)
@@ -303,7 +305,9 @@ class UtilsManager {
                         output[i][y] = DefaultConfiguration[i][y]
                     }
 
-                    else { }
+                    else {
+                        return
+                    }
                 }
             }
 
@@ -373,32 +377,32 @@ class UtilsManager {
 
 /**
  * @typedef {object} EconomyConfiguration Default Economy configuration.
- * @property {number} [dailyCooldown=86400000] 
+ * @property {number} [dailyCooldown=86400000]
  * Cooldown for Daily Command (in ms). Default: 24 hours (60000 * 60 * 24 ms)
- * 
+ *
  * @property {number} [workCooldown=3600000] Cooldown for Work Command (in ms). Default: 1 hour (60000 * 60 ms)
  * @property {number | number[]} [dailyAmount=100] Amount of money for Daily Command. Default: 100.
- * @property {number} [weeklyCooldown=604800000] 
+ * @property {number} [weeklyCooldown=604800000]
  * Cooldown for Weekly Command (in ms). Default: 7 days (60000 * 60 * 24 * 7 ms)
- * 
+ *
  * @property {number | number[]} [weeklyAmount=100] Amount of money for Weekly Command. Default: 1000.
  * @property {number | number[]} [workAmount=[10, 50]] Amount of money for Work Command. Default: [10, 50].
- * @property {boolean} [subtractOnBuy=true] 
+ * @property {boolean} [subtractOnBuy=true]
  * If true, when someone buys the item, their balance will subtract by item price. Default: false
- * 
- * @property {number} [sellingItemPercent=75] 
+ *
+ * @property {number} [sellingItemPercent=75]
  * Percent of the item's price it will be sold for. Default: 75.
- * 
- * @property {boolean} [deprecationWarnings=true] 
+ *
+ * @property {boolean} [deprecationWarnings=true]
  * If true, the deprecation warnings will be sent in the console. Default: true.
- * 
+ *
  * @property {boolean} [savePurchasesHistory=true] If true, the module will save all the purchases history.
- * 
+ *
  * @property {string} [dateLocale='en'] The region (example: 'ru'; 'en') to format the date and time. Default: 'en'.
  * @property {UpdaterOptions} [updater=UpdaterOptions] Update checker configuration.
  * @property {ErrorHandlerConfiguration} [errorHandler=ErrorHandlerConfiguration] Error handler configuration.
 
- * @property {CheckerConfiguration} [optionsChecker=CheckerConfiguration] 
+ * @property {CheckerConfiguration} [optionsChecker=CheckerConfiguration]
  * Configuration for an 'Economy.utils.checkOptions' method.
  * @property {boolean} [debug=false] Enables or disables the debug mode.
  */
@@ -406,7 +410,7 @@ class UtilsManager {
 /**
  * @typedef {object} UpdaterOptions Update checker configuration.
  * @property {boolean} [checkUpdates=true] Sends the update state message in console on start. Default: true.
- * @property {boolean} [upToDateMessage=true] 
+ * @property {boolean} [upToDateMessage=true]
  * Sends the message in console on start if module is up to date. Default: true.
  */
 
@@ -419,19 +423,19 @@ class UtilsManager {
 
 /**
  * @typedef {object} CheckerConfiguration Configuration for an 'Economy.utils.checkOptions' method.
- * @property {boolean} [ignoreInvalidTypes=false] 
+ * @property {boolean} [ignoreInvalidTypes=false]
  * Allows the method to ignore the options with invalid types. Default: false.
- * 
- * @property {boolean} [ignoreUnspecifiedOptions=true] 
+ *
+ * @property {boolean} [ignoreUnspecifiedOptions=true]
  * Allows the method to ignore the unspecified options. Default: true.
- * 
+ *
  * @property {boolean} [ignoreInvalidOptions=false] Allows the method to ignore the unexisting options. Default: false.
- * @property {boolean} [showProblems=true] Allows the method to show all the problems in the console. Default: true. 
- * 
- * @property {boolean} [sendLog=true] Allows the method to send the result in the console. 
+ * @property {boolean} [showProblems=true] Allows the method to show all the problems in the console. Default: true.
+ *
+ * @property {boolean} [sendLog=true] Allows the method to send the result in the console.
  * Requires the 'showProblems' or 'sendLog' options to set. Default: true.
- * 
- * @property {boolean} [sendSuccessLog=false] 
+ *
+ * @property {boolean} [sendSuccessLog=false]
  * Allows the method to send the result if no problems were found. Default: false.
  */
 

@@ -8,7 +8,6 @@ const errors = require('../structures/errors')
 const ShopItem = require('../classes/ShopItem')
 const InventoryItem = require('../classes/InventoryItem')
 
-
 /**
  * Shop manager methods class.
  * @extends {Emitter}
@@ -22,10 +21,10 @@ class ShopManager extends Emitter {
       * @param {string} options.dateLocale The region (example: 'ru' or 'en') to format date and time. Default: 'en'.
       * @param {boolean} options.subtractOnBuy
       * If true, when someone buys the item, their balance will subtract by item price.
-      * 
-      * @param {boolean} options.deprecationWarnings 
+      *
+      * @param {boolean} options.deprecationWarnings
       * If true, the deprecation warnings will be sent in the console.
-      * 
+      *
       * @param {boolean} options.savePurchasesHistory If true, the module will save all the purchases history.
      */
     constructor(options = {}) {
@@ -49,7 +48,7 @@ class ShopManager extends Emitter {
          * Currency Manager.
          * @type {CurrencyManager}
          */
-        this.currencies = new CurrencyManager(this.options, this.database)
+        this.currencies = new CurrencyManager(options, this.database)
     }
 
     /**
@@ -140,7 +139,7 @@ class ShopManager extends Emitter {
 
     /**
      * Creates an item in shop.
-     * 
+     *
      * This method is an alias for the `ShopManager.addItem()` method.
      * @param {string} guildID Guild ID.
      * @param {AddItemOptions} options Configuration with item info.
@@ -154,10 +153,10 @@ class ShopManager extends Emitter {
      * Edits the item in the shop.
      * @param {string | number} itemID Item ID or name.
      * @param {string} guildID Guild ID
-     * @param {'description' | 'price' | 'name' | 'message' | 'maxAmount' | 'role' | 'custom'} itemProperty 
-     * This argument means what thing in item you want to edit (item property). 
+     * @param {'description' | 'price' | 'name' | 'message' | 'maxAmount' | 'role' | 'custom'} itemProperty
+     * This argument means what thing in item you want to edit (item property).
      * Available item properties are 'description', 'price', 'name', 'message', 'amount', 'role', 'custom'.
-     * 
+     *
      * @param {any} value Any value to set.
      * @returns {boolean} If edited successfully: true, else: false.
      */
@@ -233,14 +232,14 @@ class ShopManager extends Emitter {
 
     /**
      * Edits the item in the shop.
-     * 
+     *
      * This method is an alias for the `ShopManager.editItem()` method.
      * @param {string | number} itemID Item ID or name.
      * @param {string} guildID Guild ID
-     * @param {'description' | 'price' | 'name' | 'message' | 'maxAmount' | 'role' | 'custom'} itemProperty 
-     * This argument means what thing in item you want to edit (item property). 
+     * @param {'description' | 'price' | 'name' | 'message' | 'maxAmount' | 'role' | 'custom'} itemProperty
+     * This argument means what thing in item you want to edit (item property).
      * Available item properties are 'description', 'price', 'name', 'message', 'amount', 'role', 'custom'.
-     * 
+     *
      * @param {any} value Any value to set.
      * @returns {boolean} If edited successfully: true, else: false.
      */
@@ -325,12 +324,12 @@ class ShopManager extends Emitter {
 
     /**
      * Clears the user's inventory.
-     * 
+     *
      * [!!!] This method is deprecated.
      * If you want to get all the bugfixes and
      * use the newest inventory features, please
      * switch to the usage of the new InventoryManager.
-     * 
+     *
      * [!!!] No help will be provided for inventory
      * related methods in ShopManager.
      * @param {string} memberID Member ID.
@@ -382,7 +381,7 @@ class ShopManager extends Emitter {
 
     /**
      * Shows all items in the shop.
-     * 
+     *
      * This method is an alias for the `ShopManager.fetch()` method.
      * @param {string} guildID Guild ID
      * @returns {ShopItem[]} The shop array.
@@ -393,7 +392,7 @@ class ShopManager extends Emitter {
 
     /**
      * Shows all items in the shop.
-     * 
+     *
      * This method is an alias for the `ShopManager.get()` method.
      * @param {string} guildID Guild ID
      * @returns {ShopItem[]} The shop array.
@@ -430,7 +429,7 @@ class ShopManager extends Emitter {
 
     /**
      * Gets the item in the shop.
-     * 
+     *
      * This method is an alias for the `ShopManager.getItem()` method.
      * @param {string | number} itemID Item ID or name.
      * @param {string} guildID Guild ID.
@@ -447,7 +446,7 @@ class ShopManager extends Emitter {
      * If you want to get all the bugfixes and
      * use the newest inventory features, please
      * switch to the usage of the new InventoryManager.
-     * 
+     *
      * [!!!] No help will be provided for inventory
      * related methods in ShopManager.
      * @param {string | number} itemID Item ID or name.
@@ -496,15 +495,15 @@ class ShopManager extends Emitter {
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
      * @param {number} [quantity=1] Quantity of items to buy. Default: 1.
-     * 
-     * @param {string | number} [currency=null] 
-     * The currency to subtract the money from. 
+     *
+     * @param {string | number} [currency=null]
+     * The currency to subtract the money from.
      * Can be omitted by specifying 'null' or ignoring this parameter.
      * Requires the `subtractOnBuy` option to be enabled. Default: null.
-     * 
-     * @param {string} [reason='received the item from the shop'] 
+     *
+     * @param {string} [reason='received the item from the shop']
      * The reason why the money was subtracted. Default: 'received the item from the shop'.
-     * 
+     *
      * @returns {ShopOperationInfo} Operation information object.
      */
     buy(itemID, memberID, guildID, quantity = 1, currency = null, reason = 'received the item from the shop') {
@@ -592,6 +591,7 @@ class ShopManager extends Emitter {
         if (subtractOnBuy) {
             if (currency) {
                 this.currencies.subtractBalance(currency, totalPrice, memberID, guildID, reason)
+                this.database.logger.debug('ShopItem.buy - Subtracting the balance from specified currency.')
             } else {
                 this.database.subtract(`${guildID}.${memberID}.money`, totalPrice)
 
@@ -604,6 +604,8 @@ class ShopManager extends Emitter {
                     reason
                 })
             }
+        } else {
+            this.database.logger.debug('ShopItem.buy - Subtracting on buying is disabled.')
         }
 
         this.database.set(`${guildID}.${memberID}.inventory`, newInventory)
@@ -624,6 +626,8 @@ class ShopManager extends Emitter {
                 date: new Date().toLocaleString(dateLocale),
                 custom: item.custom || {}
             })
+        } else {
+            this.database.logger.debug('ShopItem.buy - Saving purchases history is disabled.')
         }
 
         this.emit('shopItemBuy', {
@@ -643,21 +647,21 @@ class ShopManager extends Emitter {
 
     /**
      * Buys the item from the shop.
-     * 
+     *
      * This method is an alias for the `ShopManager.buy()` method.
      * @param {string | number} itemID Item ID or name.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
      * @param {number} [quantity=1] Quantity of items to buy. Default: 1.
-     * 
-     * @param {string | number} [currency=null] 
-     * The currency to subtract the money from. 
+     *
+     * @param {string | number} [currency=null]
+     * The currency to subtract the money from.
      * Can be omitted by specifying 'null' or ignoring this parameter.
      * Requires the `subtractOnBuy` option to be enabled. Default: null.
-     * 
-     * @param {string} [reason='received the item from the shop'] 
+     *
+     * @param {string} [reason='received the item from the shop']
      * The reason why the money was subtracted. Default: 'received the item from the shop'.
-     * 
+     *
      * @returns {ShopOperationInfo} Operation information object.
      */
     buyItem(itemID, memberID, guildID, quantity, currency, reason) {
@@ -666,12 +670,12 @@ class ShopManager extends Emitter {
 
     /**
      * Shows all items in user's inventory.
-     * 
+     *
      * [!!!] This method is deprecated.
      * If you want to get all the bugfixes and
      * use the newest inventory features, please
      * switch to the usage of the new InventoryManager.
-     * 
+     *
      * [!!!] No help will be provided for inventory
      * related methods in ShopManager.
      * @param {string} memberID Member ID.
@@ -706,12 +710,12 @@ class ShopManager extends Emitter {
 
     /**
      * Uses the item from user's inventory.
-     * 
+     *
      * [!!!] This method is deprecated.
      * If you want to get all the bugfixes and
      * use the newest inventory features, please
      * switch to the usage of the new InventoryManager.
-     * 
+     *
      * [!!!] No help will be provided for inventory
      * related methods in ShopManager.
      * @param {string | number} itemID Item ID or name.
@@ -825,12 +829,12 @@ class ShopManager extends Emitter {
 
     /**
      * Shows the user's purchase history.
-     * 
+     *
      * [!!!] This method is deprecated.
      * If you want to get all the bugfixes and
      * use the newest history features, please
      * switch to the usage of the new HistoryManager.
-     * 
+     *
      * [!!!] No help will be provided for history
      * related methods in ShopManager.
      * @param {string} memberID Member ID
@@ -869,12 +873,12 @@ class ShopManager extends Emitter {
 
     /**
     * Clears the user's purchases history.
-    * 
+    *
     * [!!!] This method is deprecated.
     * If you want to get all the bugfixes and
     * use the newest history features, please
     * switch to the usage of the new HistoryManager.
-    * 
+    *
     * [!!!] No help will be provided for history
     * related methods in ShopManager.
     * @param {string} memberID Member ID.
@@ -986,7 +990,7 @@ class ShopManager extends Emitter {
  * @property {UpdaterOptions} [updater=UpdaterOptions] Update checker configuration.
  * @property {ErrorHandlerConfiguration} [errorHandler=ErrorHandlerConfiguration] Error handler configuration.
 
- * @property {CheckerConfiguration} [optionsChecker=CheckerConfiguration] 
+ * @property {CheckerConfiguration} [optionsChecker=CheckerConfiguration]
  * Configuration for an 'Economy.utils.checkOptions' method.
  * @property {boolean} [debug=false] Enables or disables the debug mode.
  */

@@ -180,7 +180,7 @@ class DatabaseManager {
 
     /**
      * Fetches the data from the storage file.
-     * 
+     *
      * This method is an alias for 'DatabaseManager.fetch()' method.
      * @param {string} key The key in database.
      * @returns {any} Value from the specified key or 'false' if failed to read or 'null' if nothing found.
@@ -191,7 +191,7 @@ class DatabaseManager {
 
     /**
      * Fetches the data from the storage file.
-     * 
+     *
      * This method is an alias for the `DatabaseManager.fetch()` method.
      * @param {string} key The key in database.
      * @returns {any} Value from the specified key or 'false' if failed to read or 'null' if nothing found.
@@ -223,7 +223,7 @@ class DatabaseManager {
 
     /**
      * Removes the property from the existing object in database.
-     * 
+     *
      * This method is an alias for `DatabaseManager.remove()` method.
      * @param {string} key The key in database.
      * @returns {boolean} If cleared: true; else: false.
@@ -313,7 +313,7 @@ class DatabaseManager {
 
     /**
      * Clears the whole database.
-     * 
+     *
      * This method is an alias for `DatabaseManager.clear()` method.
      * @returns {boolean} If cleared: true; else: false.
      */
@@ -323,7 +323,7 @@ class DatabaseManager {
 
     /**
      * Removes an element from a specified array in the database.
-     * 
+     *
      * This method is an alias for `DatabaseManager.pop()` method.
      * @param {string} key The key in database.
      * @param {number} index The index in the array.
@@ -376,7 +376,7 @@ class DatabaseManager {
 
     /**
     * Changes the specified element's value in a specified array in the database.
-    * 
+    *
     * This method is an alias for `DatabaseManager.pull()` method.
     * @param {string} key The key in database.
     * @param {number} index The index in the array.
@@ -398,7 +398,7 @@ class DatabaseManager {
 
     /**
      * Checks if the element is existing in database.
-     * 
+     *
      * This method is an alias for `DatabaseManager.has()` method.
      * @param {string} key The key in database.
      * @returns {boolean} If existing: true; else: false.

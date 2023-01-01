@@ -1,7 +1,4 @@
 const EconomyError = require('../classes/util/EconomyError')
-
-const DatabaseManager = require('./DatabaseManager')
-
 const errors = require('../structures/errors')
 
 
@@ -17,14 +14,14 @@ class CooldownManager {
       * @param {number} options.dailyCooldown Cooldown for Daily Command (in ms). Default: 24 hours (60000 * 60 * 24 ms)
       * @param {number} options.workCooldown Cooldown for Work Command (in ms). Default: 1 hour (60000 * 60 ms)
       * @param {number} options.dailyAmount Amount of money for Daily Command. Default: 100.
-      * @param {number} options.weeklyCooldown 
+      * @param {number} options.weeklyCooldown
       * Cooldown for Weekly Command (in ms). Default: 7 days (60000 * 60 * 24 * 7 ms)
-      * 
+      *
       * @param {number} options.weeklyAmount Amount of money for Weekly Command. Default: 1000.
       * @param {number | number[]} options.workAmount Amount of money for Work Command. Default: [10, 50].
-     */
-    constructor(options) {
-
+      * @param {DatabaseManager} database Database manager.
+      */
+    constructor(options, database) {
 
         /**
          * Economy configuration.
@@ -35,10 +32,10 @@ class CooldownManager {
 
         /**
          * Database manager.
-         * @private
          * @type {DatabaseManager}
+         * @private
          */
-        this.database = new DatabaseManager(options)
+        this.database = database
     }
 
     /**

@@ -1,12 +1,13 @@
 const RewardManager = require('../../managers/RewardManager')
 const EconomyError = require('../util/EconomyError')
 
+const errors = require('../../structures/errors')
+
 const RewardType = {
     DAILY: 0,
     WORK: 1,
     WEEKLY: 2
 }
-
 
 /**
  * User rewards.
@@ -91,9 +92,9 @@ class Rewards {
 
     /**
     * Adds a daily reward on user's balance.
-    * @param {string} [reason='claimed the daily reward'] 
+    * @param {string} [reason='claimed the daily reward']
     * The reason why the money was added. Default: 'claimed the daily reward'
-    * 
+    *
     * @returns {RewardData} Reward object information.
     */
     getDaily(reason) {
@@ -102,9 +103,9 @@ class Rewards {
 
     /**
     * Adds a work reward on user's balance.
-    * @param {string} [reason='claimed the work reward'] 
+    * @param {string} [reason='claimed the work reward']
     * The reason why the money was added. Default: 'claimed the work reward'
-    * 
+    *
     * @returns {RewardData} Reward object information.
     */
     getWork(reason) {
@@ -113,9 +114,9 @@ class Rewards {
 
     /**
     * Adds a weekly reward on user's balance.
-    * @param {string} [reason='claimed the weekly reward'] 
+    * @param {string} [reason='claimed the weekly reward']
     * The reason why the money was added. Default: 'claimed the weekly reward'
-    * 
+    *
     * @returns {RewardData} Reward object information.
     */
     getWeekly(reason) {
@@ -158,33 +159,33 @@ module.exports = Rewards
  * @typedef {object} EconomyConfiguration Default Economy configuration.
  * @property {string} [storagePath='./storage.json'] Full path to a JSON file. Default: './storage.json'
  * @property {boolean} [checkStorage=true] Checks the if database file exists and if it has errors. Default: true
- * @property {number} [dailyCooldown=86400000] 
+ * @property {number} [dailyCooldown=86400000]
  * Cooldown for Daily Command (in ms). Default: 24 hours (60000 * 60 * 24 ms)
- * 
+ *
  * @property {number} [workCooldown=3600000] Cooldown for Work Command (in ms). Default: 1 hour (60000 * 60 ms)
  * @property {number | number[]} [dailyAmount=100] Amount of money for Daily Command. Default: 100.
- * @property {number} [weeklyCooldown=604800000] 
+ * @property {number} [weeklyCooldown=604800000]
  * Cooldown for Weekly Command (in ms). Default: 7 days (60000 * 60 * 24 * 7 ms)
  *
  * @property {number} [sellingItemPercent=75]
  * Percent of the item's price it will be sold for. Default: 75.
- * 
- * @property {boolean} [deprecationWarnings=true] 
+ *
+ * @property {boolean} [deprecationWarnings=true]
  * If true, the deprecation warnings will be sent in the console.
- * 
+ *
  * @property {boolean} [savePurchasesHistory=true] If true, the module will save all the purchases history.
- * 
+ *
  * @property {number | number[]} [weeklyAmount=100] Amount of money for Weekly Command. Default: 1000.
  * @property {number | number[]} [workAmount=[10, 50]] Amount of money for Work Command. Default: [10, 50].
- * @property {boolean} [subtractOnBuy=true] 
+ * @property {boolean} [subtractOnBuy=true]
  * If true, when someone buys the item, their balance will subtract by item price. Default: false
- * 
+ *
  * @property {number} [updateCountdown=1000] Checks for if storage file exists in specified time (in ms). Default: 1000.
  * @property {string} [dateLocale='en'] The region (example: 'ru' or 'en') to format the date and time. Default: 'en'.
  * @property {UpdaterOptions} [updater=UpdaterOptions] Update checker configuration.
  * @property {ErrorHandlerConfiguration} [errorHandler=ErrorHandlerConfiguration] Error handler configuration.
 
- * @property {CheckerConfiguration} [optionsChecker=CheckerConfiguration] 
+ * @property {CheckerConfiguration} [optionsChecker=CheckerConfiguration]
  * Configuration for an 'Economy.utils.checkOptions' method.
  * @property {boolean} [debug=false] Enables or disables the debug mode.
  */

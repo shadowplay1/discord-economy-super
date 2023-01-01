@@ -1,7 +1,6 @@
 const EconomyError = require('../classes/util/EconomyError')
 const Emitter = require('../classes/util/Emitter')
 
-const DatabaseManager = require('./DatabaseManager')
 const Currency = require('../classes/Currency')
 
 const errors = require('../structures/errors')
@@ -78,7 +77,7 @@ class CurrencyManager extends Emitter {
 
     /**
      * Finds the info for the specified currency.
-     * 
+     *
      * This method is an alias for `CurrencyManager.find()` method.
      * @param {string | number} currencyID Currency ID, its name or its symbol.
      * @param {string} guildID Guild ID.

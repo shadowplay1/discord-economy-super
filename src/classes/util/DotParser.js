@@ -11,7 +11,7 @@ const DefaultConfiguration = require('../../structures/DefaultConfiguration')
 class DotParser {
 
     /**
-     * Economy configuration. 
+     * Economy configuration.
      * @param {object} options Economy configuration.
      * @param {string} options.storagePath Full path to a JSON file. Default: './storage.json'.
      */
@@ -97,7 +97,7 @@ class DotParser {
     }
 
     /**
-     * Parses the key and removes the data from database. 
+     * Parses the key and removes the data from database.
      * @param {string} key The key in database.
      * @returns {boolean} If removed successfully: true; else: false
      */

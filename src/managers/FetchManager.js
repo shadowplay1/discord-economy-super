@@ -8,7 +8,6 @@ const ShopItem = require('../classes/ShopItem')
 const InventoryItem = require('../classes/InventoryItem')
 const HistoryItem = require('../classes/HistoryItem')
 
-
 /**
 * Fetch manager methods class.
 */

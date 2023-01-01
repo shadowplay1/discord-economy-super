@@ -11,7 +11,6 @@ const emitter = new EventEmitter({
  */
 class Emitter {
 
-
     /**
     * Economy event emitter with only important emitter methods.
     * @private
@@ -20,7 +19,7 @@ class Emitter {
 
     /**
      * Listens to the event.
-     * @param {ShopEvents} event Event name. 
+     * @param {EconomyEvents} event Event name.
      * @param {Function} listener Callback function.
      * @returns {Emitter} Economy Emitter.
      */
@@ -31,7 +30,7 @@ class Emitter {
 
     /**
      * Listens to the event only for once.
-     * @param {ShopEvents} event Event name.
+     * @param {EconomyEvents} event Event name.
      * @param {Function} listener Callback function.
      * @returns {Emitter} Economy Emitter.
      */

@@ -73,8 +73,8 @@ module.exports = {
 
     /**
      * Returns a message for an INVALID_PROPERTY error.
-     * @param {string} key 
-     * @param {string} property 
+     * @param {string} key
+     * @param {string} property
      * @returns {string} "{property}" is an invalid property for ${key}. Available properties are: {availableProps}.
      */
     invalidProperty(key, property) {
@@ -181,8 +181,8 @@ module.exports = {
     /**
      * Sends a deprecation warning log in the console.
      * @param {string} oldManager
-     * @param {string} oldMethod 
-     * @param {string} newManager 
+     * @param {string} oldMethod
+     * @param {string} newManager
      * @param {string} newMethod
      * @param {string[]} argumentsList
      * @returns {string} Deprecation warning message.
@@ -199,10 +199,10 @@ module.exports = {
      * @param {string} manager The manager where the method is using a deprecated property.
      * @param {string} oldProperty The option that is deprecated.
      * @param {string} newProperty The new option that should be used instead of the deprecated one.
-     * 
-     * @param {ProperyDeprecationOptions} [objectPropertyOptions] 
+     *
+     * @param {ProperyDeprecationOptions} [objectPropertyOptions]
      * Can be used if the deprecated property is an object property.
-     * 
+     *
      * @returns {string} A message to be sent to the console.
      */
     propertyDeprecationWarning(manager, oldProperty, newProperty, objectPropertyOptions = null) {
@@ -228,5 +228,5 @@ module.exports = {
  * @property {string} method The method that includes an options object with deprecated property.
  * @property {string} argumentName The name of the argument where the options object has a deprecated property.
  * @property {string[]} argumentsList The list of arguments of the method.
- * @property {string} example Example of the usage of the new property. 
+ * @property {string} example Example of the usage of the new property.
  */

@@ -53,7 +53,7 @@ class History extends BaseManager {
 
     /**
     * Gets all the items in user's purchases history.
-    * 
+    *
     * This method is an alias for `History.all()` method.
     * @returns {HistoryItem[]} User's history item.
     */
@@ -110,13 +110,13 @@ class History extends BaseManager {
             throw new EconomyError(errors.invalidTypes.id + typeof id, 'INVALID_TYPE')
         }
 
-        const history = this.fetch(memberID, guildID)
+        const history = this.fetch(this.memberID, this.guildID)
 
         const historyItem = this.find(
             historyItem =>
                 historyItem.id == id &&
-                historyItem.memberID == memberID &&
-                historyItem.guildID == guildID
+                historyItem.memberID == this.memberID &&
+                historyItem.guildID == this.guildID
         )
 
         const historyItemIndex = history.findIndex(histItem => histItem.id == historyItem.id)
@@ -129,7 +129,7 @@ class History extends BaseManager {
 
     /**
      * Removes the specified item from purchases history.
-     * 
+     *
      * This method is an alias for `History.remove()` method.
      * @param {string | number} id History item ID.
      * @returns {boolean} If removed: true, else: false.
@@ -161,7 +161,7 @@ class History extends BaseManager {
 
     /**
      * Gets the specified item from history.
-     * 
+     *
      * This method is an alias for `History.getItem()` method.
      * @param {string | number} id History item ID.
      * @returns {HistoryItem} Purchases history item.
@@ -175,33 +175,33 @@ class History extends BaseManager {
  * @typedef {object} EconomyConfiguration Default Economy configuration.
  * @property {string} [storagePath='./storage.json'] Full path to a JSON file. Default: './storage.json'
  * @property {boolean} [checkStorage=true] Checks the if database file exists and if it has errors. Default: true
- * @property {number} [dailyCooldown=86400000] 
+ * @property {number} [dailyCooldown=86400000]
  * Cooldown for Daily Command (in ms). Default: 24 hours (60000 * 60 * 24 ms)
- * 
+ *
  * @property {number} [workCooldown=3600000] Cooldown for Work Command (in ms). Default: 1 hour (60000 * 60 ms)
  * @property {number | number[]} [dailyAmount=100] Amount of money for Daily Command. Default: 100.
- * @property {number} [weeklyCooldown=604800000] 
+ * @property {number} [weeklyCooldown=604800000]
  * Cooldown for Weekly Command (in ms). Default: 7 days (60000 * 60 * 24 * 7 ms)
- * 
+ *
  * @property {number | number[]} [weeklyAmount=100] Amount of money for Weekly Command. Default: 1000.
  * @property {number | number[]} [workAmount=[10, 50]] Amount of money for Work Command. Default: [10, 50].
- * @property {boolean} [subtractOnBuy=true] 
+ * @property {boolean} [subtractOnBuy=true]
  * If true, when someone buys the item, their balance will subtract by item price. Default: false
- * 
- * @property {number} [sellingItemPercent=75] 
+ *
+ * @property {number} [sellingItemPercent=75]
  * Percent of the item's price it will be sold for. Default: 75.
- * 
- * @property {boolean} [deprecationWarnings=true] 
+ *
+ * @property {boolean} [deprecationWarnings=true]
  * If true, the deprecation warnings will be sent in the console. Default: true.
- * 
+ *
  * @property {boolean} [savePurchasesHistory=true] If true, the module will save all the purchases history.
- * 
+ *
  * @property {number} [updateCountdown=1000] Checks for if storage file exists in specified time (in ms). Default: 1000.
  * @property {string} [dateLocale='en'] The region (example: 'ru'; 'en') to format the date and time. Default: 'en'.
  * @property {UpdaterOptions} [updater=UpdaterOptions] Update checker configuration.
  * @property {ErrorHandlerConfiguration} [errorHandler=ErrorHandlerConfiguration] Error handler configuration.
 
- * @property {CheckerConfiguration} [optionsChecker=CheckerConfiguration] 
+ * @property {CheckerConfiguration} [optionsChecker=CheckerConfiguration]
  * Configuration for an 'Economy.utils.checkOptions' method.
  * @property {boolean} [debug=false] Enables or disables the debug mode.
  */

@@ -15,7 +15,7 @@ class BankManager extends Emitter {
 
     /**
      * Bank Manager.
-     * 
+     *
      * @param {object} options Economy configuration.
      * @param {string} options.storagePath Full path to a JSON file. Default: './storage.json'.
      */
@@ -65,7 +65,7 @@ class BankManager extends Emitter {
 
     /**
     * Gets the user's bank balance.
-    * 
+    *
     * This method is an alias of `BankManager.fetch()` method.
     * @param {string} memberID Member ID.
     * @param {string} guildID Guild ID.

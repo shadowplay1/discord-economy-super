@@ -1,6 +1,4 @@
-const DatabaseManager = require('./DatabaseManager')
 const EconomyError = require('../classes/util/EconomyError')
-
 const errors = require('../structures/errors')
 
 const HistoryItem = require('../classes/HistoryItem')
@@ -71,7 +69,7 @@ class HistoryManager {
 
     /**
     * Shows the user's purchases history.
-    * 
+    *
     * This method is an alias for `HistoryManager.fetch()` method.
     * @param {string} memberID Member ID
     * @param {string} guildID Guild ID
@@ -222,7 +220,7 @@ class HistoryManager {
 
     /**
      * Gets the specified item from history.
-     * 
+     *
      * This method is an alias for `HistoryManager.findItem()` method.
      * @param {string | number} id History item ID.
      * @param {string} memberID Member ID.
@@ -291,7 +289,7 @@ class HistoryManager {
  * @property {UpdaterOptions} [updater=UpdaterOptions] Update checker configuration.
  * @property {ErrorHandlerConfiguration} [errorHandler=ErrorHandlerConfiguration] Error handler configuration.
 
- * @property {CheckerConfiguration} [optionsChecker=CheckerConfiguration] 
+ * @property {CheckerConfiguration} [optionsChecker=CheckerConfiguration]
  * Configuration for an 'Economy.utils.checkOptions' method.
  * @property {boolean} [debug=false] Enables or disables the debug mode.
  */

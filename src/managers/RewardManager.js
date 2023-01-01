@@ -6,8 +6,6 @@ const errors = require('../structures/errors')
 const BalanceManager = require('./BalanceManager')
 const CooldownManager = require('./CooldownManager')
 
-const DatabaseManager = require('./DatabaseManager')
-
 const RewardType = {
     DAILY: 0,
     WORK: 1,
@@ -39,8 +37,9 @@ class RewardManager {
       * Cooldown for Weekly Command (in ms). Default: 7 days (60000 * 60 * 24 * 7 ms)
       * @param {number} options.weeklyAmount Amount of money for Weekly Command. Default: 1000.
       * @param {number | number[]} options.workAmount Amount of money for Work Command. Default: [10, 50].
+      * @param {DatabaseManager} database Database manager.
      */
-    constructor(options) {
+    constructor(options, database) {
 
         /**
          * Economy configuration.
@@ -54,7 +53,7 @@ class RewardManager {
         * @type {DatabaseManager}
         * @private
         */
-        this.database = new DatabaseManager(options)
+        this.database = database
 
         /**
          * Cooldown manager methods class.
