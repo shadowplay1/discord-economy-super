@@ -1,13 +1,8 @@
 const EconomyError = require('../util/EconomyError')
 const errors = require('../../structures/errors')
 
-const DatabaseManager = require('../../managers/DatabaseManager')
 const BaseManager = require('../../managers/BaseManager')
-
-const CacheManager = require('../../managers/CacheManager')
-
 const HistoryItem = require('../HistoryItem')
-
 
 /**
  * User purchases history class.
@@ -123,13 +118,13 @@ class History extends BaseManager {
             throw new EconomyError(errors.invalidTypes.id + typeof id, 'INVALID_TYPE')
         }
 
-        const history = (await this.fetch(memberID, guildID)) || []
+        const history = (await this.fetch(this.memberID, this.guildID)) || []
 
         const historyItem = await this.find(
             historyItem =>
                 historyItem.id == id &&
-                historyItem.memberID == memberID &&
-                historyItem.guildID == guildID
+                historyItem.memberID == this.memberID &&
+                historyItem.guildID == this.guildID
         )
 
         const historyItemIndex = history.findIndex(histItem => histItem.id == historyItem.id)

@@ -1,5 +1,3 @@
-const DatabaseManager = require('./DatabaseManager')
-
 const {
     CachedGuilds,
     CachedUsers,
@@ -170,9 +168,11 @@ class CacheManager {
     /**
      * Clears the specified cached items.
      * @param {CacheItemName[]} cacheItemNames Names of the cache items to clear.
-     * @returns {void}
+     * @returns {Promise<void[]>}
      */
-    clearSpecified(cacheItemNames) {
+    async clearSpecified(cacheItemNames, id) {
+        const promises = []
+
         for (const cacheItemName of cacheItemNames) {
             if (this[cacheItemName]) {
                 promises.push(this[cacheItemName].clear(id))
@@ -180,6 +180,9 @@ class CacheManager {
                 throw new EconomyError(errors.cache.invalidCacheNames, 'INVALID_CACHE_ITEM_NAME')
             }
         }
+
+        const result = await Promise.all(promises)
+        return result
     }
 
     /**

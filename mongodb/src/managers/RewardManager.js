@@ -8,9 +8,6 @@ const errors = require('../structures/errors')
 const BalanceManager = require('./BalanceManager')
 const CooldownManager = require('./CooldownManager')
 
-const DatabaseManager = require('./DatabaseManager')
-const CacheManager = require('./CacheManager')
-
 const RewardType = {
     DAILY: 0,
     WORK: 1,

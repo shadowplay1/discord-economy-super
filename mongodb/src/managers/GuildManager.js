@@ -1,16 +1,13 @@
 const EconomyGuild = require('../classes/EconomyGuild')
 
 const BaseManager = require('./BaseManager')
-
-const DatabaseManager = require('./DatabaseManager')
-const CacheManager = require('./CacheManager')
-
 const UtilsManager = require('./UtilsManager')
 
 const UserManager = require('./UserManager')
 
 const EconomyError = require('../classes/util/EconomyError')
 const errors = require('../structures/errors')
+
 const EmptyEconomyGuild = require('../classes/EmptyEconomyGuild')
 
 

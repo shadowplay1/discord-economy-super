@@ -1,5 +1,3 @@
-const CacheManager = require('../managers/CacheManager')
-
 const defaultUserObject = require('../structures/DefaultUserObject')
 const EconomyUser = require('./EconomyUser')
 

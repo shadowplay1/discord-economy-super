@@ -1,6 +1,4 @@
-const DatabaseManager = require('../../managers/DatabaseManager')
 const BankManager = require('../../managers/BankManager')
-
 
 /**
  * User bank balance class.

@@ -4,10 +4,6 @@ const BalanceManager = require('../../managers/BalanceManager')
 const CurrencyManager = require('../../managers/CurrencyManager')
 const Currency = require('../Currency')
 
-const DatabaseManager = require('../../managers/DatabaseManager')
-const CacheManager = require('../../managers/CacheManager')
-
-
 /**
  * User balance class.
  */

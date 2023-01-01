@@ -1,4 +1,3 @@
-const DatabaseManager = require('../managers/DatabaseManager')
 const EconomyGuild = require('./EconomyGuild')
 
 /**

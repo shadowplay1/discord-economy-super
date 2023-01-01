@@ -1,5 +1,4 @@
 const ShopManager = require('../managers/ShopManager')
-const CacheManager = require('../managers/CacheManager')
 
 const Balance = require('./user/Balance')
 const Bank = require('./user/Bank')
@@ -170,7 +169,7 @@ class EconomyUser {
             guildID: this.guildID,
         })
 
-        return true
+        return result
     }
 
     /**

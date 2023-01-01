@@ -1,6 +1,3 @@
-const DatabaseManager = require('../managers/DatabaseManager')
-const CacheManager = require('../managers/CacheManager')
-
 const defaultCurrencyObject = require('../structures/DefaultCurrencyObject')
 
 const EconomyError = require('./util/EconomyError')

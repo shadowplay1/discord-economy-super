@@ -1,13 +1,10 @@
 const EconomyError = require('../classes/util/EconomyError')
 const Emitter = require('../classes/util/Emitter')
 
-const DatabaseManager = require('./DatabaseManager')
-const CacheManager = require('./CacheManager')
-
-const Currency = require('../classes/Currency')
-
 const errors = require('../structures/errors')
 const defaultCurrencyObject = require('../structures/DefaultCurrencyObject')
+
+const Currency = require('../classes/Currency')
 
 
 /**

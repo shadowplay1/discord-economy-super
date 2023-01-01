@@ -1,12 +1,13 @@
 const RewardManager = require('../../managers/RewardManager')
 const EconomyError = require('../util/EconomyError')
 
+const errors = require('../../structures/errors')
+
 const RewardType = {
     DAILY: 0,
     WORK: 1,
     WEEKLY: 2
 }
-
 
 /**
  * User rewards.

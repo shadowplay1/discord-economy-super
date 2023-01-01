@@ -1,7 +1,4 @@
 const EconomyError = require('../classes/util/EconomyError')
-
-const CacheManager = require('../managers/CacheManager')
-
 const errors = require('../structures/errors')
 
 
@@ -134,8 +131,8 @@ class HistoryItem {
         const historyItem = history.find(
             historyItem =>
                 historyItem.id == id &&
-                historyItem.memberID == memberID &&
-                historyItem.guildID == guildID
+                historyItem.memberID == this.memberID &&
+                historyItem.guildID == this.guildID
         )
 
         const historyItemIndex = history.findIndex(histItem => histItem.id == historyItem.id)
@@ -143,7 +140,7 @@ class HistoryItem {
         if (!historyItem) return false
         history.splice(historyItemIndex, 1)
 
-        const result = await this.database.set(`${guildID}.${memberID}.history`, history)
+        const result = await this.database.set(`${this.guildID}.${this.memberID}.history`, history)
 
         this.cache.history.update({
             guildID: this.guildID,

@@ -4,8 +4,6 @@ const errors = require('../structures/errors')
 const EmptyEconomyGuild = require('../classes/EmptyEconomyGuild')
 const EmptyEconomyUser = require('../classes/EmptyEconomyUser')
 
-const DatabaseManager = require('../managers/DatabaseManager')
-const CacheManager = require('../managers/CacheManager')
 const defaultUserObject = require('../structures/DefaultUserObject')
 const Bank = require('../classes/user/Bank')
 const Currency = require('../classes/Currency')
@@ -197,7 +195,7 @@ class CachedItem {
         }
 
         switch (constructorName) {
-            case 'EconomyUser':
+            case 'EconomyUser': {
                 const usersCache = {}
 
                 if (!id.memberID || !id.guildID) {
@@ -214,8 +212,9 @@ class CachedItem {
                 this.set(id.guildID, usersCache)
 
                 return Promise.resolve()
+            }
 
-            case 'CooldownItem':
+            case 'CooldownItem': {
                 const cooldownsCache = {}
 
                 if (!id.memberID || !id.guildID) {
@@ -238,8 +237,9 @@ class CachedItem {
                 this.set(id.guildID, cooldownsCache)
 
                 return Promise.resolve()
+            }
 
-            case 'BalanceItem':
+            case 'BalanceItem': {
                 const balanceCache = {}
 
                 if (!id.memberID || !id.guildID) {
@@ -261,8 +261,9 @@ class CachedItem {
                 this.set(id.guildID, balanceCache)
 
                 return Promise.resolve()
+            }
 
-            case 'BankBalanceItem':
+            case 'BankBalanceItem': {
                 const bankBalanceCache = {}
 
                 if (!id.memberID || !id.guildID) {
@@ -283,8 +284,9 @@ class CachedItem {
                 this.set(id.guildID, bankBalanceCache)
 
                 return Promise.resolve()
+            }
 
-            case 'EconomyGuild':
+            case 'EconomyGuild': {
                 if (!id.guildID) {
                     throw new EconomyError(errors.cache.invalidIdentifiers(
                         constructorName,
@@ -297,8 +299,9 @@ class CachedItem {
                 this.set(id.guildID, guildObject)
 
                 return Promise.resolve()
+            }
 
-            case 'Currency':
+            case 'Currency': {
                 if (!id.guildID) {
                     throw new EconomyError(errors.cache.invalidIdentifiers(
                         constructorName,
@@ -311,8 +314,9 @@ class CachedItem {
                 this.set(id.guildID, currenciesArray)
 
                 return Promise.resolve()
+            }
 
-            case 'ShopItem':
+            case 'ShopItem': {
                 if (!id.guildID) {
                     throw new EconomyError(errors.cache.invalidIdentifiers(
                         constructorName,
@@ -325,6 +329,7 @@ class CachedItem {
                 this.set(id.guildID, shopArray)
 
                 return Promise.resolve()
+            }
         }
 
         const newCache = {}
@@ -439,7 +444,7 @@ class CachedItem {
      * @returns {boolean} True if key exists in cache, false if not.
      */
     has(key) {
-        return this.cache.hasOwnProperty(key)
+        return !!this.cache[key]
     }
 }
 

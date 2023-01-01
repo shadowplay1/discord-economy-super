@@ -1,9 +1,5 @@
 const Emitter = require('../classes/util/Emitter')
 
-const DatabaseManager = require('./DatabaseManager')
-const CacheManager = require('./CacheManager')
-
-
 /**
  * The default manager with its default methods.
  * 

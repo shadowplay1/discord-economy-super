@@ -1,8 +1,4 @@
-const DatabaseManager = require('../managers/DatabaseManager')
-const CacheManager = require('../managers/CacheManager')
-
 const CooldownManager = require('../managers/CooldownManager')
-
 
 /**
 * Cooldown item class.

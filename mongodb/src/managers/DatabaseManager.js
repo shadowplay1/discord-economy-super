@@ -1,5 +1,3 @@
-const QuickMongo = require('quick-mongo-super')
-
 const Logger = require('../classes/util/Logger')
 
 

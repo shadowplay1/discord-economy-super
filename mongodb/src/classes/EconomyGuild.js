@@ -1,8 +1,4 @@
 const UtilsManager = require('../managers/UtilsManager')
-
-const DatabaseManager = require('../managers/DatabaseManager')
-const CacheManager = require('../managers/CacheManager')
-
 const UserManager = require('../managers/UserManager')
 
 const Shop = require('./guild/Shop')

@@ -1,6 +1,4 @@
-const DatabaseManager = require('../../managers/DatabaseManager')
 const SettingsManager = require('../../managers/SettingsManager')
-
 
 /**
  * Guild Settings.

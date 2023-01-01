@@ -1,4 +1,3 @@
-const DatabaseManager = require('../../managers/DatabaseManager')
 const ms = require('../../structures/ms')
 
 const parse = ms => ({
@@ -9,7 +8,6 @@ const parse = ms => ({
     milliseconds: Math.floor(ms % 1000)
 })
 
-
 class Cooldowns {
 
     /**
@@ -19,6 +17,20 @@ class Cooldowns {
      * @param {DatabaseManager} database Database Manager.
      */
     constructor(userObject, options, database) {
+
+        /**
+         * Guild ID.
+         * @type {string}
+         * @private
+         */
+        this.guildID = userObject.guildID
+
+        /**
+         * Member ID.
+         * @type {string}
+         * @private
+         */
+        this.memberID = userObject.id
 
         /**
          * Economy configuration.
@@ -121,11 +133,11 @@ class Cooldowns {
       * @returns {Promise<boolean>} If cleared: true; else: false
       */
     async clearDaily() {
-        const result = await this.database.delete(`${guildID}.${memberID}.dailyCooldown`)
+        const result = await this.database.delete(`${this.guildID}.${this.memberID}.dailyCooldown`)
 
         this.cache.updateMany(['cooldowns', 'users'], {
-            memberID,
-            guildID
+            memberID: this.memberID,
+            guildID: this.guildID
         })
 
         return result
@@ -136,11 +148,11 @@ class Cooldowns {
      * @returns {Promise<boolean>} If cleared: true; else: false
      */
     async clearWork() {
-        const result = await this.database.delete(`${guildID}.${memberID}.workCooldown`)
+        const result = await this.database.delete(`${this.guildID}.${this.memberID}.workCooldown`)
 
         this.cache.updateMany(['cooldowns', 'users'], {
-            memberID,
-            guildID
+            memberID: this.memberID,
+            guildID: this.guildID
         })
 
         return result
@@ -151,11 +163,11 @@ class Cooldowns {
      * @returns {Promise<boolean>} If cleared: true; else: false
      */
     async clearWeekly() {
-        const result = await this.database.delete(`${guildID}.${memberID}.weeklyCooldown`)
+        const result = await this.database.delete(`${this.guildID}.${this.memberID}.weeklyCooldown`)
 
         this.cache.updateMany(['cooldowns', 'users'], {
-            memberID,
-            guildID
+            memberID: this.memberID,
+            guildID: this.guildID
         })
 
         return result

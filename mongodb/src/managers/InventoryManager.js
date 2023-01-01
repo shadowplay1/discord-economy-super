@@ -1,9 +1,6 @@
 const EconomyError = require('../classes/util/EconomyError')
 const Emitter = require('../classes/util/Emitter')
 
-const DatabaseManager = require('./DatabaseManager')
-const CacheManager = require('./CacheManager')
-
 const BalanceManager = require('./BalanceManager')
 
 const errors = require('../structures/errors')

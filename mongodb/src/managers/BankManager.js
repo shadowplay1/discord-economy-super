@@ -3,10 +3,6 @@ const Emitter = require('../classes/util/Emitter')
 const EconomyError = require('../classes/util/EconomyError')
 const errors = require('../structures/errors')
 
-const DatabaseManager = require('./DatabaseManager')
-const CacheManager = require('./CacheManager')
-
-
 /**
 * Bank manager methods class.
 * @extends {Emitter}

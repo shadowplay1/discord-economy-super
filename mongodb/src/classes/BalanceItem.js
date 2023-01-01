@@ -1,5 +1,3 @@
-const DatabaseManager = require('../managers/DatabaseManager')
-
 /**
 * Balance item class.
 */
@@ -11,9 +9,8 @@ class BalanceItem {
      * @param {string} guildID Guild ID.
      * @param {EconomyConfiguration} ecoOptions Economy configuration.
      * @param {BalanceObject} balanceObject User balance object.
-     * @param {DatabaseManager} database Database manager.
      */
-    constructor(guildID, memberID, ecoOptions, balanceObject, database, cache) {
+    constructor(guildID, memberID, ecoOptions, balanceObject) {
 
         /**
          * Member ID.

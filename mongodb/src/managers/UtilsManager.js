@@ -3,17 +3,12 @@ const { dirname } = require('path')
 
 const fetch = require('node-fetch')
 
-
-const DatabaseManager = require('./DatabaseManager')
-const CacheManager = require('./CacheManager')
-
 const DefaultConfiguration = require('../structures/DefaultConfiguration')
 const errors = require('../structures/errors')
 const defaultUserObject = require('../structures/DefaultUserObject')
 
 const Logger = require('../classes/util/Logger')
 const EconomyUser = require('../classes/EconomyUser')
-
 
 function unset(object, key) {
     const isObject = item => {
@@ -163,7 +158,7 @@ class UtilsManager {
 
         if (!user) return false
 
-        await this.database.delete(`${guildID}.${memberID}`)
+        const result = await this.database.delete(`${guildID}.${memberID}`)
 
         this.cache.updateAll({
             guildID,
@@ -244,7 +239,7 @@ class UtilsManager {
 
 
         const problems = []
-        const output = {}
+        let output = {}
 
         const keys = Object.keys(DefaultConfiguration)
         const optionKeys = Object.keys(ecoOptions || {})
@@ -272,12 +267,16 @@ class UtilsManager {
                     if (ecoOptions[i]?.[y] == undefined || output[i]?.[y] == undefined) {
                         try {
                             output[i][y] = DefaultConfiguration[i][y]
-                        } catch (_) { }
+                        } catch (_) {
+                            return
+                        }
 
                         if (!options.ignoreUnspecifiedOptions) problems.push(`options.${i}.${y} is not specified.`)
                     }
 
-                    else { }
+                    else {
+                        return
+                    }
                 }
 
                 if (typeof output[i] !== typeof DefaultConfiguration[i]) {
@@ -304,7 +303,9 @@ class UtilsManager {
                     }
                 }
 
-                else { }
+                else {
+                    return
+                }
 
                 if (i == 'workAmount' && Array.isArray(output[i]) && output[i].length > 2) {
                     output[i] = output[i].slice(0, 2)
@@ -329,7 +330,9 @@ class UtilsManager {
                         output[i][y] = DefaultConfiguration[i][y]
                     }
 
-                    else { }
+                    else {
+                        return
+                    }
                 }
             }
 

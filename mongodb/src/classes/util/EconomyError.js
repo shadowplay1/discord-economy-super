@@ -56,8 +56,13 @@ class EconomyError extends Error {
             Error.captureStackTrace(this, this.constructor)
         }
 
-        if (typeof errorMessage == 'string') {
-            super(errorMessage || 'Unknown Error')
+        else if (typeof errorMessage == 'string') {
+            super(errorMessage || 'Unknown Error.')
+        }
+
+        else {
+            code = 'UNKNOWN_ERROR'
+            super('Unknown Error.')
         }
 
         if (!errorMessage) {

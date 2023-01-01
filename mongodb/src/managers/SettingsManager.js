@@ -1,5 +1,3 @@
-const DatabaseManager = require('./DatabaseManager')
-
 const EconomyError = require('../classes/util/EconomyError')
 const errors = require('../structures/errors')
 

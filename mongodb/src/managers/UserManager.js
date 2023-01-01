@@ -1,8 +1,4 @@
 const EconomyUser = require('../classes/EconomyUser')
-
-const DatabaseManager = require('./DatabaseManager')
-const CacheManager = require('./CacheManager')
-
 const BaseManager = require('./BaseManager')
 
 const defaultUserObject = require('../structures/DefaultUserObject')

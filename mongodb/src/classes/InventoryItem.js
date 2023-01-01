@@ -1,10 +1,6 @@
-const CacheManager = require('../managers/CacheManager')
-const DatabaseManager = require('../managers/DatabaseManager')
-
 const SettingsManager = require('../managers/SettingsManager')
 
 const errors = require('../structures/errors')
-const ShopItem = require('./ShopItem')
 const EconomyError = require('./util/EconomyError')
 
 const Emitter = require('./util/Emitter')
@@ -307,7 +303,7 @@ class InventoryItem extends Emitter {
         const item = this
         const itemQuantity = inventory.filter(invItem => invItem.id == item.id).length
 
-        const percent = (await this.settings.get('sellingItemPercent', guildID))
+        const percent = (await this.settings.get('sellingItemPercent', this.guildID))
             || this.options.sellingItemPercent
 
         const sellingPrice = Math.floor((item?.price / 100) * percent)
