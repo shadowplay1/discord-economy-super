@@ -168,7 +168,7 @@ declare class Items {
     public use(itemID: string | number, client?: any): string
 
     /**
-     * Returns the stacked item in user inventory: it shows the quantity and total price of the item.
+     * Returns the stacked item in user inventory: it will have the quantity and total price of the item.
      * @param {string | number} itemID Item ID or name.
      * @returns {StackedInventoryItemObject<T>} Stacked item object.
      */

@@ -1,1 +1,3 @@
-export type ItemProperty = 'description' | 'price' | 'name' | 'message' | 'maxAmount' | 'role'
+declare type ItemProperty = 'description' | 'price' | 'name' | 'message' | 'maxAmount' | 'role' | 'custom'
+
+export = ItemProperty

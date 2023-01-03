@@ -115,7 +115,7 @@ declare class InventoryItem<T extends object = any> {
     public use(client?: any): string
 
     /**
-     * Returns the stacked item in user inventory: it shows the quantity and total price of the item.
+     * Returns the stacked item in user inventory: it will have the quantity and total price of the item.
      * @returns {StackedInventoryItemObject<T>} Stacked item object.
      */
     public stack(): StackedInventoryItemObject<T>
