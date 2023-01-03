@@ -201,7 +201,7 @@ class UtilsManager {
      * @param {EconomyConfiguration} ecoOptions Economy configuration to check.
      * @returns {EconomyConfiguration} Fixed Economy configuration.
      */
-    checkOptions(options = {}, ecoOptions) {
+    checkConfiguration(options = {}, ecoOptions) {
         this._logger.debug('Debug mode is enabled.', 'lightcyan')
         this._logger.debug('Checking the configuration...')
 
@@ -214,7 +214,7 @@ class UtilsManager {
         let fileExtension = isTSFileAllowed ? 'ts' : 'js'
         let optionsFileExists = existsSync(`./economy.config.${fileExtension}`)
 
-		const slash = dirName.includes('\\') ? '\\' : '/'
+        const slash = dirName.includes('\\') ? '\\' : '/'
 
         if (!optionsFileExists && fileExtension == 'ts' && isTSFileAllowed) {
             fileExtension = 'js'
@@ -236,7 +236,6 @@ class UtilsManager {
                 this._logger.debug('Using the configuration specified in a constructor...', 'cyan')
             }
         } else this._logger.debug('Using the configuration specified in a constructor...', 'cyan')
-
 
         const problems = []
         let output = {}
@@ -268,14 +267,14 @@ class UtilsManager {
                         try {
                             output[i][y] = DefaultConfiguration[i][y]
                         } catch (_) {
-                            return
+                            null
                         }
 
                         if (!options.ignoreUnspecifiedOptions) problems.push(`options.${i}.${y} is not specified.`)
                     }
 
                     else {
-                        return
+                        null
                     }
                 }
 
@@ -304,7 +303,7 @@ class UtilsManager {
                 }
 
                 else {
-                    return
+                    null
                 }
 
                 if (i == 'workAmount' && Array.isArray(output[i]) && output[i].length > 2) {
@@ -331,7 +330,7 @@ class UtilsManager {
                     }
 
                     else {
-                        return
+                        null
                     }
                 }
             }
@@ -364,12 +363,12 @@ class UtilsManager {
                     `${problems.length} problems found:\n\n${problems.join('\n')}` :
                     '0 problems found.'}`)
 
-				console.log(
-					'Configuration from ' +
-						`${optionsFileExists ?
-								`${dirName}${slash}economy.config.${fileExtension}` :
-								'the constructor.'}`
-				)
+                console.log(
+                    'Configuration from ' +
+                    `${optionsFileExists ?
+                        `${dirName}${slash}economy.config.${fileExtension}` :
+                        'the constructor.'}`
+                )
             }
 
             if (options.sendSuccessLog && !options.showProblems) {
@@ -378,12 +377,12 @@ class UtilsManager {
                     `${problems.length == 1 ? 'problem' : 'problems'} found.`
                 )
 
-				console.log(
-					'Configuration from ' +
-					`${optionsFileExists ?
-							`${dirName}${slash}economy.config.${fileExtension}` :
-							'the constructor.'}`
-				)
+                console.log(
+                    'Configuration from ' +
+                    `${optionsFileExists ?
+                        `${dirName}${slash}economy.config.${fileExtension}` :
+                        'the constructor.'}`
+                )
             }
         }
 
@@ -428,7 +427,7 @@ class UtilsManager {
  * @property {ErrorHandlerConfiguration} [errorHandler=ErrorHandlerConfiguration] Error handler configuration.
 
  * @property {CheckerConfiguration} [optionsChecker=CheckerConfiguration] 
- * Configuration for an 'Economy.utils.checkOptions' method.
+ * Configuration for an 'Economy.utils.checkConfiguration' method.
  * @property {boolean} [debug=false] Enables or disables the debug mode.
  */
 
@@ -447,7 +446,7 @@ class UtilsManager {
  */
 
 /**
- * @typedef {object} CheckerConfiguration Configuration for an 'Economy.utils.checkOptions' method.
+ * @typedef {object} CheckerConfiguration Configuration for an 'Economy.utils.checkConfiguration' method.
  * @property {boolean} [ignoreInvalidTypes=false] 
  * Allows the method to ignore the options with invalid types. Default: false.
  * 

@@ -48,7 +48,6 @@ class InventoryItem extends Emitter {
          */
         this.memberID = memberID
 
-
         /**
          * Inventory item ID.
          * @type {number}
@@ -92,17 +91,6 @@ class InventoryItem extends Emitter {
         this.date = itemObject.date
 
         /**
-         * Quantity of the item.
-         * @type {number}
-         */
-        this.quantity = itemObject.quantity
-
-
-        for (const [key, value] of Object.entries(itemObject || {})) {
-            this[key] = value
-        }
-
-        /**
          * Settings manager methods class.
          * @type {SettingsManager}
          * @private
@@ -122,6 +110,10 @@ class InventoryItem extends Emitter {
          * @private
          */
         this.cache = cache
+
+        for (const [key, value] of Object.entries(itemObject || {})) {
+            this[key] = value
+        }
     }
 
     /**
@@ -136,12 +128,18 @@ class InventoryItem extends Emitter {
     }
 
     /**
-     * Returns the stacked item in user inventory: it shows the quantity and total price of the item.
-     * @returns {Promise<StackedInventoryItemObject>} Stacked item object.
+     * Returns the stacked item in user inventory: it will have the quantity and total price of the item.
+     * @returns {StackedInventoryItemObject} Stacked item object.
      */
-    async stack() {
-        const inventoryArray = (await this.database.fetch(`${this.guildID}.${this.memberID}.inventory`)) || []
-        const shopArray = (await this.database.fetch(`${this.guildID}.shop`)) || []
+    stack() {
+        const inventoryArray = this.cache.inventory.get({
+            memberID: this.memberID,
+            guildID: this.guildID
+        }) || []
+
+        const shopArray = this.cache.shop.get({
+            guildID: this.guildID
+        }) || []
 
         const cleanInventory = [...new Set(inventoryArray.map(item => item.name))]
             .map(itemName => shopArray.find(shopItem => shopItem.name == itemName))
@@ -421,7 +419,7 @@ class InventoryItem extends Emitter {
  * @property {ErrorHandlerConfiguration} [errorHandler=ErrorHandlerConfiguration] Error handler configuration.
 
  * @property {CheckerConfiguration} [optionsChecker=CheckerConfiguration] 
- * Configuration for an 'Economy.utils.checkOptions' method.
+ * Configuration for an 'Economy.utils.checkConfiguration' method.
  * @property {boolean} [debug=false] Enables or disables the debug mode.
  */
 

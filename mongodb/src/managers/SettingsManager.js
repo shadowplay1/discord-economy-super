@@ -356,7 +356,7 @@ class SettingsManager {
  * @property {ErrorHandlerConfiguration} [errorHandler=ErrorHandlerConfiguration] Error handler configuration.
 
  * @property {CheckerConfiguration} [optionsChecker=CheckerConfiguration] 
- * Configuration for an 'Economy.utils.checkOptions' method.
+ * Configuration for an 'Economy.utils.checkConfiguration' method.
  * @property {boolean} [debug=false] Enables or disables the debug mode.
  */
 
@@ -376,7 +376,7 @@ class SettingsManager {
  */
 
 /**
- * @typedef {object} CheckerConfiguration Configuration for an 'Economy.utils.checkOptions' method.
+ * @typedef {object} CheckerConfiguration Configuration for an 'Economy.utils.checkConfiguration' method.
  * @property {boolean} [ignoreInvalidTypes=false] 
  * Allows the method to ignore the options with invalid types. Default: false.
  * 

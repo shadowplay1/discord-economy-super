@@ -348,6 +348,7 @@ class Currency extends Emitter {
  * @property {object} custom Custom currency data object.
  */
 
+
 /**
  * Currency class.
  * @type {Currency}

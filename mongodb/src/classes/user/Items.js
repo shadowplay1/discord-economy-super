@@ -65,7 +65,7 @@ class Items {
     }
 
     /**
-     * Returns the stacked item in user inventory: it shows the quantity and total price of the item.
+     * Returns the stacked item in user inventory: it will have the quantity and total price of the item.
      * @param {string | number} itemID Item ID or name.
      * @returns {Promise<StackedInventoryItemObject>} Stacked item object.
      */
@@ -203,7 +203,7 @@ class Items {
  * @property {ErrorHandlerConfiguration} [errorHandler=ErrorHandlerConfiguration] Error handler configuration.
 
  * @property {CheckerConfiguration} [optionsChecker=CheckerConfiguration] 
- * Configuration for an 'Economy.utils.checkOptions' method.
+ * Configuration for an 'Economy.utils.checkConfiguration' method.
  * @property {boolean} [debug=false] Enables or disables the debug mode.
  */
 

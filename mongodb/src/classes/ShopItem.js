@@ -258,6 +258,10 @@ class ShopItem extends Emitter {
      * @returns {Promise<ShopOperationInfo>} Operation information object.
      */
     async buy(memberID, quantity = 1, currency = null, reason = 'received the item from the shop') {
+        if (typeof memberID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
+        }
+
         const balance = this.cache.balance.get({
             memberID,
             guildID: this.guildID
@@ -298,10 +302,6 @@ class ShopItem extends Emitter {
                 'reason',
                 reason
             )
-        }
-
-        if (typeof memberID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
         }
 
         if (!item) return {
@@ -543,7 +543,7 @@ class ShopItem extends Emitter {
  * @property {ErrorHandlerConfiguration} [errorHandler=ErrorHandlerConfiguration] Error handler configuration.
 
  * @property {CheckerConfiguration} [optionsChecker=CheckerConfiguration] 
- * Configuration for an 'Economy.utils.checkOptions' method.
+ * Configuration for an 'Economy.utils.checkConfiguration' method.
  * @property {boolean} [debug=false] Enables or disables the debug mode.
  */
 

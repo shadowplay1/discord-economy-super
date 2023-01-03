@@ -81,13 +81,14 @@ class InventoryManager extends Emitter {
     }
 
     /**
-     * Returns the stacked item in user inventory: it shows the quantity and total price of the item.
-     * @param {string | number} itemID Item ID or name.
+     * Returns the stacked user's inventory -
+     * an array of objects of item's quantity, total price and the item itself from user's inventory
+     * for each unique item.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
-     * @returns {Promise<StackedInventoryItemObject>} Stacked item object.
+     * @returns {Promise<StackedInventoryItemObject[]>} Stacked user's inventory.
      */
-    async stack(itemID, memberID, guildID) {
+    async stacked(memberID, guildID) {
         const inventoryArray = (await this.database.fetch(`${guildID}.${memberID}.inventory`)) || []
         const shopArray = (await this.database.fetch(`${guildID}.shop`)) || []
 
@@ -103,8 +104,21 @@ class InventoryManager extends Emitter {
                 }
             })
 
-        const stackedItem = cleanInventory.find(itemObject => itemObject.item.id == itemID)
-        return stackedItem || null
+        return cleanInventory
+    }
+
+    /**
+     * Returns the stacked item in user inventory: it will have the quantity and total price of the item.
+     * @param {string | number} itemID Item ID or name.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @returns {Promise<StackedInventoryItemObject>} Stacked item object.
+     */
+    async stack(itemID, memberID, guildID) {
+        const stackedInventory = await this.stacked(memberID, guildID)
+        const stackedItem = stackedInventory.find(data => data.item.id == itemID)
+
+        return stackedItem
     }
 
     /**
@@ -620,7 +634,7 @@ class InventoryManager extends Emitter {
  * @property {ErrorHandlerConfiguration} [errorHandler=ErrorHandlerConfiguration] Error handler configuration.
 
  * @property {CheckerConfiguration} [optionsChecker=CheckerConfiguration] 
- * Configuration for an 'Economy.utils.checkOptions' method.
+ * Configuration for an 'Economy.utils.checkConfiguration' method.
  * @property {boolean} [debug=false] Enables or disables the debug mode.
  */
 
