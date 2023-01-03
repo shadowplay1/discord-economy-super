@@ -267,13 +267,14 @@ class InventoryManager extends Emitter {
     }
 
     /**
-     * Returns the stacked item in user inventory: it shows the quantity and total price of the item.
-     * @param {string | number} itemID Item ID or name.
+     * Returns the stacked user's inventory -
+     * an array of objects of item's quantity, total price and the item itself from user's inventory
+     * for each unique item.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
-     * @returns {StackedInventoryItemObject} Stacked item object.
+     * @returns {StackedInventoryItemObject[]} Stacked user's inventory.
      */
-    stack(itemID, memberID, guildID) {
+    stacked(memberID, guildID) {
         const inventoryArray = this.database.fetch(`${guildID}.${memberID}.inventory`) || []
         const shopArray = this.database.fetch(`${guildID}.shop`) || []
 
@@ -285,12 +286,25 @@ class InventoryManager extends Emitter {
                 return {
                     quantity,
                     totalPrice: item.price * quantity,
-                    item
+                    item: new InventoryItem(guildID, memberID, this.options, item, this.database)
                 }
             })
 
-        const stackedItem = cleanInventory.find(itemObject => itemObject.item.id == itemID)
-        return stackedItem || null
+        return cleanInventory
+    }
+
+    /**
+     * Returns the stacked item in user inventory: it will have the quantity and total price of the item.
+     * @param {string | number} itemID Item ID or name.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @returns {StackedInventoryItemObject} Stacked item object.
+     */
+    stack(itemID, memberID, guildID) {
+        const stackedInventory = this.stacked(memberID, guildID)
+        const stackedItem = stackedInventory.find(data => data.item.id == itemID)
+
+        return stackedItem
     }
 
     /**
@@ -544,6 +558,14 @@ class InventoryManager extends Emitter {
  */
 
 /**
+ * Stacked item object.
+ * @typedef {object} StackedInventoryItemObject
+ * @property {number} quantity Quantity of the item in inventory.
+ * @property {number} totalPrice Total price of the items in inventory.
+ * @property {InventoryItem} item The stacked item.
+ */
+
+/**
  * History data object.
  * @typedef {object} HistoryData
  * @property {number} id Item ID in history.
@@ -587,7 +609,7 @@ class InventoryManager extends Emitter {
  * @property {ErrorHandlerConfiguration} [errorHandler=ErrorHandlerConfiguration] Error handler configuration.
 
  * @property {CheckerConfiguration} [optionsChecker=CheckerConfiguration]
- * Configuration for an 'Economy.utils.checkOptions' method.
+ * Configuration for an 'Economy.utils.checkConfiguration' method.
  * @property {boolean} [debug=false] Enables or disables the debug mode.
  */
 

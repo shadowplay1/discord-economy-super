@@ -71,6 +71,7 @@ class Economy extends Emitter {
 
         if (options.debug) {
             this._logger.debug('Economy version: ' + this.version, 'lightcyan')
+            this._logger.debug('Database type is JSON.', 'lightcyan')
         }
 
         /**
@@ -89,7 +90,7 @@ class Economy extends Emitter {
          * Economy configuration.
          * @type {?EconomyConfiguration}
          */
-        this.options = this.utils.checkOptions(options.optionsChecker, options)
+        this.options = this.utils.checkConfiguration(options.optionsChecker, options)
 
         /**
          * Econoomy managers list. Made for optimization purposes.
@@ -841,7 +842,7 @@ class Economy extends Emitter {
  * @property {ErrorHandlerConfiguration} [errorHandler=ErrorHandlerConfiguration] Error handler configuration.
 
  * @property {CheckerConfiguration} [optionsChecker=CheckerConfiguration]
- * Configuration for an 'Economy.utils.checkOptions' method.
+ * Configuration for an 'Economy.utils.checkConfiguration' method.
  * @property {boolean} [debug=false] Enables or disables the debug mode.
  */
 
@@ -859,7 +860,7 @@ class Economy extends Emitter {
  */
 
 /**
- * @typedef {object} CheckerConfiguration Configuration for an 'Economy.utils.checkOptions' method.
+ * @typedef {object} CheckerConfiguration Configuration for an 'Economy.utils.checkConfiguration' method.
  * @property {boolean} [ignoreInvalidTypes=false] Allows the method to ignore the options with invalid types. Default: false.
  * @property {boolean} [ignoreUnspecifiedOptions=false] Allows the method to ignore the unspecified options. Default: false.
  * @property {boolean} [ignoreInvalidOptions=false] Allows the method to ignore the unexisting options. Default: false.

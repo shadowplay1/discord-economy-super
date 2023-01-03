@@ -46,7 +46,6 @@ class InventoryItem extends Emitter {
          */
         this.memberID = memberID
 
-
         /**
          * Inventory item ID.
          * @type {number}
@@ -103,7 +102,6 @@ class InventoryItem extends Emitter {
          */
         this.database = database
 
-
         for (const [key, value] of Object.entries(itemObject || {})) {
             this[key] = value
         }
@@ -121,7 +119,7 @@ class InventoryItem extends Emitter {
     }
 
     /**
-     * Returns the stacked item in user inventory: it shows the quantity and total price of the item.
+     * Returns the stacked item in user inventory: it will have the quantity and total price of the item.
      * @returns {StackedInventoryItemObject} Stacked item object.
      */
     stack() {
@@ -385,7 +383,7 @@ class InventoryItem extends Emitter {
  * @property {ErrorHandlerConfiguration} [errorHandler=ErrorHandlerConfiguration] Error handler configuration.
 
  * @property {CheckerConfiguration} [optionsChecker=CheckerConfiguration]
- * Configuration for an 'Economy.utils.checkOptions' method.
+ * Configuration for an 'Economy.utils.checkConfiguration' method.
  * @property {boolean} [debug=false] Enables or disables the debug mode.
  */
 

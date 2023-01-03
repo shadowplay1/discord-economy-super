@@ -168,7 +168,6 @@ class HistoryItem {
 }
 
 
-
 /**
  * History data object.
  * @typedef {object} HistoryData
@@ -214,7 +213,7 @@ class HistoryItem {
  * @property {ErrorHandlerConfiguration} [errorHandler=ErrorHandlerConfiguration] Error handler configuration.
 
  * @property {CheckerConfiguration} [optionsChecker=CheckerConfiguration]
- * Configuration for an 'Economy.utils.checkOptions' method.
+ * Configuration for an 'Economy.utils.checkConfiguration' method.
  * @property {boolean} [debug=false] Enables or disables the debug mode.
  */
 
