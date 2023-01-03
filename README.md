@@ -9,7 +9,7 @@
 ## ❓ | Why?
 <ul>
 <li><b>Clean TypeScript Defenitions 📘</b></li>
-<li><b><a href="https://des-docs.js.org/#/docs/main/1.7.3/general/migrating-to-mongo">MongoDB Support 🍃</a></b></li>
+<li><b><a href="https://des-docs.js.org/#/docs/main/1.7.4/general/migrating-to-mongo">MongoDB Support 🍃</a></b></li>
 <li><b>Flexible and Customizable ⚙️</b></li>
 <li><b>Easy to use 👍</b></li>
 <li><b>Beginner Friendly 😄</b></li>
@@ -49,7 +49,7 @@ $ pnpm add discord-economy-super
 <ul>
 <li><b><a href = "https://des-docs.js.org">Documentation</a></b></li>
 <li><b><a href = "https://www.npmjs.com/package/discord-economy-super">NPM</a></b></li>
-<li><b><a href = "https://des-docs.js.org/#/docs/main/1.7.3/general/faq">Frequently Asked Questions</a></b></li>
+<li><b><a href = "https://des-docs.js.org/#/docs/main/1.7.4/general/faq">Frequently Asked Questions</a></b></li>
 <li><b><a href = "https://github.com/shadowplay1/discord-economy-super">GitHub</a></b></li>
 <li><b><a href = "https://github.com/shadowplay1/discord-economy-super/tree/main/examples">Examples</a></b></li>
 <li><b><a href = "https://discord.gg/4pWKq8vUnb">Discord Server</a></b></li>
