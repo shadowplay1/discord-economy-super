@@ -118,9 +118,9 @@ declare class InventoryItem<T extends object = any> {
 
     /**
      * Returns the stacked item in user inventory: it will have the quantity and total price of the item.
-     * @returns {Promise<StackedInventoryItemObject<T>>} Stacked item object.
+     * @returns {StackedInventoryItemObject<T>} Stacked item object.
      */
-    public stack(): Promise<StackedInventoryItemObject<T>>
+    public stack(): StackedInventoryItemObject<T>
 
     /**
      * Removes the item from user's inventory
