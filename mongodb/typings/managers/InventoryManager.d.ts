@@ -86,15 +86,27 @@ declare class InventoryManager extends Emitter {
     ): Promise<ShopOperationInfo<T>>
 
     /**
-     * Returns the stacked item in user inventory: it shows the quantity and total price of the item.
+     * Returns the stacked item in user inventory: it will have the quantity and total price of the item.
      * @param {string | number} itemID Item ID or name.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.s
-     * @returns {Promise<StackedInventoryItemObject<T>>} Stacked item object.
+     * @returns {StackedInventoryItemObject<T>} Stacked item object.
      */
     public stack<
         T extends object = any
-    >(itemID: string | number, memberID: string, guildID: string): Promise<StackedInventoryItemObject<T>>
+    >(itemID: string | number, memberID: string, guildID: string): StackedInventoryItemObject<T>
+
+    /**
+     * Returns the stacked user's inventory -
+     * an array of objects of item's quantity, total price and the item itself from user's inventory
+     * for each unique item.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @returns {Promise<StackedInventoryItemObject[]>} Stacked user's inventory.
+     */
+    public stacked<
+        T extends object = any
+    >(memberID: string, guildID: string): Promise<StackedInventoryItemObject<T>[]>
 
     /**
      * Shows all items in user's inventory.

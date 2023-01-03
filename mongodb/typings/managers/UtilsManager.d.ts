@@ -53,7 +53,7 @@ declare class UtilsManager {
      * @param {CheckerConfiguration} options Option checker options.
      * @returns {EconomyConfiguration} Fixed Economy configuration.
      */
-    public checkOptions(options?: CheckerConfiguration): EconomyConfiguration
+    public checkConfiguration(options?: CheckerConfiguration): EconomyConfiguration
 
     /**
      * Sets the default user object for the specified member.

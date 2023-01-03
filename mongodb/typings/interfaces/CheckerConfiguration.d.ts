@@ -1,5 +1,5 @@
 /**
- * Configuration for an 'Economy.utils.checkOptions' method.
+ * Configuration for an 'Economy.utils.checkConfiguration' method.
  */
 declare interface CheckerConfiguration {
 

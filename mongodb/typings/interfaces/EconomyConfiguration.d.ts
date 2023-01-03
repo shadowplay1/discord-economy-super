@@ -81,7 +81,7 @@ declare interface EconomyConfiguration {
     errorHandler?: ErrorHandlerConfiguration
 
     /**
-     * Configuration for an 'Economy.utils.checkOptions' method.
+     * Configuration for an 'Economy.utils.checkConfiguration' method.
      */
     optionsChecker?: CheckerConfiguration
 
