@@ -1,3 +1,5 @@
+const typeOf = require('./typeOf')
+
 const settingsArray = [
     'dailyAmount',
     'dailyCooldown',
@@ -50,10 +52,10 @@ module.exports = {
      * @param {string} key
      * @param {string} type
      * @param {string} received
-     * @returns {string} {key} must be a {type}. Received type: {received}.
+     * @returns {string} {key} must be a {type}. Received type: {receivedType}.
      */
     invalidType(key, type, received) {
-        return `${key} must be a ${type}. Received type: ${received}.`
+        return `${key} must be a ${type}. Received type: ${typeOf(received)}.`
     },
 
     /**

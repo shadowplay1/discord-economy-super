@@ -19,8 +19,9 @@ class Rewards {
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
      * @param {EconomyConfiguration} options Economy configuration.
+     * @param {DatabaseManager} database Database manager.
      */
-    constructor(memberID, guildID, options) {
+    constructor(memberID, guildID, options, database) {
 
         /**
         * Member ID.
@@ -41,11 +42,17 @@ class Rewards {
         this.options = options
 
         /**
+         * Database manager.
+         * @type {DatabaseManager}
+         */
+        this.database = database
+
+        /**
          * Rewards Manager.
          * @type {RewardManager}
          * @private
          */
-        this._rewards = new RewardManager(options)
+        this._rewards = new RewardManager(options, this.database)
     }
 
     /**

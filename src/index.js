@@ -577,7 +577,7 @@ class Economy extends Emitter {
 
         for (const manager of managers) {
             this[manager.name] = new manager.manager(this.options, new DatabaseManager(this.options))
-            this._logger.debug(`${manager.manager.name} is started.`)
+            this._logger.debug(`${manager.manager.name} was started.`)
         }
 
         for (const event of events) {

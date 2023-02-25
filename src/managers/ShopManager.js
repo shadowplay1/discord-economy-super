@@ -709,7 +709,7 @@ class ShopManager extends Emitter {
     }
 
     /**
-     * Uses the item from user's inventory.
+     * Uses the item: returns the item usage message and removes the item from user's inventory.
      *
      * [!!!] This method is deprecated.
      * If you want to get all the bugfixes and
@@ -721,7 +721,7 @@ class ShopManager extends Emitter {
      * @param {string | number} itemID Item ID or name.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
-     * @param {Client} client The Discord Client. [Optional]
+     * @param {Client} client Discord Client. [Specify if the role will be given on a Discord server]
      * @returns {string | boolean} Item message or null if item not found.
      * @deprecated
      */

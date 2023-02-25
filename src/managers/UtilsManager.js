@@ -5,7 +5,7 @@ const fetch = require('node-fetch')
 
 const DefaultConfiguration = require('../structures/DefaultConfiguration')
 const errors = require('../structures/errors')
-const defaultUserObject = require('../structures/DefaultUserObject')
+const defaultUserSchema = require('../structures/DefaultUserSchema')
 
 const Logger = require('../classes/util/Logger')
 const EconomyUser = require('../classes/EconomyUser')
@@ -158,7 +158,7 @@ class UtilsManager {
         if (!guildID) return null
         if (!memberID) return null
 
-        const defaultObj = defaultUserObject
+        const defaultObj = defaultUserSchema
 
         defaultObj.id = memberID
         defaultObj.guildID = guildID
@@ -189,7 +189,7 @@ class UtilsManager {
         let fileExtension = isTSFileAllowed ? 'ts' : 'js'
         let optionsFileExists = existsSync(`./economy.config.${fileExtension}`)
 
-		const slash = dirName.includes('\\') ? '\\' : '/'
+        const slash = dirName.includes('\\') ? '\\' : '/'
 
         if (!optionsFileExists && fileExtension == 'ts' && isTSFileAllowed) {
             fileExtension = 'js'
@@ -202,7 +202,8 @@ class UtilsManager {
             )
 
             try {
-                const optionsObject = require(`${dirName}/economy.config.${fileExtension}`)
+                const rawOptionsObject = require(`${dirName}/economy.config.${fileExtension}`)
+                const optionsObject = rawOptionsObject.default ? rawOptionsObject.default : rawOptionsObject
 
                 options = optionsObject.optionsChecker
                 ecoOptions = optionsObject
@@ -228,16 +229,15 @@ class UtilsManager {
         } else {
             for (const i of keys) {
                 if (ecoOptions[i] == undefined) {
-
                     output[i] = DefaultConfiguration[i]
                     if (!options.ignoreUnspecifiedOptions) problems.push(`options.${i} is not specified.`)
                 }
+
                 else {
                     output[i] = ecoOptions[i]
                 }
 
                 for (const y of Object.keys(DefaultConfiguration[i] || {}).filter(key => isNaN(key))) {
-
                     if (ecoOptions[i]?.[y] == undefined || output[i]?.[y] == undefined) {
                         try {
                             output[i][y] = DefaultConfiguration[i][y]
@@ -245,7 +245,9 @@ class UtilsManager {
                             null
                         }
 
-                        if (!options.ignoreUnspecifiedOptions) problems.push(`options.${i}.${y} is not specified.`)
+                        if (!options.ignoreUnspecifiedOptions) {
+                            problems.push(`options.${i}.${y} is not specified.`)
+                        }
                     }
 
                     else {
@@ -291,9 +293,7 @@ class UtilsManager {
                     problems.push(errors.workAmount.tooManyElements)
                 }
 
-
                 for (const y of Object.keys(DefaultConfiguration[i] || {}).filter(key => isNaN(key))) {
-
                     if (typeof output[i]?.[y] !== typeof DefaultConfiguration[i][y]) {
                         if (!options.ignoreInvalidTypes) {
                             problems.push(
@@ -338,12 +338,12 @@ class UtilsManager {
                     `${problems.length} problems found:\n\n${problems.join('\n')}` :
                     '0 problems found.'}`)
 
-				console.log(
-					'Configuration from ' +
-						`${optionsFileExists ?
-								`${dirName}${slash}economy.config.${fileExtension}` :
-								'the constructor'}`
-				)
+                console.log(
+                    'Configuration from ' +
+                    `${optionsFileExists ?
+                        `${dirName}${slash}economy.config.${fileExtension}` :
+                        'the constructor'}`
+                )
             }
 
             if (options.sendSuccessLog && !options.showProblems) {
@@ -352,17 +352,22 @@ class UtilsManager {
                     `${problems.length == 1 ? 'problem' : 'problems'} found.`
                 )
 
-				console.log(
-					'Configuration from ' +
-					`${optionsFileExists ?
-							`${dirName}${slash}economy.config.${fileExtension}` :
-							'the constructor'}`
-				)
+                console.log(
+                    'Configuration from ' +
+                    `${optionsFileExists ?
+                        `${dirName}${slash}economy.config.${fileExtension}` :
+                        'the constructor'}`
+                )
             }
         }
 
-        if (output == DefaultConfiguration) return ecoOptions
-        else return output
+        if (output == DefaultConfiguration) {
+            return ecoOptions
+        }
+
+        else {
+            return output
+        }
     }
 }
 

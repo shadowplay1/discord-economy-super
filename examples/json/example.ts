@@ -392,16 +392,16 @@ client.on('messageCreate', async msg => {
             )
         }
 
-        const transferringResult = receiver.balance.transfer({
+        const TransferingResult = receiver.balance.transfer({
             amount,
             senderMemberID: message.author.id,
 
-            sendingReason: `transferred ${amount} coins to ${getUser(argumentUser.id).tag}.`,
+            sendingReason: `Transfered ${amount} coins to ${getUser(argumentUser.id).tag}.`,
             receivingReason: `received ${amount} coins from ${message.author.tag}.`
         })
 
         message.channel.send(
-            `${message.author}, you transferred **${transferringResult.amount}** ` +
+            `${message.author}, you Transfered **${TransferingResult.amount}** ` +
             `coins to ${getUser(argumentUser.id)}.`
         )
     }
@@ -531,6 +531,15 @@ client.on('messageCreate', async msg => {
         const price = parseInt(priceString)
         const messageOnUse = args.slice(3).join(' ')
 
+        // message on use is optional and defaults to `You have used this item!`
+
+        // supports choosing a random string from a specified strings list with following syntax:
+        // [random="str", "str1", "str2"]
+
+        // for example, if specifying `What a [random="wonderful", "great", "sunny"] day!` as message on use
+        // then in returned message, `[random="wonderful", "great", "sunny"]` will be replaced with either
+        // "wonderful", "great" or "sunny".
+
         if (!name) {
             return message.channel.send(`${message.author}, please provide a name for the item.`)
         }
@@ -546,7 +555,7 @@ client.on('messageCreate', async msg => {
         const newItem = guild.shop.addItem<CustomItemData>({
             name,
             price,
-            message: messageOnUse,
+            message: messageOnUse || '',
 
             custom: {
                 emoji,

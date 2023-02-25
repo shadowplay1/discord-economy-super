@@ -11,7 +11,7 @@ const Rewards = require('./user/Rewards')
 
 const Items = require('./user/Items')
 
-const defaultUserObject = require('../structures/DefaultUserObject')
+const defaultUserSchema = require('../structures/DefaultUserSchema')
 
 
 /**
@@ -72,7 +72,7 @@ class EconomyUser {
          * User history.
          * @type {History}
          */
-        this.history = new History(id, guildID, ecoOptions)
+        this.history = new History(id, guildID, ecoOptions, database)
 
         /**
          * User inventory.
@@ -98,7 +98,7 @@ class EconomyUser {
          * User rewards.
          * @type {Rewards}
          */
-        this.rewards = new Rewards(id, guildID, ecoOptions)
+        this.rewards = new Rewards(id, guildID, ecoOptions, database)
 
         /**
          * User items.
@@ -140,7 +140,7 @@ class EconomyUser {
      * @returns {boolean} If reset successfully: true; else: false.
      */
     reset() {
-        const defaultObj = defaultUserObject
+        const defaultObj = defaultUserSchema
 
         defaultObj.id = this.id
         defaultObj.guildID = this.guildID

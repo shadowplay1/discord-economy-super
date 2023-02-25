@@ -60,7 +60,7 @@ class RewardManager {
          * @type {CooldownManager}
          * @private
          */
-        this.cooldowns = new CooldownManager(options)
+        this.cooldowns = new CooldownManager(options, database)
 
         /**
          * Balance manager methods class.

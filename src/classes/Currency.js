@@ -119,8 +119,6 @@ class Currency extends Emitter {
 		const currenciesArray = this._all(this.guildID)
 		const currencyIndex = currenciesArray.findIndex(currency => currency.id == this.id)
 
-		if (currencyIndex == -1) return false
-
 		currenciesArray.splice(currencyIndex, 1)
 		this.database.set(`${this.guildID}.currencies`, currenciesArray)
 
@@ -144,10 +142,6 @@ class Currency extends Emitter {
 
 		if (!['name', 'symbol', 'custom'].includes(property)) {
 			throw new EconomyError(errors.invalidProperty('Currency', property), 'INVALID_PROPERTY')
-		}
-
-		if (!currency) {
-			throw new EconomyError(errors.currencies.notFound(this.id, this.guildID), 'CURRENCY_NOT_FOUND')
 		}
 
 		currency[property] = value
