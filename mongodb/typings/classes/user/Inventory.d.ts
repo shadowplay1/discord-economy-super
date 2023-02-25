@@ -23,9 +23,9 @@ declare class Inventory extends BaseManager<InventoryItem<any>> {
     public all<T extends object = any>(): Promise<InventoryItem<T>[]>
 
     /**
-     * Uses the item from user's inventory.
+     * Uses the item: returns the item usage message and removes the item from user's inventory.
      * @param {string} itemID Item ID.
-     * @param {any} [client] Discord Client [Specify if the role will be given in a Discord server].
+     * @param {any} [client] Discord Client. [Specify if the role will be given on a Discord server]
      * @returns {Promise<string>} Item message or null if item not found.
      */
     public use(itemID: string | number, client?: any): Promise<string>

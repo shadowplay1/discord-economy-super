@@ -1,9 +1,8 @@
-import { MongoConnectionOptions } from 'quick-mongo-super/typings/interfaces/QuickMongo'
+import { IMongoConnectionOptions } from 'quick-mongo-super/typings/interfaces/QuickMongo'
 
 import CheckerConfiguration from './CheckerConfiguration'
 import ErrorHandlerConfiguration from './ErrorHandlerConfiguration'
 import UpdaterOptions from './UpdaterOptions'
-
 
 /**
  * Economy configuration.

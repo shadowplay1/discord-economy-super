@@ -245,7 +245,7 @@ declare class CurrencyManager extends Emitter {
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
      * @param {string} [reason] The reason why the money was added.
-     * @returns {Promise<number>} Amount of money that was add.
+     * @returns {Promise<number>} Amount of money that was added.
      */
     public addBalance(currencyID: string, amount: number, memberID: string, guildID: string, reason?: string): Promise<number>
 
@@ -256,7 +256,7 @@ declare class CurrencyManager extends Emitter {
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
      * @param {string} [reason] The reason why the money was subtracted.
-     * @returns {Promise<number>} Amount of money that was subtract.
+     * @returns {Promise<number>} Amount of money that was subtracted.
      */
     public subtractBalance(currencyID: number, amount: number, memberID: string, guildID: string, reason?: string): Promise<number>
 
