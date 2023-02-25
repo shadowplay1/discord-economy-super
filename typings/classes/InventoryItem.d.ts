@@ -108,8 +108,8 @@ declare class InventoryItem<T extends object = any> {
     public remove(quantity?: number): boolean
 
     /**
-     * Uses the item from user's inventory.
-     * @param {Client} [client] Discord Client [Specify if the role will be given in a Discord server].
+     * Uses the item: returns the item usage message and removes the item from user's inventory.
+     * @param {Client} [client] Discord Client. [Specify if the role will be given on a Discord server]
      * @returns {string} Item message.
      */
     public use(client?: any): string

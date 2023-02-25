@@ -160,9 +160,9 @@ declare class Items {
     public get<T extends object = any>(itemID: string | number): InventoryItem<T>
 
     /**
-     * Uses the item from user's inventory.
+     * Uses the item: returns the item usage message and removes the item from user's inventory.
      * @param {string | number} itemID Item ID or name.
-     * @param {Client} [client] Discord Client [Specify if the role will be given in a Discord server].
+     * @param {Client} [client] Discord Client. [Specify if the role will be given on a Discord server]
      * @returns {string} Item message.
      */
     public use(itemID: string | number, client?: any): string

@@ -253,7 +253,7 @@ declare class CurrencyManager extends Emitter {
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
      * @param {string} [reason] The reason why the money was subtracted.
-     * @returns {number} Amount of money that was subtract.
+     * @returns {number} Amount of money that was subtracted.
      */
     public subtractBalance(currencyID: number, amount: number, memberID: string, guildID: string, reason?: string): number
 

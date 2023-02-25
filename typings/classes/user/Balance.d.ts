@@ -26,23 +26,29 @@ declare class Balance extends Emitter {
     )
 
     /**
-     * Returns a factory with `get`, `set`, `add` and `subtract` methods to work with custom currencies.
+     * Returns a factory with `get`, `getCurrency` (to get a currency info object), 
+     * `set`, `add` and `subtract` methods to work with custom currencies.
+     * 
      * @param {string} currencyID Currency ID, its name or its symbol.
-     * @returns {CurrencyFactory} Factory object.
+     * @returns {CurrencyFactory} Currency management factory object.
      */
     public currency(currencyID: string): CurrencyFactory
 
     /**
-     * Returns a factory with `get`, `set`, `add` and `subtract` methods to work with custom currencies.
+     * Returns a factory with `get`, `getCurrency` (to get a currency info object), 
+     * `set`, `add` and `subtract` methods to work with custom currencies.
+     * 
      * @param {number} currencyID Currency ID, its name or its symbol.
-     * @returns {CurrencyFactory} Factory object.
+     * @returns {CurrencyFactory} Currency management factory object.
      */
     public currency(currencyID: number): CurrencyFactory
 
     /**
-     * Returns a factory with `get`, `set`, `add` and `subtract` methods to work with custom currencies.
+     * Returns a factory with `get`, `getCurrency` (to get a currency info object), 
+     * `set`, `add` and `subtract` methods to work with custom currencies.
+     * 
      * @param {string | number} currencyID Currency ID, its name or its symbol.
-     * @returns {CurrencyFactory} Factory object.
+     * @returns {CurrencyFactory} Currency management factory object.
      */
     public currency(currencyID: string | number): CurrencyFactory
 
