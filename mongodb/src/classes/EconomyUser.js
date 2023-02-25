@@ -11,7 +11,7 @@ const Rewards = require('./user/Rewards')
 
 const Items = require('./user/Items')
 
-const defaultUserObject = require('../structures/DefaultUserObject')
+const defaultUserSchema = require('../structures/DefaultUserSchema')
 
 
 /**
@@ -157,7 +157,7 @@ class EconomyUser {
      * @returns {Promise<boolean>} If reset successfully: true; else: false.
      */
     async reset() {
-        const defaultObj = defaultUserObject
+        const defaultObj = defaultUserSchema
 
         defaultObj.id = this.id
         defaultObj.guildID = this.guildID

@@ -76,9 +76,9 @@ class Inventory extends BaseManager {
     }
 
     /**
-     * Uses the item from user's inventory.
+     * Uses the item: returns the item usage message and removes the item from user's inventory.
      * @param {string | number} itemID Item ID.
-     * @param {any} [client] Discord Client [Specify if the role will be given in a Discord server].
+     * @param {any} [client] Discord Client. [Specify if the role will be given on a Discord server]
      * @returns {Promise<string>} Item message or null if item not found.
      */
     async use(itemID, client) {

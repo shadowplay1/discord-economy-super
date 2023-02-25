@@ -56,7 +56,7 @@ class RewardManager extends Emitter {
          * @type {CooldownManager}
          * @private
          */
-        this.cooldowns = new CooldownManager(options, database)
+        this.cooldowns = new CooldownManager(options, database, cache)
 
         /**
          * Balance manager.

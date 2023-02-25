@@ -52,7 +52,7 @@ class GuildManager extends BaseManager {
          * @type {UtilsManager}
          * @private
          */
-        this.utils = new UtilsManager(options, this.database)
+        this.utils = new UtilsManager(options, database, cache)
 
         /**
          * Cache Manager.

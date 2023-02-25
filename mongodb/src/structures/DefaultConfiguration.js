@@ -7,7 +7,6 @@ const economyConfig = {
     },
 
     dailyAmount: 100,
-    updateCountdown: 1000,
     workAmount: [10, 50],
     weeklyAmount: 1000,
     dailyCooldown: 86400000,

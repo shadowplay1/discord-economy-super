@@ -51,7 +51,7 @@ class CurrencyManager extends Emitter {
      * @returns {Promise<Currency>} Currency object.
      */
     async find(currencyID, guildID) {
-        if (typeof currencyID !== 'string' && !isNaN(currencyID)) {
+        if (typeof currencyID !== 'string' && typeof currencyID !== 'number') {
             throw new EconomyError(
                 errors.invalidType(
                     'currencyID',
@@ -70,15 +70,19 @@ class CurrencyManager extends Emitter {
 
         const currency = currenciesArray.find(
             currency => currency.id == currencyID ||
-                currency.name == currencyID ||
-                currency.symbol == currencyID
-        ) || {}
+                currency.name.toLowerCase() == currencyID?.toLowerCase() ||
+                currency.symbol.toLowerCase() == currencyID?.toLowerCase()
+        )
+
+        if (!currency) {
+            return {}
+        }
 
         return new Currency(
-            currency.id,
+            currency?.id,
             guildID,
             this.options,
-            currency,
+            currency || {},
             this.database,
             this.cache
         )
@@ -109,8 +113,8 @@ class CurrencyManager extends Emitter {
 
         const currency = currenciesArray.find(
             currency => currency.id == currencyID ||
-                currency.name == currencyID ||
-                currency.symbol == currencyID
+                currency.name.toLowerCase() == currencyID?.toLowerCase() ||
+                currency.symbol.toLowerCase() == currencyID?.toLowerCase()
         )
 
         if (!['name', 'symbol', 'custom'].includes(property)) {
@@ -196,8 +200,8 @@ class CurrencyManager extends Emitter {
 
         const currency = currenciesArray.find(
             currency => currency.id == currencyID ||
-                currency.name == currencyID ||
-                currency.symbol == currencyID
+                currency.name.toLowerCase() == currencyID?.toLowerCase() ||
+                currency.symbol.toLowerCase() == currencyID?.toLowerCase()
         )
 
         if (!currency) {
@@ -254,7 +258,7 @@ class CurrencyManager extends Emitter {
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
      * @param {string} [reason] The reason why the money was added.
-     * @returns {Promise<number>} Amount of money that was add.
+     * @returns {Promise<number>} Amount of money that was added.
      */
     async addBalance(currencyID, amount, memberID, guildID, reason = '') {
         const currency = await this.get(currencyID, memberID, guildID)
@@ -282,7 +286,7 @@ class CurrencyManager extends Emitter {
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
      * @param {string} [reason] The reason why the money was subtracted.
-     * @returns {Promise<number>} Amount of money that was subtract.
+     * @returns {Promise<number>} Amount of money that was subtracted.
      */
     async subtractBalance(currencyID, amount, memberID, guildID, reason = '') {
         const currency = await this.get(currencyID, memberID, guildID)
@@ -355,8 +359,8 @@ class CurrencyManager extends Emitter {
 
         const currencyIndex = currenciesArray.findIndex(
             currency => currency.id == currencyID ||
-                currency.name == currencyID ||
-                currency.symbol == currencyID
+                currency.name.toLowerCase() == currencyID?.toLowerCase() ||
+                currency.symbol.toLowerCase() == currencyID?.toLowerCase()
         )
 
         if (currencyIndex == -1) return null

@@ -1,4 +1,4 @@
-const defaultUserObject = require('../structures/DefaultUserObject')
+const defaultUserSchema = require('../structures/DefaultUserSchema')
 const EconomyUser = require('./EconomyUser')
 
 /**
@@ -16,7 +16,7 @@ class EmptyEconomyUser extends EconomyUser {
      * @param {CacheManager} cache Cache manager.
      */
     constructor(userID, guildID, options, database, cache) {
-        super(userID, guildID, options, defaultUserObject, database, cache)
+        super(userID, guildID, options, defaultUserSchema, database, cache)
 
         /**
          * Determine if the user exists in the database.

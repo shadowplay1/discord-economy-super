@@ -68,9 +68,11 @@ class Balance {
     }
 
     /**
-     * Returns a factory with `get`, `set`, `add` and `subtract` methods to work with custom currencies.
+     * Returns a factory with `get`, `getCurrency` (to get a currency info object), 
+     * `set`, `add` and `subtract` methods to work with custom currencies.
+     * 
      * @param {string | number} currencyID Currency ID, its name or its symbol.
-     * @returns {CurrencyFactory} Factory object.
+     * @returns {CurrencyFactory} Currency management factory object.
      */
     currency(currencyID) {
         const currencies = this._currencies
@@ -90,6 +92,11 @@ class Balance {
 
             async getCurrency() {
                 const currency = await currencies.get(currencyID, guildID)
+
+                if (!currency.id) {
+                    return {}
+                }
+
                 return new Currency(currency.id, guildID, options, currency, database, cache)
             },
 

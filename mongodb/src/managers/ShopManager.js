@@ -47,7 +47,7 @@ class ShopManager extends Emitter {
          * Currency Manager.
          * @type {CurrencyManager}
          */
-        this.currencies = new CurrencyManager(this.options, this.database, this.cache)
+        this.currencies = new CurrencyManager(options, database, cache)
     }
 
     /**

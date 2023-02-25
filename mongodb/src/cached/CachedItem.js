@@ -4,7 +4,7 @@ const errors = require('../structures/errors')
 const EmptyEconomyGuild = require('../classes/EmptyEconomyGuild')
 const EmptyEconomyUser = require('../classes/EmptyEconomyUser')
 
-const defaultUserObject = require('../structures/DefaultUserObject')
+const defaultUserSchema = require('../structures/DefaultUserSchema')
 const Bank = require('../classes/user/Bank')
 const Currency = require('../classes/Currency')
 
@@ -225,7 +225,7 @@ class CachedItem {
                     ), 'INVALID_CACHING_IDENTIFIERS')
                 }
 
-                const rawUserObject = await this._database.fetch(`${id.guildID}.${id.memberID}`) || defaultUserObject
+                const rawUserObject = await this._database.fetch(`${id.guildID}.${id.memberID}`) || defaultUserSchema
 
                 const cooldownObject = {
                     daily: rawUserObject?.dailyCooldown,
@@ -250,7 +250,7 @@ class CachedItem {
                     ), 'INVALID_CACHING_IDENTIFIERS')
                 }
 
-                const rawUser = await this._database.fetch(`${id.guildID}.${id.memberID}`) || defaultUserObject
+                const rawUser = await this._database.fetch(`${id.guildID}.${id.memberID}`) || defaultUserSchema
 
                 const balanceObject = {
                     money: rawUser?.money,
@@ -274,7 +274,7 @@ class CachedItem {
                     ), 'INVALID_CACHING_IDENTIFIERS')
                 }
 
-                const rawBankUser = await this._database.fetch(`${id.guildID}.${id.memberID}`) || defaultUserObject
+                const rawBankUser = await this._database.fetch(`${id.guildID}.${id.memberID}`) || defaultUserSchema
 
                 const bankBalanceObject = {
                     balance: rawBankUser?.bank,

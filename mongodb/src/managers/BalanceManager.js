@@ -52,11 +52,13 @@ class BalanceManager extends Emitter {
     }
 
     /**
-     * Returns a factory with `get`, `set`, `add` and `subtract` methods to work with custom currencies.
+     * Returns a factory with `get`, `getCurrency` (to get a currency info object), 
+     * `set`, `add` and `subtract` methods to work with custom currencies.
+     * 
      * @param {string | number} currencyID Currency ID, its name or its symbol.
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
-     * @returns {CurrencyFactory} Factory object.
+     * @returns {CurrencyFactory} Currency management factory object.
      */
     currency(currencyID, memberID, guildID) {
         const currencies = this._currencies

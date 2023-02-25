@@ -430,15 +430,15 @@ class Economy extends Emitter {
         const connectionStartDate = Date.now()
         const QuickMongo = require('quick-mongo-super')
 
-        const mongo = new QuickMongo(this.rawOptions?.connection)
-
-        if (!this.rawOptions?.connection) {
+        if (!this.options.connection) {
             throw new EconomyError(errors.noConnectionData, 'NO_CONNECTION_DATA')
         }
 
         this._logger.debug('Connecting to MongoDB...', 'lightgreen')
 
+        const mongo = new QuickMongo(this.options.connection)
         await mongo.connect()
+
         this._mongo = mongo
 
         const connectionTime = Date.now() - connectionStartDate
@@ -582,17 +582,17 @@ class Economy extends Emitter {
         ]
 
         this.database = new DatabaseManager(this.options, this._mongo)
-        this._logger.debug('DatabaseManager is started.')
+        this._logger.debug('DatabaseManager was started.')
 
         this.cache = new CacheManager(this.options, this.database)
-        this._logger.debug('CacheManager is started.')
+        this._logger.debug('CacheManager was started.')
 
         this.users = new UserManager(this.options, this.database, null, this.cache)
-        this._logger.debug('UserManager is started.')
+        this._logger.debug('UserManager was started.')
 
         for (const manager of managers) {
             this[manager.name] = new manager.manager(this.options, this.database, this.cache)
-            this._logger.debug(`${manager.manager.name} is started.`)
+            this._logger.debug(`${manager.manager.name} was started.`)
         }
 
         for (const event of events) {

@@ -119,7 +119,6 @@ class SettingsManager {
      */
     constructor(options, database) {
 
-
         /**
         * Economy configuration.
         * @type {EconomyConfiguration}

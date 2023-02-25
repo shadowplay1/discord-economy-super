@@ -5,7 +5,7 @@ const fetch = require('node-fetch')
 
 const DefaultConfiguration = require('../structures/DefaultConfiguration')
 const errors = require('../structures/errors')
-const defaultUserObject = require('../structures/DefaultUserObject')
+const defaultUserSchema = require('../structures/DefaultUserSchema')
 
 const Logger = require('../classes/util/Logger')
 const EconomyUser = require('../classes/EconomyUser')
@@ -178,7 +178,7 @@ class UtilsManager {
         if (!guildID) return null
         if (!memberID) return null
 
-        const defaultObj = defaultUserObject
+        const defaultObj = defaultUserSchema
 
         defaultObj.id = memberID
         defaultObj.guildID = guildID
@@ -196,6 +196,33 @@ class UtilsManager {
     }
 
     /**
+     * Extracts the exported configuration object from the object.
+     * @param {any} obj The object to extract from
+     * @returns {EconomyConfiguration} Extracted Economy configuration object.
+     * @private
+     */
+    _extractConfigFromObject(obj) {
+        if (typeof obj == 'object' && obj !== null) {
+            const objectKeys = Object.keys(obj)
+                .filter(key => typeof obj[key] == 'object')
+
+            const configKeysWithObject = Object.keys(DefaultConfiguration)
+                .filter(key =>
+                    typeof DefaultConfiguration[key] == 'object' &&
+                    !Array.isArray(DefaultConfiguration[key])
+                )
+
+            if (objectKeys.length == 1 && !configKeysWithObject.includes(objectKeys[0])) {
+                return obj[objectKeys[0]]
+            }
+
+            return obj
+        }
+
+        return {}
+    }
+
+    /**
      * Checks the Economy configuration, fixes the problems and returns it.
      * @param {CheckerConfiguration} options Option checker options.
      * @param {EconomyConfiguration} ecoOptions Economy configuration to check.
@@ -206,19 +233,22 @@ class UtilsManager {
         this._logger.debug('Checking the configuration...')
 
         const filePathArray = require.main.filename.replaceAll('\\', '/').split('/')
-        const fileName = filePathArray[filePathArray.length - 1]
+        const fileName = filePathArray.at(-1)
 
         const isTSFileAllowed = fileName.endsWith('.ts')
-        const dirName = dirname(require.main.filename).replace('/' + fileName, '').replace('\\' + fileName, '')
 
-        let fileExtension = isTSFileAllowed ? 'ts' : 'js'
-        let optionsFileExists = existsSync(`./economy.config.${fileExtension}`)
+        const dirName = dirname(require.main.filename)
+            .replace('/' + fileName, '')
+            .replace('\\' + fileName, '')
 
         const slash = dirName.includes('\\') ? '\\' : '/'
 
+        let fileExtension = isTSFileAllowed ? 'ts' : 'js'
+        let optionsFileExists = existsSync(`${dirName}${slash}economy.config.${fileExtension}`)
+
         if (!optionsFileExists && fileExtension == 'ts' && isTSFileAllowed) {
             fileExtension = 'js'
-            optionsFileExists = existsSync(`./economy.config.${fileExtension}`)
+            optionsFileExists = existsSync(`${dirName}${slash}economy.config.${fileExtension}`)
         }
 
         if (optionsFileExists) {
@@ -227,10 +257,11 @@ class UtilsManager {
             )
 
             try {
-                const optionsObject = require(`${dirName}/economy.config.${fileExtension}`)
+                const rawConfigurationObject = require(`${dirName}/economy.config.${fileExtension}`)
+                const configurationObject = this._extractConfigFromObject(rawConfigurationObject)
 
-                options = optionsObject.optionsChecker
-                ecoOptions = optionsObject
+                options = configurationObject.optionsChecker || {}
+                ecoOptions = configurationObject
             } catch (err) {
                 this._logger.error(`Failed to open the configuration file:\n${err.stack}`)
                 this._logger.debug('Using the configuration specified in a constructor...', 'cyan')
@@ -251,18 +282,19 @@ class UtilsManager {
             problems.push('options is not an object. Received type: ' + typeof ecoOptions)
             output = DefaultConfiguration
         } else {
-            for (const i of keys) {
+            for (const i in DefaultConfiguration) {
                 if (ecoOptions[i] == undefined) {
-
                     output[i] = DefaultConfiguration[i]
-                    if (!options.ignoreUnspecifiedOptions) problems.push(`options.${i} is not specified.`)
+                    if (!options.ignoreUnspecifiedOptions) {
+                        problems.push(`options.${i} is not specified.`)
+                    }
                 }
+
                 else {
                     output[i] = ecoOptions[i]
                 }
 
                 for (const y of Object.keys(DefaultConfiguration[i] || {}).filter(key => isNaN(key))) {
-
                     if (ecoOptions[i]?.[y] == undefined || output[i]?.[y] == undefined) {
                         try {
                             output[i][y] = DefaultConfiguration[i][y]
@@ -270,7 +302,9 @@ class UtilsManager {
                             null
                         }
 
-                        if (!options.ignoreUnspecifiedOptions) problems.push(`options.${i}.${y} is not specified.`)
+                        if (!options.ignoreUnspecifiedOptions) {
+                            problems.push(`options.${i}.${y} is not specified.`)
+                        }
                     }
 
                     else {
@@ -316,9 +350,7 @@ class UtilsManager {
                     problems.push(errors.workAmount.tooManyElements)
                 }
 
-
                 for (const y of Object.keys(DefaultConfiguration[i] || {}).filter(key => isNaN(key))) {
-
                     if (typeof output[i]?.[y] !== typeof DefaultConfiguration[i][y]) {
                         if (!options.ignoreInvalidTypes) {
                             problems.push(
@@ -386,8 +418,13 @@ class UtilsManager {
             }
         }
 
-        if (output == DefaultConfiguration) return ecoOptions
-        else return output
+        if (output == DefaultConfiguration) {
+            return ecoOptions
+        }
+
+        else {
+            return output
+        }
     }
 }
 

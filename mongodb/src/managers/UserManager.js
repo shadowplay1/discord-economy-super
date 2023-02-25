@@ -1,7 +1,7 @@
 const EconomyUser = require('../classes/EconomyUser')
 const BaseManager = require('./BaseManager')
 
-const defaultUserObject = require('../structures/DefaultUserObject')
+const defaultUserSchema = require('../structures/DefaultUserSchema')
 const EmptyEconomyUser = require('../classes/EmptyEconomyUser')
 
 
@@ -66,7 +66,7 @@ class UserManager extends BaseManager {
         if (!guildID) return null
         if (!memberID) return null
 
-        const defaultObj = defaultUserObject
+        const defaultObj = defaultUserSchema
 
         defaultObj.id = memberID
         defaultObj.guildID = guildID
