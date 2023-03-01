@@ -9,7 +9,7 @@ const colors = {
     reset: '\x1b[0m'
 }
 
-if (Number(process.version.split('.')[0].slice(1)) < 14) {
+if (parseInt(process.version.split('.')[0].slice(1)) < 14) {
     const err = new EconomyError(errors.oldNodeVersion + process.version, 'OLD_NODE_VERSION')
 
     console.log(`${colors.red}Failed to start the module:${colors.cyan}`)
