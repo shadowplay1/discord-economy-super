@@ -1,0 +1,2873 @@
+{
+	"123": {
+		"123": {
+			"dailyCooldown": 1652855651136,
+			"workCooldown": null,
+			"weeklyCooldown": null,
+			"money": 162200,
+			"bank": 0,
+			"inventory": [
+				{
+					"id": 1,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/13/2022, 11:41:06 AM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 2,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/13/2022, 11:58:46 AM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 3,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/13/2022, 12:01:59 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 4,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/13/2022, 12:47:34 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 5,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/13/2022, 12:48:56 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 6,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/13/2022, 12:49:52 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 7,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/13/2022, 1:08:15 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 8,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/16/2022, 8:41:43 AM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 9,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/16/2022, 8:42:12 AM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 10,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/16/2022, 8:49:52 AM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 11,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/16/2022, 9:34:10 AM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 12,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/16/2022, 9:36:12 AM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 13,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/16/2022, 9:37:38 AM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 14,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/16/2022, 9:38:42 AM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 15,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/16/2022, 9:38:56 AM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 16,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/16/2022, 10:38:13 AM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 17,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/16/2022, 2:29:05 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 18,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/16/2022, 2:30:07 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 19,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/16/2022, 2:36:44 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 20,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/16/2022, 2:40:32 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 21,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/16/2022, 3:00:41 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 22,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/16/2022, 3:08:33 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 23,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/16/2022, 3:15:52 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 24,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 10:48:08 AM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 25,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 12:48:39 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 26,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 12:50:21 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 27,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 12:51:34 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 28,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 1:06:37 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 29,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 1:08:13 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 30,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 1:08:31 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 31,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 1:10:03 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 32,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 1:12:03 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 33,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 1:25:20 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 34,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 1:30:49 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 35,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 1:31:27 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 36,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 1:34:29 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 37,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 2:02:59 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 38,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 2:07:11 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 39,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 2:20:42 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 40,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 2:22:03 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 41,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 2:25:28 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 42,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 2:26:59 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 43,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 2:28:13 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 44,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 2:28:28 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 45,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 2:29:58 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 46,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 2:30:13 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 47,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 2:40:34 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 48,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 2:40:45 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 49,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 2:41:24 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 50,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 2:41:37 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 51,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 2:41:52 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 52,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 2:42:16 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 53,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 2:42:27 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 54,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 2:53:06 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 55,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 2:53:19 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 56,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 2:54:16 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 57,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/18/2022, 9:34:11 AM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 58,
+					"name": "test",
+					"price": 100,
+					"message": "You have used this item!",
+					"description": "Very mysterious item.",
+					"role": null,
+					"maxAmount": null,
+					"date": "5/18/2022, 9:34:23 AM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				}
+			],
+			"history": [
+				{
+					"id": 1,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/13/2022, 11:41:06 AM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 2,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/13/2022, 11:58:46 AM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 3,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/13/2022, 12:01:59 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 4,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/13/2022, 12:47:34 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 5,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/13/2022, 12:48:56 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 6,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/13/2022, 12:49:52 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 7,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/13/2022, 1:08:15 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 8,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/16/2022, 8:41:43 AM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 9,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/16/2022, 8:42:12 AM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 10,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/16/2022, 8:49:52 AM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 11,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/16/2022, 9:34:10 AM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 12,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/16/2022, 9:36:12 AM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 13,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/16/2022, 9:37:38 AM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 14,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/16/2022, 9:38:43 AM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 15,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/16/2022, 9:38:56 AM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 16,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/16/2022, 10:38:13 AM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 17,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/16/2022, 2:29:05 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 18,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/16/2022, 2:30:07 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 19,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/16/2022, 2:36:44 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 20,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/16/2022, 2:40:32 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 21,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/16/2022, 3:00:41 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 22,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/16/2022, 3:08:33 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 23,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/16/2022, 3:15:52 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 24,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 10:48:08 AM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 25,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 12:48:39 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 26,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 12:50:22 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 27,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 12:51:34 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 28,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 1:06:37 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 29,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 1:08:13 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 30,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 1:08:31 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 31,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 1:10:03 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 32,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 1:12:03 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 33,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 1:25:20 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 34,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 1:30:49 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 35,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 1:31:27 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 36,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 1:34:29 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 37,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 2:02:59 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 38,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 2:07:11 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 39,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 2:20:42 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 40,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 2:22:03 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 41,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 2:25:28 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 42,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 2:26:59 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 43,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 2:28:13 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 44,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 2:28:28 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 45,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 2:29:58 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 46,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 2:30:13 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 47,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 2:40:34 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 48,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 2:40:45 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 49,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 2:41:24 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 50,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 2:41:37 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 51,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 2:41:52 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 52,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 2:42:16 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 53,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 2:42:27 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 54,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 2:53:06 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 55,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 2:53:19 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 56,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/17/2022, 2:54:16 PM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 57,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/18/2022, 9:34:11 AM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				},
+				{
+					"id": 58,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test",
+					"price": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "5/18/2022, 9:34:23 AM",
+					"custom": {
+						"category": "Test Item",
+						"test": "123",
+						"sellingPrice": 75
+					}
+				}
+			],
+			"id": "123",
+			"guildID": "123"
+		},
+		"shop": [
+			{
+				"id": 1,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/11/2022, 12:10:58 PM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 2,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/11/2022, 12:19:38 PM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 3,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/11/2022, 12:20:30 PM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 4,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/11/2022, 12:30:31 PM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 5,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/11/2022, 12:47:26 PM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 6,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/11/2022, 12:58:27 PM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 7,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/11/2022, 12:59:07 PM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 8,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/11/2022, 1:06:01 PM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 9,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/13/2022, 8:57:26 AM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 10,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/13/2022, 8:57:45 AM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 11,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/13/2022, 9:27:01 AM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 12,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/13/2022, 9:31:21 AM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 13,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/13/2022, 9:46:41 AM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 14,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/13/2022, 10:06:06 AM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 15,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/13/2022, 10:06:25 AM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 16,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/13/2022, 11:37:51 AM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 17,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/13/2022, 11:41:06 AM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 18,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/13/2022, 11:58:46 AM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 19,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/13/2022, 12:01:59 PM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 20,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/13/2022, 12:47:34 PM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 21,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/13/2022, 12:48:56 PM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 22,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/13/2022, 12:49:52 PM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 23,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/13/2022, 1:08:15 PM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 24,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/16/2022, 8:41:43 AM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 25,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/16/2022, 8:42:12 AM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 26,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/16/2022, 8:49:51 AM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 27,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/16/2022, 9:34:10 AM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 28,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/16/2022, 9:36:12 AM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 29,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/16/2022, 9:37:38 AM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 30,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/16/2022, 9:38:42 AM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 31,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/16/2022, 9:38:56 AM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 32,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/16/2022, 10:38:13 AM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 33,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/16/2022, 2:29:05 PM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 34,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/16/2022, 2:30:07 PM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 35,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/16/2022, 2:36:44 PM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 36,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/16/2022, 2:40:32 PM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 37,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/16/2022, 3:00:41 PM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 38,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/16/2022, 3:08:33 PM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 39,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/16/2022, 3:15:52 PM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 40,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/17/2022, 10:48:08 AM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 41,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/17/2022, 12:48:39 PM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 42,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/17/2022, 12:50:21 PM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 43,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/17/2022, 12:51:33 PM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 44,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/17/2022, 1:06:36 PM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 45,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/17/2022, 1:08:13 PM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 46,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/17/2022, 1:08:31 PM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 47,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/17/2022, 1:10:03 PM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 48,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/17/2022, 1:12:03 PM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 49,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/17/2022, 1:25:20 PM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 50,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/17/2022, 1:30:48 PM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 51,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/17/2022, 1:31:27 PM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 52,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/17/2022, 1:34:29 PM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 53,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/17/2022, 2:02:59 PM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 54,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/17/2022, 2:07:11 PM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 55,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/17/2022, 2:20:42 PM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 56,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/17/2022, 2:22:03 PM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 57,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/17/2022, 2:25:27 PM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 58,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/17/2022, 2:26:59 PM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 59,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/17/2022, 2:28:13 PM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 60,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/17/2022, 2:28:28 PM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 61,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/17/2022, 2:29:58 PM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 62,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/17/2022, 2:30:13 PM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 63,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/17/2022, 2:40:33 PM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 64,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/17/2022, 2:40:45 PM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 65,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/17/2022, 2:41:24 PM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 66,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/17/2022, 2:41:37 PM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 67,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/17/2022, 2:41:52 PM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 68,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/17/2022, 2:42:16 PM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 69,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/17/2022, 2:42:27 PM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 70,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/17/2022, 2:53:06 PM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 71,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/17/2022, 2:53:19 PM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 72,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/17/2022, 2:54:16 PM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 73,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/18/2022, 9:34:10 AM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			},
+			{
+				"id": 74,
+				"name": "test",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "5/18/2022, 9:34:23 AM",
+				"custom": {
+					"category": "Test Item",
+					"test": "123",
+					"sellingPrice": 75
+				}
+			}
+		],
+		"settings": {
+			"dailyAmount": 1000,
+			"dailyCooldown": 15000
+		}
+	}
+}

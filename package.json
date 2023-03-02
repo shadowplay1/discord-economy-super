@@ -7,7 +7,8 @@
 	"scripts": {
 		"test": "node ./tests/test.js",
 		"postinstall": "node postinstall.js",
-		"precommit": "bash ./.husky/pre-commit",
+		"precommit": "bash ./.husky/scripts/commit-to-public.sh",
+		"docs:deploy": "bash ./.husky/scripts/deploy-docs.sh",
 		"lint": "eslint ./",
 		"lint:fix": "eslint ./ --fix"
 	},
