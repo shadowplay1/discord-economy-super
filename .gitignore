@@ -1,2 +1,9 @@
+mongodb/economy-test/
+
+src/src/
+mongodb/mongodb/
+typings/typings/
+examples/examples/
+
 *.bak
 *.sw[nop]
