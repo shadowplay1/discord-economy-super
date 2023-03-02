@@ -3,7 +3,6 @@ const { readdirSync } = require('fs')
 const EconomyError = require('./src/classes/util/EconomyError')
 const errors = require('./src/structures/errors')
 
-
 const colors = {
     red: '\x1b[31m',
     cyan: '\x1b[36m',
