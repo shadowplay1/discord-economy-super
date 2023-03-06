@@ -1,0 +1,127 @@
+{
+	"123": {
+		"123": {
+			"money": -1200,
+			"inventory": [],
+			"history": [
+				{
+					"id": 1,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test123",
+					"price": 100,
+					"quantity": 3,
+					"totalPrice": 300,
+					"role": null,
+					"maxAmount": null,
+					"date": "12/30/2022, 2:39:57 AM",
+					"custom": {}
+				},
+				{
+					"id": 2,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test123",
+					"price": 100,
+					"quantity": 3,
+					"totalPrice": 300,
+					"role": null,
+					"maxAmount": null,
+					"date": "12/30/2022, 2:40:35 AM",
+					"custom": {}
+				},
+				{
+					"id": 3,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test123",
+					"price": 100,
+					"quantity": 1,
+					"totalPrice": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "12/30/2022, 2:40:45 AM",
+					"custom": {}
+				},
+				{
+					"id": 4,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test123",
+					"price": 100,
+					"quantity": 1,
+					"totalPrice": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "12/30/2022, 2:40:46 AM",
+					"custom": {}
+				},
+				{
+					"id": 5,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test123",
+					"price": 100,
+					"quantity": 1,
+					"totalPrice": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "12/30/2022, 2:40:47 AM",
+					"custom": {}
+				},
+				{
+					"id": 6,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test123",
+					"price": 100,
+					"quantity": 1,
+					"totalPrice": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "12/30/2022, 2:40:54 AM",
+					"custom": {}
+				},
+				{
+					"id": 7,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test123",
+					"price": 100,
+					"quantity": 1,
+					"totalPrice": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "12/30/2022, 2:40:56 AM",
+					"custom": {}
+				},
+				{
+					"id": 8,
+					"memberID": "123",
+					"guildID": "123",
+					"name": "test123",
+					"price": 100,
+					"quantity": 1,
+					"totalPrice": 100,
+					"role": null,
+					"maxAmount": null,
+					"date": "12/30/2022, 2:40:57 AM",
+					"custom": {}
+				}
+			]
+		},
+		"shop": [
+			{
+				"id": 1,
+				"name": "test123",
+				"price": 100,
+				"message": "You have used this item!",
+				"description": "Very mysterious item.",
+				"maxAmount": null,
+				"role": null,
+				"date": "12/30/2022, 2:35:05 AM",
+				"custom": {}
+			}
+		]
+	}
+}

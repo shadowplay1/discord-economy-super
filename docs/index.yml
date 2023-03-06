@@ -1,0 +1,29 @@
+- name: General
+
+  files:
+    - name: Welcome
+      path: welcome.md
+
+    - name: FAQ
+      path: faq.md
+
+    - name: Migrating to MongoDB
+      path: migrating-to-mongo.md
+
+    - name: Examples
+      path: examples.md
+
+    - name: Configuring Economy
+      path: configuring.md
+
+    - name: Custom Item Data
+      path: custom-data.md
+
+    - name: Global Economy
+      path: global.md
+
+    - name: Updating your code
+      path: updating.md
+
+    - name: Changelog
+      path: changelog.md

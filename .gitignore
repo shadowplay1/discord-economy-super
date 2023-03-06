@@ -1,9 +1,23 @@
-mongodb/economy-test/
+.git.bak/
 
+node_modules/
+.vscode/
+
+des/
+discord-economy-super/
+docs-repo/
+
+examples/examples/
 src/src/
 mongodb/mongodb/
 typings/typings/
-examples/examples/
 
-*.bak
+docs/*.json
+docs/mongo/*.json
+
+fileUtils/
+aa/
+
+tmp/
+
 *.sw[nop]

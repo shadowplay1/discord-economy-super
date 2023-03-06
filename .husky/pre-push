@@ -1,0 +1,29 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+PUBLIC_REPO_DIR_NAME="des"
+
+branch=$(git rev-parse --abbrev-ref HEAD)
+echo "Pushing in a public repository to the branch '$branch'..."
+
+
+cd "./${PUBLIC_REPO_DIR_NAME}"
+
+
+is_pushed_into_public() {
+	git push -u origin $branch > /dev/null 2>&1
+}
+
+
+if ! is_pushed_into_public; then
+	echo
+	echo "[!] Failed to push to the '$branch' branch."
+	echo '[!] See the details above.'
+
+	exit 1
+fi
+
+echo "Pushed to the branch '$branch' successfully!"
+echo
+
+exit 0

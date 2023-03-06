@@ -1,0 +1,73 @@
+const { readdirSync, writeFileSync } = require('fs')
+
+const types = ['json', 'mongodb']
+const sources = ['src', 'typings']
+
+const baseDirectories = {
+	classes: {
+		guild: [],
+		user: [],
+		util: [],
+		root: []
+	},
+
+	managers: []
+}
+
+const fileTexts = {}
+const directories = {}
+
+for (const source of sources) {
+	fileTexts[source] = {
+		json: '',
+		mongodb: ''
+	}
+
+	directories[source] = {}
+
+	for (const type of types) {
+		directories[type] = type == 'json' ? {
+			...baseDirectories
+		} : {
+			cached: [],
+			...baseDirectories
+		}
+
+		if (type == 'json') {
+			for (const dir in directories.json.classes) {
+				if (dir !== 'root') {
+					const classesFolder = readdirSync(`./src/classes/${dir}`).filter(file => !file.startsWith('.'))
+					directories.json.classes[dir] = classesFolder
+				}
+			}
+
+			for (const dir in directories.json) {
+				if (dir !== 'classes') {
+					directories.json[dir] = readdirSync(`./src/${dir}`).filter(file => !file.startsWith('.'))
+				}
+			}
+
+			directories.json.classes.root = readdirSync('./src/classes').filter(d => d.includes('.'))
+		}
+
+		if (type == 'mongodb') {
+			for (const dir in directories.mongodb.classes) {
+				if (dir !== 'root') {
+					const classesFolder = readdirSync(`./mongodb/src/classes/${dir}`).filter(file => !file.startsWith('.'))
+					directories.mongodb.classes[dir] = classesFolder
+				}
+			}
+
+			for (const dir in directories.mongodb) {
+				if (dir !== 'classes') {
+					directories.mongodb[dir] = readdirSync(`./mongodb/src/${dir}`).filter(file => !file.startsWith('.'))
+				}
+			}
+
+			directories.mongodb.classes.root = readdirSync('./mongodb/src/classes').filter(d => d.includes('.'))
+		}
+	}
+}
+
+// console.log(fileTexts, directories.mongodb)
+console.log(directories)
