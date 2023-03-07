@@ -27,6 +27,7 @@ module.exports = {
     Emitter: require('./src/classes/util/Emitter'),
     Logger: require('./src/classes/util/Logger'),
     Currency: require('./src/classes/Currency'),
+    DotParser: require('./src/classes/DotParser'),
     EconomyGuild: require('./src/classes/EconomyGuild'),
     EconomyUser: require('./src/classes/EconomyUser'),
     EmptyEconomyGuild: require('./src/classes/EmptyEconomyGuild'),
