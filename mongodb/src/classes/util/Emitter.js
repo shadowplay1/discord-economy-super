@@ -62,5 +62,5 @@ module.exports = Emitter
  * 'customCurrencySet' | 'customCurrencyAdd' | 'customCurrencySubtract' |
  * 'shopItemAdd' | 'shopItemEdit' | 'shopItemBuy' |
  * 'shopItemUse' | 'shopClear' |
- * 'ready' | 'destroy'} EconomyEvents
+ * 'ready' | 'destroy'} EconomyEvents Economy events.
  */
