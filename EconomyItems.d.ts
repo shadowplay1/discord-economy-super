@@ -2,10 +2,10 @@
 // This file was generated automatically and it's not recommended to edit it yourself.
 				
 // All of these items can be imported using:
-// `const { something } = require('discord-economy-super')`
+// `const { something } = require('discord-economy-super/EconomyItems')`
 
 // or in TypeScript (all the economy types and interfaces available):
-// `import { something } = from 'discord-economy-super'`
+// `import { something } = from 'discord-economy-super/EconomyItems'`
 		
 // Any of these items and types may be used in any way. Enjoy!
 
@@ -53,7 +53,6 @@ export import EditedItemData = require('./typings/interfaces/EditedItemData')
 export import ErrorHandlerConfiguration = require('./typings/interfaces/ErrorHandlerConfiguration')
 export import ErrorHandlerOptions = require('./typings/interfaces/ErrorHandlerOptions')
 export import HistoryData = require('./typings/interfaces/HistoryData')
-export import HistoryData.ts = require('./typings/interfaces/HistoryData.ts')
 export import If = require('./typings/interfaces/If')
 export import InventoryData = require('./typings/interfaces/InventoryData')
 export import ItemBuyData = require('./typings/interfaces/ItemBuyData')

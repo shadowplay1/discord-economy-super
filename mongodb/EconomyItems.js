@@ -2,10 +2,10 @@
 // This file was generated automatically and it's not recommended to edit it yourself.
 
 // All of these items can be imported using:
-// `const { something } = require('discord-economy-super/mongodb')`
+// `const { something } = require('discord-economy-super/mongodb/EconomyItems')`
 
 // or in TypeScript (all the economy types and interfaces available):
-// `import { something } = from 'discord-economy-super/mongodb'`
+// `import { something } = from 'discord-economy-super/mongodb/EconomyItems'`
 
 // Any of these items may be used in any way. Enjoy!
 
@@ -27,7 +27,6 @@ module.exports = {
     Emitter: require('./src/classes/util/Emitter'),
     Logger: require('./src/classes/util/Logger'),
     Currency: require('./src/classes/Currency'),
-    DotParser: require('./src/classes/DotParser'),
     EconomyGuild: require('./src/classes/EconomyGuild'),
     EconomyUser: require('./src/classes/EconomyUser'),
     EmptyEconomyGuild: require('./src/classes/EmptyEconomyGuild'),
