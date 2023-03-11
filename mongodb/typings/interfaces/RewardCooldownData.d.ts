@@ -11,6 +11,11 @@ declare interface RewardCooldownData {
      * A formatted string with the remaining time until the cooldown ends.
      */
     pretty: string
+
+	/**
+	 * Cooldown end timestamp.
+	 */
+	timestamp: number
 }
 
 export = RewardCooldownData

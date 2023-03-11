@@ -1,5 +1,8 @@
 mongodb/economy-test/
 
+des/
+des-bak/
+
 src/src/
 mongodb/mongodb/
 typings/typings/

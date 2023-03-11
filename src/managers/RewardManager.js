@@ -149,15 +149,17 @@ class RewardManager {
         else reward = defaultDailyReward
 
         const userCooldown = this.cooldowns.getDaily(memberID, guildID)
-        const cooldownEnd = cooldown - (Date.now() - userCooldown)
+        const cooldownEndTimestamp = cooldown - (Date.now() - userCooldown)
 
-        if (userCooldown !== null && cooldownEnd > 0) {
+        if (userCooldown !== null && cooldownEndTimestamp > 0) {
             return {
                 type: 'daily',
                 status: false,
+
                 cooldown: {
-                    time: parse(cooldownEnd),
-                    pretty: ms(cooldownEnd)
+                    time: parse(cooldownEndTimestamp),
+                    pretty: ms(cooldownEndTimestamp),
+                    timestamp: cooldownEndTimestamp
                 },
 
                 reward: null,
@@ -211,15 +213,17 @@ class RewardManager {
         else reward = defaultWorkReward
 
         const userCooldown = this.cooldowns.getWork(memberID, guildID)
-        const cooldownEnd = cooldown - (Date.now() - userCooldown)
+        const cooldownEndTimestamp = cooldown - (Date.now() - userCooldown)
 
-        if (userCooldown !== null && cooldownEnd > 0) {
+        if (userCooldown !== null && cooldownEndTimestamp > 0) {
             return {
                 type: 'work',
                 status: false,
+
                 cooldown: {
-                    time: parse(cooldownEnd),
-                    pretty: ms(cooldownEnd),
+                    time: parse(cooldownEndTimestamp),
+                    pretty: ms(cooldownEndTimestamp),
+                    timestamp: cooldownEndTimestamp,
                 },
 
                 reward: null,
@@ -273,15 +277,17 @@ class RewardManager {
         else reward = defaultWeeklyReward
 
         const userCooldown = this.cooldowns.getWeekly(memberID, guildID)
-        const cooldownEnd = cooldown - (Date.now() - userCooldown)
+        const cooldownEndTimestamp = cooldown - (Date.now() - userCooldown)
 
-        if (userCooldown !== null && cooldownEnd > 0) {
+        if (userCooldown !== null && cooldownEndTimestamp > 0) {
             return {
                 type: 'weekly',
                 status: false,
+
                 cooldown: {
-                    time: parse(cooldownEnd),
-                    pretty: ms(cooldownEnd),
+                    time: parse(cooldownEndTimestamp),
+                    pretty: ms(cooldownEndTimestamp),
+                    timestamp: cooldownEndTimestamp,
                 },
 
                 reward: null,
@@ -324,6 +330,7 @@ class RewardManager {
  * @typedef {object} CooldownData
  * @property {TimeData} time A time object with the remaining time until the cooldown ends.
  * @property {string} pretty A formatted string with the remaining time until the cooldown ends.
+ * @property {number} timestamp Cooldown end timestamp.
  */
 
 /**

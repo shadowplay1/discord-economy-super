@@ -155,6 +155,7 @@ module.exports = Rewards
  * @typedef {object} CooldownData
  * @property {TimeData} time A time object with the remaining time until the cooldown ends.
  * @property {string} pretty A formatted string with the remaining time until the cooldown ends.
+ * @property {number} timestamp Cooldown end timestamp.
  */
 
 /**

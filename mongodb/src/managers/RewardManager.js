@@ -154,15 +154,17 @@ class RewardManager extends Emitter {
         else reward = defaultDailyReward
 
         const userCooldown = await this.database.get(`${guildID}.${memberID}.dailyCooldown`) || 0
-        const cooldownEnd = cooldown - (Date.now() - userCooldown)
+        const cooldownEndTimestamp = cooldown - (Date.now() - userCooldown)
 
-        if (userCooldown !== null && cooldownEnd > 0) {
+        if (userCooldown !== null && cooldownEndTimestamp > 0) {
             return {
                 type: 'daily',
                 status: false,
+
                 cooldown: {
-                    time: parse(cooldownEnd),
-                    pretty: ms(cooldownEnd)
+                    time: parse(cooldownEndTimestamp),
+                    pretty: ms(cooldownEndTimestamp),
+                    timestamp: cooldownEndTimestamp
                 },
 
                 reward: null,
@@ -222,15 +224,17 @@ class RewardManager extends Emitter {
         else reward = defaultWorkReward
 
         const userCooldown = await this.database.get(`${guildID}.${memberID}.workCooldown`) || 0
-        const cooldownEnd = cooldown - (Date.now() - userCooldown)
+        const cooldownEndTimestamp = cooldown - (Date.now() - userCooldown)
 
-        if (userCooldown !== null && cooldownEnd > 0) {
+        if (userCooldown !== null && cooldownEndTimestamp > 0) {
             return {
                 type: 'work',
                 status: false,
+
                 cooldown: {
-                    time: parse(cooldownEnd),
-                    pretty: ms(cooldownEnd),
+                    time: parse(cooldownEndTimestamp),
+                    pretty: ms(cooldownEndTimestamp),
+                    timestamp: cooldownEndTimestamp,
                 },
 
                 reward: null,
@@ -290,15 +294,17 @@ class RewardManager extends Emitter {
         else reward = defaultWeeklyReward
 
         const userCooldown = await this.database.get(`${guildID}.${memberID}.weeklyCooldown`) || 0
-        const cooldownEnd = cooldown - (Date.now() - userCooldown)
+        const cooldownEndTimestamp = cooldown - (Date.now() - userCooldown)
 
-        if (userCooldown !== null && cooldownEnd > 0) {
+        if (userCooldown !== null && cooldownEndTimestamp > 0) {
             return {
                 type: 'weekly',
                 status: false,
+
                 cooldown: {
-                    time: parse(cooldownEnd),
-                    pretty: ms(cooldownEnd),
+                    time: parse(cooldownEndTimestamp),
+                    pretty: ms(cooldownEndTimestamp),
+                    timestamp: cooldownEndTimestamp,
                 },
 
                 reward: null,
@@ -346,6 +352,7 @@ class RewardManager extends Emitter {
  * @typedef {object} CooldownData
  * @property {TimeData} time A time object with the remaining time until the cooldown ends.
  * @property {string} pretty A formatted string with the remaining time until the cooldown ends.
+ * @property {number} timestamp Cooldown end timestamp.
  */
 
 /**
