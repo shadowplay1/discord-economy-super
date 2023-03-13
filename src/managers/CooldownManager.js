@@ -1,5 +1,8 @@
-const EconomyError = require('../classes/util/EconomyError')
-const errors = require('../structures/errors')
+const EconomyError = require('./classes/util/EconomyError')
+const errors = require('./structures/errors')
+
+const ms = require('../../structures/ms')
+const parse = require('../structures/timeParser.js')
 
 
 /**
@@ -40,8 +43,8 @@ class CooldownManager {
 
     /**
      * Gets a user's daily cooldown.
-     * @param {string} memberID Member ID
-     * @param {string} guildID Guild ID
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
      * @returns {number} Cooldown end timestamp
      */
     getDaily(memberID, guildID) {
@@ -59,8 +62,8 @@ class CooldownManager {
 
     /**
      * Gets a user's work cooldown.
-     * @param {string} memberID Member ID
-     * @param {string} guildID Guild ID
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
      * @returns {number} Cooldown end timestamp
      */
     getWork(memberID, guildID) {
@@ -78,8 +81,8 @@ class CooldownManager {
 
     /**
      * Gets a user's daily cooldown.
-     * @param {string} memberID Member ID
-     * @param {string} guildID Guild ID
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
      * @returns {number} Cooldown end timestamp
      */
     getWeekly(memberID, guildID) {
@@ -95,10 +98,63 @@ class CooldownManager {
         return cooldown
     }
 
+
+    /**
+     * Gets all the user's cooldowns.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @returns {CooldownsTimeObject} User's cooldowns object.
+     */
+    getAll(memberID, guildID) {
+        const rawUserObject = this.database.fetch(`${guildID}.${memberID}`)
+        const result = {}
+
+        const rawCooldownsObject = {
+            daily: rawUserObject?.dailyCooldown || 0,
+            work: rawUserObject?.workCooldown || 0,
+            weekly: rawUserObject?.weeklyCooldown || 0,
+        }
+
+        for (const [rewardType, userCooldown] of Object.entries(rawCooldownsObject)) {
+            const rewardCooldown = this._rewardCooldowns[rewardType]
+            const cooldownEndTimestamp = rewardCooldown - (Date.now() - userCooldown)
+
+            const cooldownObject = userCooldown ? {
+                time: parse(cooldownEndTimestamp),
+                pretty: ms(cooldownEndTimestamp),
+                timestamp: cooldownEndTimestamp
+            } : null
+
+            result[rewardType] = cooldownObject
+        }
+
+        return result
+    }
+
+    /**
+     * Clears all the user's cooldowns.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @returns {boolean} If all cooldowns were cleared successfully: true, else: false.
+     */
+    clearAll(memberID, guildID) {
+        const results = [
+            this.clearDaily(memberID, guildID),
+            this.clearWork(memberID, guildID),
+            this.clearWeekly(memberID, guildID)
+        ]
+
+        if (results.some(result => !result)) {
+            return false
+        }
+
+        return true
+    }
+
     /**
      * Clears user's daily cooldown.
-     * @param {string} memberID Member ID
-     * @param {string} guildID Guild ID
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
      * @returns {boolean} If cleared: true; else: false
      */
     clearDaily(memberID, guildID) {
@@ -115,8 +171,8 @@ class CooldownManager {
 
     /**
      * Clears user's work cooldown.
-     * @param {string} memberID Member ID
-     * @param {string} guildID Guild ID
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
      * @returns {boolean} If cleared: true; else: false
      */
     clearWork(memberID, guildID) {
@@ -133,8 +189,8 @@ class CooldownManager {
 
     /**
      * Clears user's weekly cooldown.
-     * @param {string} memberID Member ID
-     * @param {string} guildID Guild ID
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
      * @returns {boolean} If cleared: true; else: false
      */
     clearWeekly(memberID, guildID) {

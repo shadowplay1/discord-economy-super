@@ -3,6 +3,8 @@ const ms = require('../structures/ms')
 const EconomyError = require('../classes/util/EconomyError')
 const errors = require('../structures/errors')
 
+const parse = require('../structures/timeParser.js')
+
 const BalanceManager = require('./BalanceManager')
 const CooldownManager = require('./CooldownManager')
 
@@ -12,18 +14,10 @@ const RewardType = {
     WEEKLY: 2
 }
 
-const parse = ms => ({
-    days: Math.floor(ms / 86400000),
-    hours: Math.floor(ms / 3600000 % 24),
-    minutes: Math.floor(ms / 60000 % 60),
-    seconds: Math.floor(ms / 1000 % 60),
-    milliseconds: Math.floor(ms % 1000)
-})
-
 
 /**
-* Reward manager methods class.
-*/
+ * Reward manager methods class.
+ */
 class RewardManager {
 
     /**
@@ -154,7 +148,7 @@ class RewardManager {
         if (userCooldown !== null && cooldownEndTimestamp > 0) {
             return {
                 type: 'daily',
-                status: false,
+                claimed: false,
 
                 cooldown: {
                     time: parse(cooldownEndTimestamp),
@@ -172,7 +166,7 @@ class RewardManager {
 
         return {
             type: 'daily',
-            status: true,
+            claimed: true,
             cooldown: null,
             reward,
             defaultReward: defaultDailyReward
@@ -218,7 +212,7 @@ class RewardManager {
         if (userCooldown !== null && cooldownEndTimestamp > 0) {
             return {
                 type: 'work',
-                status: false,
+                claimed: false,
 
                 cooldown: {
                     time: parse(cooldownEndTimestamp),
@@ -236,7 +230,7 @@ class RewardManager {
 
         return {
             type: 'work',
-            status: true,
+            claimed: true,
             cooldown: null,
             reward,
             defaultReward: defaultWorkReward
@@ -282,7 +276,7 @@ class RewardManager {
         if (userCooldown !== null && cooldownEndTimestamp > 0) {
             return {
                 type: 'weekly',
-                status: false,
+                claimed: false,
 
                 cooldown: {
                     time: parse(cooldownEndTimestamp),
@@ -300,7 +294,7 @@ class RewardManager {
 
         return {
             type: 'weekly',
-            status: true,
+            claimed: true,
             cooldown: null,
             reward,
             defaultReward: defaultWeeklyReward
@@ -311,7 +305,7 @@ class RewardManager {
 /**
  * @typedef {object} RewardData
  * @property {'daily' | 'work' | 'weekly'} type Type of the operation.
- * @property {boolean} status The status of operation.
+ * @property {boolean} claimed Whether the reward was claimed.
  * @property {CooldownData} cooldown Cooldown object.
  * @property {number} reward Amount of money that the user received.
  * @property {number} defaultReward Reward that was specified in a module configuration.

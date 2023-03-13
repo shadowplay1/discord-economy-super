@@ -15,9 +15,9 @@ declare interface RewardObject<RewardArray extends boolean = boolean, RewardObje
     type: Reward<RewardObjectType>
 
     /**
-     * The status of the operation.
+     * Whether the reward was claimed.
      */
-    status: boolean
+    claimed: boolean
 
     /**
      * Cooldown object.

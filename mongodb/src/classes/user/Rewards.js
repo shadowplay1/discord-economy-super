@@ -136,7 +136,7 @@ module.exports = Rewards
 /**
  * @typedef {object} RewardData
  * @property {'daily' | 'work' | 'weekly'} type Type of the operation.
- * @property {boolean} status The status of operation.
+ * @property {boolean} claimed Whether the reward was claimed.
  * @property {CooldownData} cooldown Cooldown object.
  * @property {number} reward Amount of money that the user received.
  * @property {number} defaultReward Reward that was specified in a module configuration.

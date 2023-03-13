@@ -1,9 +1,9 @@
 const ms = require('../structures/ms')
 
-const Emitter = require('../classes/util/Emitter')
-
 const EconomyError = require('../classes/util/EconomyError')
 const errors = require('../structures/errors')
+
+const parse = require('../structures/timeParser.js')
 
 const BalanceManager = require('./BalanceManager')
 const CooldownManager = require('./CooldownManager')
@@ -14,28 +14,26 @@ const RewardType = {
     WEEKLY: 2
 }
 
-const parse = ms => ({
-    days: Math.floor(ms / 86400000),
-    hours: Math.floor(ms / 3600000 % 24),
-    minutes: Math.floor(ms / 60000 % 60),
-    seconds: Math.floor(ms / 1000 % 60),
-    milliseconds: Math.floor(ms % 1000)
-})
-
 
 /**
-* Reward manager methods class.
-* @extends {Emitter}
-*/
-class RewardManager extends Emitter {
+ * Reward manager methods class.
+ */
+class RewardManager {
+    
     /**
-     * Reward Manager.
-     * @param {object} options Economy configuration.
-     * @param {DatabaseManager} database Database manager.
-     * @param {CacheManager} cache Cache manager.
-     */
+      * Reward Manager.
+      * @param {object} options Economy configuration.
+      * @param {string} options.storagePath Full path to a JSON file. Default: './storage.json'.
+      * @param {number} options.dailyCooldown Cooldown for Daily Command (in ms). Default: 24 hours (60000 * 60 * 24 ms)
+      * @param {number} options.workCooldown Cooldown for Work Command (in ms). Default: 1 hour (60000 * 60 ms)
+      * @param {number} options.dailyAmount Amount of money for Daily Command. Default: 100.
+      * @param {number} options.weeklyCooldown
+      * Cooldown for Weekly Command (in ms). Default: 7 days (60000 * 60 * 24 * 7 ms)
+      * @param {number} options.weeklyAmount Amount of money for Weekly Command. Default: 1000.
+      * @param {number | number[]} options.workAmount Amount of money for Work Command. Default: [10, 50].
+      * @param {DatabaseManager} database Database manager.
+     */	
     constructor(options, database, cache) {
-        super()
 
         /**
          * Economy configuration.
@@ -159,7 +157,7 @@ class RewardManager extends Emitter {
         if (userCooldown !== null && cooldownEndTimestamp > 0) {
             return {
                 type: 'daily',
-                status: false,
+                claimed: false,
 
                 cooldown: {
                     time: parse(cooldownEndTimestamp),
@@ -182,7 +180,7 @@ class RewardManager extends Emitter {
 
         return {
             type: 'daily',
-            status: true,
+            claimed: true,
             cooldown: null,
             reward,
             defaultReward: defaultDailyReward
@@ -229,7 +227,7 @@ class RewardManager extends Emitter {
         if (userCooldown !== null && cooldownEndTimestamp > 0) {
             return {
                 type: 'work',
-                status: false,
+                claimed: false,
 
                 cooldown: {
                     time: parse(cooldownEndTimestamp),
@@ -252,7 +250,7 @@ class RewardManager extends Emitter {
 
         return {
             type: 'work',
-            status: true,
+            claimed: true,
             cooldown: null,
             reward,
             defaultReward: defaultWorkReward
@@ -299,7 +297,7 @@ class RewardManager extends Emitter {
         if (userCooldown !== null && cooldownEndTimestamp > 0) {
             return {
                 type: 'weekly',
-                status: false,
+                claimed: false,
 
                 cooldown: {
                     time: parse(cooldownEndTimestamp),
@@ -322,7 +320,7 @@ class RewardManager extends Emitter {
 
         return {
             type: 'weekly',
-            status: true,
+            claimed: true,
             cooldown: null,
             reward,
             defaultReward: defaultWeeklyReward
@@ -333,7 +331,7 @@ class RewardManager extends Emitter {
 /**
  * @typedef {object} RewardData
  * @property {'daily' | 'work' | 'weekly'} type Type of the operation.
- * @property {boolean} status The status of operation.
+ * @property {boolean} claimed Whether the reward was claimed.
  * @property {CooldownData} cooldown Cooldown object.
  * @property {number} reward Amount of money that the user received.
  * @property {number} defaultReward Reward that was specified in a module configuration.

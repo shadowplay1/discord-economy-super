@@ -14,5 +14,8 @@ try {
 		console.log()
 	}
 } catch {
-	console.log('\x1b[91mFailed to open the project\'s `package.json` file. Are you running the module correctly?\x1b[32m')
+	console.log(
+		'\x1b[91mFailed to open the project\'s `package.json` file. ' +
+		'Are you running the module correctly?\x1b[32m'
+	)
 }

@@ -1,12 +1,5 @@
 const ms = require('../../structures/ms')
-
-const parse = ms => ({
-    days: Math.floor(ms / 86400000),
-    hours: Math.floor(ms / 3600000 % 24),
-    minutes: Math.floor(ms / 60000 % 60),
-    seconds: Math.floor(ms / 1000 % 60),
-    milliseconds: Math.floor(ms % 1000)
-})
+const parse = require('../structures/timeParser.js')
 
 class Cooldowns {
 
@@ -106,26 +99,45 @@ class Cooldowns {
     }
 
     /**
-     * Gets all user's cooldowns
+     * Gets all the user's cooldowns.
      * @returns {Promise<CooldownsTimeObject>} User's cooldowns object.
      */
-    getAll() {
+    async getAll() {
         const result = {}
         const rawCooldownsObject = this._cooldowns
 
         for (const [rewardType, userCooldown] of Object.entries(rawCooldownsObject)) {
             const rewardCooldown = this._rewardCooldowns[rewardType]
-            const cooldownEnd = rewardCooldown - (Date.now() - userCooldown)
+            const cooldownEndTimestamp = rewardCooldown - (Date.now() - userCooldown)
 
             const cooldownObject = userCooldown ? {
-                time: parse(cooldownEnd),
-                pretty: ms(cooldownEnd)
+                time: parse(cooldownEndTimestamp),
+                pretty: ms(cooldownEndTimestamp),
+                timestamp: cooldownEndTimestamp
             } : null
 
             result[rewardType] = cooldownObject
         }
 
         return result
+    }
+
+    /**
+     * Clears all the user's cooldowns.
+     * @returns {Promise<boolean>} If all cooldowns were cleared successfully: true, else: false.
+     */
+    async clearAll() {
+        const results = [
+            await this.clearDaily(),
+            await this.clearWork(),
+            await this.clearWeekly()
+        ]
+
+        if (results.some(result => !result)) {
+            return false
+        }
+
+        return true
     }
 
     /**
@@ -248,6 +260,7 @@ module.exports = Cooldowns
  * @typedef {object} CooldownData
  * @property {TimeData} time A time object with the remaining time until the cooldown ends.
  * @property {string} pretty A formatted string with the remaining time until the cooldown ends.
+ * @property {number} timestamp Cooldown end timestamp.
  */
 
 /**

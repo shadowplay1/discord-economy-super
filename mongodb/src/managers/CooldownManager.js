@@ -1,6 +1,9 @@
 const EconomyError = require('../classes/util/EconomyError')
 const errors = require('../structures/errors')
 
+const ms = require('../../structures/ms')
+const parse = require('../structures/timeParser.js')
+
 
 /**
 * Cooldown manager methods class.
@@ -40,8 +43,8 @@ class CooldownManager {
 
     /**
      * Gets a user's daily cooldown.
-     * @param {string} memberID Member ID
-     * @param {string} guildID Guild ID
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
      * @returns {Promise<number>} Cooldown end timestamp
      */
     async getDaily(memberID, guildID) {
@@ -59,8 +62,8 @@ class CooldownManager {
 
     /**
      * Gets a user's work cooldown.
-     * @param {string} memberID Member ID
-     * @param {string} guildID Guild ID
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
      * @returns {Promise<number>} Cooldown end timestamp
      */
     async getWork(memberID, guildID) {
@@ -78,8 +81,8 @@ class CooldownManager {
 
     /**
      * Gets a user's daily cooldown.
-     * @param {string} memberID Member ID
-     * @param {string} guildID Guild ID
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
      * @returns {Promise<number>} Cooldown end timestamp
      */
     async getWeekly(memberID, guildID) {
@@ -96,9 +99,61 @@ class CooldownManager {
     }
 
     /**
+     * Gets all the user's cooldowns.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @returns {Promise<CooldownsTimeObject>} User's cooldowns object.
+     */
+    async getAll(memberID, guildID) {
+        const rawUserObject = await this.database.fetch(`${guildID}.${memberID}`)
+        const result = {}
+
+        const rawCooldownsObject = {
+            daily: rawUserObject?.dailyCooldown || 0,
+            work: rawUserObject?.workCooldown || 0,
+            weekly: rawUserObject?.weeklyCooldown || 0,
+        }
+
+        for (const [rewardType, userCooldown] of Object.entries(rawCooldownsObject)) {
+            const rewardCooldown = this._rewardCooldowns[rewardType]
+            const cooldownEndTimestamp = rewardCooldown - (Date.now() - userCooldown)
+
+            const cooldownObject = userCooldown ? {
+                time: parse(cooldownEndTimestamp),
+                pretty: ms(cooldownEndTimestamp),
+                timestamp: cooldownEndTimestamp
+            } : null
+
+            result[rewardType] = cooldownObject
+        }
+
+        return result
+    }
+
+    /**
+     * Clears all the user's cooldowns.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @returns {Promise<boolean>} If all cooldowns were cleared successfully: true, else: false.
+     */
+    async clearAll(memberID, guildID) {
+        const results = [
+            await this.clearDaily(memberID, guildID),
+            await this.clearWork(memberID, guildID),
+            await this.clearWeekly(memberID, guildID)
+        ]
+
+        if (results.some(result => !result)) {
+            return false
+        }
+
+        return true
+    }
+
+    /**
      * Clears user's daily cooldown.
-     * @param {string} memberID Member ID
-     * @param {string} guildID Guild ID
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
      * @returns {Promise<boolean>} If cleared: true; else: false
      */
     async clearDaily(memberID, guildID) {
@@ -122,8 +177,8 @@ class CooldownManager {
 
     /**
      * Clears user's work cooldown.
-     * @param {string} memberID Member ID
-     * @param {string} guildID Guild ID
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
      * @returns {Promise<boolean>} If cleared: true; else: false
      */
     async clearWork(memberID, guildID) {
@@ -147,8 +202,8 @@ class CooldownManager {
 
     /**
      * Clears user's weekly cooldown.
-     * @param {string} memberID Member ID
-     * @param {string} guildID Guild ID
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
      * @returns {Promise<boolean>} If cleared: true; else: false
      */
     async clearWeekly(memberID, guildID) {
@@ -176,3 +231,11 @@ class CooldownManager {
  * @type {CooldownManager}
  */
 module.exports = CooldownManager
+
+
+/**
+ * @typedef {object} CooldownsTimeObject
+ * @property {CooldownData} daily Cooldown for Daily Command.
+ * @property {CooldownData} work Cooldown for Work Command.
+ * @property {CooldownData} weekly Cooldown for Weekly Command.
+ */
