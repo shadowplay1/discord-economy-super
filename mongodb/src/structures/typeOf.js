@@ -11,7 +11,7 @@ const typeOf = input => {
     }
 
     if (input == null || input == undefined || (typeof input == 'number' && isNaN(input))) {
-        return String(input)
+        return `${input}`
     }
 
     return input.constructor.name

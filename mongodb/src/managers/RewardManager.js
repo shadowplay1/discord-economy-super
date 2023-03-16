@@ -11,7 +11,9 @@ const CooldownManager = require('./CooldownManager')
 const RewardType = {
     DAILY: 0,
     WORK: 1,
-    WEEKLY: 2
+    WEEKLY: 2,
+    MONTHLY: 3,
+    HOURLY: 4
 }
 
 
@@ -19,20 +21,20 @@ const RewardType = {
  * Reward manager methods class.
  */
 class RewardManager {
-    
+
     /**
       * Reward Manager.
       * @param {object} options Economy configuration.
       * @param {string} options.storagePath Full path to a JSON file. Default: './storage.json'.
       * @param {number} options.dailyCooldown Cooldown for Daily Command (in ms). Default: 24 hours (60000 * 60 * 24 ms)
       * @param {number} options.workCooldown Cooldown for Work Command (in ms). Default: 1 hour (60000 * 60 ms)
-      * @param {number} options.dailyAmount Amount of money for Daily Command. Default: 100.
+      * @param {number} options.dailyAmount Amount of money for Daily Reward. Default: 100.
       * @param {number} options.weeklyCooldown
       * Cooldown for Weekly Command (in ms). Default: 7 days (60000 * 60 * 24 * 7 ms)
-      * @param {number} options.weeklyAmount Amount of money for Weekly Command. Default: 1000.
-      * @param {number | number[]} options.workAmount Amount of money for Work Command. Default: [10, 50].
+      * @param {number} options.weeklyAmount Amount of money for Weekly Reward. Default: 1000.
+      * @param {number | number[]} options.workAmount Amount of money for Work Reward. Default: [10, 50].
       * @param {DatabaseManager} database Database manager.
-     */	
+     */
     constructor(options, database, cache) {
 
         /**

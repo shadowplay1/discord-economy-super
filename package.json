@@ -1,6 +1,6 @@
 {
 	"name": "discord-economy-super",
-	"version": "1.7.5",
+	"version": "1.7.6-dev.2105fd9.1678948994661",
 	"types": "./typings/Economy.d.ts",
 	"description": "Easy and customizable economy module for your Discord Bot.",
 	"main": "index.js",
@@ -10,6 +10,7 @@
 		"precommit": "bash ./.husky/scripts/commit-to-public.sh",
 		"docs:deploy": "bash ./.husky/scripts/deploy-docs.sh",
 		"deploy": "bash ./.husky/scripts/commit-and-deploy.sh",
+		"publish": "bash ./publish.sh && bash ./.husky/scripts/deploy-docs.sh",
 		"lint": "eslint ./",
 		"lint:fix": "eslint ./ --fix"
 	},

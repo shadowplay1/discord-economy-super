@@ -339,11 +339,11 @@ class BalanceManager extends Emitter {
         }
 
         if (typeof senderMemberID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.senderMemberID + typeof memberID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidTypes.senderMemberID + typeof senderMemberID, 'INVALID_TYPE')
         }
 
         if (typeof receiverMemberID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.receiverMemberID + typeof memberID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidTypes.receiverMemberID + typeof receiverMemberID, 'INVALID_TYPE')
         }
 
         this.add(amount, receiverMemberID, guildID, receivingReason || 'receiving money from user')

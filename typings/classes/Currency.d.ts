@@ -3,8 +3,12 @@ import CurrencyManager from '../managers/CurrencyManager'
 import { CurrencyObject, CurrencyPropertyType } from '../interfaces/CurrencyObject'
 import CustomItemData from '../interfaces/CustomItemData'
 
+import TransferingOptions from '../interfaces/TransferingOptions'
+import TransferingResult from '../interfaces/TransferingResult'
+
 import EconomyConfiguration from '../interfaces/EconomyConfiguration'
 import DatabaseManager from '../managers/DatabaseManager'
+
 
 /**
  * Currency class.
@@ -135,6 +139,13 @@ declare class Currency<T extends object = any> {
      * @returns {number} Amount of money that was subtracted.
      */
     public subtractBalance(amount: number, memberID: string, reason: string): number
+
+	/**
+	 * Transfers the currency to specified user
+     * @param {CurrencyTransferOption} Currency transfering options.
+     * @returns {TransferingResult} Currency transfering result.
+     */
+	public transfer(options: TransferingOptions): TransferingResult
 
 	/**
 	 * Saves the currency object in database.

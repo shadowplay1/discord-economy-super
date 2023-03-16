@@ -6,7 +6,11 @@ import CurrencyManager from '../managers/CurrencyManager'
 import { CurrencyObject, CurrencyPropertyType } from '../interfaces/CurrencyObject'
 import CustomItemData from '../interfaces/CustomItemData'
 
+import TransferingOptions from '../interfaces/TransferingOptions'
+import TransferingResult from '../interfaces/TransferingResult'
+
 import EconomyConfiguration from '../interfaces/EconomyConfiguration'
+
 
 /**
  * Currency class.
@@ -115,11 +119,11 @@ declare class Currency<T extends object = any> {
      */
     public setBalance(amount: number, memberID: string, reason: string): Promise<number>
 
-	/**
-	 * Sets the currency for specified member.
-	 * @param {string} memberID Member ID.
-	 * @returns {Promise<number>} Member's balance.
-	 */
+    /**
+     * Sets the currency for specified member.
+     * @param {string} memberID Member ID.
+     * @returns {Promise<number>} Member's balance.
+     */
     public getBalance(memberID: string): Promise<number>
 
     /**
@@ -140,11 +144,18 @@ declare class Currency<T extends object = any> {
      */
     public subtractBalance(amount: number, memberID: string, reason: string): Promise<number>
 
-	/**
-	 * Saves the currency object in database.
-	 * @returns {Promise<Currency>} Currency instance.
-	 */
-	public save(): Promise<Currency>
+    /**
+     * Transfers the currency to specified user
+     * @param {CurrencyTransferOption} Currency transfering options.
+     * @returns {Promise<TransferingResult>} Currency transfering result.
+     */
+    public transfer(options: TransferingOptions): Promise<TransferingResult>
+
+    /**
+     * Saves the currency object in database.
+     * @returns {Promise<Currency>} Currency instance.
+     */
+    public save(): Promise<Currency>
 
     /**
      * Converts the currency object to string.

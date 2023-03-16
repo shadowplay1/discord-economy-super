@@ -94,15 +94,15 @@ class Settings {
  * @property {string} [storagePath='./storage.json'] Full path to a JSON file. Default: './storage.json'
  * @property {boolean} [checkStorage=true] Checks the if database file exists and if it has errors. Default: true
  * @property {number} [dailyCooldown=86400000]
- * Cooldown for Daily Command (in ms). Default: 24 hours (60000 * 60 * 24 ms)
+ * Cooldown for Daily Reward (in ms). Default: 24 hours (60000 * 60 * 24 ms)
  *
- * @property {number} [workCooldown=3600000] Cooldown for Work Command (in ms). Default: 1 hour (60000 * 60 ms)
- * @property {number | number[]} [dailyAmount=100] Amount of money for Daily Command. Default: 100.
+ * @property {number} [workCooldown=3600000] Cooldown for Work Reward (in ms). Default: 1 hour (60000 * 60 ms)
+ * @property {number | number[]} [dailyAmount=100] Amount of money for Daily Reward. Default: 100.
  * @property {number} [weeklyCooldown=604800000]
- * Cooldown for Weekly Command (in ms). Default: 7 days (60000 * 60 * 24 * 7 ms)
+ * Cooldown for Weekly Reward (in ms). Default: 7 days (60000 * 60 * 24 * 7 ms)
  *
- * @property {number | number[]} [weeklyAmount=100] Amount of money for Weekly Command. Default: 1000.
- * @property {number | number[]} [workAmount=[10, 50]] Amount of money for Work Command. Default: [10, 50].
+ * @property {number | number[]} [weeklyAmount=100] Amount of money for Weekly Reward. Default: 1000.
+ * @property {number | number[]} [workAmount=[10, 50]] Amount of money for Work Reward. Default: [10, 50].
  * @property {boolean} [subtractOnBuy=true]
  * If true, when someone buys the item, their balance will subtract by item price. Default: false
  *
@@ -126,14 +126,20 @@ class Settings {
 
 /**
  * @typedef {object} SettingsTypes Settings object.
- * @property {number | number[]} dailyAmount Amount of money for Daily Command. Default: 100.
- * @property {number} dailyCooldown Cooldown for Daily Command (in ms). Default: 24 hours (60000 * 60 * 24 ms)
+ * @property {number | number[]} dailyAmount Amount of money for Daily Reward. Default: 100.
+ * @property {number} dailyCooldown Cooldown for Daily Reward (in ms). Default: 24 hours (60000 * 60 * 24 ms)
  *
- * @property {number | number[]} workAmount Amount of money for Work Command. Default: [10, 50].
- * @property {number} workCooldown Cooldown for Work Command (in ms). Default: 1 hour (60000 * 60 ms)
+ * @property {number | number[]} workAmount Amount of money for Work Reward. Default: [10, 50].
+ * @property {number} workCooldown Cooldown for Work Reward (in ms). Default: 1 hour (60000 * 60 ms)
  *
- * @property {number | number[]} weeklyAmount Amount of money for Weekly Command. Default: 1000.
- * @property {number} weeklyCooldown Cooldown for Weekly Command (in ms). Default: 7 days (60000 * 60 * 24 * 7 ms)
+ * @property {number | number[]} weeklyAmount Amount of money for Weekly Reward. Default: 1000.
+ * @property {number} weeklyCooldown Cooldown for Weekly Reward (in ms). Default: 7 days (60000 * 60 * 24 * 7 ms)
+ *
+ * @property {number | number[]} monthlyAmount Amount of money for Monthly Reward. Default: 10000.
+ * @property {number} monthlyCooldown Cooldown for Weekly Reward (in ms). Default: 1 month (2629746000 ms).
+ * 
+ * @property {number | number[]} hourlyAmount Amount of money for Hourly Reward. Default: 20.
+ * @property {number} hourlyCooldown Cooldown for Hourly Reward (in ms). Default: 1 hour (3600000 ms)
  *
  * @property {string} dateLocale The region (example: 'ru' or 'en') to format the date and time. Default: 'en'
  * @property {boolean} subtractOnBuy

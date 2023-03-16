@@ -1,6 +1,6 @@
 const defaultCurrencyObject = {
-	id: 0,
-	name: '',
+    id: 0,
+    name: '',
     symbol: null,
     balances: {}
 }

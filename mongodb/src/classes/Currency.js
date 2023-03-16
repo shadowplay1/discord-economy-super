@@ -5,6 +5,7 @@ const errors = require('../structures/errors')
 
 const Emitter = require('./util/Emitter')
 
+
 /**
  * Currency class.
  * @extends {Emitter}
@@ -21,6 +22,7 @@ class Currency extends Emitter {
 	 */
 	constructor(currencyID, guildID, ecoOptions, currencyObject, database, cache) {
 		super()
+
 
 		/**
 		 * Economy configuration.
@@ -115,7 +117,6 @@ class Currency extends Emitter {
 
 	/**
 	 * Gets the array of available currencies.
-	 * @param {string} guildID Guild ID.
 	 * @returns {Promise<CurrencyObject[]>} Currencies array.
 	 * @private
 	 */
@@ -277,6 +278,50 @@ class Currency extends Emitter {
 	}
 
 	/**
+	 * Transfers the currency to specified user
+	 * @param {TransferingOptions} Currency transfering options.
+	 * @returns {Promise<TransferingResult>} Currency transfering result.
+	 */
+	async transfer(options) {
+		const {
+			amount, receiverMemberID,
+			senderMemberID, sendingReason,
+			receivingReason
+		} = options || {}
+
+		if (isNaN(amount)) {
+			throw new EconomyError(errors.invalidType('amount', 'number', amount), 'INVALID_TYPE')
+		}
+
+		if (typeof receiverMemberID !== 'string') {
+			throw new EconomyError(errors.invalidType('receiverMemberID', 'string', receiverMemberID), 'INVALID_TYPE')
+		}
+
+		if (typeof senderMemberID !== 'string') {
+			throw new EconomyError(errors.invalidType('senderMemberID', 'string', senderMemberID), 'INVALID_TYPE')
+		}
+
+		await this.subtractBalance(amount, senderMemberID, sendingReason || 'sending money to {user}')
+		await this.addBalance(amount, receiverMemberID, receivingReason || 'receiving money from {user}')
+
+		return {
+			success: true,
+			guildID: this.guildID,
+
+			senderBalance: await this.getBalance(senderMemberID),
+			receiverBalance: await this.getBalance(receiverMemberID),
+
+			amount,
+
+			senderMemberID,
+			receiverMemberID,
+
+			sendingReason: sendingReason || 'sending money to {user}',
+			receivingReason: receivingReason || 'receiving money from {user}',
+		}
+	}
+
+	/**
 	 * Subtracts the currency for specified member.
 	 * @param {number} amount Amount of money to subtract.
 	 * @param {string} memberID Member ID.
@@ -333,13 +378,40 @@ class Currency extends Emitter {
 }
 
 /**
- * @typedef {Object} CurrencyObject
+ * @typedef {object} CurrencyObject
  * @property {number} id Currency ID.
  * @property {string} guildID Guild ID.
  * @property {string} name Currency name.
  * @property {string} [symbol] Currency symbol.
  * @property {object} balances Currency balances object.
  * @property {object} custom Custom currency data object.
+ */
+
+/**
+ * @typedef {object} TransferingResult
+ * @property {boolean} success Whether the transfer was successful or not.
+ * @property {string} guildID Guild ID.
+ * @property {number} amount Amount of money that was sent.
+ * @property {string} senderMemberID Sender member ID.
+ * @property {string} receiverMemberID Receiver member ID.
+ * @property {string} sendingReason Sending reason.
+ * @property {string} receivingReason Receiving reason.
+ * @property {number} senderBalance New sender balance.
+ * @property {number} receiverBalance New receiver balance.
+ */
+
+/**
+ * @typedef {object} TransferingOptionss
+ * @property {number} amount Currency amount to transfer.
+ *
+ * @property {string} senderMemberID Sender member ID.
+ * @property {string} receiverMemberID Receiver member ID.
+ *
+ * @property {string} [sendingReason='sending money to {user}']
+ * The reason of subtracting the money from sender. (example: "sending money to {user}")
+ *
+ * @property {string} [receivingReason='receiving money from {user}']
+ * The reason of adding a money to receiver. (example: "receiving money from {user}")
  */
 
 

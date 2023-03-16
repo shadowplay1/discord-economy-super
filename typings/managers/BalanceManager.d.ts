@@ -6,11 +6,13 @@ import LeaderboardData from '../interfaces/LeaderboardData'
 import TransferingOptions from '../interfaces/TransferingOptions'
 import TransferingResult from '../interfaces/TransferingResult'
 
+import CurrencyFactory from '../interfaces/CurrencyFactory'
+
 
 /**
-* Balance manager methods class.
-* @extends {Emitter}
-*/
+ * Balance manager methods class.
+ * @extends {Emitter}
+ */
 declare class BalanceManager extends Emitter {
     public constructor(options: EconomyConfiguration)
 

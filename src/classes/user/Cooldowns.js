@@ -1,5 +1,5 @@
 const ms = require('../../structures/ms')
-const parse = require('../structures/timeParser.js')
+const parse = require('../../structures/timeParser.js')
 
 class Cooldowns {
 
@@ -201,12 +201,19 @@ module.exports = Cooldowns
  * Cooldown for Daily Command (in ms). Default: 24 hours (60000 * 60 * 24 ms)
  *
  * @property {number} [workCooldown=3600000] Cooldown for Work Command (in ms). Default: 1 hour (60000 * 60 ms)
- * @property {number | number[]} [dailyAmount=100] Amount of money for Daily Command. Default: 100.
+ * @property {number | number[]} [dailyAmount=100] Amount of money for Daily Reward. Default: 100.
  * @property {number} [weeklyCooldown=604800000]
  * Cooldown for Weekly Command (in ms). Default: 7 days (60000 * 60 * 24 * 7 ms)
  *
- * @property {number | number[]} [weeklyAmount=100] Amount of money for Weekly Command. Default: 1000.
- * @property {number | number[]} [workAmount=[10, 50]] Amount of money for Work Command. Default: [10, 50].
+ * @property {number | number[]} [weeklyAmount=100] Amount of money for Weekly Reward. Default: 1000.
+ * @property {number | number[]} [workAmount=[10, 50]] Amount of money for Work Reward. Default: [10, 50].
+ *
+ * @property {number | number[]} [monthlyAmount=10000] Amount of money for Monthly Reward. Default: 10000.
+ * @property {number} [monthlyCooldown=2629746000] Cooldown for Weekly Reward (in ms). Default: 1 month (2629746000 ms).
+ * 
+ * @property {number | number[]} hourlyAmount Amount of money for Hourly Reward. Default: 20.
+ * @property {number} hourlyCooldown Cooldown for Hourly Reward (in ms). Default: 1 hour (3600000 ms)
+
  * @property {boolean} [subtractOnBuy=true]
  * If true, when someone buys the item, their balance will subtract by item price. Default: false
  *

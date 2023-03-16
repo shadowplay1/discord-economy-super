@@ -1,31 +1,49 @@
 declare interface SettingsTypes {
-    
+
     /**
-     * Amount of money for Daily Command. Default: 100.
+     * Amount of money for Daily Reward. Default: 100.
      */
-    dailyAmount: number | number[]
+    dailyAmount: number | [number, number]
 
     /**
      * Cooldown for Daily Command (in ms). Default: 24 hours (60000 * 60 * 24 ms)
      */
     dailyCooldown: number
 
-
     /**
-     * Amount of money for Work Command. Default: [10, 50].
+     * Amount of money for Work Reward. Default: [10, 50].
      */
-    workAmount: number | number[]
+    workAmount: number | [number, number]
 
     /**
      * Cooldown for Work Command (in ms). Default: 1 hour (60000 * 60 ms)
      */
     workCooldown: number
 
+    /**
+     * Amount of money for Weekly Reward. Default: 1000.
+     */
+    weeklyAmount: number | [number, number]
 
     /**
-     * Amount of money for Weekly Command. Default: 1000.
+     * Amount of money for Monthly Reward. Default: 10000.
      */
-    weeklyAmount: number | number[]
+    monthlyAmount?: number | [number, number]
+
+    /**
+     * Cooldown for Monthly Reward (in ms). Default: 1 month (2629746000 ms).
+     */
+    monthlyCooldown?: number | [number, number]
+
+    /**
+     * Amount of money for Monthly Reward. Default: 10000.
+     */
+    hourlyAmount?: number | [number, number]
+
+    /**
+     * Cooldown for Hourly Reward (in ms). Default: 1 hour (3600000 ms)
+     */
+    hourlyCooldown?: number | [number, number]
 
     /**
      * Cooldown for Weekly Command (in ms). Default: 7 days (60000 * 60 * 24 * 7 ms)

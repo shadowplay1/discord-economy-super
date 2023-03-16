@@ -1,86 +1,91 @@
 module.exports = {
-  root: true,
+    root: true,
 
-  parserOptions: {
-    ecmaVersion: 2020,
-    sourceType: 'module',
-  },
+    parserOptions: {
+        ecmaVersion: 2020,
+        sourceType: 'module',
+    },
 
-  extends: [
-    'eslint:recommended'
-  ],
+    extends: [
+        'eslint:recommended'
+    ],
 
-  env: {
-    es6: true,
-    node: true,
-    browser: true,
-    amd: true
-  },
+    env: {
+        es6: true,
+        node: true,
+        browser: true,
+        amd: true
+    },
 
-  globals: {
-    $: true,
-    require: true,
-    process: true
-  },
+    globals: {
+        $: true,
+        require: true,
+        process: true
+    },
 
-  rules: {
-    'no-plusplus': 'off',
+    rules: {
+        'no-plusplus': 'off',
 
-    'implicit-arrow-linebreak': 'off',
-    'operator-linebreak': 'off',
-    'no-param-reassign': 'off',
-    'arrow-body-style': 'off',
+        'implicit-arrow-linebreak': 'off',
+        'operator-linebreak': 'off',
+        'no-param-reassign': 'off',
+        'arrow-body-style': 'off',
 
-    'consistent-return': 'off',
-    'function-paren-newline': 'off',
-    'max-classes-per-file': 'off',
+        'consistent-return': 'off',
+        'function-paren-newline': 'off',
+        'max-classes-per-file': 'off',
 
-	'semi': [
-		'warn',
-		'never'
-	],
+        'semi': [
+            'warn',
+            'never'
+        ],
 
-	'max-len': [
-		'warn', {
-			'code': 120
-		}
-	],
+        indent: [
+            'warn',
+            4
+        ],
 
-	'prefer-const': 'warn',
-    'camelcase': 'warn',
-    'eol-last': 'warn',
+        'max-len': [
+            'warn', {
+                'code': 120
+            }
+        ],
 
-	'dot-notation': 'warn',
-    'no-continue': 'warn',
-	'no-redeclare': 'warn',
+        'prefer-const': 'warn',
+        'camelcase': 'warn',
+        'eol-last': 'warn',
 
-    'block-spacing': [
-		'error',
-		'never'
-	],
+        'dot-notation': 'warn',
+        'no-continue': 'warn',
+        'no-redeclare': 'warn',
 
-	'no-unneeded-ternary': 'error',
-    'no-spaced-func': 'error',
-	'no-dupe-else-if': 'error',
+        'block-spacing': [
+            'error',
+            'never'
+        ],
 
-    'object-curly-spacing': [
-		'error',
-		'always'
-	],
+        'no-unneeded-ternary': 'error',
+        'no-spaced-func': 'error',
+        'no-dupe-else-if': 'error',
 
-    'no-trailing-spaces': [
-		'error', {
-			'ignoreComments': true,
-		}
-	],
+        'object-curly-spacing': [
+            'error',
+            'always'
+        ],
 
-    'quotes': [
-		'error',
-		'single'
-	],
+        'no-trailing-spaces': [
+            'error', {
+                'ignoreComments': true,
+            }
+        ],
 
-    'no-return-await': [
-		'error'
-	],
-  },
+        'quotes': [
+            'error',
+            'single'
+        ],
+
+        'no-return-await': [
+            'error'
+        ],
+    },
 }

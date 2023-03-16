@@ -1,4 +1,4 @@
-import { IMongoConnectionOptions } from 'quick-mongo-super/typings/interfaces/QuickMongo'
+import { MongoConnectionOptions } from 'quick-mongo-super/typings/interfaces/QuickMongo'
 
 import CheckerConfiguration from './CheckerConfiguration'
 import ErrorHandlerConfiguration from './ErrorHandlerConfiguration'
@@ -30,9 +30,29 @@ declare interface EconomyConfiguration {
     weeklyCooldown?: number
 
     /**
-     * Amount of money for Daily Command. Default: 100.
+     * Amount of money for Daily Reward. Default: 100.
      */
     dailyAmount?: number | [number, number]
+
+    /**
+     * Amount of money for Monthly Reward. Default: 10000.
+     */
+    monthlyAmount?: number | [number, number]
+
+    /**
+     * Cooldown for Monthly Reward (in ms). Default: 1 month (2629746000 ms).
+     */
+    monthlyCooldown?: number | [number, number]
+
+    /**
+     * Amount of money for Monthly Reward. Default: 10000.
+     */
+    hourlyAmount?: number | [number, number]
+
+    /**
+     * Cooldown for Hourly Reward (in ms). Default: 1 hour (3600000 ms)
+     */
+    hourlyCooldown?: number | [number, number]
 
     /**
      * If true, the module will save all the purchases history.
@@ -40,7 +60,7 @@ declare interface EconomyConfiguration {
     savePurchasesHistory?: boolean
 
     /**
-     * Amount of money for Work Command. Default: [10, 50].
+     * Amount of money for Work Reward. Default: [10, 50].
      */
     workAmount?: number | [number, number]
 
@@ -50,7 +70,7 @@ declare interface EconomyConfiguration {
     subtractOnBuy?: boolean
 
     /**
-     * Amount of money for Weekly Command. Default: 1000.
+     * Amount of money for Weekly Reward. Default: 1000.
      */
     weeklyAmount?: number | [number, number]
 

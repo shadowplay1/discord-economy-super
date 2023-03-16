@@ -13,9 +13,9 @@ import CurrencyFactory from '../interfaces/CurrencyFactory'
 
 
 /**
-* Balance manager methods class.
-* @extends {Emitter}
-*/
+ * Balance manager methods class.
+ * @extends {Emitter}
+ */
 declare class BalanceManager extends Emitter {
     public constructor(options: EconomyConfiguration, database: DatabaseManager, cache: CacheManager)
 
