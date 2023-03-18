@@ -28,22 +28,22 @@ declare interface SettingsTypes {
     /**
      * Amount of money for Monthly Reward. Default: 10000.
      */
-    monthlyAmount?: number | [number, number]
+    monthlyAmount: number | [number, number]
 
     /**
      * Cooldown for Monthly Reward (in ms). Default: 1 month (2629746000 ms).
      */
-    monthlyCooldown?: number | [number, number]
+    monthlyCooldown: number | [number, number]
 
     /**
      * Amount of money for Monthly Reward. Default: 10000.
      */
-    hourlyAmount?: number | [number, number]
+    hourlyAmount: number | [number, number]
 
     /**
-     * Cooldown for Hourly Reward (in ms). Default: 1 hour (3600000 ms)
+     * Cooldown for Hourly Reward (in ms). Default: 1 hour (3600000 ms).
      */
-    hourlyCooldown?: number | [number, number]
+    hourlyCooldown: number | [number, number]
 
     /**
      * Cooldown for Weekly Command (in ms). Default: 7 days (60000 * 60 * 24 * 7 ms)

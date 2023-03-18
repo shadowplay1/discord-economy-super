@@ -61,7 +61,7 @@ declare interface EconomyConfiguration {
     hourlyAmount?: number | [number, number]
 
     /**
-     * Cooldown for Hourly Reward (in ms). Default: 1 hour (3600000 ms)
+     * Cooldown for Hourly Reward (in ms). Default: 1 hour (3600000 ms).
      */
     hourlyCooldown?: number | [number, number]
 

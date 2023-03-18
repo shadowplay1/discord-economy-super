@@ -838,9 +838,9 @@ class Economy extends Emitter {
  * @property {number | number[]} [monthlyAmount=10000] Amount of money for Monthly Reward. Default: 10000.
  * @property {number} [monthlyCooldown=2629746000] Cooldown for Weekly Reward (in ms). Default: 1 month (2629746000 ms).
  * 
- * @property {number | number[]} hourlyAmount Amount of money for Hourly Reward. Default: 20.
- * @property {number} hourlyCooldown Cooldown for Hourly Reward (in ms). Default: 1 hour (3600000 ms)
-
+ * @property {number | number[]} [hourlyAmount=20] Amount of money for Hourly Reward. Default: 20.
+ * @property {number} [hourlyCooldown=3600000] Cooldown for Hourly Reward (in ms). Default: 1 hour (3600000 ms).
+ *
  * @property {boolean} [subtractOnBuy=true] If true, when someone buys the item, their balance will subtract by item price. Default: false
  *
  * @property {number} [updateCountdown=1000] Checks for if storage file exists in specified time (in ms). Default: 1000.
