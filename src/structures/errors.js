@@ -10,6 +10,12 @@ const settingsArray = [
     'weeklyAmount',
     'weeklyCooldown',
 
+    'monthlyAmount',
+    'monthlyCooldown',
+
+    'hourlyAmount',
+    'hourlyCooldown',
+
     'dateLocale',
     'subtractOnBuy',
 

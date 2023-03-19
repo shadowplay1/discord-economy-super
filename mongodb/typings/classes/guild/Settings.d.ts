@@ -2,6 +2,7 @@ import EconomyConfiguration from '../../interfaces/EconomyConfiguration'
 
 import SettingsTypes from '../../interfaces/SettingsTypes'
 import SettingValueType from '../../interfaces/SettingValueType'
+
 import DatabaseManager from '../../managers/DatabaseManager'
 
 

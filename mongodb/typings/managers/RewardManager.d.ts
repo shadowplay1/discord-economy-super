@@ -57,6 +57,28 @@ declare class RewardManager {
     public getWeekly<
         isRewardArray extends boolean = false
     >(memberID: string, guildID: string, reason?: string): Promise<RewardObject<isRewardArray, RewardType.WEEKLY>>
+
+    /**
+    * Adds a monthly reward on user's balance
+    * @param {string} memberID Member ID.
+    * @param {string} guildID Guild ID.
+    * @param {string} [reason] The reason why the money was added. Default: 'claimed the monthly reward'
+    * @returns Reward object.
+    */
+    public getMonthly<
+        isRewardArray extends boolean = false
+    >(memberID: string, guildID: string, reason?: string): Promise<RewardObject<isRewardArray, RewardType.MONTHLY>>
+
+    /**
+    * Adds a hourly reward on user's balance
+    * @param {string} memberID Member ID.
+    * @param {string} guildID Guild ID.
+    * @param {string} [reason] The reason why the money was added. Default: 'claimed the hourly reward'
+    * @returns Reward object.
+    */
+    public getHourly<
+        isRewardArray extends boolean = false
+    >(memberID: string, guildID: string, reason?: string): Promise<RewardObject<isRewardArray, RewardType.HOURLY>>
 }
 
 export = RewardManager

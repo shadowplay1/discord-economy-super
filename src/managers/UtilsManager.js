@@ -257,7 +257,9 @@ class UtilsManager {
 
                 if (typeof output[i] !== typeof DefaultConfiguration[i]) {
                     if (!options.ignoreInvalidTypes) {
-                        const isRewardOption = i == 'dailyAmount' || i == 'workAmount' || i == 'weeklyAmount'
+                        const isRewardOption = i == 'dailyAmount' || i == 'workAmount' ||
+                            i == 'weeklyAmount' || i == 'hourlyAmount' ||
+                            i == 'monthlyAmount'
 
                         if (isRewardOption) {
                             if (typeof output[i] !== 'number' && !Array.isArray(output[i])) {
@@ -382,12 +384,12 @@ class UtilsManager {
 /**
  * @typedef {object} EconomyConfiguration Default Economy configuration.
  * @property {number} [dailyCooldown=86400000]
- * Cooldown for Daily Command (in ms). Default: 24 hours (60000 * 60 * 24 ms)
+ * Cooldown for Daily Reward (in ms). Default: 24 hours (60000 * 60 * 24 ms)
  *
- * @property {number} [workCooldown=3600000] Cooldown for Work Command (in ms). Default: 1 hour (60000 * 60 ms)
+ * @property {number} [workCooldown=3600000] Cooldown for Work Reward (in ms). Default: 1 hour (60000 * 60 ms)
  * @property {number | number[]} [dailyAmount=100] Amount of money for Daily Reward. Default: 100.
  * @property {number} [weeklyCooldown=604800000]
- * Cooldown for Weekly Command (in ms). Default: 7 days (60000 * 60 * 24 * 7 ms)
+ * Cooldown for Weekly Reward (in ms). Default: 7 days (60000 * 60 * 24 * 7 ms)
  *
  * @property {number | number[]} [weeklyAmount=100] Amount of money for Weekly Reward. Default: 1000.
  * @property {number | number[]} [workAmount=[10, 50]] Amount of money for Work Reward. Default: [10, 50].

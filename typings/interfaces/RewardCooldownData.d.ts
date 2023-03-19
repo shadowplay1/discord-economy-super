@@ -15,7 +15,7 @@ declare interface RewardCooldownData {
 	/**
 	 * Cooldown end timestamp.
 	 */
-	timestamp: number
+	endTimestamp: number
 }
 
 export = RewardCooldownData

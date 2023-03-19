@@ -1,5 +1,7 @@
 const economyConfig = {
     storagePath: './storage.json',
+
+    checkStorage: true,
     updateCountdown: 1000,
 
     hourlyAmount: 20,
@@ -18,9 +20,10 @@ const economyConfig = {
     monthlyCooldown: 2629746000,
 
     sellingItemPercent: 75,
+
     savePurchasesHistory: true,
     deprecationWarnings: true,
-    checkStorage: true,
+
     dateLocale: 'en',
     subtractOnBuy: true,
 

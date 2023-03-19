@@ -281,7 +281,7 @@ class BankManager extends Emitter {
 
         return lb
             .sort((previous, current) => current.money - previous.money)
-            .filter(entry => entry.userID !== 'shop')
+            .filter(entry => entry.userID !== 'shop' && entry.userID !== 'settings')
     }
 }
 

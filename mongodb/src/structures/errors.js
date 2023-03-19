@@ -10,6 +10,12 @@ const settingsArray = [
     'weeklyAmount',
     'weeklyCooldown',
 
+    'monthlyAmount',
+    'monthlyCooldown',
+
+    'hourlyAmount',
+    'hourlyCooldown',
+
     'dateLocale',
     'subtractOnBuy',
 
@@ -43,7 +49,7 @@ const availableCurrencyProps = [
 
 
 module.exports = {
-	errored: 'Errored.',
+    errored: 'Errored.',
     notReady: 'The module is not ready to work.',
     noConnectionData: 'No connection data is provided.',
     savingHistoryDisabled: 'Saving purchases history is disabled.',

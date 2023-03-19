@@ -28,6 +28,8 @@ class EconomyUser {
      * @param {DatabaseManager} database Database Manager.
      */
     constructor(id, guildID, ecoOptions, userObject, database) {
+        userObject.id = id
+        userObject.guildID = guildID
 
         /**
          * User ID.
@@ -163,6 +165,8 @@ class EconomyUser {
  * @property {number} dailyCooldown User's daily cooldown.
  * @property {number} workCooldown User's work cooldown.
  * @property {number} weeklyCooldown User's weekly cooldown.
+ * @property {number} monthlyCooldown User's monthly cooldown.
+ * @property {number} hourlyCooldown User's hourly cooldown.
  * @property {number} money User's balance.
  * @property {number} bank User's bank balance.
  * @property {InventoryData} inventory User's inventory.
@@ -214,12 +218,12 @@ class EconomyUser {
  * @property {string} [storagePath='./storage.json'] Full path to a JSON file. Default: './storage.json'
  * @property {boolean} [checkStorage=true] Checks the if database file exists and if it has errors. Default: true
  * @property {number} [dailyCooldown=86400000]
- * Cooldown for Daily Command (in ms). Default: 24 hours (60000 * 60 * 24 ms)
+ * Cooldown for Daily Reward (in ms). Default: 24 hours (60000 * 60 * 24 ms)
  *
- * @property {number} [workCooldown=3600000] Cooldown for Work Command (in ms). Default: 1 hour (60000 * 60 ms)
+ * @property {number} [workCooldown=3600000] Cooldown for Work Reward (in ms). Default: 1 hour (60000 * 60 ms)
  * @property {number | number[]} [dailyAmount=100] Amount of money for Daily Reward. Default: 100.
  * @property {number} [weeklyCooldown=604800000]
- * Cooldown for Weekly Command (in ms). Default: 7 days (60000 * 60 * 24 * 7 ms)
+ * Cooldown for Weekly Reward (in ms). Default: 7 days (60000 * 60 * 24 * 7 ms)
  *
  * @property {number | number[]} [weeklyAmount=100] Amount of money for Weekly Reward. Default: 1000.
  * @property {number | number[]} [workAmount=[10, 50]] Amount of money for Work Reward. Default: [10, 50].

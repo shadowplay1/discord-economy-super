@@ -154,8 +154,8 @@ class Settings {
  * @property {number | number[]} monthlyAmount Amount of money for Monthly Reward. Default: 10000.
  * @property {number} monthlyCooldown Cooldown for Weekly Reward (in ms). Default: 1 month (2629746000 ms).
  * 
- * @property {number | number[]} [hourlyAmount=20] Amount of money for Hourly Reward. Default: 20.
- * @property {number} [hourlyCooldown=3600000] Cooldown for Hourly Reward (in ms). Default: 1 hour (3600000 ms).
+ * @property {number | number[]} hourlyAmount Amount of money for Hourly Reward. Default: 20.
+ * @property {number} hourlyCooldown Cooldown for Hourly Reward (in ms). Default: 1 hour (3600000 ms).
  * *
  * @property {string} dateLocale The region (example: 'ru' or 'en') to format the date and time. Default: 'en'
  * @property {boolean} subtractOnBuy
@@ -168,6 +168,8 @@ class Settings {
  * @typedef {'dailyAmount' | 'dailyCooldown' |
  * 'workAmount' | 'workCooldown' |
  * 'weeklyAmount' | 'weeklyCooldown' |
+ * 'monthlyAmount' | 'monthlyCooldown' |
+ * 'hourlyAmount' | 'hourlyCooldown' |
  * 'dateLocale' | 'subtractOnBuy' |
  * 'sellingItemPercent' | 'savePurchasesHistory'} Settings
  */

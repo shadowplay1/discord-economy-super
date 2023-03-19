@@ -69,7 +69,7 @@ declare interface EconomyEvents {
     /**
      * Emits when someone's added an item in the shop.
      */
-    shopItemAdd: ItemData
+    shopItemAdd: ItemData<any>
 
     /**
      * Emits when someone's cleared the shop.

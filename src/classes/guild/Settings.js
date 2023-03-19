@@ -152,6 +152,8 @@ class Settings {
  * @typedef {'dailyAmount' | 'dailyCooldown' |
  * 'workAmount' | 'workCooldown' |
  * 'weeklyAmount' | 'weeklyCooldown' |
+ * 'monthlyAmount' | 'monthlyCooldown' |
+ * 'hourlyAmount' | 'hourlyCooldown' |
  * 'dateLocale' | 'subtractOnBuy' |
  * 'sellingItemPercent' | 'savePurchasesHistory'} Settings
  */

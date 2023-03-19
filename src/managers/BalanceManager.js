@@ -304,7 +304,7 @@ class BalanceManager extends Emitter {
         const guildData = data[guildID]
         if (!guildData) return []
 
-        const users = Object.keys(guildData)
+        const users = Object.keys(guildData).filter(key => key !== 'settings' && key !== 'shop')
         const ranks = Object.values(guildData).map(user => user.money).filter(userID => !isNaN(userID))
 
         for (const rank in ranks) lb.push({
@@ -314,7 +314,7 @@ class BalanceManager extends Emitter {
 
         return lb
             .sort((previous, current) => current.money - previous.money)
-            .filter(entry => entry.userID !== 'shop')
+            .filter(entry => entry.userID !== 'shop' && entry.userID !== 'settings')
     }
 
     /**

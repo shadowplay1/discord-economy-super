@@ -1,6 +1,6 @@
 {
 	"name": "discord-economy-super",
-	"version": "1.7.6-dev.2105fd9.1678948994661",
+	"version": "1.7.6",
 	"types": "./typings/Economy.d.ts",
 	"description": "Easy and customizable economy module for your Discord Bot.",
 	"main": "index.js",
@@ -10,7 +10,7 @@
 		"precommit": "bash ./.husky/scripts/commit-to-public.sh",
 		"docs:deploy": "bash ./.husky/scripts/deploy-docs.sh",
 		"deploy": "bash ./.husky/scripts/commit-and-deploy.sh",
-		"publish": "bash ./publish.sh && bash ./.husky/scripts/deploy-docs.sh",
+		"upload": "bash ./publish.sh && bash ./.husky/scripts/deploy-docs.sh",
 		"lint": "eslint ./",
 		"lint:fix": "eslint ./ --fix"
 	},
@@ -49,7 +49,7 @@
 	"author": "shadowplay",
 	"license": "MIT",
 	"dependencies": {
-		"quick-mongo-super": "^1.0.11"
+		"quick-mongo-super": "^1.0.12"
 	},
 	"quick-mongo-super": {
 		"postinstall": false

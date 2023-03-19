@@ -40,7 +40,9 @@ class Cooldowns {
         this._cooldowns = {
             daily: userObject.dailyCooldown,
             work: userObject.workCooldown,
-            weekly: userObject.weeklyCooldown
+            weekly: userObject.weeklyCooldown,
+            monthly: userObject.monthlyCooldown,
+            hourly: userObject.hourlyCooldown
         }
 
         /**
@@ -50,19 +52,21 @@ class Cooldowns {
         this._rewardCooldowns = {
             daily: settings?.dailyCooldown || options.dailyCooldown,
             work: settings?.workCooldown || options.workCooldown,
-            weekly: settings?.weeklyCooldown || options.weeklyCooldown
+            weekly: settings?.weeklyCooldown || options.weeklyCooldown,
+            monthly: settings?.monthlyCooldown || options.monthlyCooldown,
+            hourly: settings?.hourlyCooldown || options.hourlyCooldown
         }
 
         /**
          * Database Manager.
          * @type {DatabaseManager}
          */
-        this.database = database
+        this._database = database
     }
 
     /**
      * Returns the cooldown of the specified type.
-     * @param {'daily' | 'work' | 'weekly'} type Cooldown type.
+     * @param {'daily' | 'work' | 'weekly' | 'monthly' | 'hourly'} type Cooldown type.
      * @returns {CooldownData} Cooldown object.
      */
     getCooldown(type) {
@@ -71,7 +75,7 @@ class Cooldowns {
     }
 
     /**
-     * Gets a user's daily cooldown.
+     * Gets user's daily cooldown.
      * @returns {CooldownData} User's daily cooldown.
      */
     getDaily() {
@@ -80,7 +84,7 @@ class Cooldowns {
     }
 
     /**
-     * Gets a user's work cooldown.
+     * Gets user's work cooldown.
      * @returns {CooldownData} User's work cooldown.
      */
     getWork() {
@@ -89,7 +93,7 @@ class Cooldowns {
     }
 
     /**
-     * Gets a user's weekly cooldown.
+     * Gets user's weekly cooldown.
      * @returns {CooldownData} User's weekly cooldown.
      */
     getWeekly() {
@@ -99,7 +103,7 @@ class Cooldowns {
 
     /**
      * Gets all the user's cooldowns.
-     * @returns {CooldownsTimeObject} User's cooldowns object.
+     * @returns {CooldownsObject} User's cooldowns object.
      */
     getAll() {
         const result = {}
@@ -107,12 +111,12 @@ class Cooldowns {
 
         for (const [rewardType, userCooldown] of Object.entries(rawCooldownsObject)) {
             const rewardCooldown = this._rewardCooldowns[rewardType]
-            const cooldownEndTimestamp = rewardCooldown - (Date.now() - userCooldown)
+            const cooldownEndTime = rewardCooldown - (Date.now() - userCooldown)
 
             const cooldownObject = userCooldown ? {
-                time: parse(cooldownEndTimestamp),
-                pretty: ms(cooldownEndTimestamp),
-                timestamp: cooldownEndTimestamp
+                time: parse(cooldownEndTime),
+                pretty: ms(cooldownEndTime),
+                endTimestamp: userCooldown
             } : null
 
             result[rewardType] = cooldownObject
@@ -129,7 +133,8 @@ class Cooldowns {
         const results = [
             this.clearDaily(),
             this.clearWork(),
-            this.clearWeekly()
+            this.clearWeekly(),
+            this.clearM()
         ]
 
         if (results.some(result => !result)) {
@@ -141,28 +146,46 @@ class Cooldowns {
 
     /**
       * Clears user's daily cooldown.
-      * @returns {boolean} If cleared: true; else: false
+      * @returns {boolean} If cleared: true; else: false.
       */
     clearDaily() {
-        const result = this.database.delete(`${this.guildID}.${this.memberID}.dailyCooldown`)
+        const result = this._database.delete(`${this.guildID}.${this.memberID}.dailyCooldown`)
         return result
     }
 
     /**
      * Clears user's work cooldown.
-     * @returns {boolean} If cleared: true; else: false
+     * @returns {boolean} If cleared: true; else: false.
      */
     clearWork() {
-        const result = this.database.delete(`${this.guildID}.${this.memberID}.workCooldown`)
+        const result = this._database.delete(`${this.guildID}.${this.memberID}.workCooldown`)
         return result
     }
 
     /**
      * Clears user's weekly cooldown.
-     * @returns {boolean} If cleared: true; else: false
+     * @returns {boolean} If cleared: true; else: false.
      */
     clearWeekly() {
-        const result = this.database.delete(`${this.guildID}.${this.memberID}.weeklyCooldown`)
+        const result = this._database.delete(`${this.guildID}.${this.memberID}.weeklyCooldown`)
+        return result
+    }
+
+    /**
+     * Clears user's monthly cooldown.
+     * @returns {boolean} If cleared: true; else: false.
+     */
+    clearMonthly() {
+        const result = this._database.delete(`${this.guildID}.${this.memberID}.monthlyCooldown`)
+        return result
+    }
+
+    /**
+     * Clears user's hourly cooldown.
+     * @returns {boolean} If cleared: true; else: false.
+     */
+    clearHourly() {
+        const result = this._database.delete(`${this.guildID}.${this.memberID}.hourlyCooldown`)
         return result
     }
 }
@@ -173,11 +196,14 @@ class Cooldowns {
  */
 module.exports = Cooldowns
 
+
 /**
  * @typedef {object} RewardCooldowns
  * @property {number} daily Daily cooldown.
  * @property {number} work Work cooldown.
  * @property {number} weekly Weekly cooldown.
+ * @property {number} monthly Hourly cooldown.
+ * @property {number} hourly Hourly cooldown.
  */
 
 /**
@@ -185,6 +211,8 @@ module.exports = Cooldowns
  * @property {number} dailyCooldown User's daily cooldown.
  * @property {number} workCooldown User's work cooldown.
  * @property {number} weeklyCooldown User's weekly cooldown.
+ * @property {number} monthlyCooldown User's monthly cooldown.
+ * @property {number} hourlyCooldown User's hourly cooldown.
  * @property {number} money User's balance.
  * @property {number} bank User's bank balance.
  * @property {InventoryData} inventory User's inventory.
@@ -198,12 +226,12 @@ module.exports = Cooldowns
  * @property {string} [storagePath='./storage.json'] Full path to a JSON file. Default: './storage.json'
  * @property {boolean} [checkStorage=true] Checks the if database file exists and if it has errors. Default: true
  * @property {number} [dailyCooldown=86400000]
- * Cooldown for Daily Command (in ms). Default: 24 hours (60000 * 60 * 24 ms)
+ * Cooldown for Daily Reward (in ms). Default: 24 hours (60000 * 60 * 24 ms)
  *
- * @property {number} [workCooldown=3600000] Cooldown for Work Command (in ms). Default: 1 hour (60000 * 60 ms)
+ * @property {number} [workCooldown=3600000] Cooldown for Work Reward (in ms). Default: 1 hour (60000 * 60 ms)
  * @property {number | number[]} [dailyAmount=100] Amount of money for Daily Reward. Default: 100.
  * @property {number} [weeklyCooldown=604800000]
- * Cooldown for Weekly Command (in ms). Default: 7 days (60000 * 60 * 24 * 7 ms)
+ * Cooldown for Weekly Reward (in ms). Default: 7 days (60000 * 60 * 24 * 7 ms)
  *
  * @property {number | number[]} [weeklyAmount=100] Amount of money for Weekly Reward. Default: 1000.
  * @property {number | number[]} [workAmount=[10, 50]] Amount of money for Work Reward. Default: [10, 50].
@@ -248,19 +276,21 @@ module.exports = Cooldowns
  * @typedef {object} CooldownData
  * @property {TimeData} time A time object with the remaining time until the cooldown ends.
  * @property {string} pretty A formatted string with the remaining time until the cooldown ends.
- * @property {number} timestamp Cooldown end timestamp.
+ * @property {number} endTimestamp Cooldown end timestamp.
  */
 
 /**
  * @typedef {object} CooldownsObject
- * @property {number} daily Cooldown for Daily Command.
- * @property {number} work Cooldown for Work Command.
- * @property {number} weekly Cooldown for Weekly Command.
+ * @property {number} daily Cooldown for Daily Reward.
+ * @property {number} work Cooldown for Work Reward.
+ * @property {number} weekly Cooldown for Weekly Reward.
  */
 
 /**
- * @typedef {object} CooldownsTimeObject
- * @property {CooldownData} daily Cooldown for Daily Command.
- * @property {CooldownData} work Cooldown for Work Command.
- * @property {CooldownData} weekly Cooldown for Weekly Command.
+ * @typedef {object} CooldownsObject
+ * @property {number} daily Cooldown for Daily Reward.
+ * @property {number} work Cooldown for Work Reward.
+ * @property {number} weekly Cooldown for Weekly Reward.
+ * @property {number} monthly Cooldown for Monthly Reward.
+ * @property {number} hourly Cooldown for Hourly Reward.
  */

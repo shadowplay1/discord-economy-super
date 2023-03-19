@@ -11,12 +11,19 @@ const settingsArray = [
     'weeklyAmount',
     'weeklyCooldown',
 
+    'monthlyAmount',
+    'monthlyCooldown',
+
+    'hourlyAmount',
+    'hourlyCooldown',
+
     'dateLocale',
     'subtractOnBuy',
 
     'sellingItemPercent',
     'savePurchasesHistory'
 ]
+
 
 /* eslint-disable indent */
 function checkValueType(key, value) {
@@ -121,18 +128,17 @@ class SettingsManager {
 
 
         /**
-        * Economy configuration.
-        * @type {EconomyConfiguration}
-        * @private
-        */
+         * Economy configuration.
+         * @type {EconomyConfiguration}
+         * @private
+         */
         this.options = options
 
-
         /**
-        * Database manager methods class.
-        * @type {DatabaseManager}
-        * @private
-        */
+         * Database manager methods class.
+         * @type {DatabaseManager}
+         * @private
+         */
         this.database = database
     }
 
@@ -175,12 +181,12 @@ class SettingsManager {
      * @returns {SettingsTypes} The server settings object.
      */
     set(key, value, guildID) {
-        if (value == undefined) {
-            throw new EconomyError(errors.invalidTypes.value + typeof value, 'INVALID_TYPE')
-        }
-
         if (typeof key !== 'string') {
             throw new EconomyError(errors.databaseManager.invalidTypes.key + typeof key, 'INVALID_TYPE')
+        }
+
+        if (value == undefined) {
+            throw new EconomyError(errors.invalidTypes.value + typeof value, 'INVALID_TYPE')
         }
 
         if (typeof guildID !== 'string') {
@@ -264,6 +270,12 @@ class SettingsManager {
             weeklyAmount: settings?.weeklyAmount == null ? null : settings?.weeklyAmount,
             weeklyCooldown: settings?.weeklyCooldown == null ? null : settings?.weeklyCooldown,
 
+            monthlyAmount: settings?.monthlyAmount == null ? null : settings?.monthlyAmount,
+            monthlyCooldown: settings?.monthlyCooldown == null ? null : settings?.monthlyCooldown,
+
+            hourlyAmount: settings?.hourlyAmount == null ? null : settings?.hourlyAmount,
+            hourlyCooldown: settings?.hourlyCooldown == null ? null : settings?.hourlyCooldown,
+
             dateLocale: settings?.dateLocale == null ? null : settings?.dateLocale,
             subtractOnBuy: settings?.subtractOnBuy == null ? null : settings?.subtractOnBuy,
 
@@ -292,6 +304,12 @@ class SettingsManager {
             weeklyAmount: this.options.weeklyAmount,
             weeklyCooldown: this.options.weeklyCooldown,
 
+            monthlyAmount: this.options.monthlyAmount,
+            monthlyCooldown: this.options.monthlyCooldown,
+
+            hourlyAmount: this.options.hourlyAmount,
+            hourlyCooldown: this.options.hourlyCooldown,
+
             dateLocale: this.options.dateLocale,
             subtractOnBuy: this.options.subtractOnBuy,
 
@@ -318,8 +336,8 @@ class SettingsManager {
  * @property {number | number[]} monthlyAmount Amount of money for Monthly Reward. Default: 10000.
  * @property {number} monthlyCooldown Cooldown for Weekly Reward (in ms). Default: 1 month (2629746000 ms).
  * 
- * @property {number | number[]} [hourlyAmount=20] Amount of money for Hourly Reward. Default: 20.
- * @property {number} [hourlyCooldown=3600000] Cooldown for Hourly Reward (in ms). Default: 1 hour (3600000 ms).
+ * @property {number | number[]} hourlyAmount Amount of money for Hourly Reward. Default: 20.
+ * @property {number} hourlyCooldown Cooldown for Hourly Reward (in ms). Default: 1 hour (3600000 ms).
  * *
  * @property {string} dateLocale The region (example: 'ru' or 'en') to format the date and time. Default: 'en'
  * @property {boolean} subtractOnBuy
@@ -350,6 +368,13 @@ class SettingsManager {
  *
  * @property {number | number[]} [weeklyAmount=100] Amount of money for Weekly Reward. Default: 1000.
  * @property {number | number[]} [workAmount=[10, 50]] Amount of money for Work Reward. Default: [10, 50].
+ *
+ * @property {number | number[]} [monthlyAmount=10000] Amount of money for Monthly Reward. Default: 10000.
+ * @property {number} [monthlyCooldown=2629746000] Cooldown for Weekly Reward (in ms). Default: 1 month (2629746000 ms).
+ * 
+ * @property {number | number[]} [hourlyAmount=20] Amount of money for Hourly Reward. Default: 20.
+ * @property {number} [hourlyCooldown=3600000] Cooldown for Hourly Reward (in ms). Default: 1 hour (3600000 ms).
+ *
  * @property {boolean} [subtractOnBuy=true]
  * If true, when someone buys the item, their balance will subtract by item price. Default: false
  *
@@ -400,6 +425,8 @@ class SettingsManager {
  * @typedef {'dailyAmount' | 'dailyCooldown' |
  * 'workAmount' | 'workCooldown' |
  * 'weeklyAmount' | 'weeklyCooldown' |
+ * 'monthlyAmount' | 'monthlyCooldown' |
+ * 'hourlyAmount' | 'hourlyCooldown' |
  * 'dateLocale' | 'subtractOnBuy' |
  * 'sellingItemPercent' | 'savePurchasesHistory'} Settings
  */

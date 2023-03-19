@@ -19,6 +19,16 @@ declare interface RawEconomyUser {
     weeklyCooldown: number
 
     /**
+     * User's monthly cooldown.
+     */
+    monthlyCooldown: number
+
+    /**
+     * User's hourly cooldown.
+     */
+    hourlyCooldown: number
+
+    /**
      * User's balance.
      */
     money: number
@@ -31,12 +41,12 @@ declare interface RawEconomyUser {
     /**
      * User's inventory.
      */
-    inventory: InventoryData
+    inventory: InventoryData<any>[]
 
     /**
      * User's purchases history.
      */
-    history: HistoryData[]
+    history: HistoryData<any>[]
 }
 
 export = RawEconomyUser

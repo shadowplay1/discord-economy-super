@@ -26,11 +26,11 @@ class RewardManager {
       * Reward Manager.
       * @param {object} options Economy configuration.
       * @param {string} options.storagePath Full path to a JSON file. Default: './storage.json'.
-      * @param {number} options.dailyCooldown Cooldown for Daily Command (in ms). Default: 24 hours (60000 * 60 * 24 ms)
-      * @param {number} options.workCooldown Cooldown for Work Command (in ms). Default: 1 hour (60000 * 60 ms)
+      * @param {number} options.dailyCooldown Cooldown for Daily Reward (in ms). Default: 24 hours (60000 * 60 * 24 ms)
+      * @param {number} options.workCooldown Cooldown for Work Reward (in ms). Default: 1 hour (60000 * 60 ms)
       * @param {number} options.dailyAmount Amount of money for Daily Reward. Default: 100.
       * @param {number} options.weeklyCooldown
-      * Cooldown for Weekly Command (in ms). Default: 7 days (60000 * 60 * 24 * 7 ms)
+      * Cooldown for Weekly Reward (in ms). Default: 7 days (60000 * 60 * 24 * 7 ms)
       * @param {number} options.weeklyAmount Amount of money for Weekly Reward. Default: 1000.
       * @param {number | number[]} options.workAmount Amount of money for Work Reward. Default: [10, 50].
       * @param {DatabaseManager} database Database manager.
@@ -82,7 +82,7 @@ class RewardManager {
      * @returns {Promise<RewardData>} Daily reward object.
     */
     async receive(reward, memberID, guildID, reason) {
-        const rewardTypes = ['daily', 'work', 'weekly']
+        const rewardTypes = ['daily', 'work', 'weekly', 'monthly', 'hourly']
 
         if (typeof memberID !== 'string') {
             throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
@@ -108,6 +108,12 @@ class RewardManager {
 
             case RewardType.WEEKLY:
                 return this.getWeekly(memberID, guildID, reason)
+
+            case RewardType.MONTHLY:
+                return this.getMonthly(memberID, guildID, reason)
+
+            case RewardType.HOURLY:
+                return this.getHourly(memberID, guildID, reason)
 
             default:
                 throw new EconomyError(
@@ -164,7 +170,7 @@ class RewardManager {
                 cooldown: {
                     time: parse(cooldownEndTimestamp),
                     pretty: ms(cooldownEndTimestamp),
-                    timestamp: cooldownEndTimestamp
+                    endTimestamp: cooldownEndTimestamp
                 },
 
                 reward: null,
@@ -234,7 +240,7 @@ class RewardManager {
                 cooldown: {
                     time: parse(cooldownEndTimestamp),
                     pretty: ms(cooldownEndTimestamp),
-                    timestamp: cooldownEndTimestamp,
+                    endTimestamp: cooldownEndTimestamp,
                 },
 
                 reward: null,
@@ -304,7 +310,7 @@ class RewardManager {
                 cooldown: {
                     time: parse(cooldownEndTimestamp),
                     pretty: ms(cooldownEndTimestamp),
-                    timestamp: cooldownEndTimestamp,
+                    endTimestamp: cooldownEndTimestamp,
                 },
 
                 reward: null,
@@ -326,6 +332,146 @@ class RewardManager {
             cooldown: null,
             reward,
             defaultReward: defaultWeeklyReward
+        }
+    }
+
+    /**
+     * Adds a monthly reward on user's balance.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @param {string} [reason] The reason why the money was added. Default: 'claimed the monthly reward'.
+     * @returns {Promise<RewardData>} Monthly reward object.
+     */
+    async getMonthly(memberID, guildID, reason = 'claimed the monthly reward') {
+        if (typeof memberID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
+        }
+
+        if (typeof guildID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
+        }
+
+        const settings = await this.database.get(`${guildID}.settings`)
+
+        const [cooldown, defaultMonthlyReward] = [
+            settings?.monthlyCooldown || this.options.monthlyCooldown,
+            settings?.monthlyAmount || this.options.monthlyAmount
+        ]
+
+        let reward
+
+        if (Array.isArray(defaultMonthlyReward)) {
+            const [min, max] = defaultMonthlyReward
+
+            if (defaultMonthlyReward.length == 1) reward = min
+            else reward = Math.floor(Math.random() * (Number(min) - Number(max)) + Number(max))
+        }
+
+        else reward = defaultMonthlyReward
+
+        const userCooldown = await this.database.get(`${guildID}.${memberID}.monthlyCooldown`) || 0
+        const cooldownEndTimestamp = cooldown - (Date.now() - userCooldown)
+
+        if (userCooldown !== null && cooldownEndTimestamp > 0) {
+            return {
+                type: 'monthly',
+                claimed: false,
+
+                cooldown: {
+                    time: parse(cooldownEndTimestamp),
+                    pretty: ms(cooldownEndTimestamp),
+                    endTimestamp: cooldownEndTimestamp,
+                },
+
+                reward: null,
+                defaultReward: defaultMonthlyReward
+            }
+        }
+
+        await this.database.set(`${guildID}.${memberID}.monthlyCooldown`, Date.now())
+        await this.balance.add(reward, memberID, guildID, reason)
+
+        this.cache.updateMany(['users', 'cooldowns', 'balance'], {
+            memberID,
+            guildID
+        })
+
+        return {
+            type: 'monthly',
+            claimed: true,
+            cooldown: null,
+            reward,
+            defaultReward: defaultMonthlyReward
+        }
+    }
+
+    /**
+     * Adds a hourly reward on user's balance.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @param {string} [reason] The reason why the money was added. Default: 'claimed the hourly reward'.
+     * @returns {Promise<RewardData>} Hourly reward object.
+     */
+    async getHourly(memberID, guildID, reason = 'claimed the hourly reward') {
+        if (typeof memberID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
+        }
+
+        if (typeof guildID !== 'string') {
+            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
+        }
+
+        const settings = await this.database.get(`${guildID}.settings`)
+
+        const [cooldown, defaultHourlyReward] = [
+            settings?.hourlyCooldown || this.options.hourlyCooldown,
+            settings?.hourlyAmount || this.options.hourlyAmount
+        ]
+
+        let reward
+
+        if (Array.isArray(defaultHourlyReward)) {
+            const [min, max] = defaultHourlyReward
+
+            if (defaultHourlyReward.length == 1) reward = min
+            else reward = Math.floor(Math.random() * (Number(min) - Number(max)) + Number(max))
+        }
+
+        else reward = defaultHourlyReward
+
+        const userCooldown = await this.database.get(`${guildID}.${memberID}.hourlyCooldown`) || 0
+        const cooldownEndTimestamp = cooldown - (Date.now() - userCooldown)
+
+        if (userCooldown !== null && cooldownEndTimestamp > 0) {
+            return {
+                type: 'hourly',
+                claimed: false,
+
+                cooldown: {
+                    time: parse(cooldownEndTimestamp),
+                    pretty: ms(cooldownEndTimestamp),
+                    endTimestamp: cooldownEndTimestamp,
+                },
+
+                reward: null,
+                defaultReward: defaultHourlyReward
+            }
+        }
+
+        await this.database.set(`${guildID}.${memberID}.hourlyCooldown`, Date.now())
+        await this.balance.add(reward, memberID, guildID, reason)
+
+        this.cache.updateMany(['users', 'cooldowns', 'balance'], {
+            memberID,
+            guildID
+        })
+
+        return {
+            type: 'hourly',
+            claimed: true,
+            cooldown: null,
+            reward,
+            defaultReward: defaultHourlyReward
         }
     }
 }
@@ -352,7 +498,7 @@ class RewardManager {
  * @typedef {object} CooldownData
  * @property {TimeData} time A time object with the remaining time until the cooldown ends.
  * @property {string} pretty A formatted string with the remaining time until the cooldown ends.
- * @property {number} timestamp Cooldown end timestamp.
+ * @property {number} endTimestamp Cooldown end timestamp.
  */
 
 /**

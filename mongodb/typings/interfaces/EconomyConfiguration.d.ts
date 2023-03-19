@@ -1,4 +1,4 @@
-import { MongoConnectionOptions } from 'quick-mongo-super/typings/interfaces/QuickMongo'
+import { IMongoConnectionOptions } from 'quick-mongo-super/typings/src/interfaces/QuickMongo'
 
 import CheckerConfiguration from './CheckerConfiguration'
 import ErrorHandlerConfiguration from './ErrorHandlerConfiguration'
@@ -12,7 +12,7 @@ declare interface EconomyConfiguration {
     /**
      * Connection info object.
      */
-    connection?: MongoConnectionOptions
+    connection?: IMongoConnectionOptions
 
     /**
      * Cooldown for Daily Command (in ms). Default: 24 hours (60000 * 60 * 24 ms)
@@ -33,6 +33,11 @@ declare interface EconomyConfiguration {
      * Amount of money for Daily Reward. Default: 100.
      */
     dailyAmount?: number | [number, number]
+
+    /**
+     * Amount of money for Work Reward. Default: [10, 50].
+     */
+    workAmount?: number | [number, number]
 
     /**
      * Amount of money for Monthly Reward. Default: 10000.
@@ -59,10 +64,6 @@ declare interface EconomyConfiguration {
      */
     savePurchasesHistory?: boolean
 
-    /**
-     * Amount of money for Work Reward. Default: [10, 50].
-     */
-    workAmount?: number | [number, number]
 
     /**
      * If true, when someone buys the item, their balance will subtract by item price.

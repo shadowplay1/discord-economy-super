@@ -176,11 +176,15 @@ class FetchManager {
         const dailyCooldown = memberData?.dailyCooldown || 0
         const workCooldown = memberData?.workCooldown || 0
         const weeklyCooldown = memberData?.weeklyCooldown || 0
+        const monthlyCooldown = memberData?.monthlyCooldown || 0
+        const hourlyCooldown = memberData?.hourlyCooldown || 0
 
         return {
             dailyCooldown,
             workCooldown,
-            weeklyCooldown
+            weeklyCooldown,
+            monthlyCooldown,
+            hourlyCooldown
         }
     }
 
@@ -208,6 +212,8 @@ class FetchManager {
  * @property {number} dailyCooldown User's daily cooldown.
  * @property {number} workCooldown User's work cooldown.
  * @property {number} weeklyCooldown User's weekly cooldown.
+ * @property {number} monthlyCooldown User's monthly cooldown.
+ * @property {number} hourlyCooldown User's hourly cooldown.
  */
 
 /**

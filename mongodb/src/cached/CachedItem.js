@@ -221,7 +221,7 @@ class CachedItem {
                     throw new EconomyError(errors.cache.invalidIdentifiers(
                         constructorName,
                         ['memberID', 'guildID'],
-                        Object.keys(id)
+                        Object.entries(id).map(([key, value]) => value ? key : `${key} (undefined)`)
                     ), 'INVALID_CACHING_IDENTIFIERS')
                 }
 
@@ -230,7 +230,9 @@ class CachedItem {
                 const cooldownObject = {
                     daily: rawUserObject?.dailyCooldown,
                     work: rawUserObject?.workCooldown,
-                    weekly: rawUserObject?.weeklyCooldown
+                    weekly: rawUserObject?.weeklyCooldown,
+                    monthly: rawUserObject.monthlyCooldown,
+                    hourly: rawUserObject.hourlyCooldown
                 }
 
                 cooldownsCache[id.memberID] = cooldownObject

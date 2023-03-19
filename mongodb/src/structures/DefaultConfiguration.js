@@ -24,6 +24,7 @@ const economyConfig = {
     sellingItemPercent: 75,
     savePurchasesHistory: true,
     deprecationWarnings: true,
+
     dateLocale: 'en',
     subtractOnBuy: true,
 

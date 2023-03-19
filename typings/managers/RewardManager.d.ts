@@ -24,10 +24,10 @@ declare class RewardManager {
 
     /**
     * Adds a daily reward on user's balance
-    * @param {string} memberID Member ID
-    * @param {string} guildID Guild ID
+    * @param {string} memberID Member ID.
+    * @param {string} guildID Guild ID.
     * @param {string} [reason] The reason why the money was added. Default: 'claimed the daily reward'
-    * @returns Daily money amount or time before next claim
+    * @returns Reward object.
     */
     public getDaily<
         isRewardArray extends boolean = false
@@ -35,10 +35,10 @@ declare class RewardManager {
 
     /**
     * Adds a work reward on user's balance
-    * @param {string} memberID Member ID
-    * @param {string} guildID Guild ID
+    * @param {string} memberID Member ID.
+    * @param {string} guildID Guild ID.
     * @param {string} [reason] The reason why the money was added. Default: 'claimed the work reward'
-    * @returns Work money amount or time before next claim
+    * @returns Reward object.
     */
     public getWork<
         isRewardArray extends boolean = true
@@ -46,14 +46,36 @@ declare class RewardManager {
 
     /**
     * Adds a weekly reward on user's balance
-    * @param {string} memberID Member ID
-    * @param {string} guildID Guild ID
+    * @param {string} memberID Member ID.
+    * @param {string} guildID Guild ID.
     * @param {string} [reason] The reason why the money was added. Default: 'claimed the weekly reward'
-    * @returns Weekly money amount or time before next claim
+    * @returns Reward object.
     */
     public getWeekly<
         isRewardArray extends boolean = false
     >(memberID: string, guildID: string, reason?: string): RewardObject<isRewardArray, RewardType.WEEKLY>
+
+    /**
+    * Adds a monthly reward on user's balance
+    * @param {string} memberID Member ID.
+    * @param {string} guildID Guild ID.
+    * @param {string} [reason] The reason why the money was added. Default: 'claimed the monthly reward'
+    * @returns Reward object.
+    */
+    public getMonthly<
+        isRewardArray extends boolean = false
+    >(memberID: string, guildID: string, reason?: string): RewardObject<isRewardArray, RewardType.MONTHLY>
+
+    /**
+    * Adds a hourly reward on user's balance
+    * @param {string} memberID Member ID.
+    * @param {string} guildID Guild ID.
+    * @param {string} [reason] The reason why the money was added. Default: 'claimed the hourly reward'
+    * @returns Reward object.
+    */
+    public getHourly<
+        isRewardArray extends boolean = false
+    >(memberID: string, guildID: string, reason?: string): RewardObject<isRewardArray, RewardType.HOURLY>
 }
 
 export = RewardManager

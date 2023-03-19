@@ -52,6 +52,18 @@ class CooldownItem {
          * @type {number}
          */
         this.weekly = cooldownsObject.weekly || 0
+
+        /**
+         * Monthly cooldown.
+         * @type {number}
+         */
+        this.monthly = cooldownsObject.monthly || 0
+
+        /**
+         * Hourly cooldown.
+         * @type {number}
+         */
+        this.hourly = cooldownsObject.hourly || 0
     }
 
     /**
@@ -77,6 +89,22 @@ class CooldownItem {
     clearWeekly() {
         return this.cooldowns.clearWeekly(this.guildID, this.memberID)
     }
+
+    /**
+     * Clears user's monthly cooldown.
+     * @returns {Promise<boolean>} If cleared: true; else: false
+     */
+    clearMonthly() {
+        return this.cooldowns.clearMonthly(this.guildID, this.memberID)
+    }
+
+    /**
+     * Clears user's hourly cooldown.
+     * @returns {Promise<boolean>} If cleared: true; else: false
+     */
+    clearHourly() {
+        return this.cooldowns.clearHourly(this.guildID, this.memberID)
+    }
 }
 
 
@@ -86,6 +114,8 @@ class CooldownItem {
  * @property {number} daily Daily cooldown.
  * @property {number} work Work cooldown.
  * @property {number} weekly Weekly cooldown.
+ * @property {number} monthly Monthly cooldown.
+ * @property {number} hourly Weekly cooldown.
  */
 
 module.exports = CooldownItem

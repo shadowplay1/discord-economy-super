@@ -244,7 +244,9 @@ class Economy extends Emitter {
                         cooldownsCache[userID] = {
                             daily: userObject.dailyCooldown,
                             work: userObject.workCooldown,
-                            weekly: userObject.weeklyCooldown
+                            weekly: userObject.weeklyCooldown,
+                            monthly: userObject.monthlyCooldown,
+                            hourly: userObject.hourlyCooldown,
                         }
 
                         balanceCache[userID] = {
@@ -867,10 +869,10 @@ class Economy extends Emitter {
 
 /**
  * @typedef {object} EconomyConfiguration Default Economy configuration.
- * @property {number} [dailyCooldown=86400000] Cooldown for Daily Command (in ms). Default: 24 hours (60000 * 60 * 24 ms)
- * @property {number} [workCooldown=3600000] Cooldown for Work Command (in ms). Default: 1 hour (60000 * 60 ms)
+ * @property {number} [dailyCooldown=86400000] Cooldown for Daily Reward (in ms). Default: 24 hours (60000 * 60 * 24 ms)
+ * @property {number} [workCooldown=3600000] Cooldown for Work Reward (in ms). Default: 1 hour (60000 * 60 ms)
  * @property {number | number[]} [dailyAmount=100] Amount of money for Daily Reward. Default: 100.
- * @property {number} [weeklyCooldown=604800000] Cooldown for Weekly Command (in ms). Default: 7 days (60000 * 60 * 24 * 7 ms)
+ * @property {number} [weeklyCooldown=604800000] Cooldown for Weekly Reward (in ms). Default: 7 days (60000 * 60 * 24 * 7 ms)
  * @property {number} [sellingItemPercent=75] 
  * Percent of the item's price it will be sold for. Default: 75.
  * 
