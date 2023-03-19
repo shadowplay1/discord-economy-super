@@ -82,7 +82,7 @@ class Inventory extends BaseManager {
         const item = inventory[itemIndex]
 
         if (typeof itemID !== 'number' && typeof itemID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.editItemArgs.itemID + typeof itemID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('itemID', 'string or number', itemID), 'INVALID_TYPE')
         }
 
         if (!item) return null
@@ -174,7 +174,7 @@ class Inventory extends BaseManager {
         const inventoryItems = inventory.filter(invItem => invItem.name == item.name)
 
         if (typeof itemID !== 'number' && typeof itemID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.editItemArgs.itemID + typeof itemID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('itemID', 'string or number', itemID), 'INVALID_TYPE')
         }
 
         if (!item) return false
@@ -206,7 +206,7 @@ class Inventory extends BaseManager {
         const itemIndex = inventory.findIndex(invItem => invItem.id == item?.id)
 
         if (typeof itemID !== 'number' && typeof itemID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.editItemArgs.itemID + typeof itemID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('itemID', 'string or number', itemID), 'INVALID_TYPE')
         }
 
         if (!item) return false

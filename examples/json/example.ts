@@ -275,7 +275,7 @@ client.on('messageCreate', async msg => {
     if (command == prefix + 'daily') {
         const dailyResult = user.rewards.getDaily<false>()
 
-        if (dailyResult.cooldown) {
+        if (!dailyResult.claimed) {
             const cooldownTime = dailyResult.cooldown.time
 
             const cooldownTimeString =
@@ -304,7 +304,7 @@ client.on('messageCreate', async msg => {
     if (command == prefix + 'work') {
         const workResult = user.rewards.getWork<true>()
 
-        if (workResult.cooldown) {
+        if (!workResult.claimed) {
             const cooldownTime = workResult.cooldown.time
 
             const cooldownTimeString =
@@ -333,7 +333,7 @@ client.on('messageCreate', async msg => {
     if (command == prefix + 'weekly') {
         const weeklyResult = user.rewards.getWeekly<true>()
 
-        if (weeklyResult.cooldown) {
+        if (!weeklyResult.claimed) {
             const cooldownTime = weeklyResult.cooldown.time
 
             const cooldownTimeString =

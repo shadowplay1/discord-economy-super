@@ -84,7 +84,7 @@ class History extends BaseManager {
 
 
         if (typeof itemID !== 'number' && typeof itemID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.editItemArgs.itemID + typeof itemID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('itemID', 'string or number', itemID), 'INVALID_TYPE')
         }
 
         if (!item) return false
@@ -115,7 +115,7 @@ class History extends BaseManager {
      */
     async remove(id) {
         if (typeof id !== 'number' && typeof id !== 'string') {
-            throw new EconomyError(errors.invalidTypes.id + typeof id, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('id', 'string or number', id), 'INVALID_TYPE')
         }
 
         const history = (await this.fetch(this.memberID, this.guildID)) || []

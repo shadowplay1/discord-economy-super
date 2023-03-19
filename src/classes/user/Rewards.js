@@ -67,14 +67,6 @@ class Rewards {
     receive(reward, reason) {
         const rewardTypes = ['daily', 'work', 'weekly', 'monthly', 'hourly']
 
-        if (typeof memberID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
-        }
-
-        if (typeof guildID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
-        }
-
         if (isNaN(reward) || !rewardTypes[reward]) {
             throw new EconomyError(
                 errors.invalidType('reward', 'key of RewardType enum', typeof reward),

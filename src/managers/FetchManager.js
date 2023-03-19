@@ -67,11 +67,11 @@ class FetchManager {
         const data = this.fetchAll()
 
         if (typeof memberID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('memberID', 'string', memberID), 'INVALID_TYPE')
         }
 
         if (typeof guildID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('guildID', 'string', guildID), 'INVALID_TYPE')
         }
 
         const guildData = data[guildID]
@@ -91,11 +91,11 @@ class FetchManager {
         const data = this.fetchAll()
 
         if (typeof memberID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('memberID', 'string', memberID), 'INVALID_TYPE')
         }
 
         if (typeof guildID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('guildID', 'string', guildID), 'INVALID_TYPE')
         }
 
         const guildData = data[guildID]
@@ -115,11 +115,11 @@ class FetchManager {
         const data = this.fetchAll()
 
         if (typeof memberID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('memberID', 'string', memberID), 'INVALID_TYPE')
         }
 
         if (typeof guildID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('guildID', 'string', guildID), 'INVALID_TYPE')
         }
 
         const guildData = data[guildID]
@@ -139,11 +139,11 @@ class FetchManager {
         const data = this.fetchAll()
 
         if (typeof memberID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('memberID', 'string', memberID), 'INVALID_TYPE')
         }
 
         if (typeof guildID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('guildID', 'string', guildID), 'INVALID_TYPE')
         }
 
         const guildData = data[guildID]
@@ -163,11 +163,11 @@ class FetchManager {
         const data = this.fetchAll()
 
         if (typeof memberID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('memberID', 'string', memberID), 'INVALID_TYPE')
         }
 
         if (typeof guildID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('guildID', 'string', guildID), 'INVALID_TYPE')
         }
 
         const guildData = data[guildID]
@@ -197,7 +197,7 @@ class FetchManager {
         const data = this.fetchAll()
 
         if (typeof guildID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('guildID', 'string', guildID), 'INVALID_TYPE')
         }
 
         const guildData = data[guildID]

@@ -49,11 +49,11 @@ class CooldownManager {
      */
     getDaily(memberID, guildID) {
         if (typeof memberID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('memberID', 'string', memberID), 'INVALID_TYPE')
         }
 
         if (typeof guildID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('guildID', 'string', guildID), 'INVALID_TYPE')
         }
 
         const cooldown = this.database.fetch(`${guildID}.${memberID}.dailyCooldown`)
@@ -68,11 +68,11 @@ class CooldownManager {
      */
     getWork(memberID, guildID) {
         if (typeof memberID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('memberID', 'string', memberID), 'INVALID_TYPE')
         }
 
         if (typeof guildID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('guildID', 'string', guildID), 'INVALID_TYPE')
         }
 
         const cooldown = this.database.fetch(`${guildID}.${memberID}.workCooldown`)
@@ -87,11 +87,11 @@ class CooldownManager {
      */
     getWeekly(memberID, guildID) {
         if (typeof memberID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('memberID', 'string', memberID), 'INVALID_TYPE')
         }
 
         if (typeof guildID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('guildID', 'string', guildID), 'INVALID_TYPE')
         }
 
         const cooldown = this.database.fetch(`${guildID}.${memberID}.weeklyCooldown`)
@@ -106,11 +106,11 @@ class CooldownManager {
      */
     getMonthly(memberID, guildID) {
         if (typeof memberID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('memberID', 'string', memberID), 'INVALID_TYPE')
         }
 
         if (typeof guildID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('guildID', 'string', guildID), 'INVALID_TYPE')
         }
 
         const cooldown = this.database.fetch(`${guildID}.${memberID}.monthlyCooldown`)
@@ -125,11 +125,11 @@ class CooldownManager {
      */
     getHourly(memberID, guildID) {
         if (typeof memberID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('memberID', 'string', memberID), 'INVALID_TYPE')
         }
 
         if (typeof guildID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('guildID', 'string', guildID), 'INVALID_TYPE')
         }
 
         const cooldown = this.database.fetch(`${guildID}.${memberID}.hourlyCooldown`)
@@ -145,11 +145,11 @@ class CooldownManager {
      */
     getAll(memberID, guildID) {
         if (typeof memberID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('memberID', 'string', memberID), 'INVALID_TYPE')
         }
 
         if (typeof guildID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('guildID', 'string', guildID), 'INVALID_TYPE')
         }
 
         const rawUserObject = this.database.fetch(`${guildID}.${memberID}`)
@@ -197,11 +197,11 @@ class CooldownManager {
      */
     clearAll(memberID, guildID) {
         if (typeof memberID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('memberID', 'string', memberID), 'INVALID_TYPE')
         }
 
         if (typeof guildID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('guildID', 'string', guildID), 'INVALID_TYPE')
         }
 
         const results = [
@@ -227,11 +227,11 @@ class CooldownManager {
      */
     clearDaily(memberID, guildID) {
         if (typeof memberID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('memberID', 'string', memberID), 'INVALID_TYPE')
         }
 
         if (typeof guildID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('guildID', 'string', guildID), 'INVALID_TYPE')
         }
 
         return this.database.delete(`${guildID}.${memberID}.dailyCooldown`)
@@ -245,11 +245,11 @@ class CooldownManager {
      */
     clearWork(memberID, guildID) {
         if (typeof memberID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('memberID', 'string', memberID), 'INVALID_TYPE')
         }
 
         if (typeof guildID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('guildID', 'string', guildID), 'INVALID_TYPE')
         }
 
         return this.database.delete(`${guildID}.${memberID}.workCooldown`)
@@ -263,11 +263,11 @@ class CooldownManager {
      */
     clearWeekly(memberID, guildID) {
         if (typeof memberID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('memberID', 'string', memberID), 'INVALID_TYPE')
         }
 
         if (typeof guildID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('guildID', 'string', guildID), 'INVALID_TYPE')
         }
 
         return this.database.delete(`${guildID}.${memberID}.weeklyCooldown`)
@@ -281,11 +281,11 @@ class CooldownManager {
      */
     clearMonthly(memberID, guildID) {
         if (typeof memberID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('memberID', 'string', memberID), 'INVALID_TYPE')
         }
 
         if (typeof guildID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('guildID', 'string', guildID), 'INVALID_TYPE')
         }
 
         return this.database.delete(`${guildID}.${memberID}.monthlyCooldown`)
@@ -299,11 +299,11 @@ class CooldownManager {
      */
     clearHourly(memberID, guildID) {
         if (typeof memberID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('memberID', 'string', memberID), 'INVALID_TYPE')
         }
 
         if (typeof guildID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('guildID', 'string', guildID), 'INVALID_TYPE')
         }
 
         return this.database.delete(`${guildID}.${memberID}.hourlyCooldown`)

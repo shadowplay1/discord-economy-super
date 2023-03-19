@@ -155,7 +155,7 @@ class SettingsManager {
      */
     get(key, guildID) {
         if (typeof guildID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('guildID', 'string', guildID), 'INVALID_TYPE')
         }
 
         if (!settingsArray.includes(key)) {
@@ -190,7 +190,7 @@ class SettingsManager {
         }
 
         if (typeof guildID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('guildID', 'string', guildID), 'INVALID_TYPE')
         }
 
         if (!settingsArray.includes(key)) {
@@ -220,7 +220,7 @@ class SettingsManager {
         }
 
         if (typeof guildID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('guildID', 'string', guildID), 'INVALID_TYPE')
         }
 
         if (!settingsArray.includes(key)) {
@@ -255,7 +255,7 @@ class SettingsManager {
      */
     all(guildID) {
         if (typeof guildID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('guildID', 'string', guildID), 'INVALID_TYPE')
         }
 
         const settings = this.database.fetch(`${guildID}.settings`)
@@ -291,7 +291,7 @@ class SettingsManager {
      */
     reset(guildID) {
         if (typeof guildID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('guildID', 'string', guildID), 'INVALID_TYPE')
         }
 
         const defaultSettings = {

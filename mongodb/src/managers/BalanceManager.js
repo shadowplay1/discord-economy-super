@@ -100,11 +100,11 @@ class BalanceManager extends Emitter {
     */
     async fetch(memberID, guildID) {
         if (typeof memberID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('memberID', 'string', memberID), 'INVALID_TYPE')
         }
 
         if (typeof guildID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('guildID', 'string', guildID), 'INVALID_TYPE')
         }
 
         const result = await this.database.fetch(`${guildID}.${memberID}.money`)
@@ -135,15 +135,15 @@ class BalanceManager extends Emitter {
         const balance = await this.fetch(memberID, guildID)
 
         if (isNaN(amount)) {
-            throw new EconomyError(errors.invalidTypes.amount + typeof amount, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('amount', 'number', amount), 'INVALID_TYPE')
         }
 
         if (typeof memberID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('memberID', 'string', memberID), 'INVALID_TYPE')
         }
 
         if (typeof guildID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('guildID', 'string', guildID), 'INVALID_TYPE')
         }
 
         await this.database.set(`${guildID}.${memberID}.money`, amount)
@@ -177,15 +177,15 @@ class BalanceManager extends Emitter {
         const balance = await this.fetch(memberID, guildID)
 
         if (isNaN(amount)) {
-            throw new EconomyError(errors.invalidTypes.amount + typeof amount, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('amount', 'number', amount), 'INVALID_TYPE')
         }
 
         if (typeof memberID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('memberID', 'string', memberID), 'INVALID_TYPE')
         }
 
         if (typeof guildID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('guildID', 'string', guildID), 'INVALID_TYPE')
         }
 
         await this.database.add(`${guildID}.${memberID}.money`, amount)
@@ -219,15 +219,15 @@ class BalanceManager extends Emitter {
         const balance = await this.fetch(memberID, guildID)
 
         if (isNaN(amount)) {
-            throw new EconomyError(errors.invalidTypes.amount + typeof amount, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('amount', 'number', amount), 'INVALID_TYPE')
         }
 
         if (typeof memberID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('memberID', 'string', memberID), 'INVALID_TYPE')
         }
 
         if (typeof guildID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('guildID', 'string', guildID), 'INVALID_TYPE')
         }
 
         await this.database.subtract(`${guildID}.${memberID}.money`, amount)
@@ -262,7 +262,7 @@ class BalanceManager extends Emitter {
         const bank = await this.database.get(`${guildID}.${memberID}.bank`)
 
         if (isNaN(amount)) {
-            throw new EconomyError(errors.invalidTypes.amount + typeof amount, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('amount', 'number', amount), 'INVALID_TYPE')
         }
 
         if (amount < 0) {
@@ -270,11 +270,11 @@ class BalanceManager extends Emitter {
         }
 
         if (typeof memberID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('memberID', 'string', memberID), 'INVALID_TYPE')
         }
 
         if (typeof guildID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('guildID', 'string', guildID), 'INVALID_TYPE')
         }
 
         await this.database.subtract(`${guildID}.${memberID}.money`, amount)
@@ -316,7 +316,7 @@ class BalanceManager extends Emitter {
         const data = await this.database.all()
 
         if (typeof guildID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('guildID', 'string', guildID), 'INVALID_TYPE')
         }
 
         const guildData = data[guildID]
@@ -349,19 +349,19 @@ class BalanceManager extends Emitter {
         } = options || {}
 
         if (typeof guildID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('guildID', 'string', guildID), 'INVALID_TYPE')
         }
 
         if (isNaN(amount)) {
-            throw new EconomyError(errors.invalidTypes.amount + typeof amount, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('amount', 'number', amount), 'INVALID_TYPE')
         }
 
         if (typeof senderMemberID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.senderMemberID + typeof senderMemberID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('senderMemberID', 'string', senderMemberID), 'INVALID_TYPE')
         }
 
         if (typeof receiverMemberID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.receiverMemberID + typeof receiverMemberID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('receiverMemberID', 'string', receiverMemberID), 'INVALID_TYPE')
         }
 
         await this.add(amount, receiverMemberID, guildID, receivingReason || 'receiving money from user')

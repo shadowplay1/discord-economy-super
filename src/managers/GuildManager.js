@@ -86,7 +86,7 @@ class GuildManager extends BaseManager {
             settings: []
         }
 
-        if (!guildID) throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
+        if (!guildID) throw new EconomyError(errors.invalidType('guildID', 'string', guildID), 'INVALID_TYPE')
 
         this.database.set(guildID, emptyGuildObject)
         return new EconomyGuild(guildID, this.options, emptyGuildObject, this.database)

@@ -259,7 +259,7 @@ class ShopItem extends Emitter {
      */
     async buy(memberID, quantity = 1, currency = null, reason = 'received the item from the shop') {
         if (typeof memberID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
+            throw new EconomyError(errors.invalidType('memberID', 'string', memberID), 'INVALID_TYPE')
         }
 
         const balance = this.cache.balance.get({

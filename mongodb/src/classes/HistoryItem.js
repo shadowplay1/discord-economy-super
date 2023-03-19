@@ -1,7 +1,3 @@
-const EconomyError = require('../classes/util/EconomyError')
-const errors = require('../structures/errors')
-
-
 /**
 * History item class.
 */
@@ -113,19 +109,6 @@ class HistoryItem {
      */
     async remove() {
         const id = this.id
-
-        if (typeof id !== 'number' && typeof id !== 'string') {
-            throw new EconomyError(errors.invalidTypes.id + typeof id, 'INVALID_TYPE')
-        }
-
-        if (typeof memberID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.memberID + typeof memberID, 'INVALID_TYPE')
-        }
-
-        if (typeof guildID !== 'string') {
-            throw new EconomyError(errors.invalidTypes.guildID + typeof guildID, 'INVALID_TYPE')
-        }
-
         const history = (await this._database.fetch(`${this.guildID}.${this.memberID}.history`)) || []
 
         const historyItem = history.find(
