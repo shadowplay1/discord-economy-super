@@ -5,6 +5,8 @@ const EconomyError = require('./util/EconomyError')
 
 const Emitter = require('./util/Emitter')
 
+const InventoryItem = require('./InventoryItem')
+
 
 /**
 * Shop item class.
@@ -325,7 +327,7 @@ class ShopItem extends Emitter {
         ) return {
             status: false,
             message: `maximum items reached (${item.maxAmount})`,
-            item: new InventoryItem(guildID, memberID, this.options, item, this.database, this.cache),
+            item: new InventoryItem(this.guildID, this.memberID, this.options, item, this.database, this.cache),
             quantity,
             totalPrice
         }
@@ -357,7 +359,7 @@ class ShopItem extends Emitter {
                     type: 'subtract',
                     guildID: this.guildID,
                     memberID,
-                    amount: Number(totalPrice),
+                    amount: parseInt(totalPrice),
                     balance: balance - totalPrice,
                     reason
                 })
@@ -410,7 +412,7 @@ class ShopItem extends Emitter {
         return {
             status: true,
             message: 'OK',
-            item: new InventoryItem(guildID, memberID, this.options, item, this.database, this.cache),
+            item: new InventoryItem(this.guildID, this.memberID, this.options, item, this.database, this.cache),
             quantity,
             totalPrice
         }

@@ -124,7 +124,7 @@ class ShopManager extends Emitter {
             price,
             message: message || 'You have used this item!',
             description: description || 'Very mysterious item.',
-            maxAmount: maxAmount == undefined ? null : Number(maxAmount),
+            maxAmount: maxAmount == undefined ? null : parseInt(maxAmount),
             role: role || null,
             date,
             custom: custom || {}
@@ -601,7 +601,7 @@ class ShopManager extends Emitter {
                     type: 'subtract',
                     guildID,
                     memberID,
-                    amount: Number(totalPrice),
+                    amount: parseInt(totalPrice),
                     balance: balance - totalPrice,
                     reason
                 })

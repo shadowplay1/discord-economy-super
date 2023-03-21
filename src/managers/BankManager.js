@@ -98,13 +98,13 @@ class BankManager extends Emitter {
             throw new EconomyError(errors.invalidType('guildID', 'string', guildID), 'INVALID_TYPE')
         }
 
-        this.database.set(`${guildID}.${memberID}.bank`, Number(amount))
+        this.database.set(`${guildID}.${memberID}.bank`, parseInt(amount))
 
         this.emit('bankSet', {
             type: 'set',
             guildID,
             memberID,
-            amount: Number(amount),
+            amount: parseInt(amount),
             bank,
             reason
         })
@@ -135,13 +135,13 @@ class BankManager extends Emitter {
             throw new EconomyError(errors.invalidType('guildID', 'string', guildID), 'INVALID_TYPE')
         }
 
-        this.database.add(`${guildID}.${memberID}.bank`, Number(amount))
+        this.database.add(`${guildID}.${memberID}.bank`, parseInt(amount))
 
         this.emit('bankAdd', {
             type: 'add',
             guildID,
             memberID,
-            amount: Number(amount),
+            amount: parseInt(amount),
             bank: bank + amount,
             reason
         })
@@ -172,13 +172,13 @@ class BankManager extends Emitter {
             throw new EconomyError(errors.invalidType('guildID', 'string', guildID), 'INVALID_TYPE')
         }
 
-        this.database.subtract(`${guildID}.${memberID}.bank`, Number(amount))
+        this.database.subtract(`${guildID}.${memberID}.bank`, parseInt(amount))
 
         this.emit('bankSubtract', {
             type: 'subtract',
             guildID,
             memberID,
-            amount: Number(amount),
+            amount: parseInt(amount),
             bank: bank + amount,
             reason
         })
@@ -221,7 +221,7 @@ class BankManager extends Emitter {
             type: 'add',
             guildID,
             memberID,
-            amount: Number(amount),
+            amount: parseInt(amount),
             balance: balance + amount,
             reason
         })
@@ -230,7 +230,7 @@ class BankManager extends Emitter {
             type: 'subtract',
             guildID,
             memberID,
-            amount: Number(amount),
+            amount: parseInt(amount),
             balance: bank - amount,
             reason
         })
@@ -259,7 +259,7 @@ class BankManager extends Emitter {
 
         for (const rank in ranks) lb.push({
             userID: users[rank],
-            money: Number(ranks[rank])
+            money: parseInt(ranks[rank])
         })
 
         return lb

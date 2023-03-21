@@ -251,7 +251,7 @@ class CurrencyManager extends Emitter {
             guildID,
             memberID,
             amount,
-            balance: currencyBalance + result,
+            balance: result,
             currency,
             reason
         })
@@ -279,7 +279,7 @@ class CurrencyManager extends Emitter {
             guildID,
             memberID,
             amount,
-            balance: currencyBalance - result,
+            balance: result,
             currency,
             reason
         })
@@ -385,7 +385,7 @@ class CurrencyManager extends Emitter {
 }
 
 /**
- * @typedef {Object} CurrencyObject
+ * @typedef {object} CurrencyObject
  * @property {number} id Currency ID.
  * @property {string} guildID Guild ID.
  * @property {string} name Currency name.

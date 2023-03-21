@@ -154,7 +154,7 @@ class BalanceManager extends Emitter {
             type: 'set',
             guildID,
             memberID,
-            amount: Number(amount),
+            amount: parseInt(amount),
             balance,
             reason
         })
@@ -191,7 +191,7 @@ class BalanceManager extends Emitter {
             type: 'add',
             guildID,
             memberID,
-            amount: Number(amount),
+            amount: parseInt(amount),
             balance: balance + amount,
             reason
         })
@@ -228,7 +228,7 @@ class BalanceManager extends Emitter {
             type: 'subtract',
             guildID,
             memberID,
-            amount: Number(amount),
+            amount: parseInt(amount),
             balance: balance - amount,
             reason
         })
@@ -271,7 +271,7 @@ class BalanceManager extends Emitter {
             type: 'subtract',
             guildID,
             memberID,
-            amount: Number(amount),
+            amount: parseInt(amount),
             balance: balance - amount,
             reason
         })
@@ -280,7 +280,7 @@ class BalanceManager extends Emitter {
             type: 'add',
             guildID,
             memberID,
-            amount: Number(amount),
+            amount: parseInt(amount),
             balance: bank + amount,
             reason
         })
@@ -309,7 +309,7 @@ class BalanceManager extends Emitter {
 
         for (const rank in ranks) lb.push({
             userID: users[rank],
-            money: Number(ranks[rank])
+            money: parseInt(ranks[rank])
         })
 
         return lb
@@ -369,7 +369,7 @@ class BalanceManager extends Emitter {
 
 
 /**
- * @typedef {Object} TransferingResult
+ * @typedef {object} TransferingResult
  * @property {boolean} success Whether the transfer was successful or not.
  * @property {string} guildID Guild ID.
  * @property {number} amount Amount of money that was sent.

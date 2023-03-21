@@ -458,7 +458,7 @@ class Economy extends Emitter {
                 if (this.errored) return reject(new EconomyError(errors.errored, 'UNKNOWN_ERROR'))
                 if (this.ready) return reject(new EconomyError(errors.notReady, 'MODULE_NOT_READY'))
 
-                if (Number(process.version.split('.')[0].slice(1)) < 14) {
+                if (parseInt(process.version.split('.')[0].slice(1)) < 14) {
                     return reject(new EconomyError(errors.oldNodeVersion + process.version, 'OLD_NODE_VERSION'))
                 }
 

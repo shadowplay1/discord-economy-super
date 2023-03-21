@@ -167,7 +167,7 @@ class Balance {
 
 
 /**
- * @typedef {Object} TransferingResult
+ * @typedef {object} TransferingResult
  * @property {boolean} success Whether the transfer was successful or not.
  * @property {string} guildID Guild ID.
  * @property {number} amount Amount of money that was sent.

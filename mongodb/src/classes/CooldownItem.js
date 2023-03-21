@@ -110,7 +110,7 @@ class CooldownItem {
 
 /**
  * Cooldowns object (in ms).
- * @typedef {Object} CooldownsObject
+ * @typedef {object} CooldownsObject
  * @property {number} daily Daily cooldown.
  * @property {number} work Work cooldown.
  * @property {number} weekly Weekly cooldown.

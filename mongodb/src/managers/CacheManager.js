@@ -201,7 +201,7 @@ module.exports = CacheManager
 
 
 /**
- * @typedef {Object} DataIdentifier
+ * @typedef {object} DataIdentifier
  * @property {string} guildID Guild ID.
  * @property {string} memberID Member ID.
  */

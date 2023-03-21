@@ -148,7 +148,7 @@ class RewardManager {
             const [min, max] = defaultDailyReward
 
             if (defaultDailyReward.length == 1) reward = min
-            else reward = Math.floor(Math.random() * (Number(min) - Number(max)) + Number(max))
+            else reward = Math.floor(Math.random() * (parseInt(min) - parseInt(max)) + parseInt(max))
         }
 
 
@@ -216,7 +216,7 @@ class RewardManager {
             const [min, max] = defaultWorkReward
 
             if (defaultWorkReward.length == 1) reward = min
-            else reward = Math.floor(Math.random() * (Number(min) - Number(max)) + Number(max))
+            else reward = Math.floor(Math.random() * (parseInt(min) - parseInt(max)) + parseInt(max))
         }
 
         else reward = defaultWorkReward
@@ -283,7 +283,7 @@ class RewardManager {
             const [min, max] = defaultWeeklyReward
 
             if (defaultWeeklyReward.length == 1) reward = min
-            else reward = Math.floor(Math.random() * (Number(min) - Number(max)) + Number(max))
+            else reward = Math.floor(Math.random() * (parseInt(min) - parseInt(max)) + parseInt(max))
         }
 
         else reward = defaultWeeklyReward
@@ -350,7 +350,7 @@ class RewardManager {
             const [min, max] = defaultMonthlyReward
 
             if (defaultMonthlyReward.length == 1) reward = min
-            else reward = Math.floor(Math.random() * (Number(min) - Number(max)) + Number(max))
+            else reward = Math.floor(Math.random() * (parseInt(min) - parseInt(max)) + parseInt(max))
         }
 
         else reward = defaultMonthlyReward
@@ -417,7 +417,7 @@ class RewardManager {
             const [min, max] = defaultHourlyReward
 
             if (defaultHourlyReward.length == 1) reward = min
-            else reward = Math.floor(Math.random() * (Number(min) - Number(max)) + Number(max))
+            else reward = Math.floor(Math.random() * (parseInt(min) - parseInt(max)) + parseInt(max))
         }
 
         else reward = defaultHourlyReward

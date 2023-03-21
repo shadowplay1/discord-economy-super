@@ -35,7 +35,7 @@ class BankBalanceItem {
 
 /**
  * Bank balance object.
- * @typedef {Object} BankBalanceObject
+ * @typedef {object} BankBalanceObject
  * @property {number} balance User's bank balance.
  */
 

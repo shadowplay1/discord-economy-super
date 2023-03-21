@@ -453,7 +453,7 @@ class CachedItem {
 module.exports = CachedItem
 
 /**
- * @typedef {Object} DataIdentifier
+ * @typedef {object} DataIdentifier
  * @property {string} guildID Guild ID.
  * @property {string} memberID Member ID.
  */

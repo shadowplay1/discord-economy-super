@@ -264,6 +264,8 @@ class CurrencyManager extends Emitter {
         const currency = await this.get(currencyID, memberID, guildID)
         const currencyBalance = await this.getBalance(currencyID, memberID, guildID)
 
+        console.log({ amount, currencyBalance, toSet: currencyBalance + amount })
+
         const result = await this.setBalance(currencyID, currencyBalance + amount, memberID, guildID, reason, false)
 
         this.emit('customCurrencyAdd', {
@@ -271,7 +273,7 @@ class CurrencyManager extends Emitter {
             guildID,
             memberID,
             amount,
-            balance: currencyBalance + result,
+            balance: result,
             currency,
             reason
         })
@@ -299,7 +301,7 @@ class CurrencyManager extends Emitter {
             guildID,
             memberID,
             amount,
-            balance: currencyBalance - result,
+            balance: result,
             currency,
             reason
         })
@@ -415,7 +417,7 @@ class CurrencyManager extends Emitter {
 }
 
 /**
- * @typedef {Object} CurrencyObject
+ * @typedef {object} CurrencyObject
  * @property {number} id Currency ID.
  * @property {string} guildID Guild ID.
  * @property {string} name Currency name.
