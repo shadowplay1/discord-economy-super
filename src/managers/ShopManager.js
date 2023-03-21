@@ -1,12 +1,14 @@
 const Emitter = require('../classes/util/Emitter')
+
 const EconomyError = require('../classes/util/EconomyError')
+const errors = require('../structures/errors')
 
 const DatabaseManager = require('./DatabaseManager')
 const CurrencyManager = require('./CurrencyManager')
 
-const errors = require('../structures/errors')
 const ShopItem = require('../classes/ShopItem')
 const InventoryItem = require('../classes/InventoryItem')
+
 
 /**
  * Shop manager methods class.
@@ -583,7 +585,7 @@ class ShopManager extends Emitter {
         ) return {
             status: false,
             message: `maximum items reached (${item.maxAmount})`,
-            item,
+            item: new InventoryItem(guildID, memberID, this.options, item, this.database),
             quantity,
             totalPrice
         }
@@ -639,7 +641,7 @@ class ShopManager extends Emitter {
         return {
             status: true,
             message: 'OK',
-            item,
+            item: new InventoryItem(guildID, memberID, this.options, item, this.database),
             quantity,
             totalPrice
         }
@@ -929,7 +931,7 @@ class ShopManager extends Emitter {
  * @typedef {object} ShopOperationInfo
  * @property {boolean} status Operation status.
  * @property {string} message Operation message.
- * @property {ShopItem | InventoryItem} item Item object.
+ * @property {InventoryItem} item Inventory item object.
  * @property {number} quantity Item quantity.
  * @property {number} totalPrice Total price of the items.
  */

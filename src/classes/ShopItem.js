@@ -293,7 +293,7 @@ class ShopItem extends Emitter {
         ) return {
             status: false,
             message: `maximum items reached (${item.maxAmount})`,
-            item,
+            item: this,
             quantity,
             totalPrice
         }
@@ -361,7 +361,7 @@ class ShopItem extends Emitter {
         return {
             status: true,
             message: 'OK',
-            item,
+            item: this,
             quantity,
             totalPrice
         }
@@ -452,6 +452,14 @@ class ShopItem extends Emitter {
  * @property {number} maxAmount Max amount of the item that user can hold in their inventory.
  * @property {string} date Date when the item was added in the shop.
  * @property {object} custom Custom item properties object.
+ */
+
+/**
+ * @typedef {object} ShopOperationInfo
+ * @property {boolean} status Operation status.
+ * @property {string} message Operation message.
+ * @property {InventoryItem} item Inventory item object.
+ * @property {number} quantity Item quantity.
  */
 
 /**

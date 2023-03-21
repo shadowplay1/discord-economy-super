@@ -156,7 +156,7 @@ class Items {
  * @typedef {object} ShopOperationInfo
  * @property {boolean} status Operation status.
  * @property {string} message Operation message.
- * @property {ShopItem | InventoryItem} item Item object.
+ * @property {InventoryItem} item Inventory item object.
  * @property {number} quantity Item quantity.
  */
 

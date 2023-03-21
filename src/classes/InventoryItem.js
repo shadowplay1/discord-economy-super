@@ -285,7 +285,7 @@ class InventoryItem extends Emitter {
             return {
                 status: false,
                 message: `not enough items to sell (${itemQuantity} < ${quantity})`,
-                item,
+                item: this,
                 quantity,
                 totalPrice: totalSellingPrice
             }
@@ -297,7 +297,7 @@ class InventoryItem extends Emitter {
         return {
             status: true,
             message: 'OK',
-            item,
+            item: this,
             quantity,
             totalPrice: totalSellingPrice
         }
@@ -350,6 +350,14 @@ class InventoryItem extends Emitter {
  * @property {number} quantity Quantity of the item in inventory.
  * @property {number} totalPrice Total price of the items in inventory.
  * @property {InventoryItem} item The stacked item.
+ */
+
+/**
+ * @typedef {object} ShopOperationInfo
+ * @property {boolean} status Operation status.
+ * @property {string} message Operation message.
+ * @property {InventoryItem} item Inventory item object.
+ * @property {number} quantity Item quantity.
  */
 
 /**

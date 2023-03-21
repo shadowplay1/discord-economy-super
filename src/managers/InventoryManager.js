@@ -9,6 +9,7 @@ const errors = require('../structures/errors')
 const InventoryItem = require('../classes/InventoryItem')
 const ShopItem = require('../classes/ShopItem')
 
+
 /**
  * Inventory manager methods class.
  * @extends {Emitter}
@@ -245,7 +246,7 @@ class InventoryManager extends Emitter {
         this.emit('shopItemUse', {
             guildID,
             usedBy: memberID,
-            item,
+            item: new InventoryItem(guildID, memberID, this.options, item, this.database),
             receivedMessage: msg
         })
 
@@ -423,7 +424,7 @@ class InventoryManager extends Emitter {
         ) return {
             status: false,
             message: `maximum items reached (${item.maxAmount})`,
-            item,
+            item: new InventoryItem(guildID, memberID, this.options, item, this.database),
             quantity,
             totalPrice
         }
@@ -434,7 +435,7 @@ class InventoryManager extends Emitter {
         return {
             status: true,
             message: 'OK',
-            item,
+            item: new InventoryItem(guildID, memberID, this.options, item, this.database),
             quantity,
             totalPrice: item.price * quantity
         }
@@ -552,7 +553,7 @@ class InventoryManager extends Emitter {
  * @typedef {object} ShopOperationInfo
  * @property {boolean} status Operation status.
  * @property {string} message Operation message.
- * @property {ShopItem | InventoryItem} item Item object.
+ * @property {InventoryItem} item Inventory item object.
  * @property {number} quantity Item quantity.
  * @property {number} totalPrice Total price of the items.
  */
