@@ -193,7 +193,7 @@ class CurrencyManager extends Emitter {
      * @param {string} guildID Guild ID.
      * @param {string} [reason] The reason why the money was set.
      * @param {boolean} [emitSet=true] If true, `customCurrencySet` event will be emitted on set. Default: true.
-     * @returns {Promise<number>} Amount of money that was set.
+     * @returns {Promise<CurrencyTransactionInfo>} Currency transaction info object.
      */
     async setBalance(currencyID, amount, memberID, guildID, reason = '', emitSet = true) {
         const currenciesArray = await this.all(guildID)
@@ -248,7 +248,12 @@ class CurrencyManager extends Emitter {
             })
         }
 
-        return amount
+        return {
+            status: true,
+            amount,
+            newBalance: amount,
+            currency
+        }
     }
 
     /**
@@ -258,7 +263,7 @@ class CurrencyManager extends Emitter {
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
      * @param {string} [reason] The reason why the money was added.
-     * @returns {Promise<number>} Amount of money that was added.
+     * @returns {Promise<CurrencyTransactionInfo>} Currency transaction info object.
      */
     async addBalance(currencyID, amount, memberID, guildID, reason = '') {
         const currency = await this.get(currencyID, memberID, guildID)
@@ -273,12 +278,17 @@ class CurrencyManager extends Emitter {
             guildID,
             memberID,
             amount,
-            balance: result,
+            balance: result.newBalance,
             currency,
             reason
         })
 
-        return result
+        return {
+            status: true,
+            amount,
+            newBalance: result.newBalance,
+            currency
+        }
     }
 
     /**
@@ -288,7 +298,7 @@ class CurrencyManager extends Emitter {
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
      * @param {string} [reason] The reason why the money was subtracted.
-     * @returns {Promise<number>} Amount of money that was subtracted.
+     * @returns {Promise<CurrencyTransactionInfo>} Currency transaction info object.
      */
     async subtractBalance(currencyID, amount, memberID, guildID, reason = '') {
         const currency = await this.get(currencyID, memberID, guildID)
@@ -301,12 +311,17 @@ class CurrencyManager extends Emitter {
             guildID,
             memberID,
             amount,
-            balance: result,
+            balance: result.newBalance,
             currency,
             reason
         })
 
-        return result
+        return {
+            status: true,
+            amount,
+            newBalance: result.newBalance,
+            currency
+        }
     }
 
     /**
@@ -424,6 +439,14 @@ class CurrencyManager extends Emitter {
  * @property {string} [symbol] Currency symbol.
  * @property {object} balances Currency balances object.
  * @property {object} custom Custom currency data object.
+ */
+
+/**
+ * @typedef {object} CurrencyTransactionInfo
+ * @property {boolean} status Status of the transaction.
+ * @property {number} amount Amount of currency used in the transaction.
+ * @property {number} newBalance New currency balance after completing the transaction.
+ * @property {Currency} currency The currency that was used in the transaction.
  */
 
 /**

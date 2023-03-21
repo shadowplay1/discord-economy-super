@@ -206,7 +206,7 @@ class Currency extends Emitter {
 	 * @param {string} memberID Member ID.
 	 * @param {string} [reason] The reason why the balance was set.
 	 * @param {boolean} [emitSet=true] If true, `customCurrencySet` event will be emitted on set. Default: true.
-	 * @returns {Promise<number>} Amount of money that was set.
+	 * @returns {Promise<CurrencyTransactionInfo>} Currency transaction info object.
 	 */
 	async setBalance(amount, memberID, reason = '', emitSet = true) {
 		const currenciesArray = await this._all(this.guildID)
@@ -250,7 +250,12 @@ class Currency extends Emitter {
 			})
 		}
 
-		return amount
+        return {
+            status: true,
+            amount,
+            newBalance: amount,
+            currency: this
+        }
 	}
 
 	/**
@@ -258,7 +263,7 @@ class Currency extends Emitter {
 	 * @param {number} amount Amount of money to add.
 	 * @param {string} memberID Member ID.
 	 * @param {string} [reason] The reason why the balance was added.
-	 * @returns {Promise<number>} Amount of money that was added.
+	 * @returns {Promise<CurrencyTransactionInfo>} Currency transaction info object.
 	 */
 	async addBalance(amount, memberID, reason = '') {
 		const currencyBalance = await this.getBalance(memberID)
@@ -274,7 +279,41 @@ class Currency extends Emitter {
 			reason
 		})
 
-		return result
+		return {
+			status: true,
+			amount,
+			newBalance: result.newBalance,
+			currency: this
+		}
+	}
+
+	/**
+	 * Subtracts the currency for specified member.
+	 * @param {number} amount Amount of money to subtract.
+	 * @param {string} memberID Member ID.
+	 * @param {string} [reason] The reason why the balance was subtracted.
+	 * @returns {Promise<CurrencyTransactionInfo>} Currency transaction info object.
+	 */
+	async subtractBalance(amount, memberID, reason = '') {
+		const currencyBalance = await this.getBalance(memberID)
+		const result = await this.setBalance(currencyBalance - amount, memberID, reason, false)
+
+		this.emit('customCurrencySubtract', {
+			type: 'customCurrencySubtract',
+			guildID: this.guildID,
+			memberID,
+			amount,
+			balance: currencyBalance - result,
+			currency: this,
+			reason
+		})
+
+		return {
+			status: true,
+			amount,
+			newBalance: result.newBalance,
+			currency: this
+		}
 	}
 
 	/**
@@ -322,30 +361,6 @@ class Currency extends Emitter {
 	}
 
 	/**
-	 * Subtracts the currency for specified member.
-	 * @param {number} amount Amount of money to subtract.
-	 * @param {string} memberID Member ID.
-	 * @param {string} [reason] The reason why the balance was subtracted.
-	 * @returns {Promise<number>} Amount of money that was subtracted.
-	 */
-	async subtractBalance(amount, memberID, reason = '') {
-		const currencyBalance = await this.getBalance(memberID)
-		const result = await this.setBalance(currencyBalance - amount, memberID, reason, false)
-
-		this.emit('customCurrencySubtract', {
-			type: 'customCurrencySubtract',
-			guildID: this.guildID,
-			memberID,
-			amount,
-			balance: currencyBalance - result,
-			currency: this,
-			reason
-		})
-
-		return result
-	}
-
-	/**
 	 * Saves the currency object in database.
 	 * @returns {Promise<Currency>} Currency instance.
 	 */
@@ -388,6 +403,19 @@ class Currency extends Emitter {
  */
 
 /**
+ * Transfering options.
+ * @typedef {object} TransferingOptions
+ * @property {number} amount Amount of money to send.
+ * @property {string} senderMemberID A member ID who will send the money.
+ * @property {string} receiverMemberID A member ID who will receive the money.
+ * @property {string} [sendingReason='sending money to user'] 
+ * The reason of subtracting the money from sender. (example: "sending money to {user}")
+ *
+ * @property {string} [receivingReason='receiving money from user']
+ * The reason of adding a money to receiver. (example: "receiving money from {user}")
+ */
+
+/**
  * @typedef {object} TransferingResult
  * @property {boolean} success Whether the transfer was successful or not.
  * @property {string} guildID Guild ID.
@@ -398,6 +426,14 @@ class Currency extends Emitter {
  * @property {string} receivingReason Receiving reason.
  * @property {number} senderBalance New sender balance.
  * @property {number} receiverBalance New receiver balance.
+ */
+
+/**
+ * @typedef {object} CurrencyTransactionInfo
+ * @property {boolean} status Status of the transaction.
+ * @property {number} amount Amount of currency used in the transaction.
+ * @property {number} newBalance New currency balance after completing the transaction.
+ * @property {Currency} currency The currency that was used in the transaction.
  */
 
 /**

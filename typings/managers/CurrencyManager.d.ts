@@ -1,6 +1,7 @@
 import Emitter from '../classes/util/Emitter'
 
 import { CurrencyObject, CurrencyPropertyType } from '../interfaces/CurrencyObject'
+import CurrencyTransactionInfo from '../interfaces/CurrencyTransactionInfo'
 import CustomItemData from '../interfaces/CustomItemData'
 
 import EconomyConfiguration from '../interfaces/EconomyConfiguration'
@@ -207,9 +208,9 @@ declare class CurrencyManager extends Emitter {
      * @param {string} guildID Guild ID.
      * @param {string} [reason] The reason why the money was set.
      * @param {boolean} [emitSet=false] If true, `customCurrencySet` event will be emitted on set. Default: false.
-     * @returns {number} Amount of money that was set.
+     * @returns {CurrencyTransactionInfo} Currency transaction info object.
      */
-    public setBalance(currencyID: string, amount: number, memberID: string, guildID: string, reason?: string, emitSet?: boolean): number
+    public setBalance(currencyID: string, amount: number, memberID: string, guildID: string, reason?: string, emitSet?: boolean): CurrencyTransactionInfo
 
     /**
      * Sets the currecy balance for speciied member.
@@ -219,9 +220,9 @@ declare class CurrencyManager extends Emitter {
      * @param {string} guildID Guild ID.
      * @param {string} [reason] The reason why the money was set.
      * @param {boolean} [emitSet=false] If true, `customCurrencySet` event will be emitted on set. Default: false.
-     * @returns {number} Amount of money that was set.
+     * @returns {CurrencyTransactionInfo} Currency transaction info object.
      */
-    public setBalance(currencyID: number, amount: number, memberID: string, guildID: string, reason?: string, emitSet?: boolean): number
+    public setBalance(currencyID: number, amount: number, memberID: string, guildID: string, reason?: string, emitSet?: boolean): CurrencyTransactionInfo
 
     /**
      * Sets the currecy balance for speciied member.
@@ -231,9 +232,9 @@ declare class CurrencyManager extends Emitter {
      * @param {string} guildID Guild ID.
      * @param {string} [reason] The reason why the money was set.
      * @param {boolean} [emitSet=false] If true, `customCurrencySet` event will be emitted on set. Default: false.
-     * @returns {number} Amount of money that was set.
+     * @returns {CurrencyTransactionInfo} Currency transaction info object.
      */
-    public setBalance(currencyID: string | number, amount: number, memberID: string, guildID: string, reason?: string, emitSet?: boolean): number
+    public setBalance(currencyID: string | number, amount: number, memberID: string, guildID: string, reason?: string, emitSet?: boolean): CurrencyTransactionInfo
 
     /**
      * Adds the currecy balance for speciied member.
@@ -242,9 +243,42 @@ declare class CurrencyManager extends Emitter {
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
      * @param {string} [reason] The reason why the money was added.
-     * @returns {number} Amount of money that was add.
+     * @returns {CurrencyTransactionInfo} Currency transaction info object.
      */
-    public addBalance(currencyID: string, amount: number, memberID: string, guildID: string, reason?: string): number
+    public addBalance(currencyID: string, amount: number, memberID: string, guildID: string, reason?: string): CurrencyTransactionInfo
+
+    /**
+     * Adds the currecy balance for speciied member.
+     * @param {number} currencyID Currency ID, its name or its symbol.
+     * @param {number} amount Amount of money to add.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @param {string} [reason] The reason why the money was added.
+     * @returns {CurrencyTransactionInfo} Currency transaction info object.
+     */
+    public addBalance(currencyID: number, amount: number, memberID: string, guildID: string, reason?: string): CurrencyTransactionInfo
+
+    /**
+     * Adds the currecy balance for speciied member.
+     * @param {string | number} currencyID Currency ID, its name or its symbol.
+     * @param {number} amount Amount of money to add.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @param {string} [reason] The reason why the money was added.
+     * @returns {CurrencyTransactionInfo} Currency transaction info object.
+     */
+    public addBalance(currencyID: string | number, amount: number, memberID: string, guildID: string, reason?: string): CurrencyTransactionInfo
+
+    /**
+     * Subtracts the currecy balance for speciied member.
+     * @param {string} currencyID Currency ID, its name or its symbol.
+     * @param {number} amount Amount of money to subtract.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @param {string} [reason] The reason why the money was subtracted.
+     * @returns {CurrencyTransactionInfo} Currency transaction info object.
+     */
+    public subtractBalance(currencyID: string, amount: number, memberID: string, guildID: string, reason?: string): CurrencyTransactionInfo
 
     /**
      * Subtracts the currecy balance for speciied member.
@@ -253,9 +287,20 @@ declare class CurrencyManager extends Emitter {
      * @param {string} memberID Member ID.
      * @param {string} guildID Guild ID.
      * @param {string} [reason] The reason why the money was subtracted.
-     * @returns {number} Amount of money that was subtracted.
+     * @returns {CurrencyTransactionInfo} Currency transaction info object.
      */
-    public subtractBalance(currencyID: number, amount: number, memberID: string, guildID: string, reason?: string): number
+    public subtractBalance(currencyID: number, amount: number, memberID: string, guildID: string, reason?: string): CurrencyTransactionInfo
+
+    /**
+     * Subtracts the currecy balance for speciied member.
+     * @param {string | number} currencyID Currency ID, its name or its symbol.
+     * @param {number} amount Amount of money to subtract.
+     * @param {string} memberID Member ID.
+     * @param {string} guildID Guild ID.
+     * @param {string} [reason] The reason why the money was subtracted.
+     * @returns {CurrencyTransactionInfo} Currency transaction info object.
+     */
+    public subtractBalance(currencyID: string | number, amount: number, memberID: string, guildID: string, reason?: string): CurrencyTransactionInfo
 
     /**
      * Deletes the currency object and all its balances in a specified guild.

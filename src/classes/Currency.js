@@ -184,7 +184,7 @@ class Currency extends Emitter {
      * @param {string} memberID Member ID.
      * @param {string} [reason] The reason why the balance was set.
      * @param {boolean} [emitSet=true] If true, `customCurrencySet` event will be emitted on set. Default: true.
-     * @returns {number} Amount of money that was set.
+     * @returns {CurrencyTransactionInfo} Currency transaction info object.
      */
     setBalance(amount, memberID, reason = '', emitSet = true) {
         const currenciesArray = this._all(this.guildID)
@@ -223,7 +223,12 @@ class Currency extends Emitter {
             })
         }
 
-        return amount
+        return {
+            status: true,
+            amount,
+            newBalance: amount,
+            currency: this
+        }
     }
 
     /**
@@ -231,7 +236,7 @@ class Currency extends Emitter {
      * @param {number} amount Amount of money to add.
      * @param {string} memberID Member ID.
      * @param {string} [reason] The reason why the balance was added.
-     * @returns {number} Amount of money that was added.
+     * @returns {CurrencyTransactionInfo} Currency transaction info object.
      */
     addBalance(amount, memberID, reason = '') {
         const currencyBalance = this.getBalance(memberID)
@@ -247,7 +252,12 @@ class Currency extends Emitter {
             reason
         })
 
-        return result
+        return {
+            status: true,
+            amount,
+            newBalance: result.newBalance,
+            currency: this
+        }
     }
 
     /**
@@ -255,7 +265,7 @@ class Currency extends Emitter {
      * @param {number} amount Amount of money to subtract.
      * @param {string} memberID Member ID.
      * @param {string} [reason] The reason why the balance was subtracted.
-     * @returns {number} Amount of money that was subtracted.
+     * @returns {CurrencyTransactionInfo} Currency transaction info object.
      */
     subtractBalance(amount, memberID, reason = '') {
         const currencyBalance = this.getBalance(memberID)
@@ -271,7 +281,12 @@ class Currency extends Emitter {
             reason
         })
 
-        return result
+        return {
+            status: true,
+            amount,
+            newBalance: result.newBalance,
+            currency: this
+        }
     }
 
     /**
@@ -367,6 +382,14 @@ class Currency extends Emitter {
  * @property {string} receivingReason Receiving reason.
  * @property {number} senderBalance New sender balance.
  * @property {number} receiverBalance New receiver balance.
+ */
+
+/**
+ * @typedef {object} CurrencyTransactionInfo
+ * @property {boolean} status Status of the transaction.
+ * @property {number} amount Amount of currency used in the transaction.
+ * @property {number} newBalance New currency balance after completing the transaction.
+ * @property {Currency} currency The currency that was used in the transaction.
  */
 
 /**

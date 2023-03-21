@@ -10,6 +10,7 @@ import TransferingOptions from '../interfaces/TransferingOptions'
 import TransferingResult from '../interfaces/TransferingResult'
 
 import EconomyConfiguration from '../interfaces/EconomyConfiguration'
+import CurrencyTransactionInfo from '../interfaces/CurrencyTransactionInfo'
 
 
 /**
@@ -112,41 +113,41 @@ declare class Currency<T extends object = any> {
 
     /**
      * Sets the currency for specified member.
-     * @param {number} amount Amount of money to set.
-     * @param {string} memberID Member ID.
-     * @param {string} [reason] The reason why the balance was set.
-     * @returns {Promise<number>} Amount of money that was set.
-     */
-    public setBalance(amount: number, memberID: string, reason: string): Promise<number>
-
-    /**
-     * Sets the currency for specified member.
      * @param {string} memberID Member ID.
      * @returns {Promise<number>} Member's balance.
      */
     public getBalance(memberID: string): Promise<number>
 
     /**
+     * Sets the currency for specified member.
+     * @param {number} amount Amount of money to set.
+     * @param {string} memberID Member ID.
+     * @param {string} [reason] The reason why the balance was set.
+     * @returns {Promise<CurrencyTransactionInfo>} Currency transaction info object.
+     */
+    public setBalance(amount: number, memberID: string, reason: string): Promise<CurrencyTransactionInfo>
+
+    /**
      * Adds the currency for specified member.
      * @param {number} amount Amount of money to add.
      * @param {string} memberID Member ID.
      * @param {string} [reason] The reason why the balance was added.
-     * @returns {Promise<number>} Amount of money that was added.
+     * @returns {Promise<CurrencyTransactionInfo>} Currency transaction info object.
      */
-    public addBalance(amount: number, memberID: string, reason: string): Promise<number>
+    public addBalance(amount: number, memberID: string, reason: string): Promise<CurrencyTransactionInfo>
 
     /**
      * Subtracts the currency for specified member.
      * @param {number} amount Amount of money to subtract.
      * @param {string} memberID Member ID.
      * @param {string} [reason] The reason why the balance was subtracted.
-     * @returns {Promise<number>} Amount of money that was subtracted.
+     * @returns {Promise<CurrencyTransactionInfo>} Currency transaction info object.
      */
-    public subtractBalance(amount: number, memberID: string, reason: string): Promise<number>
+    public subtractBalance(amount: number, memberID: string, reason: string): Promise<CurrencyTransactionInfo>
 
     /**
      * Transfers the currency to specified user
-     * @param {CurrencyTransferOption} Currency transfering options.
+     * @param {CurrencyTransferOption} options Transfering options.
      * @returns {Promise<TransferingResult>} Currency transfering result.
      */
     public transfer(options: TransferingOptions): Promise<TransferingResult>

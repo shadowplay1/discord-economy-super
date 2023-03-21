@@ -8,6 +8,7 @@ import TransferingResult from '../interfaces/TransferingResult'
 
 import EconomyConfiguration from '../interfaces/EconomyConfiguration'
 import DatabaseManager from '../managers/DatabaseManager'
+import CurrencyTransactionInfo from '../interfaces/CurrencyTransactionInfo'
 
 
 /**
@@ -108,50 +109,50 @@ declare class Currency<T extends object = any> {
 
     /**
      * Sets the currency for specified member.
+     * @param {string} memberID Member ID.
+     * @returns {number} Member's balance.
+     */
+    public getBalance(memberID: string): number
+
+    /**
+     * Sets the currency for specified member.
      * @param {number} amount Amount of money to set.
      * @param {string} memberID Member ID.
      * @param {string} [reason] The reason why the balance was set.
-     * @returns {number} Amount of money that was set.
+     * @returns {CurrencyTransactionInfo} Currency transaction info object.
      */
-    public setBalance(amount: number, memberID: string, reason: string): number
-
-	/**
-	 * Sets the currency for specified member.
-	 * @param {string} memberID Member ID.
-	 * @returns {number} Member's balance.
-	 */
-    public getBalance(memberID: string): number
+    public setBalance(amount: number, memberID: string, reason: string): CurrencyTransactionInfo
 
     /**
      * Adds the currency for specified member.
      * @param {number} amount Amount of money to add.
      * @param {string} memberID Member ID.
      * @param {string} [reason] The reason why the balance was added.
-     * @returns {number} Amount of money that was added.
+     * @returns {CurrencyTransactionInfo} Currency transaction info object.
      */
-    public addBalance(amount: number, memberID: string, reason: string): number
+    public addBalance(amount: number, memberID: string, reason: string): CurrencyTransactionInfo
 
     /**
      * Subtracts the currency for specified member.
      * @param {number} amount Amount of money to subtract.
      * @param {string} memberID Member ID.
      * @param {string} [reason] The reason why the balance was subtracted.
-     * @returns {number} Amount of money that was subtracted.
+     * @returns {CurrencyTransactionInfo} Currency transaction info object.
      */
-    public subtractBalance(amount: number, memberID: string, reason: string): number
+    public subtractBalance(amount: number, memberID: string, reason: string): CurrencyTransactionInfo
 
-	/**
-	 * Transfers the currency to specified user
-     * @param {CurrencyTransferOption} Currency transfering options.
+    /**
+     * Transfers the currency to specified user
+     * @param {CurrencyTransferOption} options Transfering options.
      * @returns {TransferingResult} Currency transfering result.
      */
-	public transfer(options: TransferingOptions): TransferingResult
+    public transfer(options: TransferingOptions): TransferingResult
 
-	/**
-	 * Saves the currency object in database.
-	 * @returns {Currency} Currency instance.
-	 */
-	public save(): Currency
+    /**
+     * Saves the currency object in database.
+     * @returns {Currency} Currency instance.
+     */
+    public save(): Currency
 
     /**
      * Converts the currency object to string.

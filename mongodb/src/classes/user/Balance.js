@@ -274,6 +274,14 @@ class Balance {
  */
 
 /**
+ * @typedef {object} CurrencyTransactionInfo
+ * @property {boolean} status Status of the transaction.
+ * @property {number} amount Amount of currency used in the transaction.
+ * @property {number} newBalance New currency balance after completing the transaction.
+ * @property {Currency} currency The currency that was used in the transaction.
+ */
+
+/**
  * @callback FactoryGet
  * @returns {Promise<number>} Currency balance.
  */
@@ -287,21 +295,21 @@ class Balance {
  * @callback FactorySet
  * @param {number} amount Amount of money to set.
  * @param {string} [reason] The reason why the money was set.
- * @returns {Promise<number>} Updated currency balance.
+ * @returns {Promise<CurrencyTransactionInfo>} Currency transaction info object.
  */
 
 /**
  * @callback FactoryAdd
  * @param {number} amount Amount of money to add.
  * @param {string} [reason] The reason why the money was added.
- * @returns {Promise<number>} Updated currency balance.
+ * @returns {Promise<CurrencyTransactionInfo>} Currency transaction info object.
  */
 
 /**
  * @callback FactorySubtract
  * @param {number} amount Amount of money to subtract.
  * @param {string} [reason] The reason why the money was subtracted.
- * @returns {Promise<number>} Updated currency balance.
+ * @returns {Promise<CurrencyTransactionInfo>} Currency transaction info object.
  */
 
 /**

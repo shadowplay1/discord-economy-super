@@ -391,6 +391,14 @@ class BalanceManager extends Emitter {
  */
 
 /**
+ * @typedef {object} CurrencyTransactionInfo
+ * @property {boolean} status Status of the transaction.
+ * @property {number} amount Amount of currency used in the transaction.
+ * @property {number} newBalance New currency balance after completing the transaction.
+ * @property {Currency} currency The currency that was used in the transaction.
+ */
+
+/**
  * @callback FactoryGet
  * @returns {number} Currency balance.
  */
@@ -404,21 +412,21 @@ class BalanceManager extends Emitter {
  * @callback FactorySet
  * @param {number} amount Amount of money to set.
  * @param {string} [reason] The reason why the money was set.
- * @returns {number} Updated currency balance.
+ * @returns {CurrencyTransactionInfo} Currency transaction info object.
  */
 
 /**
  * @callback FactoryAdd
  * @param {number} amount Amount of money to add.
  * @param {string} [reason] The reason why the money was added.
- * @returns {number} Updated currency balance.
+ * @returns {CurrencyTransactionInfo} Currency transaction info object.
  */
 
 /**
  * @callback FactorySubtract
  * @param {number} amount Amount of money to subtract.
  * @param {string} [reason] The reason why the money was subtracted.
- * @returns {number} Updated currency balance.
+ * @returns {CurrencyTransactionInfo} Currency transaction info object.
  */
 
 /**
@@ -429,6 +437,7 @@ class BalanceManager extends Emitter {
  * @property {string} receiverMemberID A member ID who will receive the money.
  * @property {string} [sendingReason='sending money to user']
  * The reason of subtracting the money from sender. (example: "sending money to {user}")
+ *
  * @property {string} [receivingReason='receiving money from user']
  * The reason of adding a money to receiver. (example: "receiving money from {user}")
  */
@@ -440,7 +449,6 @@ class BalanceManager extends Emitter {
  * @property {string} userID User ID.
  * @property {number} money Amount of money.
  */
-
 
 /**
  * Balance manager class.
