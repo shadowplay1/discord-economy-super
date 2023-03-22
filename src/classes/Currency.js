@@ -226,6 +226,7 @@ class Currency extends Emitter {
         return {
             status: true,
             amount,
+            oldBalance: currency?.balances[memberID],
             newBalance: amount,
             currency: this
         }
@@ -255,6 +256,7 @@ class Currency extends Emitter {
         return {
             status: true,
             amount,
+            oldBalance: currencyBalance,
             newBalance: result.newBalance,
             currency: this
         }
@@ -284,6 +286,7 @@ class Currency extends Emitter {
         return {
             status: true,
             amount,
+            oldBalance: currencyBalance,
             newBalance: result.newBalance,
             currency: this
         }
@@ -388,6 +391,7 @@ class Currency extends Emitter {
  * @typedef {object} CurrencyTransactionInfo
  * @property {boolean} status Status of the transaction.
  * @property {number} amount Amount of currency used in the transaction.
+ * @property {number} oldBalance New currency balance before completing the transaction.
  * @property {number} newBalance New currency balance after completing the transaction.
  * @property {Currency} currency The currency that was used in the transaction.
  */

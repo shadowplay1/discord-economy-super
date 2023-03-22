@@ -13,7 +13,12 @@ declare interface CurrencyTransactionInfo {
     amount: number
 
     /**
-     * New currency balance after completing the transaction.
+     * Currency balance before completing the transaction.
+     */
+    oldBalance: number
+
+    /**
+     * Currency balance after completing the transaction.
      */
     newBalance: number
 

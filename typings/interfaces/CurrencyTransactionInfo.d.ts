@@ -1,6 +1,6 @@
 import Currency from '../classes/Currency'
 
-interface CurrencyTransactionInfo {
+declare interface CurrencyTransactionInfo {
 
     /**
      * Status of the transaction.
@@ -13,7 +13,12 @@ interface CurrencyTransactionInfo {
     amount: number
 
     /**
-     * New currency balance after completing the transaction.
+     * Currency balance before completing the transaction.
+     */
+    oldBalance: number
+
+    /**
+     * Currency balance after completing the transaction.
      */
     newBalance: number
 
