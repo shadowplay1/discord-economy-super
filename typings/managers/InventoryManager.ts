@@ -1,7 +1,7 @@
 import Emitter from '../classes/util/Emitter'
 
 import InventoryItem from '../classes/InventoryItem'
-import EconomyOptions from '../interfaces/EconomyOptions'
+import EconomyOptions from '../interfaces/EconomyConfiguration'
 
 import ShopOperationInfo from '../interfaces/ShopOperationInfo'
 import SellingOperationInfo from '../interfaces/SellingOperationInfo'
